@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:universal_io/io.dart';
 
 import 'easy_class.dart';
 
@@ -24,17 +24,17 @@ class EasyCoder extends EasyLogger {
   void generateModel(EasyCoderModelInfo modelInfo) {
     final indent = _config.indent;
     final outputPath = '${_config.absFolder}/${modelInfo.className.toLowerCase()}.dart'; //输入文件路径
-    final oldFile = File(outputPath); //旧文件
     final buffer = StringBuffer();
     final standardRegExp = RegExp('^(' + (([..._config.baseTypes, ..._config.nestTypes, '>']).join('|')) + '){1,}\$');
     //删除旧文件
-    if (oldFile.existsSync()) {
-      try {
+    try {
+      final oldFile = File(outputPath); //旧文件
+      if (oldFile.existsSync()) {
         oldFile.deleteSync();
         logDebug(['delete file', outputPath, 'success.']);
-      } catch (error, stack) {
-        logError(['delete file', outputPath, 'error:', error, '\n', stack]);
       }
+    } catch (error, stack) {
+      logError(['delete file', outputPath, 'error:', error, '\n', stack]);
     }
     //字段分析警告
     for (var element in modelInfo.classFields) {
@@ -47,7 +47,8 @@ class EasyCoder extends EasyLogger {
     _generateImports(indent, modelInfo, buffer); //import内容
     buffer.write('///${modelInfo.classDesc.join('\n///')}\n'); //类描述信息
     buffer.write('class ${modelInfo.className} extends DbBaseModel {\n'); //类开始
-    _generateFieldDefine(indent, modelInfo, buffer); //字段定义
+    _generateConstFields(indent, modelInfo, buffer); //常量字段
+    _generateFieldDefine(indent, modelInfo, buffer); //变量字段
     _generateConstructor(indent, modelInfo, buffer); //构造函数
     _generateFromJsonMethod(indent, modelInfo, buffer); //fromJson函数
     _generateToJsonMethod(indent, modelInfo, buffer); //toJson函数
@@ -85,6 +86,27 @@ class EasyCoder extends EasyLogger {
     buffer.write('\n');
   }
 
+  void _generateConstFields(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
+    for (var element in modelInfo.constFields) {
+      buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
+      buffer.write('${indent}static const ${element.type} ${element.name} = ${element.defVal};\n\n');
+    }
+    if (modelInfo.constMap && modelInfo.constFields.isNotEmpty) {
+      buffer.write('${indent}static const Map<String, Map<int, String>> constMap = {\n');
+      buffer.write('$indent$indent\'zh\': {\n');
+      for (var element in modelInfo.constFields) {
+        buffer.write('$indent$indent$indent${element.defVal}: \'${element.zhText}\',\n');
+      }
+      buffer.write('$indent$indent},\n');
+      buffer.write('$indent$indent\'en\': {\n');
+      for (var element in modelInfo.constFields) {
+        buffer.write('$indent$indent$indent${element.defVal}: \'${element.enText}\',\n');
+      }
+      buffer.write('$indent$indent},\n');
+      buffer.write('$indent};\n\n');
+    }
+  }
+
   void _generateFieldDefine(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
     final privateFields = <EasyCoderFieldInfo>[];
     for (var element in modelInfo.classFields) {
@@ -119,20 +141,21 @@ class EasyCoder extends EasyLogger {
     }
     for (var element in modelInfo.classFields) {
       final publicName = _getFieldPublicName(element.name);
+      final defaultValue = _getFieldDefaultValue(element.type, element.defVal);
       if (element == modelInfo.classFields.last) {
         //需要先判断是否为最后一个字段
         if (modelInfo.classFields.length > 1) {
-          buffer.write('$indent$indent$indent$indent${element.name} = $publicName ?? ${element.defv};\n\n');
+          buffer.write('$indent$indent$indent$indent${element.name} = $publicName ?? $defaultValue;\n\n');
         } else {
           //当总共一个字段时，这也是第一个字段
-          buffer.write('${element.name} = $publicName ?? ${element.defv};\n\n');
+          buffer.write('${element.name} = $publicName ?? $defaultValue;\n\n');
         }
       } else if (element == modelInfo.classFields.first) {
         //能运行到这里说明modelInfo.classFields.length>=2
-        buffer.write('${element.name} = $publicName ?? ${element.defv},\n');
+        buffer.write('${element.name} = $publicName ?? $defaultValue,\n');
       } else {
         //能运行到这里说明modelInfo.classFields.length>=3
-        buffer.write('$indent$indent$indent$indent${element.name} = $publicName ?? ${element.defv},\n');
+        buffer.write('$indent$indent$indent$indent${element.name} = $publicName ?? $defaultValue,\n');
       }
     }
   }
@@ -235,7 +258,7 @@ class EasyCoder extends EasyLogger {
       buffer.write('${indent}void update(Map<String, dynamic> map) {}\n');
       return;
     }
-    buffer.write('${indent}void update(Map<String, dynamic> map) {\n');
+    buffer.write('${indent}void updateFields(Map<String, dynamic> map) {\n');
     buffer.write('$indent${indent}final parser = ${modelInfo.className}.fromJson(map);\n');
     for (var element in modelInfo.classFields) {
       buffer.write('$indent${indent}if (map[\'${element.name}\'] != null) ${element.name} = parser.${element.name};\n');
@@ -290,4 +313,17 @@ class EasyCoder extends EasyLogger {
   }
 
   String _getFieldPublicName(String name) => name.replaceAll('_', '');
+
+  String _getFieldDefaultValue(String type, String? defVal) {
+    if (defVal != null) return defVal;
+    final currType = type.trim();
+    if (currType == 'int') return '0';
+    if (currType == 'double') return '0';
+    if (currType == 'num') return '0';
+    if (currType == 'bool') return 'false';
+    if (currType == 'String') return '\'\'';
+    if (currType.startsWith('List')) return '[]';
+    if (currType.startsWith('Map')) return '{}';
+    return '$type()';
+  }
 }

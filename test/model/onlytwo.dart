@@ -31,7 +31,7 @@ class OnlyTwo extends DbBaseModel {
     };
   }
 
-  void update(Map<String, dynamic> map) {
+  void updateFields(Map<String, dynamic> map) {
     final parser = OnlyTwo.fromJson(map);
     if (map['test1'] != null) test1 = parser.test1;
     if (map['test2'] != null) test2 = parser.test2;

@@ -38,7 +38,7 @@ class Location extends DbBaseModel {
     };
   }
 
-  void update(Map<String, dynamic> map) {
+  void updateFields(Map<String, dynamic> map) {
     final parser = Location.fromJson(map);
     if (map['latitude'] != null) latitude = parser.latitude;
     if (map['longitude'] != null) longitude = parser.longitude;

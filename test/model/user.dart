@@ -6,6 +6,23 @@ import 'address.dart';
 ///用户类
 ///
 class User extends DbBaseModel {
+  ///男性
+  static const int sexMale = 1;
+
+  ///女性
+  static const int sexFemale = 2;
+
+  static const Map<String, Map<int, String>> constMap = {
+    'zh': {
+      1: 'null',
+      2: 'null',
+    },
+    'en': {
+      1: 'null',
+      2: 'null',
+    },
+  };
+
   ///
   ///标志
   ///
@@ -91,7 +108,7 @@ class User extends DbBaseModel {
     };
   }
 
-  void update(Map<String, dynamic> map) {
+  void updateFields(Map<String, dynamic> map) {
     final parser = User.fromJson(map);
     if (map['_id'] != null) _id = parser._id;
     if (map['name'] != null) name = parser.name;

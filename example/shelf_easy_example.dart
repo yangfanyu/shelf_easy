@@ -1,7 +1,5 @@
-import 'dart:io';
-
 import 'package:shelf_easy/shelf_easy.dart';
-
+import 'package:universal_io/io.dart';
 
 void main() {
   Easy.startClusterServers(
@@ -102,7 +100,7 @@ void outerServerEntryPoint(String environment, String cluster, EasyServer server
 
 void innerServerEntryPoint(String environment, String cluster, EasyServer server, EasyUniDb? database) {
   server.websocketRemote('now', (session, packet) async {
-    // return packet.responseOk(data: {'time': DateTime.now()});// error because of DateTime not implements toJson() methor
+    // return packet.responseOk(data: {'time': DateTime.now()});// error because of DateTime not implements toJson() method
     return packet.responseOk(data: {'time': DateTime.now().toString()});
   });
 }

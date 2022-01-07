@@ -1,6 +1,6 @@
 name: shelf_easy
-description: A starting point for Dart libraries or applications.
-version: 0.0.1
+description: Lightweight web server, websocket server, websocket client framework. Support cluster, Simple and easy to use.
+version: 0.0.2
 homepage: https://github.com/yangfanyu/shelf_easy
 
 environment:
@@ -21,6 +21,7 @@ dependencies:
   shelf_router: ^1.1.2
   shelf_static: ^1.1.0
   shelf_web_socket: ^1.0.1
+  universal_io: ^2.0.4
   uuid: ^3.0.5
   web_socket_channel: ^2.1.0
 

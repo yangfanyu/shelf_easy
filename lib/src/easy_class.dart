@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart';
+import 'package:universal_io/io.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -971,8 +971,14 @@ class EasyCoderModelInfo {
   ///模型类的名称
   final String className;
 
-  ///模型类的
+  ///模型常量字段
+  final List<EasyCoderFieldInfo> constFields;
+
+  ///模型变量字段
   final List<EasyCoderFieldInfo> classFields;
+
+  ///是否生成constFields字段的Map映射
+  final bool constMap;
 
   ///是否生成写入辅助类
   final bool dirty;
@@ -984,7 +990,9 @@ class EasyCoderModelInfo {
     required this.importList,
     required this.classDesc,
     required this.className,
+    required this.constFields,
     required this.classFields,
+    this.constMap = false,
     this.dirty = true,
     this.query = true,
   });
@@ -1000,20 +1008,28 @@ class EasyCoderFieldInfo {
   ///字段名称
   final String name;
 
-  ///字段默认值
-  final String defv;
-
   ///字段注释信息
   final List<String> desc;
 
   ///是否为保密字段
   final bool secrecy;
 
+  ///字段默认值
+  final String? defVal;
+
+  ///常量字段映射的中文值
+  final String? zhText;
+
+  ///常量字段映射的英文值
+  final String? enText;
+
   EasyCoderFieldInfo({
     required this.type,
     required this.name,
-    required this.defv,
     required this.desc,
     this.secrecy = false,
+    this.defVal,
+    this.zhText,
+    this.enText,
   });
 }
