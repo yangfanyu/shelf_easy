@@ -1,6 +1,6 @@
 name: shelf_easy
 description: A starting point for Dart libraries or applications.
-version: 0.0.0
+version: 0.0.1
 homepage: https://github.com/yangfanyu/shelf_easy
 
 environment:

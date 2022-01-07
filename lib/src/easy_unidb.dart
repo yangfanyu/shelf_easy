@@ -2,7 +2,7 @@ import 'db/db_base.dart';
 import 'db/db_hive.dart' as hive;
 import 'db/db_unsupport.dart' if (dart.library.io) 'db/db_mongo.dart' as mongo;
 import 'db/db_unsupport.dart' if (dart.library.io) 'db/db_postgre.dart' as postgre;
-import 'easy_class.dart' show EasyLogger, EasyUniDbDriver, EasyUniDbConfig;
+import 'easy_class.dart';
 
 class EasyUniDb extends EasyLogger implements DbBase {
   ///配置信息

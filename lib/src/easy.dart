@@ -1,24 +1,19 @@
-///
-/// More dartdocs go here.
-///
-library shelf_easy;
-
 import 'dart:io';
 
-import 'src/easy_class.dart';
-import 'src/easy_server.dart';
-import 'src/easy_unidb.dart';
-import 'src/wk/wk_base.dart';
-import 'src/wk/wk_unsupport.dart' if (dart.library.io) 'src/wk/wk_native.dart' if (dart.library.html) 'src/wk/wk_html.dart' as worker;
+import 'easy_class.dart';
+import 'easy_server.dart';
+import 'easy_unidb.dart';
+import 'wk/wk_base.dart';
+import 'wk/wk_unsupport.dart' if (dart.library.io) 'wk/wk_native.dart' if (dart.library.html) 'wk/wk_html.dart' as worker;
 
-export 'src/easy_class.dart';
-export 'src/easy_client.dart' show EasyClient;
-export 'src/easy_server.dart' show EasyServer;
-export 'src/easy_unidb.dart' show EasyUniDb;
-export 'src/easy_coder.dart' show EasyCoder;
-
+///
+///服务器入口函数
+///
 typedef EasyServerEntryPoint = void Function(String environment, String cluster, EasyServer server, EasyUniDb? uniDb);
 
+///
+///集群启动类
+///
 class Easy {
   static final List<WkBase> _workerList = [];
 

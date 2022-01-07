@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:http_parser/http_parser.dart';
-import 'package:shelf_easy/easy.dart';
+import 'package:shelf_easy/shelf_easy.dart';
 
 void main() async {
   final client = EasyClient(

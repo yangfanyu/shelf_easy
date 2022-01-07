@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bson/bson.dart';
-import 'package:shelf_easy/easy.dart';
+import 'package:shelf_easy/shelf_easy.dart';
 import 'package:shelf_easy/src/db/db_base.dart';
 
 import 'model/address.dart';

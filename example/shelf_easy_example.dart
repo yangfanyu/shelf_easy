@@ -1,6 +1,7 @@
 import 'dart:io';
 
-import 'package:shelf_easy/easy.dart';
+import 'package:shelf_easy/shelf_easy.dart';
+
 
 void main() {
   Easy.startClusterServers(
@@ -57,7 +58,7 @@ void main() {
       'production': EasyUniDbConfig(driver: EasyUniDbDriver.mongo, host: 'localhost', port: 27017, db: 'shelf_easy_example', params: {}),
     },
     logger: EasyLogger.printAndWriteLogger,
-    logLevel: EasyLogLevel.trace,
+    logLevel: EasyLogLevel.info,
     logFolder: '${Directory.current.path}/example/logs',
     logFileBackup: 3,
     logFileMaxBytes: 10 * 1024,
