@@ -484,6 +484,17 @@ class EasyServer extends EasyLogger {
     return completer.future;
   }
 
+  ///获取请求的ip地址
+  String getRequestIp(Request request) {
+    try {
+      logTrace(['getRequestIp =>', request.headers]);
+      return request.headers[_config.ipHeader] ?? (request.context['shelf.io.connection_info'] as HttpConnectionInfo?)?.remoteAddress.address ?? '0.0.0.0';
+    } catch (error, stack) {
+      logError(['getRequestIp =>', error, '\n', stack]);
+      return '0.0.0.0';
+    }
+  }
+
   void _onServerHeart() {
     _websoketMap.forEach((id, session) {
       if (session.isExpired(_config.timeout)) {
@@ -496,7 +507,7 @@ class EasyServer extends EasyLogger {
   }
 
   void _onWebSocketConnect(WebSocketChannel websocket, Request request) {
-    final session = EasyServerSession(socket: websocket, ip: _getRequestAddress(request));
+    final session = EasyServerSession(socket: websocket, ip: getRequestIp(request));
     _websoketMap[session.id] = session; //绑定到_socketMap
     websocket.stream.listen((data) {
       logTrace(['_onWebSocketData <=', session.info, data]);
@@ -618,24 +629,14 @@ class EasyServer extends EasyLogger {
         String requestUid = (request.headers['easy-security-identity'] ?? '').trim();
         requestUid = requestUid.isEmpty ? 'uid' : requestUid;
         return Future.sync(() => innerHandler(request)).then((response) {
-          logInfo(['_onHttpRequest =>', '[${_getRequestAddress(request)} $requestUid]', request.method, response.statusCode, watch.elapsed, request.requestedUri.path, request.requestedUri.query]);
+          logInfo(['_onHttpRequest =>', '[${getRequestIp(request)} $requestUid]', request.method, response.statusCode, watch.elapsed, request.requestedUri.path, request.requestedUri.query]);
           return response;
         }, onError: (Object error, StackTrace stack) {
           if (error is HijackException) throw error; //这一行不能去掉，否则启动时报错
-          logError(['_onHttpRequest =>', '[${_getRequestAddress(request)}] $requestUid', request.method, watch.elapsed, request.requestedUri.path, request.requestedUri.query, error, '\n', stack]);
+          logError(['_onHttpRequest =>', '[${getRequestIp(request)}] $requestUid', request.method, watch.elapsed, request.requestedUri.path, request.requestedUri.query, error, '\n', stack]);
           throw error;
         });
       };
     };
-  }
-
-  String _getRequestAddress(Request request) {
-    try {
-      logTrace(['_getRequestAddress =>', request.headers]);
-      return request.headers[_config.ipHeader] ?? (request.context['shelf.io.connection_info'] as HttpConnectionInfo?)?.remoteAddress.address ?? '0.0.0.0';
-    } catch (error, stack) {
-      logError(['_getRequestAddress =>', error, '\n', stack]);
-      return '0.0.0.0';
-    }
   }
 }
