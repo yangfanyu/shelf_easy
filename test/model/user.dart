@@ -45,6 +45,9 @@ class User extends DbBaseModel {
   ///归属地址
   Address address;
 
+  ///备用地址
+  Address? addressBak;
+
   ///权限列表
   List<int> accessList;
 
@@ -66,6 +69,7 @@ class User extends DbBaseModel {
     double? rmb,
     String? pwd,
     Address? address,
+    this.addressBak,
     List<int>? accessList,
     List<Address>? addressList,
     List<ObjectId>? friendList,
@@ -87,6 +91,7 @@ class User extends DbBaseModel {
       rmb: map['rmb'],
       pwd: map['pwd'],
       address: map['address'] is Map ? Address.fromJson(map['address']) : map['address'],
+      addressBak: map['addressBak'] is Map ? Address.fromJson(map['addressBak']) : map['addressBak'],
       accessList: (map['accessList'] as List?)?.map((v) => v as int).toList(),
       addressList: (map['addressList'] as List?)?.map((v) => Address.fromJson(v)).toList(),
       friendList: (map['friendList'] as List?)?.map((v) => v is String ? ObjectId.fromHexString(v) : v as ObjectId).toList(),
@@ -102,6 +107,7 @@ class User extends DbBaseModel {
       'rmb': DbQueryField.convertToBaseType(rmb),
       'pwd': DbQueryField.convertToBaseType(pwd),
       'address': DbQueryField.convertToBaseType(address),
+      'addressBak': DbQueryField.convertToBaseType(addressBak),
       'accessList': DbQueryField.convertToBaseType(accessList),
       'addressList': DbQueryField.convertToBaseType(addressList),
       'friendList': DbQueryField.convertToBaseType(friendList),
@@ -110,15 +116,16 @@ class User extends DbBaseModel {
 
   void updateFields(Map<String, dynamic> map) {
     final parser = User.fromJson(map);
-    if (map['_id'] != null) _id = parser._id;
-    if (map['name'] != null) name = parser.name;
-    if (map['age'] != null) age = parser.age;
-    if (map['rmb'] != null) rmb = parser.rmb;
-    if (map['pwd'] != null) pwd = parser.pwd;
-    if (map['address'] != null) address = parser.address;
-    if (map['accessList'] != null) accessList = parser.accessList;
-    if (map['addressList'] != null) addressList = parser.addressList;
-    if (map['friendList'] != null) friendList = parser.friendList;
+    if (map.containsKey('_id')) _id = parser._id;
+    if (map.containsKey('name')) name = parser.name;
+    if (map.containsKey('age')) age = parser.age;
+    if (map.containsKey('rmb')) rmb = parser.rmb;
+    if (map.containsKey('pwd')) pwd = parser.pwd;
+    if (map.containsKey('address')) address = parser.address;
+    if (map.containsKey('addressBak')) addressBak = parser.addressBak;
+    if (map.containsKey('accessList')) accessList = parser.accessList;
+    if (map.containsKey('addressList')) addressList = parser.addressList;
+    if (map.containsKey('friendList')) friendList = parser.friendList;
   }
 }
 
@@ -130,6 +137,7 @@ class UserDirty {
   set rmb(double value) => data['rmb'] = DbQueryField.convertToBaseType(value);
   set pwd(String value) => data['pwd'] = DbQueryField.convertToBaseType(value);
   set address(Address value) => data['address'] = DbQueryField.convertToBaseType(value);
+  set addressBak(Address value) => data['addressBak'] = DbQueryField.convertToBaseType(value);
   set accessList(List<int> value) => data['accessList'] = DbQueryField.convertToBaseType(value);
   set addressList(List<Address> value) => data['addressList'] = DbQueryField.convertToBaseType(value);
   set friendList(List<ObjectId> value) => data['friendList'] = DbQueryField.convertToBaseType(value);
@@ -152,6 +160,7 @@ class UserQuery {
   static DbQueryField<double, double, DBUnsupportArrayOperate> get rmb => DbQueryField('rmb');
   static DbQueryField<String, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get pwd => DbQueryField('pwd');
   static DbQueryField<Address, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get address => DbQueryField('address');
+  static DbQueryField<Address, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get addressBak => DbQueryField('addressBak');
   static DbQueryField<List<int>, DBUnsupportNumberOperate, int> get accessList => DbQueryField('accessList');
   static DbQueryField<List<Address>, DBUnsupportNumberOperate, Address> get addressList => DbQueryField('addressList');
   static DbQueryField<List<ObjectId>, DBUnsupportNumberOperate, ObjectId> get friendList => DbQueryField('friendList');

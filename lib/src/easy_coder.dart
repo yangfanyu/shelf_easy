@@ -38,7 +38,7 @@ class EasyCoder extends EasyLogger {
     }
     //字段分析警告
     for (var element in modelInfo.classFields) {
-      var currType = element.type.replaceAll(' ', ''); //去除全部空格
+      final currType = element.type.replaceAll(' ', ''); //去除全部空格
       if (!standardRegExp.hasMatch(currType) && (!_config.customFromJson.containsKey(currType) || !_config.customFromJsonNest.containsKey(currType))) {
         logWarn([modelInfo.className, '=>', element.name, '=>', element.type, 'not in baseTypes and nestTypes. Expression of fromJson use default.']); //不是标准类型
       }
@@ -111,7 +111,11 @@ class EasyCoder extends EasyLogger {
     final privateFields = <EasyCoderFieldInfo>[];
     for (var element in modelInfo.classFields) {
       buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
-      buffer.write('$indent${element.type} ${element.name};\n\n');
+      if (element.nullAble) {
+        buffer.write('$indent${element.type}? ${element.name};\n\n');
+      } else {
+        buffer.write('$indent${element.type} ${element.name};\n\n');
+      }
       if (element.name.startsWith('_')) {
         privateFields.add(element);
       }
@@ -130,31 +134,39 @@ class EasyCoder extends EasyLogger {
       return;
     }
     buffer.write('$indent${modelInfo.className}({\n');
+    final notNullAbleFields = <EasyCoderFieldInfo>[]; //不可空的字段
     for (var element in modelInfo.classFields) {
       final publicName = _getFieldPublicName(element.name);
-      buffer.write('$indent$indent${element.type}? $publicName,\n');
+      if (element.nullAble) {
+        buffer.write('$indent${indent}this.$publicName,\n');
+      } else {
+        buffer.write('$indent$indent${element.type}? $publicName,\n');
+        notNullAbleFields.add(element);
+      }
     }
-    if (modelInfo.classFields.length > 1) {
+    if (notNullAbleFields.isEmpty) {
+      buffer.write('$indent});\n\n');
+    } else if (notNullAbleFields.length > 1) {
       buffer.write('$indent})  : ');
     } else {
       buffer.write('$indent}) : ');
     }
-    for (var element in modelInfo.classFields) {
+    for (var element in notNullAbleFields) {
       final publicName = _getFieldPublicName(element.name);
       final defaultValue = _getFieldDefaultValue(element.type, element.defVal);
-      if (element == modelInfo.classFields.last) {
+      if (element == notNullAbleFields.last) {
         //需要先判断是否为最后一个字段
-        if (modelInfo.classFields.length > 1) {
+        if (notNullAbleFields.length > 1) {
           buffer.write('$indent$indent$indent$indent${element.name} = $publicName ?? $defaultValue;\n\n');
         } else {
           //当总共一个字段时，这也是第一个字段
           buffer.write('${element.name} = $publicName ?? $defaultValue;\n\n');
         }
-      } else if (element == modelInfo.classFields.first) {
-        //能运行到这里说明modelInfo.classFields.length>=2
+      } else if (element == notNullAbleFields.first) {
+        //能运行到这里说明 notNullAbleFields.length >= 2
         buffer.write('${element.name} = $publicName ?? $defaultValue,\n');
       } else {
-        //能运行到这里说明modelInfo.classFields.length>=3
+        //能运行到这里说明 notNullAbleFields.length >= 3
         buffer.write('$indent$indent$indent$indent${element.name} = $publicName ?? $defaultValue,\n');
       }
     }
@@ -261,7 +273,7 @@ class EasyCoder extends EasyLogger {
     buffer.write('${indent}void updateFields(Map<String, dynamic> map) {\n');
     buffer.write('$indent${indent}final parser = ${modelInfo.className}.fromJson(map);\n');
     for (var element in modelInfo.classFields) {
-      buffer.write('$indent${indent}if (map[\'${element.name}\'] != null) ${element.name} = parser.${element.name};\n');
+      buffer.write('$indent${indent}if (map.containsKey(\'${element.name}\')) ${element.name} = parser.${element.name};\n');
     }
     buffer.write('$indent}\n');
     return;

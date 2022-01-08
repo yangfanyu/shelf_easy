@@ -22,6 +22,7 @@ void main() {
       EasyCoderFieldInfo(type: 'double', name: 'rmb', desc: ['RMB'], secrecy: true, defVal: '100'),
       EasyCoderFieldInfo(type: 'String', name: 'pwd', desc: ['密码'], secrecy: true, defVal: '\'12345678\''),
       EasyCoderFieldInfo(type: 'Address', name: 'address', desc: ['归属地址']),
+      EasyCoderFieldInfo(type: 'Address', name: 'addressBak', desc: ['备用地址'], nullAble: true),
       EasyCoderFieldInfo(type: 'List<int>', name: 'accessList', desc: ['权限列表']),
       EasyCoderFieldInfo(type: 'List<Address>', name: 'addressList', desc: ['通讯地址']),
       EasyCoderFieldInfo(type: 'List<ObjectId>', name: 'friendList', desc: ['好友id列表']),
@@ -116,6 +117,16 @@ void main() {
     classFields: [
       EasyCoderFieldInfo(type: 'String', name: 'test1', desc: ['']),
       EasyCoderFieldInfo(type: 'String', name: 'test2', desc: ['']),
+    ],
+  ));
+  coder.generateModel(EasyCoderModelInfo(
+    importList: [],
+    classDesc: ['', '没有字段类', ''],
+    className: 'OnlyNull',
+    constFields: [],
+    classFields: [
+      EasyCoderFieldInfo(type: 'String', name: 'test1', desc: [''], nullAble: true),
+      EasyCoderFieldInfo(type: 'String', name: 'test2', desc: [''], nullAble: true),
     ],
   ));
   coder.generateModel(EasyCoderModelInfo(

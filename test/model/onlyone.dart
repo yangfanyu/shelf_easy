@@ -26,7 +26,7 @@ class OnlyOne extends DbBaseModel {
 
   void updateFields(Map<String, dynamic> map) {
     final parser = OnlyOne.fromJson(map);
-    if (map['test1'] != null) test1 = parser.test1;
+    if (map.containsKey('test1')) test1 = parser.test1;
   }
 }
 

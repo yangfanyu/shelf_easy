@@ -1014,6 +1014,9 @@ class EasyCoderFieldInfo {
   ///是否为保密字段
   final bool secrecy;
 
+  ///是否可以为null
+  final bool nullAble;
+
   ///字段默认值
   final String? defVal;
 
@@ -1028,6 +1031,7 @@ class EasyCoderFieldInfo {
     required this.name,
     required this.desc,
     this.secrecy = false,
+    this.nullAble = false,
     this.defVal,
     this.zhText,
     this.enText,
