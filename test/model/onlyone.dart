@@ -32,10 +32,14 @@ class OnlyOne extends DbBaseModel {
 
 class OnlyOneDirty {
   final Map<String, dynamic> data = {};
+
+  ///
   set test1(String value) => data['test1'] = DbQueryField.convertToBaseType(value);
 }
 
 class OnlyOneQuery {
   static const $tableName = 'onlyone';
+
+  ///
   static DbQueryField<String, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get test1 => DbQueryField('test1');
 }

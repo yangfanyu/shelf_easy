@@ -131,20 +131,45 @@ class User extends DbBaseModel {
 
 class UserDirty {
   final Map<String, dynamic> data = {};
+
+  ///
+  ///标志
+  ///
   set id(ObjectId value) => data['_id'] = DbQueryField.convertToBaseType(value);
+
+  ///
+  ///姓名
+  ///
   set name(String value) => data['name'] = DbQueryField.convertToBaseType(value);
+
+  ///年龄
   set age(int value) => data['age'] = DbQueryField.convertToBaseType(value);
+
+  ///RMB
   set rmb(double value) => data['rmb'] = DbQueryField.convertToBaseType(value);
+
+  ///密码
   set pwd(String value) => data['pwd'] = DbQueryField.convertToBaseType(value);
+
+  ///归属地址
   set address(Address value) => data['address'] = DbQueryField.convertToBaseType(value);
+
+  ///备用地址
   set addressBak(Address value) => data['addressBak'] = DbQueryField.convertToBaseType(value);
+
+  ///权限列表
   set accessList(List<int> value) => data['accessList'] = DbQueryField.convertToBaseType(value);
+
+  ///通讯地址
   set addressList(List<Address> value) => data['addressList'] = DbQueryField.convertToBaseType(value);
+
+  ///好友id列表
   set friendList(List<ObjectId> value) => data['friendList'] = DbQueryField.convertToBaseType(value);
 }
 
 class UserQuery {
   static const $tableName = 'user';
+
   static Set<DbQueryField> get $secrecyFieldsExclude {
     return {
       id..exclude(),
@@ -154,14 +179,37 @@ class UserQuery {
     };
   }
 
+  ///
+  ///标志
+  ///
   static DbQueryField<ObjectId, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get id => DbQueryField('_id');
+
+  ///
+  ///姓名
+  ///
   static DbQueryField<String, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get name => DbQueryField('name');
+
+  ///年龄
   static DbQueryField<int, int, DBUnsupportArrayOperate> get age => DbQueryField('age');
+
+  ///RMB
   static DbQueryField<double, double, DBUnsupportArrayOperate> get rmb => DbQueryField('rmb');
+
+  ///密码
   static DbQueryField<String, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get pwd => DbQueryField('pwd');
+
+  ///归属地址
   static DbQueryField<Address, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get address => DbQueryField('address');
+
+  ///备用地址
   static DbQueryField<Address, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get addressBak => DbQueryField('addressBak');
+
+  ///权限列表
   static DbQueryField<List<int>, DBUnsupportNumberOperate, int> get accessList => DbQueryField('accessList');
+
+  ///通讯地址
   static DbQueryField<List<Address>, DBUnsupportNumberOperate, Address> get addressList => DbQueryField('addressList');
+
+  ///好友id列表
   static DbQueryField<List<ObjectId>, DBUnsupportNumberOperate, ObjectId> get friendList => DbQueryField('friendList');
 }

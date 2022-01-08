@@ -40,12 +40,20 @@ class OnlyTwo extends DbBaseModel {
 
 class OnlyTwoDirty {
   final Map<String, dynamic> data = {};
+
+  ///
   set test1(String value) => data['test1'] = DbQueryField.convertToBaseType(value);
+
+  ///
   set test2(String value) => data['test2'] = DbQueryField.convertToBaseType(value);
 }
 
 class OnlyTwoQuery {
   static const $tableName = 'onlytwo';
+
+  ///
   static DbQueryField<String, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get test1 => DbQueryField('test1');
+
+  ///
   static DbQueryField<String, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get test2 => DbQueryField('test2');
 }

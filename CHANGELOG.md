@@ -1,3 +1,7 @@
+## 0.0.7
+
+- Test version 0.0.7.
+
 ## 0.0.6
 
 - Test version 0.0.6.

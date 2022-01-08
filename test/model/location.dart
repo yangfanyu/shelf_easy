@@ -48,14 +48,26 @@ class Location extends DbBaseModel {
 
 class LocationDirty {
   final Map<String, dynamic> data = {};
+
+  ///纬度
   set latitude(double value) => data['latitude'] = DbQueryField.convertToBaseType(value);
+
+  ///经度
   set longitude(double value) => data['longitude'] = DbQueryField.convertToBaseType(value);
+
+  ///精确度
   set accuracy(double value) => data['accuracy'] = DbQueryField.convertToBaseType(value);
 }
 
 class LocationQuery {
   static const $tableName = 'location';
+
+  ///纬度
   static DbQueryField<double, double, DBUnsupportArrayOperate> get latitude => DbQueryField('latitude');
+
+  ///经度
   static DbQueryField<double, double, DBUnsupportArrayOperate> get longitude => DbQueryField('longitude');
+
+  ///精确度
   static DbQueryField<double, double, DBUnsupportArrayOperate> get accuracy => DbQueryField('accuracy');
 }

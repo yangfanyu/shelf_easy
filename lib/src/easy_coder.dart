@@ -283,10 +283,15 @@ class EasyCoder extends EasyLogger {
     if (modelInfo.dirty && modelInfo.classFields.isNotEmpty) {
       buffer.write('\n');
       buffer.write('class ${modelInfo.className}Dirty {\n');
-      buffer.write('${indent}final Map<String, dynamic> data = {};\n');
+      buffer.write('${indent}final Map<String, dynamic> data = {};\n\n');
       for (var element in modelInfo.classFields) {
         final publicName = _getFieldPublicName(element.name);
-        buffer.write('${indent}set $publicName(${element.type} value) => data[\'${element.name}\'] = DbQueryField.convertToBaseType(value);\n');
+        buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
+        if (element == modelInfo.classFields.last) {
+          buffer.write('${indent}set $publicName(${element.type} value) => data[\'${element.name}\'] = DbQueryField.convertToBaseType(value);\n');
+        } else {
+          buffer.write('${indent}set $publicName(${element.type} value) => data[\'${element.name}\'] = DbQueryField.convertToBaseType(value);\n\n');
+        }
       }
       buffer.write('}\n');
     }
@@ -296,7 +301,7 @@ class EasyCoder extends EasyLogger {
     if (modelInfo.query && modelInfo.classFields.isNotEmpty) {
       buffer.write('\n');
       buffer.write('class ${modelInfo.className}Query {\n');
-      buffer.write('${indent}static const \$tableName = \'${modelInfo.className.toLowerCase()}\';\n'); //数据表名称
+      buffer.write('${indent}static const \$tableName = \'${modelInfo.className.toLowerCase()}\';\n\n'); //数据表名称
       //保密字段
       final secrecyList = <EasyCoderFieldInfo>[]; //保密字段
       for (var element in modelInfo.classFields) {
@@ -318,7 +323,12 @@ class EasyCoder extends EasyLogger {
         final currType = element.type.replaceAll(' ', ''); //去除全部空格
         final numType = (currType == 'int' || currType == 'double' || currType == 'num') ? currType : 'DBUnsupportNumberOperate';
         final itemType = currType.startsWith('List<') ? currType.replaceFirst('List<', '').replaceFirst('>', '').replaceAll(',', ', ') : 'DBUnsupportArrayOperate';
-        buffer.write('${indent}static DbQueryField<${element.type}, $numType, $itemType> get $publicName => DbQueryField(\'${element.name}\');\n');
+        buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
+        if (element == modelInfo.classFields.last) {
+          buffer.write('${indent}static DbQueryField<${element.type}, $numType, $itemType> get $publicName => DbQueryField(\'${element.name}\');\n');
+        } else {
+          buffer.write('${indent}static DbQueryField<${element.type}, $numType, $itemType> get $publicName => DbQueryField(\'${element.name}\');\n\n');
+        }
       }
       buffer.write('}\n');
     }

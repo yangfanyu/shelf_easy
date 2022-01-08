@@ -65,18 +65,38 @@ class Address extends DbBaseModel {
 
 class AddressDirty {
   final Map<String, dynamic> data = {};
+
+  ///国家
   set country(String value) => data['country'] = DbQueryField.convertToBaseType(value);
+
+  ///省份
   set province(String value) => data['province'] = DbQueryField.convertToBaseType(value);
+
+  ///市
   set city(String value) => data['city'] = DbQueryField.convertToBaseType(value);
+
+  ///县（区）
   set area(String value) => data['area'] = DbQueryField.convertToBaseType(value);
+
+  ///县（区）
   set location(Location value) => data['location'] = DbQueryField.convertToBaseType(value);
 }
 
 class AddressQuery {
   static const $tableName = 'address';
+
+  ///国家
   static DbQueryField<String, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get country => DbQueryField('country');
+
+  ///省份
   static DbQueryField<String, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get province => DbQueryField('province');
+
+  ///市
   static DbQueryField<String, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get city => DbQueryField('city');
+
+  ///县（区）
   static DbQueryField<String, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get area => DbQueryField('area');
+
+  ///县（区）
   static DbQueryField<Location, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get location => DbQueryField('location');
 }
