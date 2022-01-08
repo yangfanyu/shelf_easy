@@ -267,7 +267,7 @@ class EasyCoder extends EasyLogger {
 
   void _generateUpdateMethod(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
     if (modelInfo.classFields.isEmpty) {
-      buffer.write('${indent}void update(Map<String, dynamic> map) {}\n');
+      buffer.write('${indent}void updateFields(Map<String, dynamic> map) {}\n');
       return;
     }
     buffer.write('${indent}void updateFields(Map<String, dynamic> map) {\n');
