@@ -575,6 +575,20 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
       return v;
     }
   }
+
+  ///创建一个新的ObjectId
+  static ObjectId createObjectId() {
+    return ObjectId();
+  }
+
+  ///将HexString转换为ObjectId
+  static ObjectId hexstr2ObjectId(String hexstr) {
+    try {
+      return ObjectId.fromHexString(hexstr);
+    } catch (error) {
+      return ObjectId.fromHexString('000000000000000000000000');
+    }
+  }
 }
 
 ///

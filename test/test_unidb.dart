@@ -452,6 +452,8 @@ void testDataBase() {
     print(User().toJson.hashCode);
     print(User().toJson.hashCode);
     print(User().toJson.hashCode);
+    print(DbQueryField.createObjectId());
+    print(DbQueryField.hexstr2ObjectId(''));
     //关闭连接
     await database.destroy().then((value) => exit(0));
   });
