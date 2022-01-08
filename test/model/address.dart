@@ -1,4 +1,4 @@
-import 'package:shelf_easy/src/db/db_base.dart';
+import 'package:shelf_easy/shelf_easy.dart';
 import 'location.dart';
 
 ///

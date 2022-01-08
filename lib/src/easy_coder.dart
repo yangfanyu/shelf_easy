@@ -78,7 +78,7 @@ class EasyCoder extends EasyLogger {
       }
     }
     //自动导入模型基类文件
-    buffer.write('import \'package:shelf_easy/src/db/db_base.dart\';\n');
+    buffer.write('import \'package:shelf_easy/shelf_easy.dart\';\n');
     //导入自定义文件
     for (var element in modelInfo.importList) {
       buffer.write('import \'$element\';\n');

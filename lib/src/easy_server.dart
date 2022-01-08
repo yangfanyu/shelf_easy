@@ -69,9 +69,6 @@ class EasyServer extends EasyLogger {
   ///websocket会话关闭的监听器
   SessionCloseListener? _sessionCloseListener;
 
-  ///http服务的加密口令转换方法
-  HttpTokenConverter? _httpTokenConverter;
-
   ///心跳计时器
   Timer? _ticker;
 
@@ -103,14 +100,13 @@ class EasyServer extends EasyLogger {
   }
 
   ///设置事件监听器
-  void setListener({ServerHeartListener? serverHeartListener, SessionCloseListener? sessionCloseListener, HttpTokenConverter? httpTokenConverter}) {
+  void setListener({ServerHeartListener? serverHeartListener, SessionCloseListener? sessionCloseListener}) {
     _serverHeartListener = serverHeartListener;
     _sessionCloseListener = sessionCloseListener;
-    _httpTokenConverter = httpTokenConverter;
   }
 
   ///设置Http服务的动态请求路由，当设置过http路由时启动为web服务器。否则启动为websocket服务器
-  void httpRoute(String route, HttpRouteHandler handler) {
+  void httpRoute(String route, HttpRouteHandler handler, {HttpTokenConverter? tokenConverter}) {
     _router ??= Router();
     _router?.post(route, (Request request) async {
       logTrace(['_onHttpRoute <=', request.headers]);
@@ -118,7 +114,7 @@ class EasyServer extends EasyLogger {
       final requestData = _config.binary ? (await request.read().toList()).first : await request.readAsString();
       logTrace(['_onHttpRoute <=', requestData]);
       final requestUid = (request.headers['easy-security-identity'] ?? '').trim();
-      final requestToken = (_httpTokenConverter == null || requestUid.isEmpty) ? null : await _httpTokenConverter!(requestUid);
+      final requestToken = (tokenConverter == null || requestUid.isEmpty) ? null : await tokenConverter(requestUid);
       final requestPacket = EasySecurity.decrypt(requestData, requestToken ?? _config.pwd);
       if (requestPacket == null) {
         return Response.internalServerError();
@@ -137,7 +133,7 @@ class EasyServer extends EasyLogger {
   }
 
   ///设置Http服务的文件上传路由，当设置过http路由时启动为web服务器。否则启动为websocket服务器
-  void httpUpload(String route, HttpUploadHandler handler, {required String Function() destinationFolder, String defaultMediatype = 'application/octet-stream'}) {
+  void httpUpload(String route, HttpUploadHandler handler, {required String Function() destinationFolder, String defaultMediatype = 'application/octet-stream', HttpTokenConverter? tokenConverter}) {
     _router ??= Router();
     _router?.post(route, (Request request) async {
       logTrace(['_onHttpUpload <=', request.headers]);
@@ -151,7 +147,7 @@ class EasyServer extends EasyLogger {
       logTrace(['_onHttpUpload <=', requestBytesList.first]);
       //解析请求数据
       final requestUid = (request.headers['easy-security-identity'] ?? '').trim();
-      final requestToken = (_httpTokenConverter == null || requestUid.isEmpty) ? null : await _httpTokenConverter!(requestUid);
+      final requestToken = (tokenConverter == null || requestUid.isEmpty) ? null : await tokenConverter(requestUid);
       final requestPacket = EasySecurity.decrypt(requestBytesList.first, requestToken ?? _config.pwd);
       final requestFiles = <File>[];
       for (var i = 1; i < requestBytesList.length; i++) {

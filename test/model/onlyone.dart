@@ -1,4 +1,4 @@
-import 'package:shelf_easy/src/db/db_base.dart';
+import 'package:shelf_easy/shelf_easy.dart';
 
 ///
 ///只有一个字段类
