@@ -433,7 +433,7 @@ class EasyServer extends EasyLogger {
         : (SecurityContext()
           ..usePrivateKey(_config.sslCerFile!)
           ..useCertificateChain(_config.sslCerFile!));
-    serve(handler, _config.host, _config.port, securityContext: securityContext, shared: _router != null && _config.instances > 1).then((server) {
+    serve(handler, _config.host, _config.port, securityContext: securityContext, shared: _config.instances > 1).then((server) {
       if (_router != null) {
         logInfo(['web server is listening...']);
       } else {

@@ -606,7 +606,7 @@ class EasyServerConfig {
   ///监听端口号
   final int port;
 
-  ///集群启动的实例数量，仅对http服务器有效
+  ///集群启动的实例数量，建议只对web服务设置设置该值>1，因为websocket服务每个session是有状态的
   final int instances;
 
   ///数据加解密密码，为null时不启用数据加解密
@@ -977,7 +977,7 @@ class EasyCoderModelInfo {
   ///模型变量字段
   final List<EasyCoderFieldInfo> classFields;
 
-  ///是否生成constFields字段的Map映射
+  ///是否生成constFields字段的Map映射，为true时每个常量字段类型必须为int
   final bool constMap;
 
   ///是否生成写入辅助类

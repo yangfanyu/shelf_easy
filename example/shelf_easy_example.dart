@@ -9,7 +9,7 @@ void main() {
     environment: 'development',
     envClusterServerConfig: {
       'development': {
-        'web': [
+        'http': [
           EasyServerConfig(host: '127.0.0.1', port: 8080, links: ['outer', 'inner'], instances: 4),
         ],
         'outer': [
@@ -24,7 +24,7 @@ void main() {
         ]
       },
       'production': {
-        'web': [
+        'http': [
           EasyServerConfig(host: 'localhost', port: 8080, links: ['outer', 'outer']),
         ],
         'outer': [
@@ -41,12 +41,12 @@ void main() {
     },
     envClusterServerEntryPoint: {
       'development': {
-        'web': webServerEntryPoint,
+        'http': httpServerEntryPoint,
         'outer': outerServerEntryPoint,
         'inner': innerServerEntryPoint,
       },
       'production': {
-        'web': webServerEntryPoint,
+        'http': httpServerEntryPoint,
         'outer': outerServerEntryPoint,
         'inner': innerServerEntryPoint,
       },
@@ -71,7 +71,7 @@ void main() {
   });
 }
 
-void webServerEntryPoint(String environment, String cluster, EasyServer server, EasyUniDb? database) {
+void httpServerEntryPoint(String environment, String cluster, EasyServer server, EasyUniDb? database) {
   final rootPath = '${Directory.current.path}/example';
   server.httpRoute('/login/<user>/<pwd>', (request, packet) async {
     return packet.responseOk(data: {'hello': 1, 'world': 2});
