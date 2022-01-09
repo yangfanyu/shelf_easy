@@ -645,6 +645,9 @@ class EasyServerConfig {
   ///数据库配置信息
   final EasyUniDbConfig? uniDbConfig;
 
+  ///是否启用ssl模式
+  bool get sslsEnable => sslKeyFile != null && sslCerFile != null;
+
   EasyServerConfig({
     this.logger,
     this.logLevel,

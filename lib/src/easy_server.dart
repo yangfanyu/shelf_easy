@@ -398,7 +398,7 @@ class EasyServer extends EasyLogger {
     _config.clusterConfigs.forEach((cluster, serverList) {
       final clientList = <EasyClient>[];
       for (var server in serverList) {
-        final url = server.sslKeyFile == null || server.sslCerFile == null ? 'ws://${server.host}:${server.port}' : 'wss://${server.host}:${server.port}';
+        final url = server.sslsEnable ? 'wss://${server.host}:${server.port}' : 'ws://${server.host}:${server.port}';
         clientList.add(EasyClient(
           config: EasyClientConfig(
             logger: _config.logger,
@@ -427,11 +427,11 @@ class EasyServer extends EasyLogger {
         return webSocketHandler((WebSocketChannel websocket) => _onWebSocketConnect(websocket, request))(request);
       }
     });
-    final securityContext = _config.sslKeyFile == null || _config.sslCerFile == null
-        ? null
-        : (SecurityContext()
-          ..usePrivateKey(_config.sslCerFile!)
-          ..useCertificateChain(_config.sslCerFile!));
+    final securityContext = _config.sslsEnable
+        ? (SecurityContext()
+          ..usePrivateKey(_config.sslKeyFile!)
+          ..useCertificateChain(_config.sslCerFile!))
+        : null;
     serve(handler, _config.host, _config.port, securityContext: securityContext, shared: _config.instances > 1).then((server) {
       if (_router != null) {
         logInfo(['web server is listening...']);
