@@ -264,12 +264,14 @@ class EasyClient extends EasyLogger {
   void bindUser(String uid, {required String? token}) {
     _uid = uid;
     _token = token;
+    logDebug(['bindUser =>', _uid, _token]);
   }
 
   ///解绑用户信息
   void unbindUser() {
     _uid = null;
     _token = null;
+    logDebug(['unbindUser =>', _uid, _token]);
   }
 
   ///是否已经建立网络连接
