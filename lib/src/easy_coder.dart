@@ -70,13 +70,6 @@ class EasyCoder extends EasyLogger {
   }
 
   void _generateImports(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
-    //自动导入ObjectId文件
-    for (var element in modelInfo.classFields) {
-      if (element.type.contains('ObjectId')) {
-        buffer.write('import \'package:bson/bson.dart\';\n');
-        break;
-      }
-    }
     //自动导入模型基类文件
     buffer.write('import \'package:shelf_easy/shelf_easy.dart\';\n');
     //导入自定义文件

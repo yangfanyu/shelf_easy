@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bson/bson.dart';
+import 'package:shelf_easy/shelf_easy.dart';
 
 main() {
   // Assign compile-time constant to p0.
@@ -65,6 +65,13 @@ main() {
   final list = ['a1', 'a2', 'a3', 'a', 'a6', 'a5', 'a4'];
   list.sort((a, b) => a.compareTo(b));
   print(list);
+
+  final objId1 = DbQueryField.hexstr2ObjectId('000000000000000000000000');
+  final objId2 = DbQueryField.hexstr2ObjectId('000000000000000000000000');
+  final objId3 = DbQueryField.hexstr2ObjectId('000000000000000000000001');
+
+  print('objId1 == objId2 => ${objId1 == objId2}');
+  print('objId1 == objId3 => ${objId1 == objId3}');
 
   //ObjectId
   Map<String, ObjectId> map3 = {

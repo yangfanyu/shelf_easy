@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:bson/bson.dart';
 
+export 'package:bson/bson.dart';
+
 ///
 ///数据库操作接口
 ///
