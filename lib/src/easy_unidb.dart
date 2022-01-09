@@ -156,7 +156,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
 
   ///查找并删除单条记录
   @override
-  Future<DbResult<T>> findAndDelete<T extends DbBaseModel>(String table, DbFilter filter, {DBFindDeleteOptions? findDeleteOptions, required T Function(Map<String, dynamic> map) converter}) async {
+  Future<DbResult<T>> findAndDelete<T extends DbBaseModel>(String table, DbFilter filter, {DbFindDeleteOptions? findDeleteOptions, required T Function(Map<String, dynamic> map) converter}) async {
     try {
       final result = await _handle.findAndDelete(table, filter, findDeleteOptions: findDeleteOptions, converter: converter);
       logDebug(['findAndDelete =>', table, filter, findDeleteOptions, result]);
@@ -167,11 +167,11 @@ class EasyUniDb extends EasyLogger implements DbBase {
     }
   }
 
-  ///查找并更新单条记录，如果[DBFindUpdateOptions.$upsert]为true 但是 [DBFindUpdateOptions.$returnNew]非true, 则在upserted之后不会返回新插入的对象数据
+  ///查找并更新单条记录，如果[DbFindUpdateOptions.$upsert]为true 但是 [DbFindUpdateOptions.$returnNew]非true, 则在upserted之后不会返回新插入的对象数据
   @override
-  Future<DbResult<T>> findAndUpdate<T extends DbBaseModel>(String table, DbFilter filter, DbUpdate update, {DBFindUpdateOptions? findUpdateOptions, required T Function(Map<String, dynamic> map) converter}) async {
+  Future<DbResult<T>> findAndUpdate<T extends DbBaseModel>(String table, DbFilter filter, DbUpdate update, {DbFindUpdateOptions? findUpdateOptions, required T Function(Map<String, dynamic> map) converter}) async {
     if (findUpdateOptions?.$upsert == true && findUpdateOptions?.$returnNew != true) {
-      logWarn(['findAndUpdate =>', table, 'DBFindUpdateOptions.\$upsert is true but DBFindUpdateOptions.\$returnNew is not true, may cause return null result.']);
+      logWarn(['findAndUpdate =>', table, 'DbFindUpdateOptions.\$upsert is true but DbFindUpdateOptions.\$returnNew is not true, may cause return null result.']);
     }
     try {
       final result = await _handle.findAndUpdate(table, filter, update, findUpdateOptions: findUpdateOptions, converter: converter);
@@ -198,7 +198,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
 
   ///事务批量操作，[operate]为批量操作回调函数，[operate]未抛出异常则提交事务，[operate]抛出异常则回滚事务，务必将回调参数session赋值给[operate]中的操作的xxxxOptions.session
   @override
-  Future<DbResult<void>> withTransaction(Future<String> Function(DbSession session) operate, {DBTransactionOptions? transactionOptions, void Function({String? msg, String? warn, String? err})? onmessage}) async {
+  Future<DbResult<void>> withTransaction(Future<String> Function(DbSession session) operate, {DbTransactionOptions? transactionOptions, void Function({String? msg, String? warn, String? err})? onmessage}) async {
     try {
       final result = await _handle.withTransaction(operate, transactionOptions: transactionOptions, onmessage: onmessage ?? ({msg, warn, err}) => _defaultTransactionMessageListener(this, msg: msg, warn: warn, err: err));
       logDebug(['withTransaction =>', transactionOptions, result]);

@@ -149,10 +149,10 @@ void testHelpClass() {
       ).$projectionToJson(),
     ),
   );
-  print('\n DBFindDeleteOptions');
+  print('\n DbFindDeleteOptions');
   print(
     encoder.convert(
-      DBFindDeleteOptions(
+      DbFindDeleteOptions(
         $projection: {
           UserQuery.name..include(),
           UserQuery.age..exclude(),
@@ -160,10 +160,10 @@ void testHelpClass() {
       ).toJson(),
     ),
   );
-  print('\n DBFindUpdateOptions');
+  print('\n DbFindUpdateOptions');
   print(
     encoder.convert(
-      DBFindUpdateOptions(
+      DbFindUpdateOptions(
         $upsert: false,
         $returnNew: true,
         $projection: {
@@ -355,7 +355,7 @@ void testDataBase() {
         },
       ),
       converter: User.fromJson,
-      findUpdateOptions: DBFindUpdateOptions(
+      findUpdateOptions: DbFindUpdateOptions(
         $upsert: true,
         $returnNew: true,
         $projection: {
@@ -388,7 +388,7 @@ void testDataBase() {
         },
       ),
       converter: User.fromJson,
-      findUpdateOptions: DBFindUpdateOptions(
+      findUpdateOptions: DbFindUpdateOptions(
         $upsert: true,
         // $returnNew: true,
       ),
@@ -404,7 +404,7 @@ void testDataBase() {
         },
       ),
       converter: User.fromJson,
-      findDeleteOptions: DBFindDeleteOptions(
+      findDeleteOptions: DbFindDeleteOptions(
         $projection: {
           // UserQuery.name..include(),
           UserQuery.address..exclude(),

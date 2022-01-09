@@ -26,13 +26,13 @@ abstract class DbBase {
 
   Future<DbResult<T>> findMany<T extends DbBaseModel>(String table, DbFilter filter, {DbFindOptions? findOptions, required T Function(Map<String, dynamic> map) converter}) => throw UnimplementedError();
 
-  Future<DbResult<T>> findAndDelete<T extends DbBaseModel>(String table, DbFilter filter, {DBFindDeleteOptions? findDeleteOptions, required T Function(Map<String, dynamic> map) converter}) => throw UnimplementedError();
+  Future<DbResult<T>> findAndDelete<T extends DbBaseModel>(String table, DbFilter filter, {DbFindDeleteOptions? findDeleteOptions, required T Function(Map<String, dynamic> map) converter}) => throw UnimplementedError();
 
-  Future<DbResult<T>> findAndUpdate<T extends DbBaseModel>(String table, DbFilter filter, DbUpdate update, {DBFindUpdateOptions? findUpdateOptions, required T Function(Map<String, dynamic> map) converter}) => throw UnimplementedError();
+  Future<DbResult<T>> findAndUpdate<T extends DbBaseModel>(String table, DbFilter filter, DbUpdate update, {DbFindUpdateOptions? findUpdateOptions, required T Function(Map<String, dynamic> map) converter}) => throw UnimplementedError();
 
   Future<DbResult<int>> count(String table, DbFilter filter, {DbCountOptions? countOptions}) => throw UnimplementedError();
 
-  Future<DbResult<void>> withTransaction(Future<String> Function(DbSession session) operate, {DBTransactionOptions? transactionOptions, void Function({String? msg, String? warn, String? err})? onmessage}) => throw UnimplementedError();
+  Future<DbResult<void>> withTransaction(Future<String> Function(DbSession session) operate, {DbTransactionOptions? transactionOptions, void Function({String? msg, String? warn, String? err})? onmessage}) => throw UnimplementedError();
 }
 
 ///
@@ -356,14 +356,14 @@ class DbFindOptions extends DbBaseModel {
 ///
 ///删除且查询操作选项
 ///
-class DBFindDeleteOptions extends DbBaseModel {
+class DbFindDeleteOptions extends DbBaseModel {
   //事务会话
   final DbSession? session;
 
   ///投影参数
   final Set<DbQueryField>? $projection;
 
-  DBFindDeleteOptions({this.session, this.$projection});
+  DbFindDeleteOptions({this.session, this.$projection});
 
   ///$projection转换为Map格式数据
   Map<String, Object>? $projectionToJson() {
@@ -386,7 +386,7 @@ class DBFindDeleteOptions extends DbBaseModel {
 ///
 ///更新且查询操作选项
 ///
-class DBFindUpdateOptions extends DbBaseModel {
+class DbFindUpdateOptions extends DbBaseModel {
   //事务会话
   final DbSession? session;
 
@@ -399,7 +399,7 @@ class DBFindUpdateOptions extends DbBaseModel {
   ///投影参数
   final Set<DbQueryField>? $projection;
 
-  DBFindUpdateOptions({this.session, this.$upsert, this.$returnNew, this.$projection});
+  DbFindUpdateOptions({this.session, this.$upsert, this.$returnNew, this.$projection});
 
   ///$projection转换为Map格式数据
   Map<String, Object>? $projectionToJson() {
@@ -443,7 +443,7 @@ class DbCountOptions extends DbBaseModel {
 ///
 ///事务的会话选项
 ///
-class DBTransactionOptions extends DbBaseModel {
+class DbTransactionOptions extends DbBaseModel {
   @override
   Map<String, dynamic> toJson() {
     return {};

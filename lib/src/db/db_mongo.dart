@@ -151,7 +151,7 @@ class DbMongo implements DbBase {
   }
 
   @override
-  Future<DbResult<T>> findAndDelete<T extends DbBaseModel>(String table, DbFilter filter, {DBFindDeleteOptions? findDeleteOptions, required T Function(Map<String, dynamic> map) converter}) async {
+  Future<DbResult<T>> findAndDelete<T extends DbBaseModel>(String table, DbFilter filter, {DbFindDeleteOptions? findDeleteOptions, required T Function(Map<String, dynamic> map) converter}) async {
     final result = await _db.collection(table).modernFindAndModify(
           query: filter.toJson(),
           remove: true,
@@ -172,7 +172,7 @@ class DbMongo implements DbBase {
   }
 
   @override
-  Future<DbResult<T>> findAndUpdate<T extends DbBaseModel>(String table, DbFilter filter, DbUpdate update, {DBFindUpdateOptions? findUpdateOptions, required T Function(Map<String, dynamic> map) converter}) async {
+  Future<DbResult<T>> findAndUpdate<T extends DbBaseModel>(String table, DbFilter filter, DbUpdate update, {DbFindUpdateOptions? findUpdateOptions, required T Function(Map<String, dynamic> map) converter}) async {
     final result = await _db.collection(table).modernFindAndModify(
           query: filter.toJson(),
           update: update.toJson(),
@@ -213,7 +213,7 @@ class DbMongo implements DbBase {
   }
 
   @override
-  Future<DbResult<void>> withTransaction(Future<String> Function(DbSession session) operate, {DBTransactionOptions? transactionOptions, void Function({String? msg, String? warn, String? err})? onmessage}) async {
+  Future<DbResult<void>> withTransaction(Future<String> Function(DbSession session) operate, {DbTransactionOptions? transactionOptions, void Function({String? msg, String? warn, String? err})? onmessage}) async {
     if (onmessage != null) onmessage(warn: 'The underlying driver mongo_dart does not support transactions. This function is just a preliminary interface.');
     final session = DbSession();
     if (onmessage != null) onmessage(msg: 'startSession');
