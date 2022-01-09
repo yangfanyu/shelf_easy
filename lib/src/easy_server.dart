@@ -21,7 +21,7 @@ typedef ServerHeartListener = void Function(int totalSocket, int totalSession);
 typedef SessionCloseListener = void Function(EasyServerSession session, int? code, String? reason);
 
 ///http请求时，根据请求头easy-security-identity的值获取用户的token
-typedef HttpTokenConverter = Future<String> Function(String? identity);
+typedef HttpTokenConverter = Future<String> Function(String identity);
 
 ///http路由处理方法
 typedef HttpRouteHandler = Future<EasyPacket?> Function(Request request, EasyPacket packet);
@@ -77,6 +77,9 @@ class EasyServer extends EasyLogger {
 
   ///http请求路由
   Router? _router;
+
+  ///读取配置信息
+  EasyServerConfig get config => _config;
 
   EasyServer({required EasyServerConfig config})
       : _config = config,
