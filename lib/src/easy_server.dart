@@ -398,16 +398,15 @@ class EasyServer extends EasyLogger {
     _config.clusterConfigs.forEach((cluster, serverList) {
       final clientList = <EasyClient>[];
       for (var server in serverList) {
-        final url = server.sslsEnable ? 'wss://${server.host}:${server.port}' : 'ws://${server.host}:${server.port}';
         clientList.add(EasyClient(
           config: EasyClientConfig(
             logger: _config.logger,
             logLevel: _config.logLevel,
-            logTag: '$logTag [$url]',
+            logTag: '$logTag [${server.websocketUrl}]',
             logFilePath: _config.logFilePath,
             logFileBackup: _config.logFileBackup,
             logFileMaxBytes: _config.logFileMaxBytes,
-            url: url,
+            url: server.websocketUrl,
             pwd: server.pwd,
             binary: server.binary,
             heartick: (server.heart / 1000).floor(),

@@ -648,6 +648,12 @@ class EasyServerConfig {
   ///是否启用ssl模式
   bool get sslsEnable => sslKeyFile != null && sslCerFile != null;
 
+  ///http请求地址
+  String get httpUrl => sslsEnable ? 'https://$host:$port' : 'http://$host:$port';
+
+  ///websocket连接地址
+  String get websocketUrl => sslsEnable ? 'wss://$host:$port' : 'ws://$host:$port';
+
   EasyServerConfig({
     this.logger,
     this.logLevel,
