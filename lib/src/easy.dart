@@ -119,7 +119,7 @@ class Easy {
     });
     finalServerConfig.forEach((cluster, serverConfigList) {
       for (var serverConfig in serverConfigList) {
-        serverConfig.initClusterLinks(finalServerConfig); //初始化需要远程连接的集群分组配置信息
+        serverConfig.initClusterConfigs(finalServerConfig); //初始化需要远程连接的集群分组配置信息
         if (machineBind && serverConfig.host != File(machineFile).readAsStringSync().trim()) {
           continue; //不匹配主机名
         }

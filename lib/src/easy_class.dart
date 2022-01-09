@@ -669,7 +669,7 @@ class EasyServerConfig {
   }) : clusterConfigs = {};
 
   ///初始化需要远程连接的集群分组配置信息
-  void initClusterLinks(Map<String, List<EasyServerConfig>> clusterServerConfigs) {
+  void initClusterConfigs(Map<String, List<EasyServerConfig>> clusterServerConfigs) {
     links?.forEach((cluster) {
       clusterConfigs[cluster] = clusterServerConfigs[cluster] ?? [];
     });
