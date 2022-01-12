@@ -217,8 +217,8 @@ class Complex extends DbBaseModel {
     };
   }
 
-  void updateFields(Map<String, dynamic> map) {
-    final parser = Complex.fromJson(map);
+  void updateFields(Map<String, dynamic> map, {Complex? parser}) {
+    parser = parser ?? Complex.fromJson(map);
     if (map.containsKey('_id')) _id = parser._id;
     if (map.containsKey('baseInt')) baseInt = parser.baseInt;
     if (map.containsKey('baseDouble')) baseDouble = parser.baseDouble;

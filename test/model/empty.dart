@@ -15,5 +15,5 @@ class Empty extends DbBaseModel {
     return {};
   }
 
-  void updateFields(Map<String, dynamic> map) {}
+  void updateFields(Map<String, dynamic> map, {Empty? parser}) {}
 }

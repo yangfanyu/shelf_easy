@@ -53,8 +53,8 @@ class Address extends DbBaseModel {
     };
   }
 
-  void updateFields(Map<String, dynamic> map) {
-    final parser = Address.fromJson(map);
+  void updateFields(Map<String, dynamic> map, {Address? parser}) {
+    parser = parser ?? Address.fromJson(map);
     if (map.containsKey('country')) country = parser.country;
     if (map.containsKey('province')) province = parser.province;
     if (map.containsKey('city')) city = parser.city;

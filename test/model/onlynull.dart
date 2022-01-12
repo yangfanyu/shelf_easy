@@ -30,8 +30,8 @@ class OnlyNull extends DbBaseModel {
     };
   }
 
-  void updateFields(Map<String, dynamic> map) {
-    final parser = OnlyNull.fromJson(map);
+  void updateFields(Map<String, dynamic> map, {OnlyNull? parser}) {
+    parser = parser ?? OnlyNull.fromJson(map);
     if (map.containsKey('test1')) test1 = parser.test1;
     if (map.containsKey('test2')) test2 = parser.test2;
   }

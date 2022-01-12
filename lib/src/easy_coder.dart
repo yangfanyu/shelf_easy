@@ -260,11 +260,11 @@ class EasyCoder extends EasyLogger {
 
   void _generateUpdateMethod(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
     if (modelInfo.classFields.isEmpty) {
-      buffer.write('${indent}void updateFields(Map<String, dynamic> map) {}\n');
+      buffer.write('${indent}void updateFields(Map<String, dynamic> map, {${modelInfo.className}? parser}) {}\n');
       return;
     }
-    buffer.write('${indent}void updateFields(Map<String, dynamic> map) {\n');
-    buffer.write('$indent${indent}final parser = ${modelInfo.className}.fromJson(map);\n');
+    buffer.write('${indent}void updateFields(Map<String, dynamic> map, {${modelInfo.className}? parser}) {\n');
+    buffer.write('$indent${indent}parser = parser ?? ${modelInfo.className}.fromJson(map);\n');
     for (var element in modelInfo.classFields) {
       buffer.write('$indent${indent}if (map.containsKey(\'${element.name}\')) ${element.name} = parser.${element.name};\n');
     }

@@ -113,8 +113,8 @@ class User extends DbBaseModel {
     };
   }
 
-  void updateFields(Map<String, dynamic> map) {
-    final parser = User.fromJson(map);
+  void updateFields(Map<String, dynamic> map, {User? parser}) {
+    parser = parser ?? User.fromJson(map);
     if (map.containsKey('_id')) _id = parser._id;
     if (map.containsKey('name')) name = parser.name;
     if (map.containsKey('age')) age = parser.age;
