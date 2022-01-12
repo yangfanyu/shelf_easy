@@ -386,6 +386,9 @@ class EasyPacket<T> {
     return map;
   }
 
+  ///克隆一个实例并赋值extra字段
+  EasyPacket cloneExtra(T? extra) => EasyPacket._(route: route, id: id, code: code, desc: desc, data: data, ucid: ucid, word: word, sign: sign, extra: extra);
+
   ///验证签名是否错误
   bool isSignError(String secret) => EasySecurity.getMd5('$secret$route$word$secret') != sign;
 
