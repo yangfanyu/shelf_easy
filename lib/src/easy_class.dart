@@ -259,7 +259,7 @@ class EasyLogger {
 ///
 ///数据包类
 ///
-class EasyPacket {
+class EasyPacket<T> {
   ///响应或请求的路由
   final String route;
 
@@ -284,12 +284,15 @@ class EasyPacket {
   ///集群内部包签名字符串
   final String? sign;
 
+  ///自定义扩展结果字段，不参与任何转换工作，纯粹由使用者自定义值
+  final T? extra;
+
   ///状态是否正确
   bool get ok => code == 200;
 
   String get codeDesc => '[$code:$desc]';
 
-  const EasyPacket._({this.route = '', this.id = 0, this.code = 200, this.desc = 'OK', this.data, this.ucid, this.word, this.sign});
+  const EasyPacket._({this.route = '', this.id = 0, this.code = 200, this.desc = 'OK', this.data, this.ucid, this.word, this.sign, this.extra});
 
   /* **************** 服务端推送使用 **************** */
 
