@@ -36,7 +36,7 @@ typedef WebsocketRouteHandler = Future<EasyPacket?> Function(EasyServerSession s
 typedef WebsocketMessageCustomer = Map<String, dynamic> Function(String? uid, Map<String, dynamic>? data);
 
 ///集群节点分配函数
-typedef ClusterClientDispatcher = int Function(String cluster, EasyPacket packet);
+typedef ClusterClientDispatcher = int Function(String cluster, String? ucid, Map<String, dynamic>? data);
 
 ///
 ///服务器
@@ -332,7 +332,7 @@ class EasyServer extends EasyLogger {
     if (clientList == null) return;
     final packet = EasyPacket.pushsign(_config.secret, route: route, data: data, ucid: ucid);
     if (dispatcher != null) {
-      final client = clientList[dispatcher(cluster, packet)];
+      final client = clientList[dispatcher(cluster, ucid, data)];
       logDebug(['pushClusterSession >>>>>>', cluster, client.url, packet]);
       client.websocketRequest(EasyConstant.routeInnerP2P, data: packet.toJson(), waitCompleter: false);
     } else {
@@ -349,7 +349,7 @@ class EasyServer extends EasyLogger {
     if (clientList == null) return;
     final packet = EasyPacket.pushsign(_config.secret, route: route, data: data, ucid: ucid);
     if (dispatcher != null) {
-      final client = clientList[dispatcher(cluster, packet)];
+      final client = clientList[dispatcher(cluster, ucid, data)];
       logDebug(['pushClusterChannel >>>>>>', cluster, client.url, packet]);
       client.websocketRequest(EasyConstant.routeInnerGRP, data: packet.toJson(), waitCompleter: false);
     } else {
@@ -372,21 +372,21 @@ class EasyServer extends EasyLogger {
   }
 
   ///集群节点间远程路由异步调用，[dispatcher]为null时，从该集群的全部节点中随机选择一个节点
-  void callRemote(String cluster, {required String route, Map<String, dynamic>? data, ClusterClientDispatcher? dispatcher}) {
+  void callRemote(String cluster, {required String route, Map<String, dynamic>? data, String? ucid, ClusterClientDispatcher? dispatcher}) {
     final clientList = _clusterClientMap[cluster];
     if (clientList == null) return;
-    final packet = EasyPacket.pushsign(_config.secret, route: route, data: data, ucid: null);
-    final client = clientList[dispatcher == null ? Random().nextInt(clientList.length) : dispatcher(cluster, packet)];
+    final packet = EasyPacket.pushsign(_config.secret, route: route, data: data, ucid: ucid);
+    final client = clientList[dispatcher == null ? Random().nextInt(clientList.length) : dispatcher(cluster, ucid, data)];
     logDebug(['callRemote >>>>>>', cluster, client.url, packet]);
     client.websocketRequest(EasyConstant.routeInnerRMC, data: packet.toJson(), waitCompleter: false);
   }
 
   ///集群节点间远程路由异步调用，并返回结果，[dispatcher]为null时，从该集群的全部节点中随机选择一个节点
-  Future<EasyPacket> callRemoteForResult(String cluster, {required String route, Map<String, dynamic>? data, ClusterClientDispatcher? dispatcher}) {
+  Future<EasyPacket> callRemoteForResult(String cluster, {required String route, Map<String, dynamic>? data, String? ucid, ClusterClientDispatcher? dispatcher}) {
     final clientList = _clusterClientMap[cluster];
     if (clientList == null) return Future.value(EasyConstant.serverCloseBySocketError);
-    final packet = EasyPacket.pushsign(_config.secret, route: route, data: data, ucid: null);
-    final client = clientList[dispatcher == null ? Random().nextInt(clientList.length) : dispatcher(cluster, packet)];
+    final packet = EasyPacket.pushsign(_config.secret, route: route, data: data, ucid: ucid);
+    final client = clientList[dispatcher == null ? Random().nextInt(clientList.length) : dispatcher(cluster, ucid, data)];
     logDebug(['callRemoteForResult >>>>>>', cluster, client.url, packet]);
     return client.websocketRequest(EasyConstant.routeInnerRMC, data: packet.toJson(), waitCompleter: true);
   }
