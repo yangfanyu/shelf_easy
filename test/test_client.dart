@@ -1,4 +1,3 @@
-import 'package:http_parser/http_parser.dart';
 import 'package:shelf_easy/shelf_easy.dart';
 import 'package:universal_io/io.dart';
 
