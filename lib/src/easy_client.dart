@@ -102,7 +102,7 @@ class EasyClient extends EasyLogger {
 
   ///运行一个并发计算任务，[taskType]为计算任务类型名，[taskData]计算任务所需数据
   Future<T?> runThreadTask<T>(String taskType, dynamic taskData) {
-    if (hasIsolate()) {
+    if (threadEnable()) {
       return _thread!.runTask(taskType: taskType, taskData: taskData);
     } else {
       return Future.value(null);
@@ -150,7 +150,7 @@ class EasyClient extends EasyLogger {
   Future<EasyPacket> httpRequest(String route, {Map<String, dynamic>? data, List<List<int>>? fileBytes, MediaType? mediaType, Map<String, String>? headers}) async {
     final requestId = _reqIdInc++;
     final requestPacket = EasyPacket.request(route: route, id: requestId, desc: DateTime.now().millisecondsSinceEpoch.toString(), data: data);
-    final requestData = hasIsolate()
+    final requestData = threadEnable()
         ? await _thread!.runTask(
             taskType: _threadTaskEncrypt,
             taskData: [requestPacket, _token ?? _config.pwd, _config.binary],
@@ -181,7 +181,7 @@ class EasyClient extends EasyLogger {
         logError(['httpResponse <<<<<<', responsePacket]);
         return responsePacket;
       }
-      final responseData = hasIsolate()
+      final responseData = threadEnable()
           ? await _thread!.runTask(
               taskType: _threadTaskDecrypt,
               taskData: [responseBody, _token ?? _config.pwd],
@@ -219,7 +219,7 @@ class EasyClient extends EasyLogger {
       logError(['websocketRequest =>', responsePacket.codeDesc, requestPacket]);
       return responsePacket;
     }
-    final requestData = hasIsolate()
+    final requestData = threadEnable()
         ? await _thread!.runTask(
             taskType: _threadTaskEncrypt,
             taskData: [requestPacket, _token ?? _config.pwd, _config.binary],
@@ -316,7 +316,7 @@ class EasyClient extends EasyLogger {
   }
 
   ///是否已经建立隔离线程
-  bool hasIsolate() => _thread != null;
+  bool threadEnable() => _thread != null;
 
   ///是否已经建立网络连接
   bool isConnected() => _socket != null && _socketInited;
@@ -343,7 +343,7 @@ class EasyClient extends EasyLogger {
 
   void _onWebSocketData(dynamic data) async {
     if (_expired) return;
-    final packet = hasIsolate()
+    final packet = threadEnable()
         ? await _thread!.runTask(
             taskType: _threadTaskDecrypt,
             taskData: [data, _token ?? _config.pwd],

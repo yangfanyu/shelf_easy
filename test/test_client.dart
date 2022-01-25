@@ -33,8 +33,7 @@ void main() async {
       mediaType: MediaType.parse('image/png'),
     );
     client.runThreadTask<String>('taskType xxxx', 'taskData xxxx').then((value) {
-      print(value);
-      print('after thread task ${threadFunction.hashCode} ${threadFunction.a}');
+      print('after thread task: value is ($value), (${threadFunction.hashCode} ${threadFunction.a} ${ThreadFunctionTest.b})');
     });
   });
 
@@ -46,10 +45,12 @@ void main() async {
 
 class ThreadFunctionTest {
   int a = 1;
+  static int b = 2;
   Future<String> threadHandler(String type, dynamic data) {
     print(type);
     print(data);
     a = 100;
-    return Future.value('threadHandler $hashCode $a');
+    b = 200;
+    return Future.value('$hashCode $a $b');
   }
 }
