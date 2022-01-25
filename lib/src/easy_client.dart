@@ -5,11 +5,16 @@ import 'package:http_parser/http_parser.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'easy_class.dart';
+import 'wk/wk_base.dart';
+import 'wk/wk_unsupport.dart' if (dart.library.io) 'wk/wk_native.dart' if (dart.library.html) 'wk/wk_html.dart' as worker;
 
 ///
 ///客户端
 ///
 class EasyClient extends EasyLogger {
+  static const _threadTaskEncrypt = '___threadTaskEncrypt___';
+  static const _threadTaskDecrypt = '___threadTaskDecrypt___';
+
   ///配置信息
   final EasyClientConfig _config;
 
@@ -36,6 +41,9 @@ class EasyClient extends EasyLogger {
 
   ///本实例是否已经废弃，即是否已经调用过[destroy]方法
   bool _expired;
+
+  ///并发隔离线程
+  WkBase? _thread;
 
   ///weboscket实例
   WebSocketChannel? _socket;
@@ -68,6 +76,7 @@ class EasyClient extends EasyLogger {
         _retryCnt = 0,
         _paused = false,
         _expired = false,
+        _thread = null,
         _socket = null,
         _socketInited = false,
         _timer = null,
@@ -83,6 +92,21 @@ class EasyClient extends EasyLogger {
     if (_config.timeout < 5 * 1000) throw ('_config.timeout < 5 * 1000');
     if (_config.heartick < 30) throw ('_config.heartick < 30');
     if (_config.conntick < 3) throw ('_config.conntick < 3');
+  }
+
+  ///初始化并发线程，用于客户端高计算量任务，如json解析、加解密操作等
+  Future<void> initThread(Future<dynamic> Function(String taskType, dynamic taskData) customHandler) {
+    _thread = worker.create(WkConfig(serviceConfig: {'customHandler': customHandler}, serviceHandler: _serviceHandler, messageHandler: _messageHandler));
+    return _thread!.start();
+  }
+
+  ///运行一个并发计算任务，[taskType]为计算任务类型名，[taskData]计算任务所需数据
+  Future<T?> runThreadTask<T>(String taskType, dynamic taskData) {
+    if (hasIsolate()) {
+      return _thread!.runTask(taskType: taskType, taskData: taskData);
+    } else {
+      return Future.value(null);
+    }
   }
 
   ///开始进行网络连接，[now]为true时立即尝试连接，为false时将会推迟[EasyClientConfig.conntick]秒连接
@@ -102,8 +126,8 @@ class EasyClient extends EasyLogger {
   }
 
   ///关闭连接销毁实例，调用此函数后，此实例不可进行websocket网络操作，不可重新连接网络。
-  Future<void> destroy() {
-    if (_expired) return Future.value();
+  Future<void> destroy() async {
+    if (_expired) return;
     logDebug(['destroy...']);
     //关闭计时器
     _timer?.cancel();
@@ -113,6 +137,8 @@ class EasyClient extends EasyLogger {
     _listenersMap.clear();
     //安全关闭连接
     _safeClose(EasyConstant.clientCloseByDestroy.code, EasyConstant.clientCloseByDestroy.desc);
+    //销毁隔离线程
+    await _thread?.close();
     //最后设置废弃标志
     return Future.delayed(Duration(milliseconds: 30), () {
       _expired = true;
@@ -124,7 +150,12 @@ class EasyClient extends EasyLogger {
   Future<EasyPacket> httpRequest(String route, {Map<String, dynamic>? data, List<List<int>>? fileBytes, MediaType? mediaType, Map<String, String>? headers}) async {
     final requestId = _reqIdInc++;
     final requestPacket = EasyPacket.request(route: route, id: requestId, desc: DateTime.now().millisecondsSinceEpoch.toString(), data: data);
-    final requestData = EasySecurity.encrypt(requestPacket, _token ?? _config.pwd, _config.binary);
+    final requestData = hasIsolate()
+        ? await _thread!.runTask(
+            taskType: _threadTaskEncrypt,
+            taskData: [requestPacket, _token ?? _config.pwd, _config.binary],
+          )
+        : EasySecurity.encrypt(requestPacket, _token ?? _config.pwd, _config.binary);
     if (requestData == null) {
       final responsePacket = requestPacket.requestEncryptError();
       logError(['httpRequest =>', responsePacket.codeDesc, requestPacket]);
@@ -150,7 +181,12 @@ class EasyClient extends EasyLogger {
         logError(['httpResponse <<<<<<', responsePacket]);
         return responsePacket;
       }
-      final responseData = EasySecurity.decrypt(responseBody, _token ?? _config.pwd);
+      final responseData = hasIsolate()
+          ? await _thread!.runTask(
+              taskType: _threadTaskDecrypt,
+              taskData: [responseBody, _token ?? _config.pwd],
+            )
+          : EasySecurity.decrypt(responseBody, _token ?? _config.pwd);
       if (responseData == null) {
         final responsePacket = requestPacket.requestDecryptError();
         logError(['httpResponse <<<<<<', responsePacket]);
@@ -170,24 +206,29 @@ class EasyClient extends EasyLogger {
   }
 
   ///发起websocket请求，[waitCompleter]为true时等待服务器响应请求，为false时发送完毕后立即返回
-  Future<EasyPacket> websocketRequest(String route, {Map<String, dynamic>? data, bool waitCompleter = true}) {
+  Future<EasyPacket> websocketRequest(String route, {Map<String, dynamic>? data, bool waitCompleter = true}) async {
     final requestId = _reqIdInc++;
     final requestPacket = EasyPacket.request(route: route, id: requestId, desc: DateTime.now().millisecondsSinceEpoch.toString(), data: data);
     if (_expired) {
       final responsePacket = requestPacket.requestExpiredError();
       logError(['websocketRequest =>', responsePacket.codeDesc, requestPacket]);
-      return Future.value(responsePacket);
+      return responsePacket;
     }
     if (!isConnected()) {
       final responsePacket = requestPacket.requestNotConnected();
       logError(['websocketRequest =>', responsePacket.codeDesc, requestPacket]);
-      return Future.value(responsePacket);
+      return responsePacket;
     }
-    final requestData = EasySecurity.encrypt(requestPacket, _token ?? _config.pwd, _config.binary);
+    final requestData = hasIsolate()
+        ? await _thread!.runTask(
+            taskType: _threadTaskEncrypt,
+            taskData: [requestPacket, _token ?? _config.pwd, _config.binary],
+          )
+        : EasySecurity.encrypt(requestPacket, _token ?? _config.pwd, _config.binary);
     if (requestData == null) {
       final responsePacket = requestPacket.requestEncryptError();
       logError(['websocketRequest =>', responsePacket.codeDesc, requestPacket]);
-      return Future.value(responsePacket);
+      return responsePacket;
     }
     if (route == EasyConstant.routeHeartick) {
       logTrace(['websocketHeartick >>>>>>', requestPacket]);
@@ -195,7 +236,7 @@ class EasyClient extends EasyLogger {
       _socket?.sink.add(requestData);
       final responsePacket = requestPacket.requestFinished();
       logTrace(['websocketHeartick <<<<<<', responsePacket]);
-      return Future.value(responsePacket);
+      return responsePacket;
     }
     logDebug(['websocketRequest >>>>>>', requestPacket]);
     logTrace(['websocketRequest =>', requestData]);
@@ -208,7 +249,7 @@ class EasyClient extends EasyLogger {
       _socket?.sink.add(requestData);
       final responsePacket = requestPacket.requestFinished();
       logDebug(['websocketResponse <<<<<<', responsePacket]);
-      return Future.value(responsePacket);
+      return responsePacket;
     }
   }
 
@@ -274,6 +315,9 @@ class EasyClient extends EasyLogger {
     logDebug(['unbindUser =>', _uid, _token]);
   }
 
+  ///是否已经建立隔离线程
+  bool hasIsolate() => _thread != null;
+
   ///是否已经建立网络连接
   bool isConnected() => _socket != null && _socketInited;
 
@@ -297,9 +341,14 @@ class EasyClient extends EasyLogger {
     _socketInited = false;
   }
 
-  void _onWebSocketData(dynamic data) {
+  void _onWebSocketData(dynamic data) async {
     if (_expired) return;
-    final packet = EasySecurity.decrypt(data, _token ?? _config.pwd);
+    final packet = hasIsolate()
+        ? await _thread!.runTask(
+            taskType: _threadTaskDecrypt,
+            taskData: [data, _token ?? _config.pwd],
+          )
+        : EasySecurity.decrypt(data, _token ?? _config.pwd);
     if (packet == null) {
       logError(['_onWebSocketData <=', 'decrypt error:', data]);
       return;
@@ -385,5 +434,21 @@ class EasyClient extends EasyLogger {
     }
     //心跳周期回调
     if (_onheart != null) _onheart!(_timerInc, _netDelay);
+  }
+
+  static Future<bool> _serviceHandler(WkSignal signal, Map<String, dynamic> config) async {
+    return true;
+  }
+
+  static Future<dynamic> _messageHandler(Map<String, dynamic> config, String type, dynamic data) async {
+    Future<dynamic> Function(String taskType, dynamic taskData) customHandler = config['customHandler'];
+    switch (type) {
+      case _threadTaskEncrypt:
+        return EasySecurity.encrypt(data[0], data[1], data[2]);
+      case _threadTaskDecrypt:
+        return EasySecurity.decrypt(data[0], data[1]);
+      default:
+        return customHandler(type, data);
+    }
   }
 }

@@ -148,7 +148,7 @@ class Easy {
     }
   }
 
-  static Future<dynamic> _serviceHandler(WkSignal signal, Map<String, dynamic> config) async {
+  static Future<bool> _serviceHandler(WkSignal signal, Map<String, dynamic> config) async {
     switch (signal) {
       case WkSignal.start:
         final String environment = config['environment'];
@@ -179,10 +179,10 @@ class Easy {
       default:
         break;
     }
-    return null;
+    return true;
   }
 
-  static Future<dynamic> _messageHandler(String type, dynamic data) async {
+  static Future<dynamic> _messageHandler(Map<String, dynamic> config, String type, dynamic data) async {
     return null;
   }
 }

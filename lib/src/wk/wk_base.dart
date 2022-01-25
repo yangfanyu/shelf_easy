@@ -25,10 +25,10 @@ class WkConfig {
   final Map<String, dynamic> serviceConfig;
 
   ///内部服务处理器（顶级函数 或 静态函数）
-  final Future<dynamic> Function(WkSignal signal, Map<String, dynamic> config) serviceHandler;
+  final Future<bool> Function(WkSignal signal, Map<String, dynamic> config) serviceHandler;
 
   ///外部消息处理器（顶级函数 或 静态函数）
-  final Future<dynamic> Function(String taskType, dynamic taskData) messageHandler;
+  final Future<dynamic> Function(Map<String, dynamic> config, String taskType, dynamic taskData) messageHandler;
 
   ///数据通讯端口
   dynamic sendPort;

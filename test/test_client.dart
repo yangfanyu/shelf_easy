@@ -10,6 +10,8 @@ void main() async {
       binary: true,
     ),
   );
+  final threadFunction = ThreadFunctionTest();
+  await client.initThread(threadFunction.threadHandler);
   client.connect(onopen: () {
     //websocketRequest
     client.websocketRequest('enter', data: {});
@@ -30,10 +32,24 @@ void main() async {
       ],
       mediaType: MediaType.parse('image/png'),
     );
+    client.runThreadTask<String>('taskType xxxx', 'taskData xxxx').then((value) {
+      print(value);
+      print('after thread task ${threadFunction.hashCode} ${threadFunction.a}');
+    });
   });
 
   //sigint
   ProcessSignal.sigint.watch().listen((signal) {
     client.destroy().then((value) => exit(0));
   });
+}
+
+class ThreadFunctionTest {
+  int a = 1;
+  Future<String> threadHandler(String type, dynamic data) {
+    print(type);
+    print(data);
+    a = 100;
+    return Future.value('threadHandler $hashCode $a');
+  }
 }

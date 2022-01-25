@@ -87,7 +87,7 @@ class WkNative implements WkBase {
             break;
           case WkSignal.message:
             try {
-              final result = await config.messageHandler(message.type, message.data);
+              final result = await config.messageHandler(config.serviceConfig, message.type, message.data);
               sendPort.send(WkMessage(message.signal, message.id, message.type, result));
             } catch (error) {
               sendPort.send(WkMessage(message.signal, message.id, message.type, null));
