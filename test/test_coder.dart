@@ -27,6 +27,9 @@ void main() {
       EasyCoderFieldInfo(type: 'List<Address>', name: 'addressList', desc: ['通讯地址']),
       EasyCoderFieldInfo(type: 'List<ObjectId>', name: 'friendList', desc: ['好友id列表']),
     ],
+    extraFields: [
+      EasyCoderFieldInfo(type: 'String', name: '\$pingying', desc: ['', '非序列化字段', '']),
+    ],
     constMap: true,
   ));
   coder.generateModel(EasyCoderModelInfo(
@@ -41,6 +44,7 @@ void main() {
       EasyCoderFieldInfo(type: 'String', name: 'area', desc: ['县（区）']),
       EasyCoderFieldInfo(type: 'Location', name: 'location', desc: ['县（区）']),
     ],
+    extraFields: [],
   ));
   coder.generateModel(EasyCoderModelInfo(
     importList: [],
@@ -52,6 +56,7 @@ void main() {
       EasyCoderFieldInfo(type: 'double', name: 'longitude', desc: ['经度']),
       EasyCoderFieldInfo(type: 'double', name: 'accuracy', desc: ['精确度']),
     ],
+    extraFields: [],
   ));
   coder.generateModel(EasyCoderModelInfo(
     importList: ['address.dart'],
@@ -99,6 +104,7 @@ void main() {
       // EasyCoderFieldInfo(type: 'List', name: 'badList',  desc: []),
       // EasyCoderFieldInfo(type: 'Map', name: 'badMap', desc: []),
     ],
+    extraFields: [],
   ));
   coder.generateModel(EasyCoderModelInfo(
     importList: [],
@@ -108,6 +114,7 @@ void main() {
     classFields: [
       EasyCoderFieldInfo(type: 'String', name: 'test1', desc: ['']),
     ],
+    extraFields: [],
   ));
   coder.generateModel(EasyCoderModelInfo(
     importList: [],
@@ -118,6 +125,7 @@ void main() {
       EasyCoderFieldInfo(type: 'String', name: 'test1', desc: ['']),
       EasyCoderFieldInfo(type: 'String', name: 'test2', desc: ['']),
     ],
+    extraFields: [],
   ));
   coder.generateModel(EasyCoderModelInfo(
     importList: [],
@@ -128,6 +136,7 @@ void main() {
       EasyCoderFieldInfo(type: 'String', name: 'test1', desc: [''], nullAble: true),
       EasyCoderFieldInfo(type: 'String', name: 'test2', desc: [''], nullAble: true),
     ],
+    extraFields: [],
   ));
   coder.generateModel(EasyCoderModelInfo(
     importList: [],
@@ -135,5 +144,6 @@ void main() {
     className: 'Empty',
     constFields: [],
     classFields: [],
+    extraFields: [],
   ));
 }

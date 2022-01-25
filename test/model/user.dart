@@ -61,6 +61,11 @@ class User extends DbBaseModel {
   ///
   ObjectId get id => _id;
 
+  ///
+  ///非序列化字段
+  ///
+  String $pingying = '';
+
   User({
     ObjectId? id,
     String? name,

@@ -119,6 +119,13 @@ class EasyCoder extends EasyLogger {
       buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
       buffer.write('$indent${element.type} get $publicName => ${element.name};\n\n');
     }
+    //扩展字段
+    for (var element in modelInfo.extraFields) {
+      final publicName = _getFieldPublicName(element.name);
+      final defaultValue = _getFieldDefaultValue(element.type, element.defVal);
+      buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
+      buffer.write('$indent${element.type} $publicName = $defaultValue;\n\n');
+    }
   }
 
   void _generateConstructor(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {

@@ -992,6 +992,9 @@ class EasyCoderModelInfo {
   ///模型变量字段
   final List<EasyCoderFieldInfo> classFields;
 
+  ///模型扩展字段，这一部分字段不参与序列化和查询
+  final List<EasyCoderFieldInfo> extraFields;
+
   ///是否生成constFields字段的Map映射，为true时每个常量字段类型必须为int
   final bool constMap;
 
@@ -1007,6 +1010,7 @@ class EasyCoderModelInfo {
     required this.className,
     required this.constFields,
     required this.classFields,
+    required this.extraFields,
     this.constMap = false,
     this.dirty = true,
     this.query = true,
