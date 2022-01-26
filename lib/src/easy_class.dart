@@ -188,19 +188,19 @@ class EasyLogger {
   static void printLogger(EasyLogger instance, String msg, EasyLogLevel logLevel) {
     switch (logLevel) {
       case EasyLogLevel.trace:
-        print('\x1B[34m$msg\x1B[0m');
+        stdout.writeln('\x1B[34m$msg\x1B[0m');
         break;
       case EasyLogLevel.debug:
-        print('\x1B[36m$msg\x1B[0m');
+        stdout.writeln('\x1B[36m$msg\x1B[0m');
         break;
       case EasyLogLevel.info:
-        print('\x1B[32m$msg\x1B[0m');
+        stdout.writeln('\x1B[32m$msg\x1B[0m');
         break;
       case EasyLogLevel.warn:
-        print('\x1B[33m$msg\x1B[0m');
+        stdout.writeln('\x1B[33m$msg\x1B[0m');
         break;
       case EasyLogLevel.error:
-        print('\x1B[31m$msg\x1B[0m');
+        stdout.writeln('\x1B[31m$msg\x1B[0m');
         break;
     }
   }
