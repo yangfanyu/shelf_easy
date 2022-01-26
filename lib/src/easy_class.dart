@@ -184,8 +184,29 @@ class EasyLogger {
   ///当前输出文件缓存
   static final Map<String, File> _filesMap = {};
 
-  ///输出到控制台
+  ///使用[print]输出到控制台
   static void printLogger(EasyLogger instance, String msg, EasyLogLevel logLevel) {
+    switch (logLevel) {
+      case EasyLogLevel.trace:
+        print('\x1B[34m$msg\x1B[0m');
+        break;
+      case EasyLogLevel.debug:
+        print('\x1B[36m$msg\x1B[0m');
+        break;
+      case EasyLogLevel.info:
+        print('\x1B[32m$msg\x1B[0m');
+        break;
+      case EasyLogLevel.warn:
+        print('\x1B[33m$msg\x1B[0m');
+        break;
+      case EasyLogLevel.error:
+        print('\x1B[31m$msg\x1B[0m');
+        break;
+    }
+  }
+
+  ///使用[stdout]输出到控制台
+  static void stdoutLogger(EasyLogger instance, String msg, EasyLogLevel logLevel) {
     switch (logLevel) {
       case EasyLogLevel.trace:
         stdout.writeln('\x1B[34m$msg\x1B[0m');
@@ -205,9 +226,7 @@ class EasyLogger {
     }
   }
 
-  ///写入到日志文件
-  ///
-  ///注意：为避免并发异步写入混乱，目前采用的全部是同步操作
+  ///写入到日志文件，注意：为避免并发异步写入混乱，目前采用的全部是同步操作
   static void writeLogger(EasyLogger instance, String msg, EasyLogLevel logLevel) {
     if (instance._logFilePath == null) return;
     try {
@@ -252,6 +271,12 @@ class EasyLogger {
   ///同时输出到控制台和写入到文件
   static void printAndWriteLogger(EasyLogger instance, String msg, EasyLogLevel logLevel) {
     printLogger(instance, msg, logLevel);
+    writeLogger(instance, msg, logLevel);
+  }
+
+  ///同时输出到控制台和写入到文件
+  static void stdoutAndWriteLogger(EasyLogger instance, String msg, EasyLogLevel logLevel) {
+    stdoutLogger(instance, msg, logLevel);
     writeLogger(instance, msg, logLevel);
   }
 }
