@@ -1,6 +1,6 @@
 name: shelf_easy
 description: Lightweight web server, websocket server, websocket client framework. Support cluster, simple and easy to use.
-version: 0.0.29
+version: 0.0.30
 homepage: https://github.com/yangfanyu/shelf_easy
 
 environment:
@@ -16,13 +16,13 @@ dependencies:
   mongo_dart: ^0.7.4
   postgres: ^2.4.3
   shelf: ^1.2.0
-  shelf_multipart: ^0.1.0
+  shelf_multipart: ^1.0.0
   shelf_proxy: ^1.0.1
   shelf_router: ^1.1.2
   shelf_static: ^1.1.0
   shelf_web_socket: ^1.0.1
   universal_io: ^2.0.4
-  uuid: ^3.0.5
+  uuid: ^3.0.6
   web_socket_channel: ^2.1.0
 
 dev_dependencies:

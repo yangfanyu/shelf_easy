@@ -81,6 +81,16 @@ main() {
   print("ObjectId Map to JsonStr: ${jsonEncode(map3)}");
   print("JsonStr to ObjectId Map: ${jsonDecode(jsonEncode(map3))}  ${jsonDecode(jsonEncode(map3))['a']} ${jsonDecode(jsonEncode(map3))['a'] is String}"); //xxx xxx true 转换回来变成字符串了
 
+  Map<ObjectId, int> map3x = {};
+  map3x[objId1] = 0;
+  map3x[objId3] = 1;
+  print("ObjectId Map : $map3x ${map3x['000000000000000000000000']} ${map3x[DbQueryField.hexstr2ObjectId('000000000000000000000000')]} ${map3x[objId3]}");
+
+  Map<String, int> map3z = {};
+  map3z['000000000000000000000000'] = 2;
+  map3z['000000000000000000000001'] = 3;
+  print("ObjectId Map : $map3z ${map3z['000000000000000000000000']} ${map3z[objId3]} ${map3z[objId3.toHexString()]}");
+
   //jsonEncode操作Map时只支持以字符串为键
   Map<int, int> map4 = {
     1: 123,
