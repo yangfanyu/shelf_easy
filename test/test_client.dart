@@ -1,5 +1,6 @@
+import 'dart:io';
+
 import 'package:shelf_easy/shelf_easy.dart';
-import 'package:universal_io/io.dart';
 
 void main() async {
   final client = EasyClient(
