@@ -420,7 +420,7 @@ class EasyServer extends EasyLogger {
       }
     });
     //处理器
-    final handler = _httpRequestLogger().addMiddleware(corsHeaders(headers: _config.corsHeaders)).addHandler((request) {
+    final handler = _httpRequestLogger().addMiddleware(corsHeaders(headers: _config.httpHeaders)).addHandler((request) {
       if (_router != null) {
         return _router!(request);
       } else {
