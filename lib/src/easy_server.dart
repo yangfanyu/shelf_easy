@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:http_parser/http_parser.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
+import 'package:shelf_cors_headers/shelf_cors_headers.dart';
 import 'package:shelf_multipart/multipart.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:shelf_static/shelf_static.dart';
@@ -109,7 +110,7 @@ class EasyServer extends EasyLogger {
   }
 
   ///设置Http服务的动态请求路由，当设置过http路由时启动为web服务器。否则启动为websocket服务器
-  void httpRoute(String route, HttpRouteHandler handler, {HttpTokenConverter? tokenConverter, Map<String, Object>? responseHeaders}) {
+  void httpRoute(String route, HttpRouteHandler handler, {HttpTokenConverter? tokenConverter, Map<String, Object>? headers}) {
     _router ??= Router();
     _router?.post(route, (Request request) async {
       logTrace(['_onHttpRoute <=', request.headers]);
@@ -120,7 +121,7 @@ class EasyServer extends EasyLogger {
       final requestToken = (tokenConverter == null || requestUid.isEmpty) ? null : await tokenConverter(requestUid);
       final requestPacket = EasySecurity.decrypt(requestData, requestToken ?? _config.pwd);
       if (requestPacket == null) {
-        return Response.internalServerError(headers: responseHeaders);
+        return Response.internalServerError(headers: headers);
       }
       logDebug(['_onHttpRoute <<<<<<', requestPacket]);
       //路由响应数据
@@ -128,15 +129,15 @@ class EasyServer extends EasyLogger {
       logDebug(['_onHttpRoute >>>>>>', responsePacket]);
       final responseData = EasySecurity.encrypt(responsePacket, requestToken ?? _config.pwd, _config.binary);
       if (responseData == null) {
-        return Response.internalServerError(headers: responseHeaders);
+        return Response.internalServerError(headers: headers);
       }
       logTrace(['_onHttpRoute =>', responseData]);
-      return Response.ok(responseData, headers: {'content-type': _config.binary ? 'application/octet-stream' : 'text/plain'}..addAll(responseHeaders ?? {}));
+      return Response.ok(responseData, headers: {'content-type': _config.binary ? 'application/octet-stream' : 'text/plain'}..addAll(headers ?? {}));
     });
   }
 
   ///设置Http服务的文件上传路由，当设置过http路由时启动为web服务器。否则启动为websocket服务器
-  void httpUpload(String route, HttpUploadHandler handler, {required String Function() destinationFolder, String defaultMediatype = 'application/octet-stream', HttpTokenConverter? tokenConverter, Map<String, Object>? responseHeaders}) {
+  void httpUpload(String route, HttpUploadHandler handler, {required String Function() destinationFolder, String defaultMediatype = 'application/octet-stream', HttpTokenConverter? tokenConverter, Map<String, Object>? headers}) {
     _router ??= Router();
     _router?.post(route, (Request request) async {
       logTrace(['_onHttpUpload <=', request.headers]);
@@ -160,7 +161,7 @@ class EasyServer extends EasyLogger {
         requestFiles.add(file);
       }
       if (requestPacket == null) {
-        return Response.internalServerError(headers: responseHeaders);
+        return Response.internalServerError(headers: headers);
       }
       logDebug(['_onHttpUpload <<<<<<', requestPacket, '\n', requestFiles]);
       //路由响应数据
@@ -168,10 +169,10 @@ class EasyServer extends EasyLogger {
       logDebug(['_onHttpUpload >>>>>>', responsePacket]);
       final responseData = EasySecurity.encrypt(responsePacket, requestToken ?? _config.pwd, _config.binary);
       if (responseData == null) {
-        return Response.internalServerError(headers: responseHeaders);
+        return Response.internalServerError(headers: headers);
       }
       logTrace(['_onHttpUpload =>', responseData]);
-      return Response.ok(responseData, headers: {'content-type': _config.binary ? 'application/octet-stream' : 'text/plain'}..addAll(responseHeaders ?? {}));
+      return Response.ok(responseData, headers: {'content-type': _config.binary ? 'application/octet-stream' : 'text/plain'}..addAll(headers ?? {}));
     });
   }
 
@@ -419,7 +420,7 @@ class EasyServer extends EasyLogger {
       }
     });
     //处理器
-    final handler = _httpRequestLogger().addHandler((request) {
+    final handler = _httpRequestLogger().addMiddleware(corsHeaders()).addHandler((request) {
       if (_router != null) {
         return _router!(request);
       } else {

@@ -167,7 +167,7 @@ class EasyClient extends EasyLogger {
       int fieldId = 0;
       final url = Uri.parse(route);
       final response = fileBytes == null || mediaType == null
-          ? await http.post(url, body: requestData, headers: (headers ?? {})..addAll({'content-type': _config.binary ? 'application/octet-stream' : 'text/plain', 'easy-security-identity': _uid ?? ''}))
+          ? await http.post(url, body: requestData, headers: {'content-type': _config.binary ? 'application/octet-stream' : 'text/plain', 'easy-security-identity': _uid ?? ''}..addAll(headers ?? {}))
           : await http.Response.fromStream(await (http.MultipartRequest('POST', url)
                 ..headers.addAll({'easy-security-identity': _uid ?? ''})
                 ..files.add(_config.binary ? http.MultipartFile.fromBytes('data', requestData) : http.MultipartFile.fromString('data', requestData))
