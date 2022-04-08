@@ -393,7 +393,7 @@ class EasyServer extends EasyLogger {
   }
 
   ///开启服务器，当设置过http路由时启动为web服务器。否则启动为websocket服务器
-  Future<void> start({Map<String, String>? headers}) {
+  Future<void> start() {
     final completer = Completer();
     //创建关联的集群节点
     _config.clusterConfigs.forEach((cluster, serverList) {
@@ -420,7 +420,7 @@ class EasyServer extends EasyLogger {
       }
     });
     //处理器
-    final handler = _httpRequestLogger().addMiddleware(corsHeaders(headers: headers)).addHandler((request) {
+    final handler = _httpRequestLogger().addMiddleware(corsHeaders(headers: _config.corsHeaders)).addHandler((request) {
       if (_router != null) {
         return _router!(request);
       } else {

@@ -661,6 +661,9 @@ class EasyServerConfig {
   ///获取ip地址的请求头
   final String ipHeader;
 
+  ///跨域请求头信息
+  final Map<String, String>? corsHeaders;
+
   ///ssl模式key文件路径
   final String? sslKeyFile;
 
@@ -702,6 +705,7 @@ class EasyServerConfig {
     this.timeout = 60 * 1000 * 3,
     this.reqIdCache = 32,
     this.ipHeader = 'x-forwarded-for',
+    this.corsHeaders,
     this.sslKeyFile,
     this.sslCerFile,
     this.links,

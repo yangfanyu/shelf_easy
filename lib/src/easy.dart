@@ -92,6 +92,7 @@ class Easy {
             timeout: serverConfig.timeout,
             reqIdCache: serverConfig.reqIdCache,
             ipHeader: serverConfig.ipHeader,
+            corsHeaders: serverConfig.corsHeaders,
             sslKeyFile: sslKeyFile ?? serverConfig.sslKeyFile,
             sslCerFile: sslCerFile ?? serverConfig.sslCerFile,
             links: serverConfig.links,
