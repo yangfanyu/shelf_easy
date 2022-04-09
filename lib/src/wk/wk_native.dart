@@ -39,7 +39,7 @@ class WkNative implements WkBase {
 
   @override
   Future<void> close() async {
-    await runTask(signal: WkSignal.close); //发送服务关闭信息好
+    await runTask(signal: WkSignal.close); //发送服务关闭信号
     _timer?.cancel();
     _receivePort?.close();
     _isolate?.kill();
