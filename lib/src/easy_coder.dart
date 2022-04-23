@@ -124,7 +124,11 @@ class EasyCoder extends EasyLogger {
       final publicName = _getFieldPublicName(element.name);
       final defaultValue = _getFieldDefaultValue(element.type, element.defVal);
       buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
-      buffer.write('$indent${element.type} $publicName = $defaultValue;\n\n');
+      if (element.nullAble) {
+        buffer.write('$indent${element.type}? $publicName;\n\n');
+      } else {
+        buffer.write('$indent${element.type} $publicName = $defaultValue;\n\n');
+      }
     }
   }
 
