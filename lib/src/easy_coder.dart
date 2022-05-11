@@ -52,6 +52,7 @@ class EasyCoder extends EasyLogger {
     _generateConstructor(indent, modelInfo, buffer); //构造函数
     _generateFromJsonMethod(indent, modelInfo, buffer); //fromJson函数
     _generateToJsonMethod(indent, modelInfo, buffer); //toJson函数
+    _generateToKValuesMethod(indent, modelInfo, buffer); //toKValues函数
     _generateUpdateMethod(indent, modelInfo, buffer); //update函数
     buffer.write('}\n'); //类结束
     //写入辅助类
@@ -264,6 +265,24 @@ class EasyCoder extends EasyLogger {
     buffer.write('$indent${indent}return {\n');
     for (var element in modelInfo.classFields) {
       buffer.write('$indent$indent$indent\'${element.name}\': DbQueryField.convertToBaseType(${element.name}),\n');
+    }
+    buffer.write('$indent$indent};\n');
+    buffer.write('$indent}\n\n');
+  }
+
+  void _generateToKValuesMethod(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
+    if (modelInfo.classFields.isEmpty) {
+      buffer.write('$indent@override\n');
+      buffer.write('${indent}Map<String, dynamic> toKValues() {\n');
+      buffer.write('$indent${indent}return {};\n');
+      buffer.write('$indent}\n\n');
+      return;
+    }
+    buffer.write('$indent@override\n');
+    buffer.write('${indent}Map<String, dynamic> toKValues() {\n');
+    buffer.write('$indent${indent}return {\n');
+    for (var element in modelInfo.classFields) {
+      buffer.write('$indent$indent$indent\'${element.name}\': ${element.name},\n');
     }
     buffer.write('$indent$indent};\n');
     buffer.write('$indent}\n\n');

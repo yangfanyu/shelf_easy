@@ -217,6 +217,40 @@ class Complex extends DbBaseModel {
     };
   }
 
+  @override
+  Map<String, dynamic> toKValues() {
+    return {
+      '_id': _id,
+      'baseInt': baseInt,
+      'baseDouble': baseDouble,
+      'baseNum': baseNum,
+      'baseBool': baseBool,
+      'baseString': baseString,
+      'baseAddress': baseAddress,
+      'baseObjectId': baseObjectId,
+      'listInt': listInt,
+      'listDouble': listDouble,
+      'listNum': listNum,
+      'listBool': listBool,
+      'listString': listString,
+      'listAddress': listAddress,
+      'listObjectId': listObjectId,
+      'mapInt': mapInt,
+      'mapDouble': mapDouble,
+      'mapNum': mapNum,
+      'mapBool': mapBool,
+      'mapString': mapString,
+      'mapAddress': mapAddress,
+      'mapObjectId': mapObjectId,
+      'listListMapMapListMapDouble': listListMapMapListMapDouble,
+      'listListMapMapListMapAddress': listListMapMapListMapAddress,
+      'listListMapMapListMapObjectId': listListMapMapListMapObjectId,
+      'mapMapListListMapListDouble': mapMapListListMapListDouble,
+      'mapMapListListMapListAddress': mapMapListListMapListAddress,
+      'mapMapListListMapListObjectId': mapMapListListMapListObjectId,
+    };
+  }
+
   void updateFields(Map<String, dynamic> map, {Complex? parser}) {
     parser = parser ?? Complex.fromJson(map);
     if (map.containsKey('_id')) _id = parser._id;

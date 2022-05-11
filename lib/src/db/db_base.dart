@@ -82,7 +82,11 @@ class DbSession {}
 ///基本数据表模型
 ///
 abstract class DbBaseModel {
+  ///转换为可以直接调用[jsonEncode]来序列化基本数据类型的Map
   Map<String, dynamic> toJson();
+
+  ///转换为可以使用字符串key来读取字段value的Map
+  Map<String, dynamic> toKValues() => throw UnimplementedError();
 
   @override
   String toString() {

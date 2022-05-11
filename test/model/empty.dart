@@ -15,5 +15,10 @@ class Empty extends DbBaseModel {
     return {};
   }
 
+  @override
+  Map<String, dynamic> toKValues() {
+    return {};
+  }
+
   void updateFields(Map<String, dynamic> map, {Empty? parser}) {}
 }

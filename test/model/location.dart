@@ -38,6 +38,15 @@ class Location extends DbBaseModel {
     };
   }
 
+  @override
+  Map<String, dynamic> toKValues() {
+    return {
+      'latitude': latitude,
+      'longitude': longitude,
+      'accuracy': accuracy,
+    };
+  }
+
   void updateFields(Map<String, dynamic> map, {Location? parser}) {
     parser = parser ?? Location.fromJson(map);
     if (map.containsKey('latitude')) latitude = parser.latitude;

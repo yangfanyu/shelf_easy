@@ -24,6 +24,13 @@ class OnlyOne extends DbBaseModel {
     };
   }
 
+  @override
+  Map<String, dynamic> toKValues() {
+    return {
+      'test1': test1,
+    };
+  }
+
   void updateFields(Map<String, dynamic> map, {OnlyOne? parser}) {
     parser = parser ?? OnlyOne.fromJson(map);
     if (map.containsKey('test1')) test1 = parser.test1;

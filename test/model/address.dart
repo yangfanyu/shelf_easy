@@ -53,6 +53,17 @@ class Address extends DbBaseModel {
     };
   }
 
+  @override
+  Map<String, dynamic> toKValues() {
+    return {
+      'country': country,
+      'province': province,
+      'city': city,
+      'area': area,
+      'location': location,
+    };
+  }
+
   void updateFields(Map<String, dynamic> map, {Address? parser}) {
     parser = parser ?? Address.fromJson(map);
     if (map.containsKey('country')) country = parser.country;

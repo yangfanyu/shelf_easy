@@ -30,6 +30,14 @@ class OnlyNull extends DbBaseModel {
     };
   }
 
+  @override
+  Map<String, dynamic> toKValues() {
+    return {
+      'test1': test1,
+      'test2': test2,
+    };
+  }
+
   void updateFields(Map<String, dynamic> map, {OnlyNull? parser}) {
     parser = parser ?? OnlyNull.fromJson(map);
     if (map.containsKey('test1')) test1 = parser.test1;
