@@ -134,7 +134,8 @@ class User extends DbBaseModel {
     };
   }
 
-  void updateFields(Map<String, dynamic> map, {User? parser}) {
+  @override
+  void updateByJson(Map<String, dynamic> map, {User? parser}) {
     parser = parser ?? User.fromJson(map);
     if (map.containsKey('_id')) _id = parser._id;
     if (map.containsKey('name')) name = parser.name;
@@ -146,6 +147,20 @@ class User extends DbBaseModel {
     if (map.containsKey('accessList')) accessList = parser.accessList;
     if (map.containsKey('addressList')) addressList = parser.addressList;
     if (map.containsKey('friendList')) friendList = parser.friendList;
+  }
+
+  @override
+  void updateByKValues(Map<String, dynamic> map) {
+    if (map.containsKey('_id')) _id = map['_id'];
+    if (map.containsKey('name')) name = map['name'];
+    if (map.containsKey('age')) age = map['age'];
+    if (map.containsKey('rmb')) rmb = map['rmb'];
+    if (map.containsKey('pwd')) pwd = map['pwd'];
+    if (map.containsKey('address')) address = map['address'];
+    if (map.containsKey('addressBak')) addressBak = map['addressBak'];
+    if (map.containsKey('accessList')) accessList = map['accessList'];
+    if (map.containsKey('addressList')) addressList = map['addressList'];
+    if (map.containsKey('friendList')) friendList = map['friendList'];
   }
 }
 

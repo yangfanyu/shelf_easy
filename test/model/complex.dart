@@ -251,7 +251,8 @@ class Complex extends DbBaseModel {
     };
   }
 
-  void updateFields(Map<String, dynamic> map, {Complex? parser}) {
+  @override
+  void updateByJson(Map<String, dynamic> map, {Complex? parser}) {
     parser = parser ?? Complex.fromJson(map);
     if (map.containsKey('_id')) _id = parser._id;
     if (map.containsKey('baseInt')) baseInt = parser.baseInt;
@@ -281,6 +282,38 @@ class Complex extends DbBaseModel {
     if (map.containsKey('mapMapListListMapListDouble')) mapMapListListMapListDouble = parser.mapMapListListMapListDouble;
     if (map.containsKey('mapMapListListMapListAddress')) mapMapListListMapListAddress = parser.mapMapListListMapListAddress;
     if (map.containsKey('mapMapListListMapListObjectId')) mapMapListListMapListObjectId = parser.mapMapListListMapListObjectId;
+  }
+
+  @override
+  void updateByKValues(Map<String, dynamic> map) {
+    if (map.containsKey('_id')) _id = map['_id'];
+    if (map.containsKey('baseInt')) baseInt = map['baseInt'];
+    if (map.containsKey('baseDouble')) baseDouble = map['baseDouble'];
+    if (map.containsKey('baseNum')) baseNum = map['baseNum'];
+    if (map.containsKey('baseBool')) baseBool = map['baseBool'];
+    if (map.containsKey('baseString')) baseString = map['baseString'];
+    if (map.containsKey('baseAddress')) baseAddress = map['baseAddress'];
+    if (map.containsKey('baseObjectId')) baseObjectId = map['baseObjectId'];
+    if (map.containsKey('listInt')) listInt = map['listInt'];
+    if (map.containsKey('listDouble')) listDouble = map['listDouble'];
+    if (map.containsKey('listNum')) listNum = map['listNum'];
+    if (map.containsKey('listBool')) listBool = map['listBool'];
+    if (map.containsKey('listString')) listString = map['listString'];
+    if (map.containsKey('listAddress')) listAddress = map['listAddress'];
+    if (map.containsKey('listObjectId')) listObjectId = map['listObjectId'];
+    if (map.containsKey('mapInt')) mapInt = map['mapInt'];
+    if (map.containsKey('mapDouble')) mapDouble = map['mapDouble'];
+    if (map.containsKey('mapNum')) mapNum = map['mapNum'];
+    if (map.containsKey('mapBool')) mapBool = map['mapBool'];
+    if (map.containsKey('mapString')) mapString = map['mapString'];
+    if (map.containsKey('mapAddress')) mapAddress = map['mapAddress'];
+    if (map.containsKey('mapObjectId')) mapObjectId = map['mapObjectId'];
+    if (map.containsKey('listListMapMapListMapDouble')) listListMapMapListMapDouble = map['listListMapMapListMapDouble'];
+    if (map.containsKey('listListMapMapListMapAddress')) listListMapMapListMapAddress = map['listListMapMapListMapAddress'];
+    if (map.containsKey('listListMapMapListMapObjectId')) listListMapMapListMapObjectId = map['listListMapMapListMapObjectId'];
+    if (map.containsKey('mapMapListListMapListDouble')) mapMapListListMapListDouble = map['mapMapListListMapListDouble'];
+    if (map.containsKey('mapMapListListMapListAddress')) mapMapListListMapListAddress = map['mapMapListListMapListAddress'];
+    if (map.containsKey('mapMapListListMapListObjectId')) mapMapListListMapListObjectId = map['mapMapListListMapListObjectId'];
   }
 }
 

@@ -82,16 +82,21 @@ class DbSession {}
 ///基本数据表模型
 ///
 abstract class DbBaseModel {
-  ///转换为可以直接调用[jsonEncode]来序列化基本数据类型的Map
-  Map<String, dynamic> toJson();
+  ///转换为基本数据类型的Map。转换结果可以直接使用[jsonEncode]进行序列化，可以直接保存到mongo数据库
+  Map<String, dynamic> toJson() => throw UnimplementedError();
 
-  ///转换为可以使用字符串key来读取字段value的Map
+  ///通过基本数据类型的Map来更新字段。来源[map]可以直接使用[jsonEncode]进行序列化，可以直接保存到mongo数据库
+  void updateByJson(Map<String, dynamic> map) => throw UnimplementedError();
+
+  ///转换为用字符串key读取字段值的Map
   Map<String, dynamic> toKValues() => throw UnimplementedError();
 
+  ///通过用字符串key读取字段值的Map来更新字段
+  void updateByKValues(Map<String, dynamic> map) => throw UnimplementedError();
+
+  ///jsonEncode(this)抛出的异常被吃掉了，所以需要写成jsonEncode(toJson())
   @override
-  String toString() {
-    return '$runtimeType(${jsonEncode(toJson())})'; //jsonEncode(this)抛出的异常被吃掉了，所以需要写成jsonEncode(toJson())
-  }
+  String toString() => '$runtimeType(${jsonEncode(toJson())})';
 }
 
 ///
@@ -567,7 +572,7 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
 
   /* **************** 工具函数 ********** */
 
-  ///将复杂类型转换为dart内置的基础类型，以便于进行JSON转换
+  ///将复杂类型转换为dart内置的基础类型。转换结果可以直接使用[jsonEncode]进行序列化，可以直接保存到mongo数据库
   static dynamic convertToBaseType(dynamic v) {
     if (v is Map) {
       return v.map((key, value) => MapEntry(key, convertToBaseType(value)));

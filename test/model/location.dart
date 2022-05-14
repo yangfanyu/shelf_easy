@@ -47,11 +47,19 @@ class Location extends DbBaseModel {
     };
   }
 
-  void updateFields(Map<String, dynamic> map, {Location? parser}) {
+  @override
+  void updateByJson(Map<String, dynamic> map, {Location? parser}) {
     parser = parser ?? Location.fromJson(map);
     if (map.containsKey('latitude')) latitude = parser.latitude;
     if (map.containsKey('longitude')) longitude = parser.longitude;
     if (map.containsKey('accuracy')) accuracy = parser.accuracy;
+  }
+
+  @override
+  void updateByKValues(Map<String, dynamic> map) {
+    if (map.containsKey('latitude')) latitude = map['latitude'];
+    if (map.containsKey('longitude')) longitude = map['longitude'];
+    if (map.containsKey('accuracy')) accuracy = map['accuracy'];
   }
 }
 

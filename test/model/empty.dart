@@ -20,5 +20,9 @@ class Empty extends DbBaseModel {
     return {};
   }
 
-  void updateFields(Map<String, dynamic> map, {Empty? parser}) {}
+  @override
+  void updateByJson(Map<String, dynamic> map, {Empty? parser}) {}
+
+  @override
+  void updateByKValues(Map<String, dynamic> map) {}
 }

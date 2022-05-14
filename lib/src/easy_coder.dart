@@ -53,7 +53,8 @@ class EasyCoder extends EasyLogger {
     _generateFromJsonMethod(indent, modelInfo, buffer); //fromJson函数
     _generateToJsonMethod(indent, modelInfo, buffer); //toJson函数
     _generateToKValuesMethod(indent, modelInfo, buffer); //toKValues函数
-    _generateUpdateMethod(indent, modelInfo, buffer); //update函数
+    _generateUpdateByJsonMethod(indent, modelInfo, buffer); //updateByJson函数
+    _generateUpdateByKValuesMethod(indent, modelInfo, buffer); //updateByKValues函数
     buffer.write('}\n'); //类结束
     //写入辅助类
     _generateDirtyClass(indent, modelInfo, buffer);
@@ -288,15 +289,32 @@ class EasyCoder extends EasyLogger {
     buffer.write('$indent}\n\n');
   }
 
-  void _generateUpdateMethod(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
+  void _generateUpdateByJsonMethod(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
     if (modelInfo.classFields.isEmpty) {
-      buffer.write('${indent}void updateFields(Map<String, dynamic> map, {${modelInfo.className}? parser}) {}\n');
+      buffer.write('$indent@override\n');
+      buffer.write('${indent}void updateByJson(Map<String, dynamic> map, {${modelInfo.className}? parser}) {}\n\n');
       return;
     }
-    buffer.write('${indent}void updateFields(Map<String, dynamic> map, {${modelInfo.className}? parser}) {\n');
+    buffer.write('$indent@override\n');
+    buffer.write('${indent}void updateByJson(Map<String, dynamic> map, {${modelInfo.className}? parser}) {\n');
     buffer.write('$indent${indent}parser = parser ?? ${modelInfo.className}.fromJson(map);\n');
     for (var element in modelInfo.classFields) {
       buffer.write('$indent${indent}if (map.containsKey(\'${element.name}\')) ${element.name} = parser.${element.name};\n');
+    }
+    buffer.write('$indent}\n\n');
+    return;
+  }
+
+  void _generateUpdateByKValuesMethod(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
+    if (modelInfo.classFields.isEmpty) {
+      buffer.write('$indent@override\n');
+      buffer.write('${indent}void updateByKValues(Map<String, dynamic> map) {}\n');
+      return;
+    }
+    buffer.write('$indent@override\n');
+    buffer.write('${indent}void updateByKValues(Map<String, dynamic> map) {\n');
+    for (var element in modelInfo.classFields) {
+      buffer.write('$indent${indent}if (map.containsKey(\'${element.name}\')) ${element.name} = map[\'${element.name}\'];\n');
     }
     buffer.write('$indent}\n');
     return;

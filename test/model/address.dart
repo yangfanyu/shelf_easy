@@ -64,13 +64,23 @@ class Address extends DbBaseModel {
     };
   }
 
-  void updateFields(Map<String, dynamic> map, {Address? parser}) {
+  @override
+  void updateByJson(Map<String, dynamic> map, {Address? parser}) {
     parser = parser ?? Address.fromJson(map);
     if (map.containsKey('country')) country = parser.country;
     if (map.containsKey('province')) province = parser.province;
     if (map.containsKey('city')) city = parser.city;
     if (map.containsKey('area')) area = parser.area;
     if (map.containsKey('location')) location = parser.location;
+  }
+
+  @override
+  void updateByKValues(Map<String, dynamic> map) {
+    if (map.containsKey('country')) country = map['country'];
+    if (map.containsKey('province')) province = map['province'];
+    if (map.containsKey('city')) city = map['city'];
+    if (map.containsKey('area')) area = map['area'];
+    if (map.containsKey('location')) location = map['location'];
   }
 }
 
