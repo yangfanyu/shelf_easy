@@ -21,12 +21,21 @@ class Location extends DbBaseModel {
         longitude = longitude ?? 0,
         accuracy = accuracy ?? 0;
 
+  factory Location.fromString(String data) {
+    return Location.fromJson(jsonDecode(data.substring(data.indexOf('(') + 1, data.lastIndexOf(')'))));
+  }
+
   factory Location.fromJson(Map<String, dynamic> map) {
     return Location(
       latitude: map['latitude'],
       longitude: map['longitude'],
       accuracy: map['accuracy'],
     );
+  }
+
+  @override
+  String toString() {
+    return 'Location(${jsonEncode(toJson())})';
   }
 
   @override

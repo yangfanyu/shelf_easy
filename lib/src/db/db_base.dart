@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:bson/bson.dart';
 
-export 'package:bson/bson.dart';
+export 'dart:convert' show JsonEncoder, jsonDecode, jsonEncode;
+
+export 'package:bson/bson.dart' show ObjectId;
 
 ///
 ///数据库操作接口
@@ -573,9 +575,11 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
   /* **************** 工具函数 ********** */
 
   ///将复杂类型转换为dart内置的基础类型。转换结果可以直接使用[jsonEncode]进行序列化，可以直接保存到mongo数据库
+  ///
+  ///经过测试发现：jsonEncode操作Map时只支持以字符串为key，mongo数据库保存Map时只支持以字符串为key
   static dynamic convertToBaseType(dynamic v) {
     if (v is Map) {
-      return v.map((key, value) => MapEntry(key, convertToBaseType(value)));
+      return v.map((key, value) => MapEntry(key is String ? key : (key is ObjectId ? key.toHexString() : key.toString()), convertToBaseType(value)));
     } else if (v is List) {
       return v.map((value) => convertToBaseType(value)).toList();
     } else if (v is DbBaseModel) {

@@ -11,10 +11,19 @@ class OnlyOne extends DbBaseModel {
     String? test1,
   }) : test1 = test1 ?? '';
 
+  factory OnlyOne.fromString(String data) {
+    return OnlyOne.fromJson(jsonDecode(data.substring(data.indexOf('(') + 1, data.lastIndexOf(')'))));
+  }
+
   factory OnlyOne.fromJson(Map<String, dynamic> map) {
     return OnlyOne(
       test1: map['test1'],
     );
+  }
+
+  @override
+  String toString() {
+    return 'OnlyOne(${jsonEncode(toJson())})';
   }
 
   @override

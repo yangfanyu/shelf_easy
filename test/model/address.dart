@@ -32,6 +32,10 @@ class Address extends DbBaseModel {
         area = area ?? '',
         location = location ?? Location();
 
+  factory Address.fromString(String data) {
+    return Address.fromJson(jsonDecode(data.substring(data.indexOf('(') + 1, data.lastIndexOf(')'))));
+  }
+
   factory Address.fromJson(Map<String, dynamic> map) {
     return Address(
       country: map['country'],
@@ -40,6 +44,11 @@ class Address extends DbBaseModel {
       area: map['area'],
       location: map['location'] is Map ? Location.fromJson(map['location']) : map['location'],
     );
+  }
+
+  @override
+  String toString() {
+    return 'Address(${jsonEncode(toJson())})';
   }
 
   @override

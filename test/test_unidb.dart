@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:shelf_easy/shelf_easy.dart';
@@ -7,8 +6,23 @@ import 'model/address.dart';
 import 'model/user.dart';
 
 void main() {
+  // testJsonTool();
   // testHelpClass();
   testDataBase();
+}
+
+void testJsonTool() {
+  final encoder = JsonEncoder.withIndent('  ');
+  final user = User(
+    age: 88,
+    ageObjectIdAddressMap: {
+      1: {ObjectId(): Address()}
+    },
+  );
+  final userString = user.toString();
+  print(userString);
+  print(User.fromString(userString));
+  print(encoder.convert(User.fromString(userString)));
 }
 
 void testHelpClass() {
@@ -203,7 +217,11 @@ void testDataBase() {
     );
     //insertMany
     await database.insertMany(UserQuery.$tableName, [
-      User(name: '用户2', friendList: [user.id]),
+      User(name: '用户2', friendList: [
+        user.id
+      ], ageObjectIdAddressMap: {
+        1: {ObjectId(): Address()}
+      }),
       User(name: '用户3', friendList: [user.id]),
       User(name: '用户4', friendList: [user.id]),
     ]);
@@ -279,7 +297,7 @@ void testDataBase() {
       converter: User.fromJson,
     );
     //findOne without filter and with skip,projection
-    await database.findOne(
+    final complexUser = await database.findOne(
       UserQuery.$tableName,
       DbFilter({}),
       converter: User.fromJson,
@@ -293,6 +311,7 @@ void testDataBase() {
         },
       ),
     );
+    print(complexUser.result?.ageObjectIdAddressMap);
     //findOne without filter and with skip sort projection
     await database.findMany(
       UserQuery.$tableName,

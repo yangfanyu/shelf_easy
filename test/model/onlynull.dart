@@ -15,11 +15,20 @@ class OnlyNull extends DbBaseModel {
     this.test2,
   });
 
+  factory OnlyNull.fromString(String data) {
+    return OnlyNull.fromJson(jsonDecode(data.substring(data.indexOf('(') + 1, data.lastIndexOf(')'))));
+  }
+
   factory OnlyNull.fromJson(Map<String, dynamic> map) {
     return OnlyNull(
       test1: map['test1'],
       test2: map['test2'],
     );
+  }
+
+  @override
+  String toString() {
+    return 'OnlyNull(${jsonEncode(toJson())})';
   }
 
   @override

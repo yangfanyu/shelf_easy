@@ -16,11 +16,20 @@ class OnlyTwo extends DbBaseModel {
   })  : test1 = test1 ?? '',
         test2 = test2 ?? '';
 
+  factory OnlyTwo.fromString(String data) {
+    return OnlyTwo.fromJson(jsonDecode(data.substring(data.indexOf('(') + 1, data.lastIndexOf(')'))));
+  }
+
   factory OnlyTwo.fromJson(Map<String, dynamic> map) {
     return OnlyTwo(
       test1: map['test1'],
       test2: map['test2'],
     );
+  }
+
+  @override
+  String toString() {
+    return 'OnlyTwo(${jsonEncode(toJson())})';
   }
 
   @override

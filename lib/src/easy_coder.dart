@@ -25,7 +25,6 @@ class EasyCoder extends EasyLogger {
     final indent = _config.indent;
     final outputPath = '${_config.absFolder}/${modelInfo.className.toLowerCase()}.dart'; //输入文件路径
     final buffer = StringBuffer();
-    final standardRegExp = RegExp('^(' + (([..._config.baseTypes, ..._config.nestTypes, '>']).join('|')) + '){1,}\$');
     //删除旧文件
     try {
       final oldFile = File(outputPath); //旧文件
@@ -36,13 +35,6 @@ class EasyCoder extends EasyLogger {
     } catch (error, stack) {
       logError(['delete file', outputPath, 'error:', error, '\n', stack]);
     }
-    //字段分析警告
-    for (var element in modelInfo.classFields) {
-      final currType = element.type.replaceAll(' ', ''); //去除全部空格
-      if (!standardRegExp.hasMatch(currType) && (!_config.customFromJson.containsKey(currType) || !_config.customFromJsonNest.containsKey(currType))) {
-        logWarn([modelInfo.className, '=>', element.name, '=>', element.type, 'not in baseTypes and nestTypes. Expression of fromJson use default.']); //不是标准类型
-      }
-    }
     //拼接类内容
     _generateImports(indent, modelInfo, buffer); //import内容
     buffer.write('///${modelInfo.classDesc.join('\n///')}\n'); //类描述信息
@@ -50,7 +42,9 @@ class EasyCoder extends EasyLogger {
     _generateConstFields(indent, modelInfo, buffer); //常量字段
     _generateFieldDefine(indent, modelInfo, buffer); //变量字段
     _generateConstructor(indent, modelInfo, buffer); //构造函数
+    _generateFromStringMethod(indent, modelInfo, buffer); //fromString函数
     _generateFromJsonMethod(indent, modelInfo, buffer); //fromJson函数
+    _generateToStringMethod(indent, modelInfo, buffer); //toString函数
     _generateToJsonMethod(indent, modelInfo, buffer); //toJson函数
     _generateToKValuesMethod(indent, modelInfo, buffer); //toKValues函数
     _generateUpdateByJsonMethod(indent, modelInfo, buffer); //updateByJson函数
@@ -178,6 +172,12 @@ class EasyCoder extends EasyLogger {
     }
   }
 
+  void _generateFromStringMethod(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
+    buffer.write('${indent}factory ${modelInfo.className}.fromString(String data) {\n');
+    buffer.write('$indent${indent}return ${modelInfo.className}.fromJson(jsonDecode(data.substring(data.indexOf(\'(\') + 1, data.lastIndexOf(\')\'))));\n');
+    buffer.write('$indent}\n\n');
+  }
+
   void _generateFromJsonMethod(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
     if (modelInfo.classFields.isEmpty) {
       buffer.write('${indent}factory ${modelInfo.className}.fromJson(Map<String, dynamic> map) {\n');
@@ -190,21 +190,21 @@ class EasyCoder extends EasyLogger {
     for (var element in modelInfo.classFields) {
       final publicName = _getFieldPublicName(element.name);
       var currType = element.type.replaceAll(' ', ''); //去除全部空格
-      if (_config.baseTypes.any((type) => type == currType)) {
-        //基本数据类型
-        buffer.write('$indent$indent$indent$publicName: map[\'${element.name}\'],\n');
-      } else if (_config.nestTypes.any((type) => currType.startsWith(type))) {
+      if (currType.startsWith('List<') || currType.startsWith('Map<')) {
         //嵌套数据类型
         final prefix = <String>[];
         final suffix = <String>[];
-        while (_config.nestTypes.any((type) => currType.startsWith(type))) {
-          for (var type in _config.nestTypes) {
-            if (currType.startsWith(type)) {
-              prefix.add(type);
-              suffix.add('>');
-              currType = currType.replaceFirst(type, '').replaceFirst('>', '');
-              break;
-            }
+        while (currType.startsWith('List<') || currType.startsWith('Map<')) {
+          if (currType.startsWith('List<')) {
+            final type = 'List<';
+            prefix.add(type);
+            suffix.add('>');
+            currType = currType.replaceFirst(type, '').replaceFirst('>', '');
+          } else if (currType.startsWith('Map<')) {
+            final type = currType.substring(0, currType.indexOf(',') + 1);
+            prefix.add(type);
+            suffix.add('>');
+            currType = currType.replaceFirst(type, '').replaceFirst('>', '');
           }
         }
         logTrace(['symbol table =>', element.name, element.type, '=>', prefix, suffix, currType]);
@@ -212,45 +212,48 @@ class EasyCoder extends EasyLogger {
         final suffStr = <String>[];
         for (var type in prefix) {
           if (prevStr.isEmpty) {
-            if (type.startsWith('List')) {
+            if (type.startsWith('List<')) {
               prevStr.add('(map[\'${element.name}\'] as List?)?.map((v) => ');
               suffStr.insert(0, ').toList()');
-            } else if (type.startsWith('Map')) {
-              final keyType = type.replaceFirst('Map<', '');
-              prevStr.add('(map[\'${element.name}\'] as Map?)?.map((k, v) => MapEntry(k as $keyType ');
+            } else if (type.startsWith('Map<')) {
+              final keyType = type.replaceFirst('Map<', '').replaceFirst(',', '');
+              final keyTemplate = _config.nestFromJsonKeys[keyType] ?? _config.nestFromJsonKeys[EasyCoderConfig.defaultType]!;
+              prevStr.add('(map[\'${element.name}\'] as Map?)?.map((k, v) => MapEntry(${EasyCoderConfig.compileTemplateCode(keyTemplate, 'k', keyType)}, ');
               suffStr.insert(0, '))');
             }
           } else {
-            if (type.startsWith('List')) {
+            if (type.startsWith('List<')) {
               prevStr.add('(v as List).map((v) => ');
               suffStr.insert(0, ').toList()');
-            } else if (type.startsWith('Map')) {
-              final keyType = type.replaceFirst('Map<', '');
-              prevStr.add('(v as Map).map((k, v) => MapEntry(k as $keyType ');
+            } else if (type.startsWith('Map<')) {
+              final keyType = type.replaceFirst('Map<', '').replaceFirst(',', '');
+              final keyTemplate = _config.nestFromJsonKeys[keyType] ?? _config.nestFromJsonKeys[EasyCoderConfig.defaultType]!;
+              prevStr.add('(v as Map).map((k, v) => MapEntry(${EasyCoderConfig.compileTemplateCode(keyTemplate, 'k', keyType)}, ');
               suffStr.insert(0, '))');
             }
           }
         }
-        if (_config.baseTypes.any((type) => type == currType)) {
-          //最内层为基本数据类型
-          final expression = '${prevStr.join('')}v as $currType${suffStr.join('')}';
-          logTrace(['expression =>', element.name, element.type, '=>', expression]);
-          buffer.write('$indent$indent$indent$publicName: $expression,\n');
-        } else {
-          //最内层为可JSON化的对象
-          final templateCode = _config.customFromJsonNest[currType] ?? _config.defaultFromJsonNest;
-          final expression = '${prevStr.join('')}${EasyCoderConfig.compileTemplateCode(templateCode, 'v', currType)}${suffStr.join('')}';
-          logTrace(['expression =>', element.name, element.type, '=>', expression]);
-          buffer.write('$indent$indent$indent$publicName: $expression,\n');
-        }
+        final valTemplate = _config.nestFromJsonVals[currType] ?? _config.nestFromJsonVals[EasyCoderConfig.defaultType]!;
+        final expression = '${prevStr.join('')}${EasyCoderConfig.compileTemplateCode(valTemplate, 'v', currType)}${suffStr.join('')}';
+        logTrace(['expression =>', element.name, element.type, '=>', expression]);
+        buffer.write('$indent$indent$indent$publicName: $expression,\n');
       } else {
-        //可JSON化的对象
-        final templateCode = _config.customFromJson[currType] ?? _config.defaultFromJson;
-        buffer.write('$indent$indent$indent$publicName: ${EasyCoderConfig.compileTemplateCode(templateCode, 'map[\'${element.name}\']', currType)},\n');
+        //其他数据类型
+        final valTemplate = _config.baseFromJsonVals[currType] ?? _config.baseFromJsonVals[EasyCoderConfig.defaultType]!;
+        final expression = EasyCoderConfig.compileTemplateCode(valTemplate, 'map[\'${element.name}\']', currType);
+        buffer.write('$indent$indent$indent$publicName: $expression,\n');
       }
     }
     buffer.write('$indent$indent);\n');
     buffer.write('$indent}\n\n');
+  }
+
+  void _generateToStringMethod(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
+    buffer.write('$indent@override\n');
+    buffer.write('${indent}String toString() {\n');
+    buffer.write('$indent${indent}return \'${modelInfo.className}(\${jsonEncode(toJson())})\';\n');
+    buffer.write('$indent}\n\n');
+    return;
   }
 
   void _generateToJsonMethod(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {

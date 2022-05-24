@@ -27,6 +27,7 @@ void main() {
       EasyCoderFieldInfo(type: 'List<int>', name: 'accessList', desc: ['权限列表']),
       EasyCoderFieldInfo(type: 'List<Address>', name: 'addressList', desc: ['通讯地址']),
       EasyCoderFieldInfo(type: 'List<ObjectId>', name: 'friendList', desc: ['好友id列表']),
+      EasyCoderFieldInfo(type: 'Map<int, Map<ObjectId, Address>>', name: 'ageObjectIdAddressMap', desc: ['测试复杂类型']),
     ],
     extraFields: [
       EasyCoderFieldInfo(type: 'String', name: '\$pingying', desc: ['', '非序列化字段', '']),
@@ -83,7 +84,7 @@ void main() {
       EasyCoderFieldInfo(type: 'List<String>', name: 'listString', desc: []),
       EasyCoderFieldInfo(type: 'List<Address>', name: 'listAddress', desc: []),
       EasyCoderFieldInfo(type: 'List<ObjectId>', name: 'listObjectId', desc: []),
-      //map
+      //String map
       EasyCoderFieldInfo(type: 'Map<String, int>', name: 'mapInt', desc: []),
       EasyCoderFieldInfo(type: 'Map<String, double>', name: 'mapDouble', desc: []),
       EasyCoderFieldInfo(type: 'Map<String, num>', name: 'mapNum', desc: []),
@@ -91,6 +92,46 @@ void main() {
       EasyCoderFieldInfo(type: 'Map<String, String>', name: 'mapString', desc: []),
       EasyCoderFieldInfo(type: 'Map<String, Address>', name: 'mapAddress', desc: []),
       EasyCoderFieldInfo(type: 'Map<String, ObjectId>', name: 'mapObjectId', desc: []),
+      //int map
+      EasyCoderFieldInfo(type: 'Map<int, int>', name: 'map2Int', desc: []),
+      EasyCoderFieldInfo(type: 'Map<int, double>', name: 'map2Double', desc: []),
+      EasyCoderFieldInfo(type: 'Map<int, num>', name: 'map2Num', desc: []),
+      EasyCoderFieldInfo(type: 'Map<int, bool>', name: 'map2Bool', desc: []),
+      EasyCoderFieldInfo(type: 'Map<int, String>', name: 'map2String', desc: []),
+      EasyCoderFieldInfo(type: 'Map<int, Address>', name: 'map2Address', desc: []),
+      EasyCoderFieldInfo(type: 'Map<int, ObjectId>', name: 'map2ObjectId', desc: []),
+      //double map
+      EasyCoderFieldInfo(type: 'Map<double, int>', name: 'map3Int', desc: []),
+      EasyCoderFieldInfo(type: 'Map<double, double>', name: 'map3Double', desc: []),
+      EasyCoderFieldInfo(type: 'Map<double, num>', name: 'map3Num', desc: []),
+      EasyCoderFieldInfo(type: 'Map<double, bool>', name: 'map3Bool', desc: []),
+      EasyCoderFieldInfo(type: 'Map<double, String>', name: 'map3String', desc: []),
+      EasyCoderFieldInfo(type: 'Map<double, Address>', name: 'map3Address', desc: []),
+      EasyCoderFieldInfo(type: 'Map<double, ObjectId>', name: 'map3ObjectId', desc: []),
+      //bool map
+      EasyCoderFieldInfo(type: 'Map<bool, int>', name: 'map4Int', desc: []),
+      EasyCoderFieldInfo(type: 'Map<bool, double>', name: 'map4Double', desc: []),
+      EasyCoderFieldInfo(type: 'Map<bool, num>', name: 'map4Num', desc: []),
+      EasyCoderFieldInfo(type: 'Map<bool, bool>', name: 'map4Bool', desc: []),
+      EasyCoderFieldInfo(type: 'Map<bool, String>', name: 'map4String', desc: []),
+      EasyCoderFieldInfo(type: 'Map<bool, Address>', name: 'map4Address', desc: []),
+      EasyCoderFieldInfo(type: 'Map<bool, ObjectId>', name: 'map4ObjectId', desc: []),
+      //ObjectId map
+      EasyCoderFieldInfo(type: 'Map<ObjectId, int>', name: 'map5Int', desc: []),
+      EasyCoderFieldInfo(type: 'Map<ObjectId, double>', name: 'map5Double', desc: []),
+      EasyCoderFieldInfo(type: 'Map<ObjectId, num>', name: 'map5Num', desc: []),
+      EasyCoderFieldInfo(type: 'Map<ObjectId, bool>', name: 'map5Bool', desc: []),
+      EasyCoderFieldInfo(type: 'Map<ObjectId, String>', name: 'map5String', desc: []),
+      EasyCoderFieldInfo(type: 'Map<ObjectId, Address>', name: 'map5Address', desc: []),
+      EasyCoderFieldInfo(type: 'Map<ObjectId, ObjectId>', name: 'map5ObjectId', desc: []),
+      //Address map
+      EasyCoderFieldInfo(type: 'Map<Address, int>', name: 'map6Int', desc: []),
+      EasyCoderFieldInfo(type: 'Map<Address, double>', name: 'map6Double', desc: []),
+      EasyCoderFieldInfo(type: 'Map<Address, num>', name: 'map6Num', desc: []),
+      EasyCoderFieldInfo(type: 'Map<Address, bool>', name: 'map6Bool', desc: []),
+      EasyCoderFieldInfo(type: 'Map<Address, String>', name: 'map6String', desc: []),
+      EasyCoderFieldInfo(type: 'Map<Address, Address>', name: 'map6Address', desc: []),
+      EasyCoderFieldInfo(type: 'Map<Address, ObjectId>', name: 'map6ObjectId', desc: []),
       //complex
       EasyCoderFieldInfo(type: 'List<List<Map<String, Map<String, List<Map<String, double>>>>>>', name: 'listListMapMapListMapDouble', desc: []),
       EasyCoderFieldInfo(type: 'List<List<Map<String, Map<String, List<Map<String, Address>>>>>>', name: 'listListMapMapListMapAddress', desc: []),

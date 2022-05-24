@@ -6,8 +6,17 @@ import 'package:shelf_easy/shelf_easy.dart';
 class Empty extends DbBaseModel {
   Empty();
 
+  factory Empty.fromString(String data) {
+    return Empty.fromJson(jsonDecode(data.substring(data.indexOf('(') + 1, data.lastIndexOf(')'))));
+  }
+
   factory Empty.fromJson(Map<String, dynamic> map) {
     return Empty();
+  }
+
+  @override
+  String toString() {
+    return 'Empty(${jsonEncode(toJson())})';
   }
 
   @override

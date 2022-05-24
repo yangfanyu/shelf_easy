@@ -56,6 +56,9 @@ class User extends DbBaseModel {
   ///好友id列表
   List<ObjectId> friendList;
 
+  ///测试复杂类型
+  Map<int, Map<ObjectId, Address>> ageObjectIdAddressMap;
+
   ///
   ///标志
   ///
@@ -77,6 +80,7 @@ class User extends DbBaseModel {
     List<int>? accessList,
     List<Address>? addressList,
     List<ObjectId>? friendList,
+    Map<int, Map<ObjectId, Address>>? ageObjectIdAddressMap,
   })  : _id = id ?? ObjectId(),
         name = name ?? '名称',
         age = age ?? 10,
@@ -85,7 +89,12 @@ class User extends DbBaseModel {
         address = address ?? Address(),
         accessList = accessList ?? [],
         addressList = addressList ?? [],
-        friendList = friendList ?? [];
+        friendList = friendList ?? [],
+        ageObjectIdAddressMap = ageObjectIdAddressMap ?? {};
+
+  factory User.fromString(String data) {
+    return User.fromJson(jsonDecode(data.substring(data.indexOf('(') + 1, data.lastIndexOf(')'))));
+  }
 
   factory User.fromJson(Map<String, dynamic> map) {
     return User(
@@ -99,7 +108,13 @@ class User extends DbBaseModel {
       accessList: (map['accessList'] as List?)?.map((v) => v as int).toList(),
       addressList: (map['addressList'] as List?)?.map((v) => Address.fromJson(v)).toList(),
       friendList: (map['friendList'] as List?)?.map((v) => v is String ? ObjectId.fromHexString(v) : v as ObjectId).toList(),
+      ageObjectIdAddressMap: (map['ageObjectIdAddressMap'] as Map?)?.map((k, v) => MapEntry(int.parse(k), (v as Map).map((k, v) => MapEntry(ObjectId.fromHexString(k), Address.fromJson(v))))),
     );
+  }
+
+  @override
+  String toString() {
+    return 'User(${jsonEncode(toJson())})';
   }
 
   @override
@@ -115,6 +130,7 @@ class User extends DbBaseModel {
       'accessList': DbQueryField.convertToBaseType(accessList),
       'addressList': DbQueryField.convertToBaseType(addressList),
       'friendList': DbQueryField.convertToBaseType(friendList),
+      'ageObjectIdAddressMap': DbQueryField.convertToBaseType(ageObjectIdAddressMap),
     };
   }
 
@@ -131,6 +147,7 @@ class User extends DbBaseModel {
       'accessList': accessList,
       'addressList': addressList,
       'friendList': friendList,
+      'ageObjectIdAddressMap': ageObjectIdAddressMap,
     };
   }
 
@@ -147,6 +164,7 @@ class User extends DbBaseModel {
     if (map.containsKey('accessList')) accessList = parser.accessList;
     if (map.containsKey('addressList')) addressList = parser.addressList;
     if (map.containsKey('friendList')) friendList = parser.friendList;
+    if (map.containsKey('ageObjectIdAddressMap')) ageObjectIdAddressMap = parser.ageObjectIdAddressMap;
   }
 
   @override
@@ -161,6 +179,7 @@ class User extends DbBaseModel {
     if (map.containsKey('accessList')) accessList = map['accessList'];
     if (map.containsKey('addressList')) addressList = map['addressList'];
     if (map.containsKey('friendList')) friendList = map['friendList'];
+    if (map.containsKey('ageObjectIdAddressMap')) ageObjectIdAddressMap = map['ageObjectIdAddressMap'];
   }
 }
 
@@ -200,6 +219,9 @@ class UserDirty {
 
   ///好友id列表
   set friendList(List<ObjectId> value) => data['friendList'] = DbQueryField.convertToBaseType(value);
+
+  ///测试复杂类型
+  set ageObjectIdAddressMap(Map<int, Map<ObjectId, Address>> value) => data['ageObjectIdAddressMap'] = DbQueryField.convertToBaseType(value);
 }
 
 class UserQuery {
@@ -247,4 +269,7 @@ class UserQuery {
 
   ///好友id列表
   static DbQueryField<List<ObjectId>, DBUnsupportNumberOperate, ObjectId> get friendList => DbQueryField('friendList');
+
+  ///测试复杂类型
+  static DbQueryField<Map<int, Map<ObjectId, Address>>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get ageObjectIdAddressMap => DbQueryField('ageObjectIdAddressMap');
 }

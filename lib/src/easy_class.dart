@@ -938,6 +938,8 @@ class EasyUniDbConfig {
 ///代码生成器配置
 ///
 class EasyCoderConfig {
+  static const defaultType = '__defaultType__';
+
   ///日志处理方法
   final EasyLogHandler? logger;
 
@@ -962,23 +964,14 @@ class EasyCoderConfig {
   ///代码缩进单位
   final String indent;
 
-  ///基本数据类型
-  final List<String> baseTypes;
+  ///基本数据类型fromJson方法-值转换
+  final Map<String, String> baseFromJsonVals;
 
-  ///嵌套数据类型（经过测试，jsonEncode操作Map时只支持以字符串为key）
-  final List<String> nestTypes;
+  ///嵌套数据类型fromJson方法-键转换（经过测试发现：jsonEncode操作Map时只支持以字符串为key，mongo数据库保存Map时只支持以字符串为key）
+  final Map<String, String> nestFromJsonKeys;
 
-  ///复杂类型默认的fromJson方法
-  final String defaultFromJson;
-
-  ///复杂类型默认的fromJson方法-内嵌情况
-  final String defaultFromJsonNest;
-
-  ///复杂类型自定义fromJson方法
-  final Map<String, String> customFromJson;
-
-  ///复杂类型自定义fromJson方法-内嵌情况
-  final Map<String, String> customFromJsonNest;
+  ///嵌套数据类型fromJson方法-值转换
+  final Map<String, String> nestFromJsonVals;
 
   EasyCoderConfig({
     this.logger,
@@ -989,13 +982,39 @@ class EasyCoderConfig {
     this.logFileMaxBytes,
     required this.absFolder,
     this.indent = '  ',
-    this.baseTypes = const ['int', 'double', 'num', 'bool', 'String'],
-    this.nestTypes = const ['List<', 'Map<String,'],
-    this.defaultFromJson = '# is Map ? @.fromJson(#) : #',
-    this.defaultFromJsonNest = '@.fromJson(#)',
-    this.customFromJson = const {'ObjectId': '# is String ? @.fromHexString(#) : #'},
-    this.customFromJsonNest = const {'ObjectId': '# is String ? @.fromHexString(#) : # as @'},
-  });
+    Map<String, String> customBaseFromJsonVals = const {},
+    Map<String, String> customNestFromJsonKeys = const {},
+    Map<String, String> customNestFromJsonVals = const {},
+  })  : baseFromJsonVals = {
+          'int': '#',
+          'double': '#',
+          'num': '#',
+          'bool': '#',
+          'String': '#',
+          'ObjectId': '# is String ? @.fromHexString(#) : #',
+          defaultType: '# is Map ? @.fromJson(#) : #',
+          ...customBaseFromJsonVals,
+        },
+        nestFromJsonKeys = {
+          'int': '@.parse(#)',
+          'double': '@.parse(#)',
+          'num': '@.parse(#)',
+          'bool': '# == \'true\'',
+          'String': '# as @',
+          'ObjectId': '@.fromHexString(#)',
+          defaultType: '@.fromString(#)',
+          ...customNestFromJsonKeys,
+        },
+        nestFromJsonVals = {
+          'int': '# as @',
+          'double': '# as @',
+          'num': '# as @',
+          'bool': '# as @',
+          'String': '# as @',
+          'ObjectId': '# is String ? @.fromHexString(#) : # as @',
+          defaultType: '@.fromJson(#)',
+          ...customNestFromJsonVals,
+        };
 
   static String compileTemplateCode(String templateCode, String valueCode, String typeCode) {
     return templateCode.replaceAll('#', valueCode).replaceAll('@', typeCode);
