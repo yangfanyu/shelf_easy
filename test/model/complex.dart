@@ -268,7 +268,7 @@ class Complex extends DbBaseModel {
         baseBool = baseBool ?? true,
         baseString = baseString ?? '',
         baseAddress = baseAddress ?? Address(),
-        baseObjectId = baseObjectId ?? ObjectId(),
+        baseObjectId = baseObjectId ?? ObjectId.fromHexString('000000000000000000000000'),
         listInt = listInt ?? [],
         listDouble = listDouble ?? [],
         listNum = listNum ?? [],

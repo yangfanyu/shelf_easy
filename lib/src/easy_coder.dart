@@ -118,7 +118,7 @@ class EasyCoder extends EasyLogger {
     //扩展字段
     for (var element in modelInfo.extraFields) {
       final publicName = _getFieldPublicName(element.name);
-      final defaultValue = _getFieldDefaultValue(element.type, element.defVal);
+      final defaultValue = _getFieldDefaultValue(element.name, element.type, element.defVal);
       buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
       if (element.nullAble) {
         buffer.write('$indent${element.type}? $publicName;\n\n');
@@ -153,7 +153,7 @@ class EasyCoder extends EasyLogger {
     }
     for (var element in notNullAbleFields) {
       final publicName = _getFieldPublicName(element.name);
-      final defaultValue = _getFieldDefaultValue(element.type, element.defVal);
+      final defaultValue = _getFieldDefaultValue(element.name, element.type, element.defVal);
       if (element == notNullAbleFields.last) {
         //需要先判断是否为最后一个字段
         if (notNullAbleFields.length > 1) {
@@ -380,7 +380,7 @@ class EasyCoder extends EasyLogger {
 
   String _getFieldPublicName(String name) => name.replaceAll('_', '');
 
-  String _getFieldDefaultValue(String type, String? defVal) {
+  String _getFieldDefaultValue(String name, String type, String? defVal) {
     if (defVal != null) return defVal;
     final currType = type.trim();
     if (currType == 'int') return '0';
@@ -388,6 +388,7 @@ class EasyCoder extends EasyLogger {
     if (currType == 'num') return '0';
     if (currType == 'bool') return 'false';
     if (currType == 'String') return '\'\'';
+    if (currType == 'ObjectId') return name == '_id' ? 'ObjectId()' : 'ObjectId.fromHexString(\'000000000000000000000000\')';
     if (currType.startsWith('List')) return '[]';
     if (currType.startsWith('Map')) return '{}';
     return '$type()';
