@@ -30,6 +30,9 @@ class Complex extends DbBaseModel {
   ObjectId baseObjectId;
 
   ///
+  DbJsonWraper baseJsonWraper;
+
+  ///
   List<int> listInt;
 
   ///
@@ -206,6 +209,7 @@ class Complex extends DbBaseModel {
     String? baseString,
     Address? baseAddress,
     ObjectId? baseObjectId,
+    DbJsonWraper? baseJsonWraper,
     List<int>? listInt,
     List<double>? listDouble,
     List<num>? listNum,
@@ -269,6 +273,7 @@ class Complex extends DbBaseModel {
         baseString = baseString ?? '',
         baseAddress = baseAddress ?? Address(),
         baseObjectId = baseObjectId ?? ObjectId.fromHexString('000000000000000000000000'),
+        baseJsonWraper = baseJsonWraper ?? DbJsonWraper(),
         listInt = listInt ?? [],
         listDouble = listDouble ?? [],
         listNum = listNum ?? [],
@@ -339,6 +344,7 @@ class Complex extends DbBaseModel {
       baseString: map['baseString'],
       baseAddress: map['baseAddress'] is Map ? Address.fromJson(map['baseAddress']) : map['baseAddress'],
       baseObjectId: map['baseObjectId'] is String ? ObjectId.fromHexString(map['baseObjectId']) : map['baseObjectId'],
+      baseJsonWraper: map['baseJsonWraper'] is Map ? DbJsonWraper.fromJson(map['baseJsonWraper']) : map['baseJsonWraper'],
       listInt: (map['listInt'] as List?)?.map((v) => v as int).toList(),
       listDouble: (map['listDouble'] as List?)?.map((v) => v as double).toList(),
       listNum: (map['listNum'] as List?)?.map((v) => v as num).toList(),
@@ -413,6 +419,7 @@ class Complex extends DbBaseModel {
       'baseString': DbQueryField.convertToBaseType(baseString),
       'baseAddress': DbQueryField.convertToBaseType(baseAddress),
       'baseObjectId': DbQueryField.convertToBaseType(baseObjectId),
+      'baseJsonWraper': DbQueryField.convertToBaseType(baseJsonWraper),
       'listInt': DbQueryField.convertToBaseType(listInt),
       'listDouble': DbQueryField.convertToBaseType(listDouble),
       'listNum': DbQueryField.convertToBaseType(listNum),
@@ -482,6 +489,7 @@ class Complex extends DbBaseModel {
       'baseString': baseString,
       'baseAddress': baseAddress,
       'baseObjectId': baseObjectId,
+      'baseJsonWraper': baseJsonWraper,
       'listInt': listInt,
       'listDouble': listDouble,
       'listNum': listNum,
@@ -551,6 +559,7 @@ class Complex extends DbBaseModel {
     if (map.containsKey('baseString')) baseString = parser.baseString;
     if (map.containsKey('baseAddress')) baseAddress = parser.baseAddress;
     if (map.containsKey('baseObjectId')) baseObjectId = parser.baseObjectId;
+    if (map.containsKey('baseJsonWraper')) baseJsonWraper = parser.baseJsonWraper;
     if (map.containsKey('listInt')) listInt = parser.listInt;
     if (map.containsKey('listDouble')) listDouble = parser.listDouble;
     if (map.containsKey('listNum')) listNum = parser.listNum;
@@ -618,6 +627,7 @@ class Complex extends DbBaseModel {
     if (map.containsKey('baseString')) baseString = map['baseString'];
     if (map.containsKey('baseAddress')) baseAddress = map['baseAddress'];
     if (map.containsKey('baseObjectId')) baseObjectId = map['baseObjectId'];
+    if (map.containsKey('baseJsonWraper')) baseJsonWraper = map['baseJsonWraper'];
     if (map.containsKey('listInt')) listInt = map['listInt'];
     if (map.containsKey('listDouble')) listDouble = map['listDouble'];
     if (map.containsKey('listNum')) listNum = map['listNum'];
@@ -702,6 +712,9 @@ class ComplexDirty {
 
   ///
   set baseObjectId(ObjectId value) => data['baseObjectId'] = DbQueryField.convertToBaseType(value);
+
+  ///
+  set baseJsonWraper(DbJsonWraper value) => data['baseJsonWraper'] = DbQueryField.convertToBaseType(value);
 
   ///
   set listInt(List<int> value) => data['listInt'] = DbQueryField.convertToBaseType(value);
@@ -895,6 +908,9 @@ class ComplexQuery {
 
   ///
   static DbQueryField<ObjectId, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get baseObjectId => DbQueryField('baseObjectId');
+
+  ///
+  static DbQueryField<DbJsonWraper, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get baseJsonWraper => DbQueryField('baseJsonWraper');
 
   ///
   static DbQueryField<List<int>, DBUnsupportNumberOperate, int> get listInt => DbQueryField('listInt');

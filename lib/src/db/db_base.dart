@@ -108,12 +108,26 @@ class DbJsonWraper extends DbBaseModel {
   ///可以直接使用[jsonEncode]进行序列化，可以直接保存到mongo数据库的Map数据
   final Map<String, dynamic> data;
 
-  DbJsonWraper(this.data);
+  DbJsonWraper({Map<String, dynamic>? data}) : data = data ?? {};
 
-  factory DbJsonWraper.fromJson(Map<String, dynamic> map) => DbJsonWraper(map);
+  factory DbJsonWraper.fromString(String data) => DbJsonWraper.fromJson(jsonDecode(data.substring(data.indexOf('(') + 1, data.lastIndexOf(')'))));
+
+  factory DbJsonWraper.fromJson(Map<String, dynamic> map) => DbJsonWraper(data: map);
 
   @override
   Map<String, dynamic> toJson() => data;
+
+  @override
+  void updateByJson(Map<String, dynamic> map) => data.addAll(map);
+
+  @override
+  Map<String, dynamic> toKValues() => data;
+
+  @override
+  void updateByKValues(Map<String, dynamic> map) => data.addAll(map);
+
+  @override
+  String toString() => 'DbJsonWraper(${jsonEncode(toJson())})';
 }
 
 ///

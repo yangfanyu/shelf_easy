@@ -76,6 +76,7 @@ void main() {
       EasyCoderFieldInfo(type: 'String', name: 'baseString', desc: []),
       EasyCoderFieldInfo(type: 'Address', name: 'baseAddress', desc: []),
       EasyCoderFieldInfo(type: 'ObjectId', name: 'baseObjectId', desc: []),
+      EasyCoderFieldInfo(type: 'DbJsonWraper', name: 'baseJsonWraper', desc: []),
       //list
       EasyCoderFieldInfo(type: 'List<int>', name: 'listInt', desc: []),
       EasyCoderFieldInfo(type: 'List<double>', name: 'listDouble', desc: []),
