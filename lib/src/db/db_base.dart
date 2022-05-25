@@ -81,16 +81,6 @@ class DbConfig {
 class DbSession {}
 
 ///
-///JSON数据封装类
-///
-class DbJsonWraper {
-  ///可以直接使用[jsonEncode]进行序列化，可以直接保存到mongo数据库的Map数据
-  final Map<String, dynamic> jsonMap;
-
-  DbJsonWraper(this.jsonMap);
-}
-
-///
 ///基本数据表模型
 ///
 abstract class DbBaseModel {
@@ -109,6 +99,21 @@ abstract class DbBaseModel {
   ///jsonEncode(this)抛出的异常被吃掉了，所以需要写成jsonEncode(toJson())
   @override
   String toString() => '$runtimeType(${jsonEncode(toJson())})';
+}
+
+///
+///JSON数据封装类
+///
+class DbJsonWraper extends DbBaseModel {
+  ///可以直接使用[jsonEncode]进行序列化，可以直接保存到mongo数据库的Map数据
+  final Map<String, dynamic> data;
+
+  DbJsonWraper(this.data);
+
+  factory DbJsonWraper.fromJson(Map<String, dynamic> map) => DbJsonWraper(map);
+
+  @override
+  Map<String, dynamic> toJson() => data;
 }
 
 ///
@@ -588,9 +593,7 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
   ///
   ///经过测试发现：jsonEncode操作Map时只支持以字符串为key，mongo数据库保存Map时只支持以字符串为key
   static dynamic convertToBaseType(dynamic v) {
-    if (v is DbJsonWraper) {
-      return v.jsonMap;
-    } else if (v is Map) {
+    if (v is Map) {
       return v.map((key, value) => MapEntry(key is String ? key : (key is ObjectId ? key.toHexString() : key.toString()), convertToBaseType(value)));
     } else if (v is List) {
       return v.map((value) => convertToBaseType(value)).toList();
