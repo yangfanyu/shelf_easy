@@ -627,6 +627,8 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
 
   String? _group$max;
 
+  String get name => _name;
+
   DbQueryField(this._name) : _cmds = {};
 
   /* **************** 指令操作 ********** */
