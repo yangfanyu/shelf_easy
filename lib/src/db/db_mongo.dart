@@ -203,6 +203,16 @@ class DbMongo implements DbBase {
   }
 
   @override
+  Future<DbResult<T>> aggregate<T extends DbBaseModel>(String table, List<DbPipeline> pipeline, {DbAggregateOptions? aggregateOptions, required T Function(Map<String, dynamic> map) converter}) async {
+    final result = await _db.collection(table).modernAggregate(pipeline.map((e) => e.compile()).toList()).toList();
+    return DbResult(
+      success: true,
+      resultList: result.map((e) => converter(e)).toList(),
+      resultData: result,
+    );
+  }
+
+  @override
   Future<DbResult<int>> count(String table, DbFilter filter, {DbCountOptions? countOptions}) async {
     final result = await _db.collection(table).count(filter.toJson());
     return DbResult(

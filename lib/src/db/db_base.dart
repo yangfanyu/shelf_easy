@@ -34,6 +34,8 @@ abstract class DbBase {
 
   Future<DbResult<T>> findAndUpdate<T extends DbBaseModel>(String table, DbFilter filter, DbUpdate update, {DbFindUpdateOptions? findUpdateOptions, required T Function(Map<String, dynamic> map) converter}) => throw UnimplementedError();
 
+  Future<DbResult<T>> aggregate<T extends DbBaseModel>(String table, List<DbPipeline> pipeline, {DbAggregateOptions? aggregateOptions, required T Function(Map<String, dynamic> map) converter}) => throw UnimplementedError();
+
   Future<DbResult<int>> count(String table, DbFilter filter, {DbCountOptions? countOptions}) => throw UnimplementedError();
 
   Future<DbResult<void>> withTransaction(Future<String> Function(DbSession session) operate, {DbTransactionOptions? transactionOptions, void Function({String? msg, String? warn, String? err})? onmessage}) => throw UnimplementedError();
@@ -288,6 +290,81 @@ class DbUpdate extends DbBaseModel {
 }
 
 ///
+///聚合语句处理
+///
+class DbPipeline extends DbBaseModel {
+  ///过滤操作
+  final DbFilter? $match;
+
+  ///分组操作
+  final Set<DbQueryField>? $group;
+
+  ///计数字段
+  final String? $count;
+
+  ///跳过数量
+  final int? $skip;
+
+  ///返回数量
+  final int? $limit;
+
+  ///排序参数
+  final Set<DbQueryField>? $sort;
+
+  DbPipeline({this.$match, this.$group, this.$count, this.$skip, this.$limit, this.$sort});
+
+  @override
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    if ($match != null) {
+      map['\$match'] = $match?.toJson();
+    }
+    if ($group != null) {
+      final groupIds = <String, dynamic>{};
+      final groupFields = <String, Map<String, dynamic>>{};
+      for (var element in $group!) {
+        if (element._group$id != null) groupIds[element._group$id!] = '\$${element._name}';
+        if (element._group$sum != null) groupFields[element._group$sum!] = {'\$sum': '\$${element._name}'};
+        if (element._group$avg != null) groupFields[element._group$avg!] = {'\$avg': '\$${element._name}'};
+        if (element._group$min != null) groupFields[element._group$min!] = {'\$min': '\$${element._name}'};
+        if (element._group$max != null) groupFields[element._group$max!] = {'\$max': '\$${element._name}'};
+      }
+      if ($count != null) groupFields[$count!] = {'\$sum': 1};
+      if (groupIds.length == 1) {
+        map['\$group'] = {'_id': groupIds.values.first, ...groupFields};
+      } else {
+        map['\$group'] = {'_id': groupIds, ...groupFields};
+      }
+    }
+    if ($skip != null) {
+      map['\$skip'] = $skip;
+    }
+    if ($limit != null) {
+      map['\$limit'] = $limit;
+    }
+    if ($sort != null) {
+      map['\$sort'] = {for (var element in $sort!) element._name: element._value$sort ?? DBUnsupportNullValue('\$sort', element._name)};
+    }
+    return map;
+  }
+
+  Map<String, Object> compile() {
+    final map = toJson();
+    return map.map((key, value) => MapEntry(key, _convertToObject(value)));
+  }
+
+  Object _convertToObject(dynamic v) {
+    if (v is Map) {
+      return v.map((key, value) => MapEntry(key, _convertToObject(value)));
+    } else if (v is List) {
+      return v.map((value) => _convertToObject(value)).toList();
+    } else {
+      return v;
+    }
+  }
+}
+
+///
 ///插入操作选项
 ///
 class DbInsertOptions extends DbBaseModel {
@@ -467,6 +544,21 @@ class DbFindUpdateOptions extends DbBaseModel {
   }
 }
 
+//
+///聚合操作附加选项
+///
+class DbAggregateOptions extends DbBaseModel {
+  //事务会话
+  final DbSession? session;
+
+  DbAggregateOptions({this.session});
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {};
+  }
+}
+
 ///
 ///统计数量附加选项
 ///
@@ -525,7 +617,18 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
 
   int? _value$projection;
 
+  String? _group$id;
+
+  String? _group$sum;
+
+  String? _group$avg;
+
+  String? _group$min;
+
+  String? _group$max;
+
   DbQueryField(this._name) : _cmds = {};
+
   /* **************** 指令操作 ********** */
   ///等于
   void $eq(FD_TYPE value) => _cmds['\$eq'] = convertToBaseType(value);
@@ -600,6 +703,23 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
 
   ///返回结排除该字段
   void exclude() => $projection(0);
+
+  /* **************** 聚合操作 ********** */
+
+  ///将该字段作为分组id
+  void $id({String? asField}) => _group$id = asField ?? _name;
+
+  ///计算该字段的总和值
+  void $sum({String? asField}) => _group$sum = asField ?? _name;
+
+  ///计算该字段的平均值
+  void $avg({String? asField}) => _group$avg = asField ?? _name;
+
+  ///获取该字段的最小值。
+  void $min({String? asField}) => _group$min = asField ?? _name;
+
+  ///获取该字段的最大值。
+  void $max({String? asField}) => _group$max = asField ?? _name;
 
   /* **************** 工具函数 ********** */
 

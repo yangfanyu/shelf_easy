@@ -8,7 +8,8 @@ import 'model/user.dart';
 void main() {
   // testJsonTool();
   // testHelpClass();
-  testDataBase();
+  // testDataBase();
+  testAggregate();
 }
 
 void testJsonTool() {
@@ -471,6 +472,111 @@ void testDataBase() {
     print(User().toJson.hashCode);
     print(DbQueryField.createObjectId());
     print(DbQueryField.hexstr2ObjectId(''));
+    //关闭连接
+    await database.destroy().then((value) => exit(0));
+  });
+  //sigint
+  ProcessSignal.sigint.watch().listen((signal) {
+    database.destroy().then((value) => exit(0));
+  });
+}
+
+void testAggregate() {
+  final database = EasyUniDb(
+    config: EasyUniDbConfig(
+      driver: EasyUniDbDriver.mongo,
+      host: InternetAddress.anyIPv4.host,
+      port: 27017,
+      db: 'shelf',
+      params: {},
+    ),
+  );
+  database.connect().then((value) async {
+    //deleteMany without filter
+    await database.deleteMany(UserQuery.$tableName, DbFilter({}));
+    //insertMany
+    await database.insertMany(UserQuery.$tableName, [
+      User(name: '用户11', age: 11, rmb: 10),
+      User(name: '用户11', age: 11, rmb: 20),
+      User(name: '用户22', age: 22, rmb: 30),
+      User(name: '用户22', age: 22, rmb: 40),
+      User(name: '用户33', age: 33, rmb: 50),
+      User(name: '用户33', age: 33, rmb: 60),
+      User(name: '用户44', age: 44, rmb: 70),
+      User(name: '用户44', age: 44, rmb: 80),
+    ]);
+    //aggregate1
+    await database.aggregate<DbJsonWraper>(
+      UserQuery.$tableName,
+      [
+        DbPipeline(
+          $match: DbFilter({
+            UserQuery.age..$gte(15),
+          }),
+        ),
+        DbPipeline(
+          $group: {
+            UserQuery.age..$id(),
+            UserQuery.rmb..$sum(),
+            UserQuery.age..$sum(asField: 'sumAge'),
+            UserQuery.rmb..$min(asField: 'minRmb'),
+            UserQuery.rmb..$max(asField: 'maxRmb'),
+            UserQuery.rmb..$avg(asField: 'avgRmb'),
+          },
+          $count: 'usercnt',
+        ),
+        DbPipeline(
+          $sort: {
+            UserQuery.id..sortAsc(),
+          },
+        )
+      ],
+      converter: DbJsonWraper.fromJson,
+    );
+    //aggregate2
+    await database.aggregate<DbJsonWraper>(
+      UserQuery.$tableName,
+      [
+        DbPipeline(
+          $match: DbFilter(
+            {
+              // UserQuery.age..$gte(15),
+            },
+            $or: [
+              {
+                UserQuery.age..$eq(11),
+              },
+              {
+                UserQuery.age..$eq(22),
+              },
+              {
+                UserQuery.age..$eq(33),
+              },
+            ],
+          ),
+        ),
+        DbPipeline(
+          $group: {
+            UserQuery.age..$id(),
+            UserQuery.name..$id(asField: 'nick'),
+            UserQuery.rmb..$sum(),
+          },
+          $count: 'usercnt',
+        ),
+        DbPipeline(
+          $sort: {
+            UserQuery.id..sortAsc(),
+          },
+        ),
+        DbPipeline(
+          $skip: 1,
+        ),
+        DbPipeline(
+          $limit: 2,
+        ),
+      ],
+      converter: DbJsonWraper.fromJson,
+    );
     //关闭连接
     await database.destroy().then((value) => exit(0));
   });

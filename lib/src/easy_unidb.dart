@@ -183,6 +183,18 @@ class EasyUniDb extends EasyLogger implements DbBase {
     }
   }
 
+  @override
+  Future<DbResult<T>> aggregate<T extends DbBaseModel>(String table, List<DbPipeline> pipeline, {DbAggregateOptions? aggregateOptions, required T Function(Map<String, dynamic> map) converter}) async {
+    try {
+      final result = await _handle.aggregate(table, pipeline, aggregateOptions: aggregateOptions, converter: converter);
+      logDebug(['aggregate =>', table, pipeline, aggregateOptions, result]);
+      return result;
+    } catch (error, stack) {
+      logError(['aggregate =>', table, pipeline, aggregateOptions, error, '\n', stack]);
+      return DbResult(success: false, message: error.toString());
+    }
+  }
+
   ///统计记录数量
   @override
   Future<DbResult<int>> count(String table, DbFilter filter, {DbCountOptions? countOptions}) async {
