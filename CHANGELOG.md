@@ -1,4 +1,4 @@
-## 1.0.0
+## 1.0.1
 
 - Implement and test core functions.
 
