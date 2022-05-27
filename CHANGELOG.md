@@ -1,6 +1,6 @@
-## 0.0.66
+## 1.0.0
 
-- Test version 0.0.66.
+- Implement and test core functions.
 
 ## 0.0.0
 
