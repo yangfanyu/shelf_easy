@@ -659,6 +659,12 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
   ///查询存在该字段的记录
   void $exists(bool exists) => _cmds['\$exists'] = convertToBaseType(exists);
 
+  ///正则匹配，mongo官方文档：https://www.mongodb.com/docs/v4.4/reference/operator/query/regex/
+  void $match(String pattern, {String? options}) {
+    _cmds['\$regex'] = pattern;
+    if (options != null) _cmds['\$options'] = options;
+  }
+
   /* **************** 赋值操作 ********** */
 
   ///设置 $set 操作的值

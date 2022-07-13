@@ -8,8 +8,8 @@ import 'model/user.dart';
 void main() {
   // testJsonTool();
   // testHelpClass();
-  // testDataBase();
-  testAggregate();
+  testDataBase();
+  // testAggregate();
 }
 
 void testJsonTool() {
@@ -34,6 +34,7 @@ void testHelpClass() {
       DbFilter(
         {
           UserQuery.name..$eq('compare'),
+          UserQuery.pwd..$match('pattern', options: 'i'),
           UserQuery.age
             ..$gte(10)
             ..$lte(20),
@@ -290,6 +291,14 @@ void testDataBase() {
       updateOptions: DbUpdateOptions(
         $upsert: true,
       ),
+    );
+    //findOne with filter match
+    await database.findOne(
+      UserQuery.$tableName,
+      DbFilter({
+        UserQuery.name..$match('4', options: 'i'),
+      }),
+      converter: User.fromJson,
     );
     //findOne without filter
     await database.findOne(
