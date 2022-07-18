@@ -190,9 +190,9 @@ class DbResult<T> extends DbBaseModel {
       'upsertedCount': upsertedCount,
       'deletedCount': deletedCount,
     };
-    if (result != null) map['result'] = DbQueryField.convertToBaseType(result);
-    if (resultList != null) map['resultList'] = DbQueryField.convertToBaseType(resultList);
-    if (resultData != null) map['resultData'] = DbQueryField.convertToBaseType(resultData);
+    if (result != null) map['result'] = DbQueryField.toBaseType(result);
+    if (resultList != null) map['resultList'] = DbQueryField.toBaseType(resultList);
+    if (resultData != null) map['resultData'] = DbQueryField.toBaseType(resultData);
     return map;
   }
 }
@@ -633,31 +633,31 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
 
   /* **************** 指令操作 ********** */
   ///等于
-  void $eq(FD_TYPE value) => _cmds['\$eq'] = convertToBaseType(value);
+  void $eq(FD_TYPE value) => _cmds['\$eq'] = toBaseType(value);
 
   ///不等于
-  void $ne(FD_TYPE value) => _cmds['\$ne'] = convertToBaseType(value);
+  void $ne(FD_TYPE value) => _cmds['\$ne'] = toBaseType(value);
 
   ///大于
-  void $gt(FD_TYPE value) => _cmds['\$gt'] = convertToBaseType(value);
+  void $gt(FD_TYPE value) => _cmds['\$gt'] = toBaseType(value);
 
   ///大于等于
-  void $gte(FD_TYPE value) => _cmds['\$gte'] = convertToBaseType(value);
+  void $gte(FD_TYPE value) => _cmds['\$gte'] = toBaseType(value);
 
   ///小于
-  void $lt(FD_TYPE value) => _cmds['\$lt'] = convertToBaseType(value);
+  void $lt(FD_TYPE value) => _cmds['\$lt'] = toBaseType(value);
 
   ///小于等于
-  void $lte(FD_TYPE value) => _cmds['\$lte'] = convertToBaseType(value);
+  void $lte(FD_TYPE value) => _cmds['\$lte'] = toBaseType(value);
 
   ///匹配数组中任一值
-  void $in(List<FD_TYPE> values) => _cmds['\$in'] = convertToBaseType(values);
+  void $in(List<FD_TYPE> values) => _cmds['\$in'] = toBaseType(values);
 
   ///不匹配数组中的值
-  void $nin(List<FD_TYPE> values) => _cmds['\$nin'] = convertToBaseType(values);
+  void $nin(List<FD_TYPE> values) => _cmds['\$nin'] = toBaseType(values);
 
   ///查询存在该字段的记录
-  void $exists(bool exists) => _cmds['\$exists'] = convertToBaseType(exists);
+  void $exists(bool exists) => _cmds['\$exists'] = toBaseType(exists);
 
   ///正则匹配，mongo官方文档：https://www.mongodb.com/docs/v4.4/reference/operator/query/regex/
   void $match(String pattern, {String? options}) {
@@ -668,31 +668,31 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
   /* **************** 赋值操作 ********** */
 
   ///设置 $set 操作的值
-  void $set(FD_TYPE value) => _value$set = convertToBaseType(value);
+  void $set(FD_TYPE value) => _value$set = toBaseType(value);
 
   ///设置 $inc 操作的值
-  void $inc(NUM_TYPE value) => _value$inc = convertToBaseType(value);
+  void $inc(NUM_TYPE value) => _value$inc = toBaseType(value);
 
   ///设置 $mul 操作的值
-  void $mul(NUM_TYPE value) => _value$mul = convertToBaseType(value);
+  void $mul(NUM_TYPE value) => _value$mul = toBaseType(value);
 
   ///设置 $addToSet 操作的值
-  void $addToSet(ITEM_TYPE value) => _value$addToSet = convertToBaseType(value);
+  void $addToSet(ITEM_TYPE value) => _value$addToSet = toBaseType(value);
 
   ///设置 $push 操作的值
-  void $push(ITEM_TYPE value) => _value$push = convertToBaseType(value);
+  void $push(ITEM_TYPE value) => _value$push = toBaseType(value);
 
   ///设置 $pull 操作的值
-  void $pull(ITEM_TYPE value) => _value$pull = convertToBaseType(value);
+  void $pull(ITEM_TYPE value) => _value$pull = toBaseType(value);
 
   ///设置 $pop 操作的值，1表示最后一个，-1表示第一个
-  void $pop(int value) => _value$pop = convertToBaseType(value);
+  void $pop(int value) => _value$pop = toBaseType(value);
 
   ///设置 $sort 操作的值，1为升序排列，-1是降序排列
-  void $sort(int value) => _value$sort = convertToBaseType(value);
+  void $sort(int value) => _value$sort = toBaseType(value);
 
   ///设置 $projection 操作的值，1为包含该字段，0为排除该字段
-  void $projection(int value) => _value$projection = convertToBaseType(value);
+  void $projection(int value) => _value$projection = toBaseType(value);
 
   ///从该数组字段中移除最后一个成员
   void popLast() => $pop(1);
@@ -734,11 +734,11 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
   ///将复杂类型转换为dart内置的基础类型。转换结果可以直接使用[jsonEncode]进行序列化，可以直接保存到mongo数据库
   ///
   ///经过测试发现：jsonEncode操作Map时只支持以字符串为key，mongo数据库保存Map时只支持以字符串为key
-  static dynamic convertToBaseType(dynamic v) {
+  static dynamic toBaseType(dynamic v) {
     if (v is Map) {
-      return v.map((key, value) => MapEntry(key is String ? key : (key is ObjectId ? key.toHexString() : key.toString()), convertToBaseType(value)));
+      return v.map((key, value) => MapEntry(key is String ? key : (key is ObjectId ? key.toHexString() : key.toString()), toBaseType(value)));
     } else if (v is List) {
-      return v.map((value) => convertToBaseType(value)).toList();
+      return v.map((value) => toBaseType(value)).toList();
     } else if (v is DbBaseModel) {
       return v.toJson();
     } else if (v is ObjectId) {
@@ -746,6 +746,100 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
     } else {
       return v;
     }
+  }
+
+  ///解析int，失败返回0
+  static int parseInt(dynamic v) => tryParseInt(v) ?? 0;
+
+  ///解析double，失败返回0
+  static double parseDouble(dynamic v) => tryParseDouble(v) ?? 0;
+
+  ///解析num，失败返回0
+  static num parseNum(dynamic v) => tryParseNum(v) ?? 0;
+
+  ///解析bool，失败返回false
+  static bool parseBool(dynamic v) => tryParseBool(v) ?? false;
+
+  ///解析String，失败返回''
+  static String parseString(dynamic v) => tryParseString(v) ?? '';
+
+  ///解析ObjectId，失败返回ObjectId('000000000000000000000000')
+  static ObjectId parseObjectId(dynamic v) => tryParseObjectId(v) ?? ObjectId.fromHexString('000000000000000000000000');
+
+  ///解析int，失败返回null
+  static int? tryParseInt(dynamic v) {
+    if (v is int) {
+      return v;
+    } else if (v is double) {
+      return v.toInt();
+    } else if (v is num) {
+      return v.toInt();
+    } else if (v is String) {
+      return int.tryParse(v);
+    }
+    return null;
+  }
+
+  ///解析double，失败返回null
+  static double? tryParseDouble(dynamic v) {
+    if (v is int) {
+      return v.toDouble();
+    } else if (v is double) {
+      return v;
+    } else if (v is num) {
+      return v.toDouble();
+    } else if (v is String) {
+      return double.tryParse(v);
+    }
+    return null;
+  }
+
+  ///解析num，失败返回null
+  static num? tryParseNum(dynamic v) {
+    if (v is int) {
+      return v;
+    } else if (v is double) {
+      return v;
+    } else if (v is num) {
+      return v;
+    } else if (v is String) {
+      return num.tryParse(v);
+    }
+    return null;
+  }
+
+  ///解析bool，失败返回null
+  static bool? tryParseBool(dynamic v) {
+    if (v is bool) {
+      return v;
+    } else if (v is String) {
+      return v == 'true';
+    }
+    return null;
+  }
+
+  ///解析String，失败返回null
+  static String? tryParseString(dynamic v) {
+    if (v is String) {
+      return v;
+    } else if (v != null) {
+      return v.toString();
+    }
+    return null;
+  }
+
+  ///解析ObjectId，失败返回null
+  static ObjectId? tryParseObjectId(dynamic v) {
+    if (v is ObjectId) {
+      return v;
+    } else if (v is String) {
+      try {
+        return ObjectId.fromHexString(v);
+      } catch (error) {
+        return null;
+      }
+    }
+    return null;
   }
 
   ///创建一个新的ObjectId

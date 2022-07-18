@@ -98,17 +98,17 @@ class User extends DbBaseModel {
 
   factory User.fromJson(Map<String, dynamic> map) {
     return User(
-      id: map['_id'] is String ? ObjectId.fromHexString(map['_id']) : map['_id'],
-      name: map['name'],
-      age: map['age'],
-      rmb: map['rmb'],
-      pwd: map['pwd'],
+      id: DbQueryField.tryParseObjectId(map['_id']),
+      name: DbQueryField.tryParseString(map['name']),
+      age: DbQueryField.tryParseInt(map['age']),
+      rmb: DbQueryField.tryParseDouble(map['rmb']),
+      pwd: DbQueryField.tryParseString(map['pwd']),
       address: map['address'] is Map ? Address.fromJson(map['address']) : map['address'],
       addressBak: map['addressBak'] is Map ? Address.fromJson(map['addressBak']) : map['addressBak'],
-      accessList: (map['accessList'] as List?)?.map((v) => v as int).toList(),
+      accessList: (map['accessList'] as List?)?.map((v) => DbQueryField.parseInt(v)).toList(),
       addressList: (map['addressList'] as List?)?.map((v) => Address.fromJson(v)).toList(),
-      friendList: (map['friendList'] as List?)?.map((v) => v is String ? ObjectId.fromHexString(v) : v as ObjectId).toList(),
-      ageObjectIdAddressMap: (map['ageObjectIdAddressMap'] as Map?)?.map((k, v) => MapEntry(int.parse(k), (v as Map).map((k, v) => MapEntry(ObjectId.fromHexString(k), Address.fromJson(v))))),
+      friendList: (map['friendList'] as List?)?.map((v) => DbQueryField.parseObjectId(v)).toList(),
+      ageObjectIdAddressMap: (map['ageObjectIdAddressMap'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseInt(k), (v as Map).map((k, v) => MapEntry(DbQueryField.parseObjectId(k), Address.fromJson(v))))),
     );
   }
 
@@ -120,17 +120,17 @@ class User extends DbBaseModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      '_id': DbQueryField.convertToBaseType(_id),
-      'name': DbQueryField.convertToBaseType(name),
-      'age': DbQueryField.convertToBaseType(age),
-      'rmb': DbQueryField.convertToBaseType(rmb),
-      'pwd': DbQueryField.convertToBaseType(pwd),
-      'address': DbQueryField.convertToBaseType(address),
-      'addressBak': DbQueryField.convertToBaseType(addressBak),
-      'accessList': DbQueryField.convertToBaseType(accessList),
-      'addressList': DbQueryField.convertToBaseType(addressList),
-      'friendList': DbQueryField.convertToBaseType(friendList),
-      'ageObjectIdAddressMap': DbQueryField.convertToBaseType(ageObjectIdAddressMap),
+      '_id': DbQueryField.toBaseType(_id),
+      'name': DbQueryField.toBaseType(name),
+      'age': DbQueryField.toBaseType(age),
+      'rmb': DbQueryField.toBaseType(rmb),
+      'pwd': DbQueryField.toBaseType(pwd),
+      'address': DbQueryField.toBaseType(address),
+      'addressBak': DbQueryField.toBaseType(addressBak),
+      'accessList': DbQueryField.toBaseType(accessList),
+      'addressList': DbQueryField.toBaseType(addressList),
+      'friendList': DbQueryField.toBaseType(friendList),
+      'ageObjectIdAddressMap': DbQueryField.toBaseType(ageObjectIdAddressMap),
     };
   }
 
@@ -189,39 +189,39 @@ class UserDirty {
   ///
   ///标志
   ///
-  set id(ObjectId value) => data['_id'] = DbQueryField.convertToBaseType(value);
+  set id(ObjectId value) => data['_id'] = DbQueryField.toBaseType(value);
 
   ///
   ///姓名
   ///
-  set name(String value) => data['name'] = DbQueryField.convertToBaseType(value);
+  set name(String value) => data['name'] = DbQueryField.toBaseType(value);
 
   ///年龄
-  set age(int value) => data['age'] = DbQueryField.convertToBaseType(value);
+  set age(int value) => data['age'] = DbQueryField.toBaseType(value);
 
   ///RMB
-  set rmb(double value) => data['rmb'] = DbQueryField.convertToBaseType(value);
+  set rmb(double value) => data['rmb'] = DbQueryField.toBaseType(value);
 
   ///密码
-  set pwd(String value) => data['pwd'] = DbQueryField.convertToBaseType(value);
+  set pwd(String value) => data['pwd'] = DbQueryField.toBaseType(value);
 
   ///归属地址
-  set address(Address value) => data['address'] = DbQueryField.convertToBaseType(value);
+  set address(Address value) => data['address'] = DbQueryField.toBaseType(value);
 
   ///备用地址
-  set addressBak(Address value) => data['addressBak'] = DbQueryField.convertToBaseType(value);
+  set addressBak(Address value) => data['addressBak'] = DbQueryField.toBaseType(value);
 
   ///权限列表
-  set accessList(List<int> value) => data['accessList'] = DbQueryField.convertToBaseType(value);
+  set accessList(List<int> value) => data['accessList'] = DbQueryField.toBaseType(value);
 
   ///通讯地址
-  set addressList(List<Address> value) => data['addressList'] = DbQueryField.convertToBaseType(value);
+  set addressList(List<Address> value) => data['addressList'] = DbQueryField.toBaseType(value);
 
   ///好友id列表
-  set friendList(List<ObjectId> value) => data['friendList'] = DbQueryField.convertToBaseType(value);
+  set friendList(List<ObjectId> value) => data['friendList'] = DbQueryField.toBaseType(value);
 
   ///测试复杂类型
-  set ageObjectIdAddressMap(Map<int, Map<ObjectId, Address>> value) => data['ageObjectIdAddressMap'] = DbQueryField.convertToBaseType(value);
+  set ageObjectIdAddressMap(Map<int, Map<ObjectId, Address>> value) => data['ageObjectIdAddressMap'] = DbQueryField.toBaseType(value);
 }
 
 class UserQuery {

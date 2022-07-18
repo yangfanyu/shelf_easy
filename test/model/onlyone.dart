@@ -17,7 +17,7 @@ class OnlyOne extends DbBaseModel {
 
   factory OnlyOne.fromJson(Map<String, dynamic> map) {
     return OnlyOne(
-      test1: map['test1'],
+      test1: DbQueryField.tryParseString(map['test1']),
     );
   }
 
@@ -29,7 +29,7 @@ class OnlyOne extends DbBaseModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'test1': DbQueryField.convertToBaseType(test1),
+      'test1': DbQueryField.toBaseType(test1),
     };
   }
 
@@ -56,7 +56,7 @@ class OnlyOneDirty {
   final Map<String, dynamic> data = {};
 
   ///
-  set test1(String value) => data['test1'] = DbQueryField.convertToBaseType(value);
+  set test1(String value) => data['test1'] = DbQueryField.toBaseType(value);
 }
 
 class OnlyOneQuery {

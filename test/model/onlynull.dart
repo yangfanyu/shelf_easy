@@ -21,8 +21,8 @@ class OnlyNull extends DbBaseModel {
 
   factory OnlyNull.fromJson(Map<String, dynamic> map) {
     return OnlyNull(
-      test1: map['test1'],
-      test2: map['test2'],
+      test1: DbQueryField.tryParseString(map['test1']),
+      test2: DbQueryField.tryParseString(map['test2']),
     );
   }
 
@@ -34,8 +34,8 @@ class OnlyNull extends DbBaseModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'test1': DbQueryField.convertToBaseType(test1),
-      'test2': DbQueryField.convertToBaseType(test2),
+      'test1': DbQueryField.toBaseType(test1),
+      'test2': DbQueryField.toBaseType(test2),
     };
   }
 
@@ -65,10 +65,10 @@ class OnlyNullDirty {
   final Map<String, dynamic> data = {};
 
   ///
-  set test1(String value) => data['test1'] = DbQueryField.convertToBaseType(value);
+  set test1(String value) => data['test1'] = DbQueryField.toBaseType(value);
 
   ///
-  set test2(String value) => data['test2'] = DbQueryField.convertToBaseType(value);
+  set test2(String value) => data['test2'] = DbQueryField.toBaseType(value);
 }
 
 class OnlyNullQuery {

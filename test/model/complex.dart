@@ -336,70 +336,70 @@ class Complex extends DbBaseModel {
 
   factory Complex.fromJson(Map<String, dynamic> map) {
     return Complex(
-      id: map['_id'] is String ? ObjectId.fromHexString(map['_id']) : map['_id'],
-      baseInt: map['baseInt'],
-      baseDouble: map['baseDouble'],
-      baseNum: map['baseNum'],
-      baseBool: map['baseBool'],
-      baseString: map['baseString'],
+      id: DbQueryField.tryParseObjectId(map['_id']),
+      baseInt: DbQueryField.tryParseInt(map['baseInt']),
+      baseDouble: DbQueryField.tryParseDouble(map['baseDouble']),
+      baseNum: DbQueryField.tryParseNum(map['baseNum']),
+      baseBool: DbQueryField.tryParseBool(map['baseBool']),
+      baseString: DbQueryField.tryParseString(map['baseString']),
       baseAddress: map['baseAddress'] is Map ? Address.fromJson(map['baseAddress']) : map['baseAddress'],
-      baseObjectId: map['baseObjectId'] is String ? ObjectId.fromHexString(map['baseObjectId']) : map['baseObjectId'],
+      baseObjectId: DbQueryField.tryParseObjectId(map['baseObjectId']),
       baseJsonWraper: map['baseJsonWraper'] is Map ? DbJsonWraper.fromJson(map['baseJsonWraper']) : map['baseJsonWraper'],
-      listInt: (map['listInt'] as List?)?.map((v) => v as int).toList(),
-      listDouble: (map['listDouble'] as List?)?.map((v) => v as double).toList(),
-      listNum: (map['listNum'] as List?)?.map((v) => v as num).toList(),
-      listBool: (map['listBool'] as List?)?.map((v) => v as bool).toList(),
-      listString: (map['listString'] as List?)?.map((v) => v as String).toList(),
+      listInt: (map['listInt'] as List?)?.map((v) => DbQueryField.parseInt(v)).toList(),
+      listDouble: (map['listDouble'] as List?)?.map((v) => DbQueryField.parseDouble(v)).toList(),
+      listNum: (map['listNum'] as List?)?.map((v) => DbQueryField.parseNum(v)).toList(),
+      listBool: (map['listBool'] as List?)?.map((v) => DbQueryField.parseBool(v)).toList(),
+      listString: (map['listString'] as List?)?.map((v) => DbQueryField.parseString(v)).toList(),
       listAddress: (map['listAddress'] as List?)?.map((v) => Address.fromJson(v)).toList(),
-      listObjectId: (map['listObjectId'] as List?)?.map((v) => v is String ? ObjectId.fromHexString(v) : v as ObjectId).toList(),
-      mapInt: (map['mapInt'] as Map?)?.map((k, v) => MapEntry(k as String, v as int)),
-      mapDouble: (map['mapDouble'] as Map?)?.map((k, v) => MapEntry(k as String, v as double)),
-      mapNum: (map['mapNum'] as Map?)?.map((k, v) => MapEntry(k as String, v as num)),
-      mapBool: (map['mapBool'] as Map?)?.map((k, v) => MapEntry(k as String, v as bool)),
-      mapString: (map['mapString'] as Map?)?.map((k, v) => MapEntry(k as String, v as String)),
-      mapAddress: (map['mapAddress'] as Map?)?.map((k, v) => MapEntry(k as String, Address.fromJson(v))),
-      mapObjectId: (map['mapObjectId'] as Map?)?.map((k, v) => MapEntry(k as String, v is String ? ObjectId.fromHexString(v) : v as ObjectId)),
-      map2Int: (map['map2Int'] as Map?)?.map((k, v) => MapEntry(int.parse(k), v as int)),
-      map2Double: (map['map2Double'] as Map?)?.map((k, v) => MapEntry(int.parse(k), v as double)),
-      map2Num: (map['map2Num'] as Map?)?.map((k, v) => MapEntry(int.parse(k), v as num)),
-      map2Bool: (map['map2Bool'] as Map?)?.map((k, v) => MapEntry(int.parse(k), v as bool)),
-      map2String: (map['map2String'] as Map?)?.map((k, v) => MapEntry(int.parse(k), v as String)),
-      map2Address: (map['map2Address'] as Map?)?.map((k, v) => MapEntry(int.parse(k), Address.fromJson(v))),
-      map2ObjectId: (map['map2ObjectId'] as Map?)?.map((k, v) => MapEntry(int.parse(k), v is String ? ObjectId.fromHexString(v) : v as ObjectId)),
-      map3Int: (map['map3Int'] as Map?)?.map((k, v) => MapEntry(double.parse(k), v as int)),
-      map3Double: (map['map3Double'] as Map?)?.map((k, v) => MapEntry(double.parse(k), v as double)),
-      map3Num: (map['map3Num'] as Map?)?.map((k, v) => MapEntry(double.parse(k), v as num)),
-      map3Bool: (map['map3Bool'] as Map?)?.map((k, v) => MapEntry(double.parse(k), v as bool)),
-      map3String: (map['map3String'] as Map?)?.map((k, v) => MapEntry(double.parse(k), v as String)),
-      map3Address: (map['map3Address'] as Map?)?.map((k, v) => MapEntry(double.parse(k), Address.fromJson(v))),
-      map3ObjectId: (map['map3ObjectId'] as Map?)?.map((k, v) => MapEntry(double.parse(k), v is String ? ObjectId.fromHexString(v) : v as ObjectId)),
-      map4Int: (map['map4Int'] as Map?)?.map((k, v) => MapEntry(k == 'true', v as int)),
-      map4Double: (map['map4Double'] as Map?)?.map((k, v) => MapEntry(k == 'true', v as double)),
-      map4Num: (map['map4Num'] as Map?)?.map((k, v) => MapEntry(k == 'true', v as num)),
-      map4Bool: (map['map4Bool'] as Map?)?.map((k, v) => MapEntry(k == 'true', v as bool)),
-      map4String: (map['map4String'] as Map?)?.map((k, v) => MapEntry(k == 'true', v as String)),
-      map4Address: (map['map4Address'] as Map?)?.map((k, v) => MapEntry(k == 'true', Address.fromJson(v))),
-      map4ObjectId: (map['map4ObjectId'] as Map?)?.map((k, v) => MapEntry(k == 'true', v is String ? ObjectId.fromHexString(v) : v as ObjectId)),
-      map5Int: (map['map5Int'] as Map?)?.map((k, v) => MapEntry(ObjectId.fromHexString(k), v as int)),
-      map5Double: (map['map5Double'] as Map?)?.map((k, v) => MapEntry(ObjectId.fromHexString(k), v as double)),
-      map5Num: (map['map5Num'] as Map?)?.map((k, v) => MapEntry(ObjectId.fromHexString(k), v as num)),
-      map5Bool: (map['map5Bool'] as Map?)?.map((k, v) => MapEntry(ObjectId.fromHexString(k), v as bool)),
-      map5String: (map['map5String'] as Map?)?.map((k, v) => MapEntry(ObjectId.fromHexString(k), v as String)),
-      map5Address: (map['map5Address'] as Map?)?.map((k, v) => MapEntry(ObjectId.fromHexString(k), Address.fromJson(v))),
-      map5ObjectId: (map['map5ObjectId'] as Map?)?.map((k, v) => MapEntry(ObjectId.fromHexString(k), v is String ? ObjectId.fromHexString(v) : v as ObjectId)),
-      map6Int: (map['map6Int'] as Map?)?.map((k, v) => MapEntry(Address.fromString(k), v as int)),
-      map6Double: (map['map6Double'] as Map?)?.map((k, v) => MapEntry(Address.fromString(k), v as double)),
-      map6Num: (map['map6Num'] as Map?)?.map((k, v) => MapEntry(Address.fromString(k), v as num)),
-      map6Bool: (map['map6Bool'] as Map?)?.map((k, v) => MapEntry(Address.fromString(k), v as bool)),
-      map6String: (map['map6String'] as Map?)?.map((k, v) => MapEntry(Address.fromString(k), v as String)),
+      listObjectId: (map['listObjectId'] as List?)?.map((v) => DbQueryField.parseObjectId(v)).toList(),
+      mapInt: (map['mapInt'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseString(k), DbQueryField.parseInt(v))),
+      mapDouble: (map['mapDouble'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseString(k), DbQueryField.parseDouble(v))),
+      mapNum: (map['mapNum'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseString(k), DbQueryField.parseNum(v))),
+      mapBool: (map['mapBool'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseString(k), DbQueryField.parseBool(v))),
+      mapString: (map['mapString'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseString(k), DbQueryField.parseString(v))),
+      mapAddress: (map['mapAddress'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseString(k), Address.fromJson(v))),
+      mapObjectId: (map['mapObjectId'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseString(k), DbQueryField.parseObjectId(v))),
+      map2Int: (map['map2Int'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseInt(k), DbQueryField.parseInt(v))),
+      map2Double: (map['map2Double'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseInt(k), DbQueryField.parseDouble(v))),
+      map2Num: (map['map2Num'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseInt(k), DbQueryField.parseNum(v))),
+      map2Bool: (map['map2Bool'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseInt(k), DbQueryField.parseBool(v))),
+      map2String: (map['map2String'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseInt(k), DbQueryField.parseString(v))),
+      map2Address: (map['map2Address'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseInt(k), Address.fromJson(v))),
+      map2ObjectId: (map['map2ObjectId'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseInt(k), DbQueryField.parseObjectId(v))),
+      map3Int: (map['map3Int'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseDouble(k), DbQueryField.parseInt(v))),
+      map3Double: (map['map3Double'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseDouble(k), DbQueryField.parseDouble(v))),
+      map3Num: (map['map3Num'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseDouble(k), DbQueryField.parseNum(v))),
+      map3Bool: (map['map3Bool'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseDouble(k), DbQueryField.parseBool(v))),
+      map3String: (map['map3String'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseDouble(k), DbQueryField.parseString(v))),
+      map3Address: (map['map3Address'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseDouble(k), Address.fromJson(v))),
+      map3ObjectId: (map['map3ObjectId'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseDouble(k), DbQueryField.parseObjectId(v))),
+      map4Int: (map['map4Int'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseBool(k), DbQueryField.parseInt(v))),
+      map4Double: (map['map4Double'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseBool(k), DbQueryField.parseDouble(v))),
+      map4Num: (map['map4Num'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseBool(k), DbQueryField.parseNum(v))),
+      map4Bool: (map['map4Bool'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseBool(k), DbQueryField.parseBool(v))),
+      map4String: (map['map4String'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseBool(k), DbQueryField.parseString(v))),
+      map4Address: (map['map4Address'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseBool(k), Address.fromJson(v))),
+      map4ObjectId: (map['map4ObjectId'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseBool(k), DbQueryField.parseObjectId(v))),
+      map5Int: (map['map5Int'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseObjectId(k), DbQueryField.parseInt(v))),
+      map5Double: (map['map5Double'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseObjectId(k), DbQueryField.parseDouble(v))),
+      map5Num: (map['map5Num'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseObjectId(k), DbQueryField.parseNum(v))),
+      map5Bool: (map['map5Bool'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseObjectId(k), DbQueryField.parseBool(v))),
+      map5String: (map['map5String'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseObjectId(k), DbQueryField.parseString(v))),
+      map5Address: (map['map5Address'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseObjectId(k), Address.fromJson(v))),
+      map5ObjectId: (map['map5ObjectId'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseObjectId(k), DbQueryField.parseObjectId(v))),
+      map6Int: (map['map6Int'] as Map?)?.map((k, v) => MapEntry(Address.fromString(k), DbQueryField.parseInt(v))),
+      map6Double: (map['map6Double'] as Map?)?.map((k, v) => MapEntry(Address.fromString(k), DbQueryField.parseDouble(v))),
+      map6Num: (map['map6Num'] as Map?)?.map((k, v) => MapEntry(Address.fromString(k), DbQueryField.parseNum(v))),
+      map6Bool: (map['map6Bool'] as Map?)?.map((k, v) => MapEntry(Address.fromString(k), DbQueryField.parseBool(v))),
+      map6String: (map['map6String'] as Map?)?.map((k, v) => MapEntry(Address.fromString(k), DbQueryField.parseString(v))),
       map6Address: (map['map6Address'] as Map?)?.map((k, v) => MapEntry(Address.fromString(k), Address.fromJson(v))),
-      map6ObjectId: (map['map6ObjectId'] as Map?)?.map((k, v) => MapEntry(Address.fromString(k), v is String ? ObjectId.fromHexString(v) : v as ObjectId)),
-      listListMapMapListMapDouble: (map['listListMapMapListMapDouble'] as List?)?.map((v) => (v as List).map((v) => (v as Map).map((k, v) => MapEntry(k as String, (v as Map).map((k, v) => MapEntry(k as String, (v as List).map((v) => (v as Map).map((k, v) => MapEntry(k as String, v as double))).toList()))))).toList()).toList(),
-      listListMapMapListMapAddress: (map['listListMapMapListMapAddress'] as List?)?.map((v) => (v as List).map((v) => (v as Map).map((k, v) => MapEntry(k as String, (v as Map).map((k, v) => MapEntry(k as String, (v as List).map((v) => (v as Map).map((k, v) => MapEntry(k as String, Address.fromJson(v)))).toList()))))).toList()).toList(),
-      listListMapMapListMapObjectId: (map['listListMapMapListMapObjectId'] as List?)?.map((v) => (v as List).map((v) => (v as Map).map((k, v) => MapEntry(k as String, (v as Map).map((k, v) => MapEntry(k as String, (v as List).map((v) => (v as Map).map((k, v) => MapEntry(k as String, v is String ? ObjectId.fromHexString(v) : v as ObjectId))).toList()))))).toList()).toList(),
-      mapMapListListMapListDouble: (map['mapMapListListMapListDouble'] as Map?)?.map((k, v) => MapEntry(k as String, (v as Map).map((k, v) => MapEntry(k as String, (v as List).map((v) => (v as List).map((v) => (v as Map).map((k, v) => MapEntry(k as String, (v as List).map((v) => v as double).toList()))).toList()).toList())))),
-      mapMapListListMapListAddress: (map['mapMapListListMapListAddress'] as Map?)?.map((k, v) => MapEntry(k as String, (v as Map).map((k, v) => MapEntry(k as String, (v as List).map((v) => (v as List).map((v) => (v as Map).map((k, v) => MapEntry(k as String, (v as List).map((v) => Address.fromJson(v)).toList()))).toList()).toList())))),
-      mapMapListListMapListObjectId: (map['mapMapListListMapListObjectId'] as Map?)?.map((k, v) => MapEntry(k as String, (v as Map).map((k, v) => MapEntry(k as String, (v as List).map((v) => (v as List).map((v) => (v as Map).map((k, v) => MapEntry(k as String, (v as List).map((v) => v is String ? ObjectId.fromHexString(v) : v as ObjectId).toList()))).toList()).toList())))),
+      map6ObjectId: (map['map6ObjectId'] as Map?)?.map((k, v) => MapEntry(Address.fromString(k), DbQueryField.parseObjectId(v))),
+      listListMapMapListMapDouble: (map['listListMapMapListMapDouble'] as List?)?.map((v) => (v as List).map((v) => (v as Map).map((k, v) => MapEntry(DbQueryField.parseString(k), (v as Map).map((k, v) => MapEntry(DbQueryField.parseString(k), (v as List).map((v) => (v as Map).map((k, v) => MapEntry(DbQueryField.parseString(k), DbQueryField.parseDouble(v)))).toList()))))).toList()).toList(),
+      listListMapMapListMapAddress: (map['listListMapMapListMapAddress'] as List?)?.map((v) => (v as List).map((v) => (v as Map).map((k, v) => MapEntry(DbQueryField.parseString(k), (v as Map).map((k, v) => MapEntry(DbQueryField.parseString(k), (v as List).map((v) => (v as Map).map((k, v) => MapEntry(DbQueryField.parseString(k), Address.fromJson(v)))).toList()))))).toList()).toList(),
+      listListMapMapListMapObjectId: (map['listListMapMapListMapObjectId'] as List?)?.map((v) => (v as List).map((v) => (v as Map).map((k, v) => MapEntry(DbQueryField.parseString(k), (v as Map).map((k, v) => MapEntry(DbQueryField.parseString(k), (v as List).map((v) => (v as Map).map((k, v) => MapEntry(DbQueryField.parseString(k), DbQueryField.parseObjectId(v)))).toList()))))).toList()).toList(),
+      mapMapListListMapListDouble: (map['mapMapListListMapListDouble'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseString(k), (v as Map).map((k, v) => MapEntry(DbQueryField.parseString(k), (v as List).map((v) => (v as List).map((v) => (v as Map).map((k, v) => MapEntry(DbQueryField.parseString(k), (v as List).map((v) => DbQueryField.parseDouble(v)).toList()))).toList()).toList())))),
+      mapMapListListMapListAddress: (map['mapMapListListMapListAddress'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseString(k), (v as Map).map((k, v) => MapEntry(DbQueryField.parseString(k), (v as List).map((v) => (v as List).map((v) => (v as Map).map((k, v) => MapEntry(DbQueryField.parseString(k), (v as List).map((v) => Address.fromJson(v)).toList()))).toList()).toList())))),
+      mapMapListListMapListObjectId: (map['mapMapListListMapListObjectId'] as Map?)?.map((k, v) => MapEntry(DbQueryField.parseString(k), (v as Map).map((k, v) => MapEntry(DbQueryField.parseString(k), (v as List).map((v) => (v as List).map((v) => (v as Map).map((k, v) => MapEntry(DbQueryField.parseString(k), (v as List).map((v) => DbQueryField.parseObjectId(v)).toList()))).toList()).toList())))),
     );
   }
 
@@ -411,70 +411,70 @@ class Complex extends DbBaseModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      '_id': DbQueryField.convertToBaseType(_id),
-      'baseInt': DbQueryField.convertToBaseType(baseInt),
-      'baseDouble': DbQueryField.convertToBaseType(baseDouble),
-      'baseNum': DbQueryField.convertToBaseType(baseNum),
-      'baseBool': DbQueryField.convertToBaseType(baseBool),
-      'baseString': DbQueryField.convertToBaseType(baseString),
-      'baseAddress': DbQueryField.convertToBaseType(baseAddress),
-      'baseObjectId': DbQueryField.convertToBaseType(baseObjectId),
-      'baseJsonWraper': DbQueryField.convertToBaseType(baseJsonWraper),
-      'listInt': DbQueryField.convertToBaseType(listInt),
-      'listDouble': DbQueryField.convertToBaseType(listDouble),
-      'listNum': DbQueryField.convertToBaseType(listNum),
-      'listBool': DbQueryField.convertToBaseType(listBool),
-      'listString': DbQueryField.convertToBaseType(listString),
-      'listAddress': DbQueryField.convertToBaseType(listAddress),
-      'listObjectId': DbQueryField.convertToBaseType(listObjectId),
-      'mapInt': DbQueryField.convertToBaseType(mapInt),
-      'mapDouble': DbQueryField.convertToBaseType(mapDouble),
-      'mapNum': DbQueryField.convertToBaseType(mapNum),
-      'mapBool': DbQueryField.convertToBaseType(mapBool),
-      'mapString': DbQueryField.convertToBaseType(mapString),
-      'mapAddress': DbQueryField.convertToBaseType(mapAddress),
-      'mapObjectId': DbQueryField.convertToBaseType(mapObjectId),
-      'map2Int': DbQueryField.convertToBaseType(map2Int),
-      'map2Double': DbQueryField.convertToBaseType(map2Double),
-      'map2Num': DbQueryField.convertToBaseType(map2Num),
-      'map2Bool': DbQueryField.convertToBaseType(map2Bool),
-      'map2String': DbQueryField.convertToBaseType(map2String),
-      'map2Address': DbQueryField.convertToBaseType(map2Address),
-      'map2ObjectId': DbQueryField.convertToBaseType(map2ObjectId),
-      'map3Int': DbQueryField.convertToBaseType(map3Int),
-      'map3Double': DbQueryField.convertToBaseType(map3Double),
-      'map3Num': DbQueryField.convertToBaseType(map3Num),
-      'map3Bool': DbQueryField.convertToBaseType(map3Bool),
-      'map3String': DbQueryField.convertToBaseType(map3String),
-      'map3Address': DbQueryField.convertToBaseType(map3Address),
-      'map3ObjectId': DbQueryField.convertToBaseType(map3ObjectId),
-      'map4Int': DbQueryField.convertToBaseType(map4Int),
-      'map4Double': DbQueryField.convertToBaseType(map4Double),
-      'map4Num': DbQueryField.convertToBaseType(map4Num),
-      'map4Bool': DbQueryField.convertToBaseType(map4Bool),
-      'map4String': DbQueryField.convertToBaseType(map4String),
-      'map4Address': DbQueryField.convertToBaseType(map4Address),
-      'map4ObjectId': DbQueryField.convertToBaseType(map4ObjectId),
-      'map5Int': DbQueryField.convertToBaseType(map5Int),
-      'map5Double': DbQueryField.convertToBaseType(map5Double),
-      'map5Num': DbQueryField.convertToBaseType(map5Num),
-      'map5Bool': DbQueryField.convertToBaseType(map5Bool),
-      'map5String': DbQueryField.convertToBaseType(map5String),
-      'map5Address': DbQueryField.convertToBaseType(map5Address),
-      'map5ObjectId': DbQueryField.convertToBaseType(map5ObjectId),
-      'map6Int': DbQueryField.convertToBaseType(map6Int),
-      'map6Double': DbQueryField.convertToBaseType(map6Double),
-      'map6Num': DbQueryField.convertToBaseType(map6Num),
-      'map6Bool': DbQueryField.convertToBaseType(map6Bool),
-      'map6String': DbQueryField.convertToBaseType(map6String),
-      'map6Address': DbQueryField.convertToBaseType(map6Address),
-      'map6ObjectId': DbQueryField.convertToBaseType(map6ObjectId),
-      'listListMapMapListMapDouble': DbQueryField.convertToBaseType(listListMapMapListMapDouble),
-      'listListMapMapListMapAddress': DbQueryField.convertToBaseType(listListMapMapListMapAddress),
-      'listListMapMapListMapObjectId': DbQueryField.convertToBaseType(listListMapMapListMapObjectId),
-      'mapMapListListMapListDouble': DbQueryField.convertToBaseType(mapMapListListMapListDouble),
-      'mapMapListListMapListAddress': DbQueryField.convertToBaseType(mapMapListListMapListAddress),
-      'mapMapListListMapListObjectId': DbQueryField.convertToBaseType(mapMapListListMapListObjectId),
+      '_id': DbQueryField.toBaseType(_id),
+      'baseInt': DbQueryField.toBaseType(baseInt),
+      'baseDouble': DbQueryField.toBaseType(baseDouble),
+      'baseNum': DbQueryField.toBaseType(baseNum),
+      'baseBool': DbQueryField.toBaseType(baseBool),
+      'baseString': DbQueryField.toBaseType(baseString),
+      'baseAddress': DbQueryField.toBaseType(baseAddress),
+      'baseObjectId': DbQueryField.toBaseType(baseObjectId),
+      'baseJsonWraper': DbQueryField.toBaseType(baseJsonWraper),
+      'listInt': DbQueryField.toBaseType(listInt),
+      'listDouble': DbQueryField.toBaseType(listDouble),
+      'listNum': DbQueryField.toBaseType(listNum),
+      'listBool': DbQueryField.toBaseType(listBool),
+      'listString': DbQueryField.toBaseType(listString),
+      'listAddress': DbQueryField.toBaseType(listAddress),
+      'listObjectId': DbQueryField.toBaseType(listObjectId),
+      'mapInt': DbQueryField.toBaseType(mapInt),
+      'mapDouble': DbQueryField.toBaseType(mapDouble),
+      'mapNum': DbQueryField.toBaseType(mapNum),
+      'mapBool': DbQueryField.toBaseType(mapBool),
+      'mapString': DbQueryField.toBaseType(mapString),
+      'mapAddress': DbQueryField.toBaseType(mapAddress),
+      'mapObjectId': DbQueryField.toBaseType(mapObjectId),
+      'map2Int': DbQueryField.toBaseType(map2Int),
+      'map2Double': DbQueryField.toBaseType(map2Double),
+      'map2Num': DbQueryField.toBaseType(map2Num),
+      'map2Bool': DbQueryField.toBaseType(map2Bool),
+      'map2String': DbQueryField.toBaseType(map2String),
+      'map2Address': DbQueryField.toBaseType(map2Address),
+      'map2ObjectId': DbQueryField.toBaseType(map2ObjectId),
+      'map3Int': DbQueryField.toBaseType(map3Int),
+      'map3Double': DbQueryField.toBaseType(map3Double),
+      'map3Num': DbQueryField.toBaseType(map3Num),
+      'map3Bool': DbQueryField.toBaseType(map3Bool),
+      'map3String': DbQueryField.toBaseType(map3String),
+      'map3Address': DbQueryField.toBaseType(map3Address),
+      'map3ObjectId': DbQueryField.toBaseType(map3ObjectId),
+      'map4Int': DbQueryField.toBaseType(map4Int),
+      'map4Double': DbQueryField.toBaseType(map4Double),
+      'map4Num': DbQueryField.toBaseType(map4Num),
+      'map4Bool': DbQueryField.toBaseType(map4Bool),
+      'map4String': DbQueryField.toBaseType(map4String),
+      'map4Address': DbQueryField.toBaseType(map4Address),
+      'map4ObjectId': DbQueryField.toBaseType(map4ObjectId),
+      'map5Int': DbQueryField.toBaseType(map5Int),
+      'map5Double': DbQueryField.toBaseType(map5Double),
+      'map5Num': DbQueryField.toBaseType(map5Num),
+      'map5Bool': DbQueryField.toBaseType(map5Bool),
+      'map5String': DbQueryField.toBaseType(map5String),
+      'map5Address': DbQueryField.toBaseType(map5Address),
+      'map5ObjectId': DbQueryField.toBaseType(map5ObjectId),
+      'map6Int': DbQueryField.toBaseType(map6Int),
+      'map6Double': DbQueryField.toBaseType(map6Double),
+      'map6Num': DbQueryField.toBaseType(map6Num),
+      'map6Bool': DbQueryField.toBaseType(map6Bool),
+      'map6String': DbQueryField.toBaseType(map6String),
+      'map6Address': DbQueryField.toBaseType(map6Address),
+      'map6ObjectId': DbQueryField.toBaseType(map6ObjectId),
+      'listListMapMapListMapDouble': DbQueryField.toBaseType(listListMapMapListMapDouble),
+      'listListMapMapListMapAddress': DbQueryField.toBaseType(listListMapMapListMapAddress),
+      'listListMapMapListMapObjectId': DbQueryField.toBaseType(listListMapMapListMapObjectId),
+      'mapMapListListMapListDouble': DbQueryField.toBaseType(mapMapListListMapListDouble),
+      'mapMapListListMapListAddress': DbQueryField.toBaseType(mapMapListListMapListAddress),
+      'mapMapListListMapListObjectId': DbQueryField.toBaseType(mapMapListListMapListObjectId),
     };
   }
 
@@ -690,196 +690,196 @@ class ComplexDirty {
   final Map<String, dynamic> data = {};
 
   ///
-  set id(ObjectId value) => data['_id'] = DbQueryField.convertToBaseType(value);
+  set id(ObjectId value) => data['_id'] = DbQueryField.toBaseType(value);
 
   ///
-  set baseInt(int value) => data['baseInt'] = DbQueryField.convertToBaseType(value);
+  set baseInt(int value) => data['baseInt'] = DbQueryField.toBaseType(value);
 
   ///
-  set baseDouble(double value) => data['baseDouble'] = DbQueryField.convertToBaseType(value);
+  set baseDouble(double value) => data['baseDouble'] = DbQueryField.toBaseType(value);
 
   ///
-  set baseNum(num value) => data['baseNum'] = DbQueryField.convertToBaseType(value);
+  set baseNum(num value) => data['baseNum'] = DbQueryField.toBaseType(value);
 
   ///
-  set baseBool(bool value) => data['baseBool'] = DbQueryField.convertToBaseType(value);
+  set baseBool(bool value) => data['baseBool'] = DbQueryField.toBaseType(value);
 
   ///
-  set baseString(String value) => data['baseString'] = DbQueryField.convertToBaseType(value);
+  set baseString(String value) => data['baseString'] = DbQueryField.toBaseType(value);
 
   ///
-  set baseAddress(Address value) => data['baseAddress'] = DbQueryField.convertToBaseType(value);
+  set baseAddress(Address value) => data['baseAddress'] = DbQueryField.toBaseType(value);
 
   ///
-  set baseObjectId(ObjectId value) => data['baseObjectId'] = DbQueryField.convertToBaseType(value);
+  set baseObjectId(ObjectId value) => data['baseObjectId'] = DbQueryField.toBaseType(value);
 
   ///
-  set baseJsonWraper(DbJsonWraper value) => data['baseJsonWraper'] = DbQueryField.convertToBaseType(value);
+  set baseJsonWraper(DbJsonWraper value) => data['baseJsonWraper'] = DbQueryField.toBaseType(value);
 
   ///
-  set listInt(List<int> value) => data['listInt'] = DbQueryField.convertToBaseType(value);
+  set listInt(List<int> value) => data['listInt'] = DbQueryField.toBaseType(value);
 
   ///
-  set listDouble(List<double> value) => data['listDouble'] = DbQueryField.convertToBaseType(value);
+  set listDouble(List<double> value) => data['listDouble'] = DbQueryField.toBaseType(value);
 
   ///
-  set listNum(List<num> value) => data['listNum'] = DbQueryField.convertToBaseType(value);
+  set listNum(List<num> value) => data['listNum'] = DbQueryField.toBaseType(value);
 
   ///
-  set listBool(List<bool> value) => data['listBool'] = DbQueryField.convertToBaseType(value);
+  set listBool(List<bool> value) => data['listBool'] = DbQueryField.toBaseType(value);
 
   ///
-  set listString(List<String> value) => data['listString'] = DbQueryField.convertToBaseType(value);
+  set listString(List<String> value) => data['listString'] = DbQueryField.toBaseType(value);
 
   ///
-  set listAddress(List<Address> value) => data['listAddress'] = DbQueryField.convertToBaseType(value);
+  set listAddress(List<Address> value) => data['listAddress'] = DbQueryField.toBaseType(value);
 
   ///
-  set listObjectId(List<ObjectId> value) => data['listObjectId'] = DbQueryField.convertToBaseType(value);
+  set listObjectId(List<ObjectId> value) => data['listObjectId'] = DbQueryField.toBaseType(value);
 
   ///
-  set mapInt(Map<String, int> value) => data['mapInt'] = DbQueryField.convertToBaseType(value);
+  set mapInt(Map<String, int> value) => data['mapInt'] = DbQueryField.toBaseType(value);
 
   ///
-  set mapDouble(Map<String, double> value) => data['mapDouble'] = DbQueryField.convertToBaseType(value);
+  set mapDouble(Map<String, double> value) => data['mapDouble'] = DbQueryField.toBaseType(value);
 
   ///
-  set mapNum(Map<String, num> value) => data['mapNum'] = DbQueryField.convertToBaseType(value);
+  set mapNum(Map<String, num> value) => data['mapNum'] = DbQueryField.toBaseType(value);
 
   ///
-  set mapBool(Map<String, bool> value) => data['mapBool'] = DbQueryField.convertToBaseType(value);
+  set mapBool(Map<String, bool> value) => data['mapBool'] = DbQueryField.toBaseType(value);
 
   ///
-  set mapString(Map<String, String> value) => data['mapString'] = DbQueryField.convertToBaseType(value);
+  set mapString(Map<String, String> value) => data['mapString'] = DbQueryField.toBaseType(value);
 
   ///
-  set mapAddress(Map<String, Address> value) => data['mapAddress'] = DbQueryField.convertToBaseType(value);
+  set mapAddress(Map<String, Address> value) => data['mapAddress'] = DbQueryField.toBaseType(value);
 
   ///
-  set mapObjectId(Map<String, ObjectId> value) => data['mapObjectId'] = DbQueryField.convertToBaseType(value);
+  set mapObjectId(Map<String, ObjectId> value) => data['mapObjectId'] = DbQueryField.toBaseType(value);
 
   ///
-  set map2Int(Map<int, int> value) => data['map2Int'] = DbQueryField.convertToBaseType(value);
+  set map2Int(Map<int, int> value) => data['map2Int'] = DbQueryField.toBaseType(value);
 
   ///
-  set map2Double(Map<int, double> value) => data['map2Double'] = DbQueryField.convertToBaseType(value);
+  set map2Double(Map<int, double> value) => data['map2Double'] = DbQueryField.toBaseType(value);
 
   ///
-  set map2Num(Map<int, num> value) => data['map2Num'] = DbQueryField.convertToBaseType(value);
+  set map2Num(Map<int, num> value) => data['map2Num'] = DbQueryField.toBaseType(value);
 
   ///
-  set map2Bool(Map<int, bool> value) => data['map2Bool'] = DbQueryField.convertToBaseType(value);
+  set map2Bool(Map<int, bool> value) => data['map2Bool'] = DbQueryField.toBaseType(value);
 
   ///
-  set map2String(Map<int, String> value) => data['map2String'] = DbQueryField.convertToBaseType(value);
+  set map2String(Map<int, String> value) => data['map2String'] = DbQueryField.toBaseType(value);
 
   ///
-  set map2Address(Map<int, Address> value) => data['map2Address'] = DbQueryField.convertToBaseType(value);
+  set map2Address(Map<int, Address> value) => data['map2Address'] = DbQueryField.toBaseType(value);
 
   ///
-  set map2ObjectId(Map<int, ObjectId> value) => data['map2ObjectId'] = DbQueryField.convertToBaseType(value);
+  set map2ObjectId(Map<int, ObjectId> value) => data['map2ObjectId'] = DbQueryField.toBaseType(value);
 
   ///
-  set map3Int(Map<double, int> value) => data['map3Int'] = DbQueryField.convertToBaseType(value);
+  set map3Int(Map<double, int> value) => data['map3Int'] = DbQueryField.toBaseType(value);
 
   ///
-  set map3Double(Map<double, double> value) => data['map3Double'] = DbQueryField.convertToBaseType(value);
+  set map3Double(Map<double, double> value) => data['map3Double'] = DbQueryField.toBaseType(value);
 
   ///
-  set map3Num(Map<double, num> value) => data['map3Num'] = DbQueryField.convertToBaseType(value);
+  set map3Num(Map<double, num> value) => data['map3Num'] = DbQueryField.toBaseType(value);
 
   ///
-  set map3Bool(Map<double, bool> value) => data['map3Bool'] = DbQueryField.convertToBaseType(value);
+  set map3Bool(Map<double, bool> value) => data['map3Bool'] = DbQueryField.toBaseType(value);
 
   ///
-  set map3String(Map<double, String> value) => data['map3String'] = DbQueryField.convertToBaseType(value);
+  set map3String(Map<double, String> value) => data['map3String'] = DbQueryField.toBaseType(value);
 
   ///
-  set map3Address(Map<double, Address> value) => data['map3Address'] = DbQueryField.convertToBaseType(value);
+  set map3Address(Map<double, Address> value) => data['map3Address'] = DbQueryField.toBaseType(value);
 
   ///
-  set map3ObjectId(Map<double, ObjectId> value) => data['map3ObjectId'] = DbQueryField.convertToBaseType(value);
+  set map3ObjectId(Map<double, ObjectId> value) => data['map3ObjectId'] = DbQueryField.toBaseType(value);
 
   ///
-  set map4Int(Map<bool, int> value) => data['map4Int'] = DbQueryField.convertToBaseType(value);
+  set map4Int(Map<bool, int> value) => data['map4Int'] = DbQueryField.toBaseType(value);
 
   ///
-  set map4Double(Map<bool, double> value) => data['map4Double'] = DbQueryField.convertToBaseType(value);
+  set map4Double(Map<bool, double> value) => data['map4Double'] = DbQueryField.toBaseType(value);
 
   ///
-  set map4Num(Map<bool, num> value) => data['map4Num'] = DbQueryField.convertToBaseType(value);
+  set map4Num(Map<bool, num> value) => data['map4Num'] = DbQueryField.toBaseType(value);
 
   ///
-  set map4Bool(Map<bool, bool> value) => data['map4Bool'] = DbQueryField.convertToBaseType(value);
+  set map4Bool(Map<bool, bool> value) => data['map4Bool'] = DbQueryField.toBaseType(value);
 
   ///
-  set map4String(Map<bool, String> value) => data['map4String'] = DbQueryField.convertToBaseType(value);
+  set map4String(Map<bool, String> value) => data['map4String'] = DbQueryField.toBaseType(value);
 
   ///
-  set map4Address(Map<bool, Address> value) => data['map4Address'] = DbQueryField.convertToBaseType(value);
+  set map4Address(Map<bool, Address> value) => data['map4Address'] = DbQueryField.toBaseType(value);
 
   ///
-  set map4ObjectId(Map<bool, ObjectId> value) => data['map4ObjectId'] = DbQueryField.convertToBaseType(value);
+  set map4ObjectId(Map<bool, ObjectId> value) => data['map4ObjectId'] = DbQueryField.toBaseType(value);
 
   ///
-  set map5Int(Map<ObjectId, int> value) => data['map5Int'] = DbQueryField.convertToBaseType(value);
+  set map5Int(Map<ObjectId, int> value) => data['map5Int'] = DbQueryField.toBaseType(value);
 
   ///
-  set map5Double(Map<ObjectId, double> value) => data['map5Double'] = DbQueryField.convertToBaseType(value);
+  set map5Double(Map<ObjectId, double> value) => data['map5Double'] = DbQueryField.toBaseType(value);
 
   ///
-  set map5Num(Map<ObjectId, num> value) => data['map5Num'] = DbQueryField.convertToBaseType(value);
+  set map5Num(Map<ObjectId, num> value) => data['map5Num'] = DbQueryField.toBaseType(value);
 
   ///
-  set map5Bool(Map<ObjectId, bool> value) => data['map5Bool'] = DbQueryField.convertToBaseType(value);
+  set map5Bool(Map<ObjectId, bool> value) => data['map5Bool'] = DbQueryField.toBaseType(value);
 
   ///
-  set map5String(Map<ObjectId, String> value) => data['map5String'] = DbQueryField.convertToBaseType(value);
+  set map5String(Map<ObjectId, String> value) => data['map5String'] = DbQueryField.toBaseType(value);
 
   ///
-  set map5Address(Map<ObjectId, Address> value) => data['map5Address'] = DbQueryField.convertToBaseType(value);
+  set map5Address(Map<ObjectId, Address> value) => data['map5Address'] = DbQueryField.toBaseType(value);
 
   ///
-  set map5ObjectId(Map<ObjectId, ObjectId> value) => data['map5ObjectId'] = DbQueryField.convertToBaseType(value);
+  set map5ObjectId(Map<ObjectId, ObjectId> value) => data['map5ObjectId'] = DbQueryField.toBaseType(value);
 
   ///
-  set map6Int(Map<Address, int> value) => data['map6Int'] = DbQueryField.convertToBaseType(value);
+  set map6Int(Map<Address, int> value) => data['map6Int'] = DbQueryField.toBaseType(value);
 
   ///
-  set map6Double(Map<Address, double> value) => data['map6Double'] = DbQueryField.convertToBaseType(value);
+  set map6Double(Map<Address, double> value) => data['map6Double'] = DbQueryField.toBaseType(value);
 
   ///
-  set map6Num(Map<Address, num> value) => data['map6Num'] = DbQueryField.convertToBaseType(value);
+  set map6Num(Map<Address, num> value) => data['map6Num'] = DbQueryField.toBaseType(value);
 
   ///
-  set map6Bool(Map<Address, bool> value) => data['map6Bool'] = DbQueryField.convertToBaseType(value);
+  set map6Bool(Map<Address, bool> value) => data['map6Bool'] = DbQueryField.toBaseType(value);
 
   ///
-  set map6String(Map<Address, String> value) => data['map6String'] = DbQueryField.convertToBaseType(value);
+  set map6String(Map<Address, String> value) => data['map6String'] = DbQueryField.toBaseType(value);
 
   ///
-  set map6Address(Map<Address, Address> value) => data['map6Address'] = DbQueryField.convertToBaseType(value);
+  set map6Address(Map<Address, Address> value) => data['map6Address'] = DbQueryField.toBaseType(value);
 
   ///
-  set map6ObjectId(Map<Address, ObjectId> value) => data['map6ObjectId'] = DbQueryField.convertToBaseType(value);
+  set map6ObjectId(Map<Address, ObjectId> value) => data['map6ObjectId'] = DbQueryField.toBaseType(value);
 
   ///
-  set listListMapMapListMapDouble(List<List<Map<String, Map<String, List<Map<String, double>>>>>> value) => data['listListMapMapListMapDouble'] = DbQueryField.convertToBaseType(value);
+  set listListMapMapListMapDouble(List<List<Map<String, Map<String, List<Map<String, double>>>>>> value) => data['listListMapMapListMapDouble'] = DbQueryField.toBaseType(value);
 
   ///
-  set listListMapMapListMapAddress(List<List<Map<String, Map<String, List<Map<String, Address>>>>>> value) => data['listListMapMapListMapAddress'] = DbQueryField.convertToBaseType(value);
+  set listListMapMapListMapAddress(List<List<Map<String, Map<String, List<Map<String, Address>>>>>> value) => data['listListMapMapListMapAddress'] = DbQueryField.toBaseType(value);
 
   ///
-  set listListMapMapListMapObjectId(List<List<Map<String, Map<String, List<Map<String, ObjectId>>>>>> value) => data['listListMapMapListMapObjectId'] = DbQueryField.convertToBaseType(value);
+  set listListMapMapListMapObjectId(List<List<Map<String, Map<String, List<Map<String, ObjectId>>>>>> value) => data['listListMapMapListMapObjectId'] = DbQueryField.toBaseType(value);
 
   ///
-  set mapMapListListMapListDouble(Map<String, Map<String, List<List<Map<String, List<double>>>>>> value) => data['mapMapListListMapListDouble'] = DbQueryField.convertToBaseType(value);
+  set mapMapListListMapListDouble(Map<String, Map<String, List<List<Map<String, List<double>>>>>> value) => data['mapMapListListMapListDouble'] = DbQueryField.toBaseType(value);
 
   ///
-  set mapMapListListMapListAddress(Map<String, Map<String, List<List<Map<String, List<Address>>>>>> value) => data['mapMapListListMapListAddress'] = DbQueryField.convertToBaseType(value);
+  set mapMapListListMapListAddress(Map<String, Map<String, List<List<Map<String, List<Address>>>>>> value) => data['mapMapListListMapListAddress'] = DbQueryField.toBaseType(value);
 
   ///
-  set mapMapListListMapListObjectId(Map<String, Map<String, List<List<Map<String, List<ObjectId>>>>>> value) => data['mapMapListListMapListObjectId'] = DbQueryField.convertToBaseType(value);
+  set mapMapListListMapListObjectId(Map<String, Map<String, List<List<Map<String, List<ObjectId>>>>>> value) => data['mapMapListListMapListObjectId'] = DbQueryField.toBaseType(value);
 }
 
 class ComplexQuery {

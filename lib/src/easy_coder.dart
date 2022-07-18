@@ -268,7 +268,7 @@ class EasyCoder extends EasyLogger {
     buffer.write('${indent}Map<String, dynamic> toJson() {\n');
     buffer.write('$indent${indent}return {\n');
     for (var element in modelInfo.classFields) {
-      buffer.write('$indent$indent$indent\'${element.name}\': DbQueryField.convertToBaseType(${element.name}),\n');
+      buffer.write('$indent$indent$indent\'${element.name}\': DbQueryField.toBaseType(${element.name}),\n');
     }
     buffer.write('$indent$indent};\n');
     buffer.write('$indent}\n\n');
@@ -332,9 +332,9 @@ class EasyCoder extends EasyLogger {
         final publicName = _getFieldPublicName(element.name);
         buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
         if (element == modelInfo.classFields.last) {
-          buffer.write('${indent}set $publicName(${element.type} value) => data[\'${element.name}\'] = DbQueryField.convertToBaseType(value);\n');
+          buffer.write('${indent}set $publicName(${element.type} value) => data[\'${element.name}\'] = DbQueryField.toBaseType(value);\n');
         } else {
-          buffer.write('${indent}set $publicName(${element.type} value) => data[\'${element.name}\'] = DbQueryField.convertToBaseType(value);\n\n');
+          buffer.write('${indent}set $publicName(${element.type} value) => data[\'${element.name}\'] = DbQueryField.toBaseType(value);\n\n');
         }
       }
       buffer.write('}\n');

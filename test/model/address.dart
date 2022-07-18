@@ -38,10 +38,10 @@ class Address extends DbBaseModel {
 
   factory Address.fromJson(Map<String, dynamic> map) {
     return Address(
-      country: map['country'],
-      province: map['province'],
-      city: map['city'],
-      area: map['area'],
+      country: DbQueryField.tryParseString(map['country']),
+      province: DbQueryField.tryParseString(map['province']),
+      city: DbQueryField.tryParseString(map['city']),
+      area: DbQueryField.tryParseString(map['area']),
       location: map['location'] is Map ? Location.fromJson(map['location']) : map['location'],
     );
   }
@@ -54,11 +54,11 @@ class Address extends DbBaseModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'country': DbQueryField.convertToBaseType(country),
-      'province': DbQueryField.convertToBaseType(province),
-      'city': DbQueryField.convertToBaseType(city),
-      'area': DbQueryField.convertToBaseType(area),
-      'location': DbQueryField.convertToBaseType(location),
+      'country': DbQueryField.toBaseType(country),
+      'province': DbQueryField.toBaseType(province),
+      'city': DbQueryField.toBaseType(city),
+      'area': DbQueryField.toBaseType(area),
+      'location': DbQueryField.toBaseType(location),
     };
   }
 
@@ -97,19 +97,19 @@ class AddressDirty {
   final Map<String, dynamic> data = {};
 
   ///国家
-  set country(String value) => data['country'] = DbQueryField.convertToBaseType(value);
+  set country(String value) => data['country'] = DbQueryField.toBaseType(value);
 
   ///省份
-  set province(String value) => data['province'] = DbQueryField.convertToBaseType(value);
+  set province(String value) => data['province'] = DbQueryField.toBaseType(value);
 
   ///市
-  set city(String value) => data['city'] = DbQueryField.convertToBaseType(value);
+  set city(String value) => data['city'] = DbQueryField.toBaseType(value);
 
   ///县（区）
-  set area(String value) => data['area'] = DbQueryField.convertToBaseType(value);
+  set area(String value) => data['area'] = DbQueryField.toBaseType(value);
 
   ///县（区）
-  set location(Location value) => data['location'] = DbQueryField.convertToBaseType(value);
+  set location(Location value) => data['location'] = DbQueryField.toBaseType(value);
 }
 
 class AddressQuery {

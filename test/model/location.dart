@@ -27,9 +27,9 @@ class Location extends DbBaseModel {
 
   factory Location.fromJson(Map<String, dynamic> map) {
     return Location(
-      latitude: map['latitude'],
-      longitude: map['longitude'],
-      accuracy: map['accuracy'],
+      latitude: DbQueryField.tryParseDouble(map['latitude']),
+      longitude: DbQueryField.tryParseDouble(map['longitude']),
+      accuracy: DbQueryField.tryParseDouble(map['accuracy']),
     );
   }
 
@@ -41,9 +41,9 @@ class Location extends DbBaseModel {
   @override
   Map<String, dynamic> toJson() {
     return {
-      'latitude': DbQueryField.convertToBaseType(latitude),
-      'longitude': DbQueryField.convertToBaseType(longitude),
-      'accuracy': DbQueryField.convertToBaseType(accuracy),
+      'latitude': DbQueryField.toBaseType(latitude),
+      'longitude': DbQueryField.toBaseType(longitude),
+      'accuracy': DbQueryField.toBaseType(accuracy),
     };
   }
 
@@ -76,13 +76,13 @@ class LocationDirty {
   final Map<String, dynamic> data = {};
 
   ///纬度
-  set latitude(double value) => data['latitude'] = DbQueryField.convertToBaseType(value);
+  set latitude(double value) => data['latitude'] = DbQueryField.toBaseType(value);
 
   ///经度
-  set longitude(double value) => data['longitude'] = DbQueryField.convertToBaseType(value);
+  set longitude(double value) => data['longitude'] = DbQueryField.toBaseType(value);
 
   ///精确度
-  set accuracy(double value) => data['accuracy'] = DbQueryField.convertToBaseType(value);
+  set accuracy(double value) => data['accuracy'] = DbQueryField.toBaseType(value);
 }
 
 class LocationQuery {
