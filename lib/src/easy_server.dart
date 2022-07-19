@@ -197,6 +197,15 @@ class EasyServer extends EasyLogger {
   ///设置Websocket服务的远程监听器
   void websocketRemote(String route, WebsocketRouteHandler handler) => _websoketRemoteMap[route] = handler;
 
+  ///关闭[uid]对应的session
+  void kickoutUser(String uid) {
+    final session = _websoketSessionMap[uid];
+    if (session == null) return;
+    logDebug(['kickoutUser =>', session.info]);
+    unbindUser(session); //解绑uid对应的旧session（此步骤务必在close之前执行，否则close异步事件中，会将uid对应的新session移除掉）
+    session.close(EasyConstant.serverCloseByKickoutError.code, EasyConstant.serverCloseByKickoutError.desc); //关闭旧的session
+  }
+
   ///绑定用户信息到session。[token]是数据加解密密钥，为null时，使用[EasyServerConfig.pwd]进行加解密
   void bindUser(EasyServerSession session, String uid, {required String? token, bool closeold = false}) {
     //旧session处理
