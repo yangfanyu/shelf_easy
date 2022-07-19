@@ -71,7 +71,7 @@ class EasyConstant {
   static const serverCloseByNewbindError = EasyPacket._(code: 4008, desc: 'serverCloseByNewbindError');
 
   ///服务端调用kickout函数关闭会话
-  static const serverCloseByKickoutError = EasyPacket._(code: 4008, desc: 'serverCloseByKickoutError');
+  static const serverCloseByKickoutError = EasyPacket._(code: 4009, desc: 'serverCloseByKickoutError');
 
   ///客户端尝试重新连接
   static const clientCloseByRetry = EasyPacket._(code: 4101, desc: 'clientCloseByRetry');
