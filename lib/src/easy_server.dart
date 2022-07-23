@@ -79,6 +79,9 @@ class EasyServer extends EasyLogger {
   ///http请求路由
   Router? _router;
 
+  ///读取http路由器实例
+  Router get router => _router ??= Router();
+
   ///读取配置信息
   EasyServerConfig get config => _config;
 
