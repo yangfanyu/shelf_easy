@@ -27,7 +27,7 @@ class DbMongo implements DbBase {
   Future<DbResult<void>> insertOne<T extends DbBaseModel>(String table, T model, {DbInsertOptions? insertOptions}) async {
     final result = await _db.collection(table).insertOne(model.toJson());
     return DbResult(
-      success: true,
+      success: result.nInserted > 0,
       insertedCount: result.nInserted,
       modifiedCount: result.nModified,
       matchedCount: result.nMatched,
@@ -40,7 +40,7 @@ class DbMongo implements DbBase {
   Future<DbResult<void>> insertMany<T extends DbBaseModel>(String table, List<T> models, {DbInsertOptions? insertOptions}) async {
     final result = await _db.collection(table).insertMany(models.map((e) => e.toJson()).toList());
     return DbResult(
-      success: true,
+      success: result.nInserted > 0,
       insertedCount: result.nInserted,
       modifiedCount: result.nModified,
       matchedCount: result.nMatched,
@@ -53,7 +53,7 @@ class DbMongo implements DbBase {
   Future<DbResult<void>> deleteOne(String table, DbFilter filter, {DbDeleteOptions? deleteOptions}) async {
     final result = await _db.collection(table).deleteOne(filter.toJson());
     return DbResult(
-      success: true,
+      success: result.nRemoved > 0,
       insertedCount: result.nInserted,
       modifiedCount: result.nModified,
       matchedCount: result.nMatched,
@@ -66,7 +66,7 @@ class DbMongo implements DbBase {
   Future<DbResult<void>> deleteMany(String table, DbFilter filter, {DbDeleteOptions? deleteOptions}) async {
     final result = await _db.collection(table).deleteMany(filter.toJson());
     return DbResult(
-      success: true,
+      success: result.nRemoved > 0,
       insertedCount: result.nInserted,
       modifiedCount: result.nModified,
       matchedCount: result.nMatched,
@@ -83,7 +83,7 @@ class DbMongo implements DbBase {
           upsert: updateOptions?.$upsert,
         );
     return DbResult(
-      success: true,
+      success: result.nModified > 0 || result.nMatched > 0 || result.nUpserted > 0,
       insertedCount: result.nInserted,
       modifiedCount: result.nModified,
       matchedCount: result.nMatched,
@@ -100,7 +100,7 @@ class DbMongo implements DbBase {
           upsert: updateOptions?.$upsert,
         );
     return DbResult(
-      success: true,
+      success: result.nModified > 0 || result.nMatched > 0 || result.nUpserted > 0,
       insertedCount: result.nInserted,
       modifiedCount: result.nModified,
       matchedCount: result.nMatched,
