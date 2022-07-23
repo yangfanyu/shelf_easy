@@ -659,12 +659,23 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
   ///查询存在该字段的记录
   void $exists(bool exists) => _cmds['\$exists'] = toBaseType(exists);
 
-  ///正则匹配，mongo官方文档：https://www.mongodb.com/docs/v4.4/reference/operator/query/regex/
-  void $match(String pattern, {String? options}) {
+  ///关键词匹配，mongo官方文档：https://www.mongodb.com/docs/v4.4/reference/operator/query/regex/
+  void $match(String pattern, {String options = 'i'}) {
     _cmds['\$regex'] = pattern;
-    if (options != null) _cmds['\$options'] = options;
+    _cmds['\$options'] = options;
   }
 
+  ///数组中任意一项匹配满足条件
+  void $itemMatch({ITEM_TYPE? $eq, ITEM_TYPE? $ne, ITEM_TYPE? $gt, ITEM_TYPE? $lt, ITEM_TYPE? $gte, ITEM_TYPE? $lte}) {
+    final exp = {};
+    if ($eq != null) exp['\$eq'] = $eq;
+    if ($ne != null) exp['\$ne'] = $ne;
+    if ($gt != null) exp['\$gt'] = $gt;
+    if ($lt != null) exp['\$lt'] = $lt;
+    if ($gte != null) exp['\$gte'] = $gte;
+    if ($lte != null) exp['\$lte'] = $lte;
+    _cmds['\$elemMatch'] = exp;
+  }
   /* **************** 赋值操作 ********** */
 
   ///设置 $set 操作的值

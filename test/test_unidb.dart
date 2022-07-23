@@ -39,6 +39,7 @@ void testHelpClass() {
             ..$gte(10)
             ..$lte(20),
           UserQuery.address..$eq(Address()),
+          UserQuery.accessList..$itemMatch($gte: 1, $lte: 0),
         },
         $or: [
           {
@@ -212,7 +213,7 @@ void testDataBase() {
     //deleteMany without filter
     await database.deleteMany(UserQuery.$tableName, DbFilter({}));
     //insertOne
-    final user = User(name: '用户1');
+    final user = User(name: '用户1', accessList: [-1, 101, 102, 103, 104]);
     await database.insertOne(
       UserQuery.$tableName,
       user,
@@ -223,9 +224,14 @@ void testDataBase() {
         user.id
       ], ageObjectIdAddressMap: {
         1: {ObjectId(): Address()}
-      }),
-      User(name: '用户3', friendList: [user.id]),
-      User(name: '用户4', friendList: [user.id]),
+      }, accessList: [
+        201,
+        202,
+        203,
+        204
+      ]),
+      User(name: '用户3', friendList: [user.id], accessList: [-1, 301, 302, 303, 304]),
+      User(name: '用户4', friendList: [user.id], accessList: [-1, 401, 402, 403, 404]),
     ]);
     //updateOne
     await database.updateOne(
@@ -296,9 +302,29 @@ void testDataBase() {
     await database.findOne(
       UserQuery.$tableName,
       DbFilter({
-        UserQuery.name..$match('4', options: 'i'),
+        UserQuery.name..$match('3', options: 'i'),
+      }),
+      findOptions: DbFindOptions(
+        $projection: {
+          UserQuery.name..include(),
+          UserQuery.accessList..include(),
+        },
+      ),
+      converter: User.fromJson,
+    );
+    //findOne with filter elemMatch
+    await database.findOne(
+      UserQuery.$tableName,
+      DbFilter({
+        UserQuery.accessList..$itemMatch($eq: 202),
       }),
       converter: User.fromJson,
+      findOptions: DbFindOptions(
+        $projection: {
+          UserQuery.name..include(),
+          UserQuery.accessList..include(),
+        },
+      ),
     );
     //findOne without filter
     await database.findOne(
@@ -355,6 +381,34 @@ void testDataBase() {
           // UserQuery.accessList..exclude(),
           // UserQuery.addressList..exclude(),
           // UserQuery.friendList..exclude(),
+        },
+      ),
+    );
+    //findMany with filter elemMatch
+    await database.findMany(
+      UserQuery.$tableName,
+      DbFilter({
+        UserQuery.accessList..$itemMatch($gte: 200, $lte: 400),
+      }),
+      converter: User.fromJson,
+      findOptions: DbFindOptions(
+        $projection: {
+          UserQuery.name..include(),
+          UserQuery.accessList..include(),
+        },
+      ),
+    );
+    //findMany with filter elemMatch
+    await database.findMany(
+      UserQuery.$tableName,
+      DbFilter({
+        UserQuery.accessList..$itemMatch($ne: -1),
+      }),
+      converter: User.fromJson,
+      findOptions: DbFindOptions(
+        $projection: {
+          UserQuery.name..include(),
+          UserQuery.accessList..include(),
         },
       ),
     );
