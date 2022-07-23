@@ -412,6 +412,20 @@ void testDataBase() {
         },
       ),
     );
+    //findMany with filter elemMatch [every$ne]
+    await database.findMany(
+      UserQuery.$tableName,
+      DbFilter({
+        UserQuery.accessList..$itemMatch(every$ne: -1),
+      }),
+      converter: User.fromJson,
+      findOptions: DbFindOptions(
+        $projection: {
+          UserQuery.name..include(),
+          UserQuery.accessList..include(),
+        },
+      ),
+    );
     //count
     await database.count(
       UserQuery.$tableName,
