@@ -55,7 +55,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
   Future<DbResult<void>> insertOne<T extends DbBaseModel>(String table, T model, {DbInsertOptions? insertOptions}) async {
     try {
       final result = await _handle.insertOne(table, model, insertOptions: insertOptions);
-      logDebug(['insertOne =>', table, model, insertOptions, result]);
+      (result.success ? logDebug : logWarn)(['insertOne =>', table, model, insertOptions, result]);
       return result;
     } catch (error, stack) {
       logError(['insertOne =>', table, model, insertOptions, error, '\n', stack]);
@@ -68,7 +68,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
   Future<DbResult<void>> insertMany<T extends DbBaseModel>(String table, List<T> models, {DbInsertOptions? insertOptions}) async {
     try {
       final result = await _handle.insertMany(table, models, insertOptions: insertOptions);
-      logDebug(['insertMany =>', table, models, insertOptions, result]);
+      (result.success ? logDebug : logWarn)(['insertMany =>', table, models, insertOptions, result]);
       return result;
     } catch (error, stack) {
       logError(['insertMany =>', table, models, insertOptions, error, '\n', stack]);
@@ -81,7 +81,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
   Future<DbResult<void>> deleteOne(String table, DbFilter filter, {DbDeleteOptions? deleteOptions}) async {
     try {
       final result = await _handle.deleteOne(table, filter, deleteOptions: deleteOptions);
-      logDebug(['deleteOne =>', table, filter, deleteOptions, result]);
+      (result.success ? logDebug : logWarn)(['deleteOne =>', table, filter, deleteOptions, result]);
       return result;
     } catch (error, stack) {
       logError(['deleteOne =>', table, filter, deleteOptions, error, '\n', stack]);
@@ -94,7 +94,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
   Future<DbResult<void>> deleteMany(String table, DbFilter filter, {DbDeleteOptions? deleteOptions}) async {
     try {
       final result = await _handle.deleteMany(table, filter, deleteOptions: deleteOptions);
-      logDebug(['deleteMany =>', table, filter, deleteOptions, result]);
+      (result.success ? logDebug : logWarn)(['deleteMany =>', table, filter, deleteOptions, result]);
       return result;
     } catch (error, stack) {
       logError(['deleteMany =>', table, filter, deleteOptions, error, '\n', stack]);
@@ -107,7 +107,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
   Future<DbResult<void>> updateOne(String table, DbFilter filter, DbUpdate update, {DbUpdateOptions? updateOptions}) async {
     try {
       final result = await _handle.updateOne(table, filter, update, updateOptions: updateOptions);
-      logDebug(['updateOne =>', table, filter, update, updateOptions, result]);
+      (result.success ? logDebug : logWarn)(['updateOne =>', table, filter, update, updateOptions, result]);
       return result;
     } catch (error, stack) {
       logError(['updateOne =>', table, filter, update, updateOptions, error, '\n', stack]);
@@ -120,7 +120,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
   Future<DbResult<void>> updateMany(String table, DbFilter filter, DbUpdate update, {DbUpdateOptions? updateOptions}) async {
     try {
       final result = await _handle.updateMany(table, filter, update, updateOptions: updateOptions);
-      logDebug(['updateMany =>', table, filter, update, updateOptions, result]);
+      (result.success ? logDebug : logWarn)(['updateMany =>', table, filter, update, updateOptions, result]);
       return result;
     } catch (error, stack) {
       logError(['updateMany =>', table, filter, update, updateOptions, error, '\n', stack]);
@@ -133,7 +133,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
   Future<DbResult<T>> findOne<T extends DbBaseModel>(String table, DbFilter filter, {DbFindOptions? findOptions, required T Function(Map<String, dynamic> map) converter}) async {
     try {
       final result = await _handle.findOne(table, filter, findOptions: findOptions, converter: converter);
-      logDebug(['findOne =>', table, filter, findOptions, result]);
+      (result.success ? logDebug : logWarn)(['findOne =>', table, filter, findOptions, result]);
       return result;
     } catch (error, stack) {
       logError(['findOne =>', table, filter, findOptions, error, '\n', stack]);
@@ -146,7 +146,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
   Future<DbResult<T>> findMany<T extends DbBaseModel>(String table, DbFilter filter, {DbFindOptions? findOptions, required T Function(Map<String, dynamic> map) converter}) async {
     try {
       final result = await _handle.findMany(table, filter, findOptions: findOptions, converter: converter);
-      logDebug(['findMany =>', table, filter, findOptions, result]);
+      (result.success ? logDebug : logWarn)(['findMany =>', table, filter, findOptions, result]);
       return result;
     } catch (error, stack) {
       logError(['findMany =>', table, filter, findOptions, error, '\n', stack]);
@@ -159,7 +159,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
   Future<DbResult<T>> findAndDelete<T extends DbBaseModel>(String table, DbFilter filter, {DbFindDeleteOptions? findDeleteOptions, required T Function(Map<String, dynamic> map) converter}) async {
     try {
       final result = await _handle.findAndDelete(table, filter, findDeleteOptions: findDeleteOptions, converter: converter);
-      logDebug(['findAndDelete =>', table, filter, findDeleteOptions, result]);
+      (result.success ? logDebug : logWarn)(['findAndDelete =>', table, filter, findDeleteOptions, result]);
       return result;
     } catch (error, stack) {
       logError(['findAndDelete =>', table, filter, findDeleteOptions, error, '\n', stack]);
@@ -175,7 +175,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
     }
     try {
       final result = await _handle.findAndUpdate(table, filter, update, findUpdateOptions: findUpdateOptions, converter: converter);
-      logDebug(['findAndUpdate =>', table, filter, update, findUpdateOptions, result]);
+      (result.success ? logDebug : logWarn)(['findAndUpdate =>', table, filter, update, findUpdateOptions, result]);
       return result;
     } catch (error, stack) {
       logError(['findAndUpdate =>', table, filter, update, findUpdateOptions, error, '\n', stack]);
@@ -187,7 +187,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
   Future<DbResult<T>> aggregate<T extends DbBaseModel>(String table, List<DbPipeline> pipeline, {DbAggregateOptions? aggregateOptions, required T Function(Map<String, dynamic> map) converter}) async {
     try {
       final result = await _handle.aggregate(table, pipeline, aggregateOptions: aggregateOptions, converter: converter);
-      logDebug(['aggregate =>', table, pipeline, aggregateOptions, result]);
+      (result.success ? logDebug : logWarn)(['aggregate =>', table, pipeline, aggregateOptions, result]);
       return result;
     } catch (error, stack) {
       logError(['aggregate =>', table, pipeline, aggregateOptions, error, '\n', stack]);
@@ -200,7 +200,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
   Future<DbResult<int>> count(String table, DbFilter filter, {DbCountOptions? countOptions}) async {
     try {
       final result = await _handle.count(table, filter, countOptions: countOptions);
-      logDebug(['count =>', table, filter, countOptions, result]);
+      (result.success ? logDebug : logWarn)(['count =>', table, filter, countOptions, result]);
       return result;
     } catch (error, stack) {
       logError(['count =>', table, filter, countOptions, error, '\n', stack]);
@@ -213,7 +213,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
   Future<DbResult<void>> withTransaction(Future<String> Function(DbSession session) operate, {DbTransactionOptions? transactionOptions, void Function({String? msg, String? warn, String? err})? onmessage}) async {
     try {
       final result = await _handle.withTransaction(operate, transactionOptions: transactionOptions, onmessage: onmessage ?? ({msg, warn, err}) => _defaultTransactionMessageListener(this, msg: msg, warn: warn, err: err));
-      logDebug(['withTransaction =>', transactionOptions, result]);
+      (result.success ? logDebug : logWarn)(['withTransaction =>', transactionOptions, result]);
       return result;
     } catch (error, stack) {
       logError(['withTransaction =>', transactionOptions, error, '\n', stack]);
