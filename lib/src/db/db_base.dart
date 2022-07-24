@@ -139,6 +139,9 @@ class DbResult<T> extends DbBaseModel {
   ///操作是否成功
   final bool success;
 
+  ///插入、更新、删除的状态码（-1表示抛出异常，>=0表示被操作对象的数量）
+  final int rescode;
+
   ///操作成功或失败的描述情况
   final String message;
 
@@ -168,6 +171,7 @@ class DbResult<T> extends DbBaseModel {
 
   DbResult({
     required this.success,
+    required this.rescode,
     this.message = '',
     this.insertedCount = 0,
     this.modifiedCount = 0,
@@ -183,6 +187,7 @@ class DbResult<T> extends DbBaseModel {
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{
       'success': success,
+      'rescode': rescode,
       'message': message,
       'insertedCount': insertedCount,
       'modifiedCount': modifiedCount,

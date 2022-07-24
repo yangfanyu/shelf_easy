@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:mongo_dart/mongo_dart.dart';
 
 import 'db_base.dart';
@@ -28,6 +30,7 @@ class DbMongo implements DbBase {
     final result = await _db.collection(table).insertOne(model.toJson());
     return DbResult(
       success: result.nInserted > 0,
+      rescode: result.nInserted,
       insertedCount: result.nInserted,
       modifiedCount: result.nModified,
       matchedCount: result.nMatched,
@@ -41,6 +44,7 @@ class DbMongo implements DbBase {
     final result = await _db.collection(table).insertMany(models.map((e) => e.toJson()).toList());
     return DbResult(
       success: result.nInserted > 0,
+      rescode: result.nInserted,
       insertedCount: result.nInserted,
       modifiedCount: result.nModified,
       matchedCount: result.nMatched,
@@ -54,6 +58,7 @@ class DbMongo implements DbBase {
     final result = await _db.collection(table).deleteOne(filter.toJson());
     return DbResult(
       success: result.nRemoved > 0,
+      rescode: result.nRemoved,
       insertedCount: result.nInserted,
       modifiedCount: result.nModified,
       matchedCount: result.nMatched,
@@ -67,6 +72,7 @@ class DbMongo implements DbBase {
     final result = await _db.collection(table).deleteMany(filter.toJson());
     return DbResult(
       success: result.nRemoved > 0,
+      rescode: result.nRemoved,
       insertedCount: result.nInserted,
       modifiedCount: result.nModified,
       matchedCount: result.nMatched,
@@ -84,6 +90,7 @@ class DbMongo implements DbBase {
         );
     return DbResult(
       success: result.nModified > 0 || result.nMatched > 0 || result.nUpserted > 0,
+      rescode: max(max(result.nModified, result.nMatched), result.nUpserted),
       insertedCount: result.nInserted,
       modifiedCount: result.nModified,
       matchedCount: result.nMatched,
@@ -101,6 +108,7 @@ class DbMongo implements DbBase {
         );
     return DbResult(
       success: result.nModified > 0 || result.nMatched > 0 || result.nUpserted > 0,
+      rescode: max(max(result.nModified, result.nMatched), result.nUpserted),
       insertedCount: result.nInserted,
       modifiedCount: result.nModified,
       matchedCount: result.nMatched,
@@ -120,11 +128,13 @@ class DbMongo implements DbBase {
     if (result == null) {
       return DbResult(
         success: false,
+        rescode: 0,
         message: 'Result is null',
       );
     } else {
       return DbResult(
         success: true,
+        rescode: 1,
         result: converter(result),
         resultData: result,
       );
@@ -145,6 +155,7 @@ class DbMongo implements DbBase {
         .toList();
     return DbResult(
       success: true,
+      rescode: result.length,
       resultList: result.map((e) => converter(e)).toList(),
       resultData: result,
     );
@@ -160,11 +171,13 @@ class DbMongo implements DbBase {
     if (result.value == null) {
       return DbResult(
         success: false,
+        rescode: 0,
         message: result.errmsg ?? 'Result.value is null',
       );
     } else {
       return DbResult(
         success: true,
+        rescode: 1,
         result: converter(result.value!),
         resultData: result.value,
       );
@@ -185,17 +198,20 @@ class DbMongo implements DbBase {
       if (result.lastErrorObject?.upserted != null) {
         return DbResult(
           success: true,
+          rescode: 0,
           message: result.errmsg ?? 'Upserted a new document with ${result.lastErrorObject?.upserted}',
         );
       } else {
         return DbResult(
           success: false,
+          rescode: 0,
           message: result.errmsg ?? 'Result.value is null',
         );
       }
     } else {
       return DbResult(
         success: true,
+        rescode: 1,
         result: converter(result.value!),
         resultData: result.value,
       );
@@ -207,6 +223,7 @@ class DbMongo implements DbBase {
     final result = await _db.collection(table).modernAggregate(pipeline.map((e) => e.compile()).toList()).toList();
     return DbResult(
       success: true,
+      rescode: result.length,
       resultList: result.map((e) => converter(e)).toList(),
       resultData: result,
     );
@@ -217,6 +234,7 @@ class DbMongo implements DbBase {
     final result = await _db.collection(table).count(filter.toJson());
     return DbResult(
       success: true,
+      rescode: result,
       result: result,
       resultData: result,
     );
@@ -231,10 +249,10 @@ class DbMongo implements DbBase {
       if (onmessage != null) onmessage(msg: 'startTransaction');
       final message = await operate(session);
       if (onmessage != null) onmessage(msg: 'commitTransaction');
-      return DbResult(success: true, message: message);
+      return DbResult(success: true, rescode: 0, message: message);
     } catch (error, stack) {
       if (onmessage != null) onmessage(err: 'abortTransaction by error: $error\n$stack');
-      return DbResult(success: false, message: error.toString());
+      return DbResult(success: false, rescode: -1, message: error.toString());
     } finally {
       if (onmessage != null) onmessage(msg: 'endSession');
     }

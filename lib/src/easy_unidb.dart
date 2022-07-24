@@ -59,7 +59,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
       return result;
     } catch (error, stack) {
       logError(['insertOne =>', table, model, insertOptions, error, '\n', stack]);
-      return DbResult(success: false, message: error.toString());
+      return DbResult(success: false, rescode: -1, message: error.toString());
     }
   }
 
@@ -72,7 +72,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
       return result;
     } catch (error, stack) {
       logError(['insertMany =>', table, models, insertOptions, error, '\n', stack]);
-      return DbResult(success: false, message: error.toString());
+      return DbResult(success: false, rescode: -1, message: error.toString());
     }
   }
 
@@ -85,7 +85,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
       return result;
     } catch (error, stack) {
       logError(['deleteOne =>', table, filter, deleteOptions, error, '\n', stack]);
-      return DbResult(success: false, message: error.toString());
+      return DbResult(success: false, rescode: -1, message: error.toString());
     }
   }
 
@@ -98,7 +98,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
       return result;
     } catch (error, stack) {
       logError(['deleteMany =>', table, filter, deleteOptions, error, '\n', stack]);
-      return DbResult(success: false, message: error.toString());
+      return DbResult(success: false, rescode: -1, message: error.toString());
     }
   }
 
@@ -111,7 +111,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
       return result;
     } catch (error, stack) {
       logError(['updateOne =>', table, filter, update, updateOptions, error, '\n', stack]);
-      return DbResult(success: false, message: error.toString());
+      return DbResult(success: false, rescode: -1, message: error.toString());
     }
   }
 
@@ -124,7 +124,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
       return result;
     } catch (error, stack) {
       logError(['updateMany =>', table, filter, update, updateOptions, error, '\n', stack]);
-      return DbResult(success: false, message: error.toString());
+      return DbResult(success: false, rescode: -1, message: error.toString());
     }
   }
 
@@ -137,7 +137,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
       return result;
     } catch (error, stack) {
       logError(['findOne =>', table, filter, findOptions, error, '\n', stack]);
-      return DbResult(success: false, message: error.toString());
+      return DbResult(success: false, rescode: -1, message: error.toString());
     }
   }
 
@@ -150,7 +150,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
       return result;
     } catch (error, stack) {
       logError(['findMany =>', table, filter, findOptions, error, '\n', stack]);
-      return DbResult(success: false, message: error.toString());
+      return DbResult(success: false, rescode: -1, message: error.toString());
     }
   }
 
@@ -163,7 +163,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
       return result;
     } catch (error, stack) {
       logError(['findAndDelete =>', table, filter, findDeleteOptions, error, '\n', stack]);
-      return DbResult(success: false, message: error.toString());
+      return DbResult(success: false, rescode: -1, message: error.toString());
     }
   }
 
@@ -179,7 +179,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
       return result;
     } catch (error, stack) {
       logError(['findAndUpdate =>', table, filter, update, findUpdateOptions, error, '\n', stack]);
-      return DbResult(success: false, message: error.toString());
+      return DbResult(success: false, rescode: -1, message: error.toString());
     }
   }
 
@@ -191,7 +191,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
       return result;
     } catch (error, stack) {
       logError(['aggregate =>', table, pipeline, aggregateOptions, error, '\n', stack]);
-      return DbResult(success: false, message: error.toString());
+      return DbResult(success: false, rescode: -1, message: error.toString());
     }
   }
 
@@ -204,7 +204,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
       return result;
     } catch (error, stack) {
       logError(['count =>', table, filter, countOptions, error, '\n', stack]);
-      return DbResult(success: false, message: error.toString());
+      return DbResult(success: false, rescode: -1, message: error.toString());
     }
   }
 
@@ -217,7 +217,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
       return result;
     } catch (error, stack) {
       logError(['withTransaction =>', transactionOptions, error, '\n', stack]);
-      return DbResult(success: false, message: error.toString());
+      return DbResult(success: false, rescode: -1, message: error.toString());
     }
   }
 
