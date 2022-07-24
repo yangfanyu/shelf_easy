@@ -139,7 +139,7 @@ class DbResult<T> extends DbBaseModel {
   ///操作是否成功
   final bool success;
 
-  ///插入、更新、删除的状态码（-1表示抛出异常，>=0表示被操作对象的数量）
+  ///操作结果状态（-1表示抛出异常，>=0表示匹配的操作对象的数量）
   final int rescode;
 
   ///操作成功或失败的描述情况

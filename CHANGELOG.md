@@ -1,4 +1,4 @@
-## 1.0.15
+## 1.0.16
 
 - Modify result's success judge rule for mongo's insert, delete, update functions.
 - 
