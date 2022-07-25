@@ -696,13 +696,13 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
   ///设置 $mul 操作的值
   void $mul(NUM_TYPE value) => _value$mul = toBaseType(value);
 
-  ///设置 $addToSet 操作的值
+  ///设置 $addToSet 操作的值，往数组里面加入一个元素，如果数组里已经存在该元素，则不会加入，可避免重复
   void $addToSet(ITEM_TYPE value) => _value$addToSet = toBaseType(value);
 
-  ///设置 $push 操作的值
+  ///设置 $push 操作的值，往数组末尾加入一个元素，如果元素不存在，就会创建一个新的元素，如果元素存在了，就会再添加一个一模一样的元素，会造成重复
   void $push(ITEM_TYPE value) => _value$push = toBaseType(value);
 
-  ///设置 $pull 操作的值
+  ///设置 $pull 操作的值，删除数组元素，将所有匹配的元素删除
   void $pull(ITEM_TYPE value) => _value$pull = toBaseType(value);
 
   ///设置 $pop 操作的值，1表示最后一个，-1表示第一个
