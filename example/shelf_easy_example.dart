@@ -64,6 +64,8 @@ void main() {
     pwd: '123',
     secret: EasySecurity.uuid.v4(),
     binary: true,
+    runErrorsZone: false,
+    errorsAreFatal: true,
   );
 
   //sigint
@@ -75,6 +77,7 @@ void main() {
 void httpServerEntryPoint(String environment, String cluster, EasyServer server, EasyUniDb? database) {
   final rootPath = '${Directory.current.path}/example';
   server.httpRoute('/login/<user>/<pwd>', (request, packet) async {
+    server.logWarn([packet]);
     return packet.responseOk(data: {'hello': 1, 'world': 2});
   });
   server.httpUpload('/upload', (request, packet, files) async {
@@ -85,10 +88,16 @@ void httpServerEntryPoint(String environment, String cluster, EasyServer server,
     rootPath,
     listDirectories: true,
   );
+
+  //Asynchronous error test
+  Future.delayed(Duration(seconds: 13), () {
+    throw ('http async error');
+  });
 }
 
 void outerServerEntryPoint(String environment, String cluster, EasyServer server, EasyUniDb? database) {
   server.websocketRoute('enter', (session, packet) async {
+    server.logWarn([packet]);
     return packet.responseOk(data: {'aaa': 1, 'bbb': 2});
   });
   server.websocketRoute('leave', (session, packet) async {
@@ -97,11 +106,22 @@ void outerServerEntryPoint(String environment, String cluster, EasyServer server
   server.websocketRoute('datatime', (session, packet) async {
     return server.callRemoteForResult('inner', route: 'now');
   });
+
+  //Asynchronous error test
+  Future.delayed(Duration(seconds: 14), () {
+    throw ('outer async error');
+  });
 }
 
 void innerServerEntryPoint(String environment, String cluster, EasyServer server, EasyUniDb? database) {
   server.websocketRemote('now', (session, packet) async {
+    server.logWarn([packet]);
     // return packet.responseOk(data: {'time': DateTime.now()});// error because of DateTime not implements toJson() method
     return packet.responseOk(data: {'time': DateTime.now().toString()});
+  });
+
+  //Asynchronous error test
+  Future.delayed(Duration(seconds: 15), () {
+    throw ('inner async error');
   });
 }

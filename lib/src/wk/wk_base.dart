@@ -5,7 +5,7 @@ import 'dart:async';
 ///
 abstract class WkBase {
   ///启动线程
-  Future<void> start() => throw UnimplementedError();
+  Future<void> start({bool runErrorsZone = true, bool errorsAreFatal = false}) => throw UnimplementedError();
 
   ///关闭线程
   Future<void> close() => throw UnimplementedError();
@@ -73,6 +73,9 @@ enum WkSignal {
 ///线程通讯消息
 ///
 class WkMessage {
+  ///未处理的异常
+  static const runZonedGuardedError = '___runZonedGuardedError___';
+
   ///消息信号类型
   final WkSignal signal;
 

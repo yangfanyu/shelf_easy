@@ -109,6 +109,9 @@ enum EasyLogLevel {
 
   ///error
   error,
+
+  ///fatal
+  fatal,
 }
 
 ///
@@ -156,31 +159,37 @@ class EasyLogger {
 
   void logTrace(List<dynamic> args) {
     if (EasyLogLevel.trace.index >= _logLevel.index) {
-      _logger(this, '[TRACE] ${DateTime.now().toIso8601String()} $_logTag ${args.join(' ')}', EasyLogLevel.trace);
+      _logger(this, '[TRACE] ${DateTime.now().toIso8601String().padRight(26, '0')} $_logTag ${args.join(' ')}', EasyLogLevel.trace);
     }
   }
 
   void logDebug(List<dynamic> args) {
     if (EasyLogLevel.debug.index >= _logLevel.index) {
-      _logger(this, '[DEBUG] ${DateTime.now().toIso8601String()} $_logTag ${args.join(' ')}', EasyLogLevel.debug);
+      _logger(this, '[DEBUG] ${DateTime.now().toIso8601String().padRight(26, '0')} $_logTag ${args.join(' ')}', EasyLogLevel.debug);
     }
   }
 
   void logInfo(List<dynamic> args) {
     if (EasyLogLevel.info.index >= _logLevel.index) {
-      _logger(this, '[INFO] ${DateTime.now().toIso8601String()} $_logTag ${args.join(' ')}', EasyLogLevel.info);
+      _logger(this, '[INFO] ${DateTime.now().toIso8601String().padRight(26, '0')} $_logTag ${args.join(' ')}', EasyLogLevel.info);
     }
   }
 
   void logWarn(List<dynamic> args) {
     if (EasyLogLevel.warn.index >= _logLevel.index) {
-      _logger(this, '[WARN] ${DateTime.now().toIso8601String()} $_logTag ${args.join(' ')}', EasyLogLevel.warn);
+      _logger(this, '[WARN] ${DateTime.now().toIso8601String().padRight(26, '0')} $_logTag ${args.join(' ')}', EasyLogLevel.warn);
     }
   }
 
   void logError(List<dynamic> args) {
     if (EasyLogLevel.error.index >= _logLevel.index) {
-      _logger(this, '[ERROR] ${DateTime.now().toIso8601String()} $_logTag ${args.join(' ')}', EasyLogLevel.error);
+      _logger(this, '[ERROR] ${DateTime.now().toIso8601String().padRight(26, '0')} $_logTag ${args.join(' ')}', EasyLogLevel.error);
+    }
+  }
+
+  void logFatal(List<dynamic> args) {
+    if (EasyLogLevel.fatal.index >= _logLevel.index) {
+      _logger(this, '[FATAL] ${DateTime.now().toIso8601String().padRight(26, '0')} $_logTag ${args.join(' ')}', EasyLogLevel.fatal);
     }
   }
 
@@ -205,6 +214,9 @@ class EasyLogger {
       case EasyLogLevel.error:
         print('\x1B[31m$msg\x1B[0m');
         break;
+      case EasyLogLevel.fatal:
+        print('\x1B[35m$msg\x1B[0m');
+        break;
     }
   }
 
@@ -225,6 +237,9 @@ class EasyLogger {
         break;
       case EasyLogLevel.error:
         stdout.writeln('\x1B[31m$msg\x1B[0m');
+        break;
+      case EasyLogLevel.fatal:
+        stdout.writeln('\x1B[35m$msg\x1B[0m');
         break;
     }
   }

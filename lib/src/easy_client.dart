@@ -95,9 +95,9 @@ class EasyClient extends EasyLogger {
   }
 
   ///初始化并发线程，用于客户端高计算量任务，如json解析、加解密操作等
-  Future<void> initThread(Future<dynamic> Function(String taskType, dynamic taskData) customHandler) {
+  Future<void> initThread(Future<dynamic> Function(String taskType, dynamic taskData) customHandler, {bool runErrorsZone = true, bool errorsAreFatal = false}) {
     _thread = worker.create(WkConfig(serviceConfig: {'customHandler': customHandler}, serviceHandler: _serviceHandler, messageHandler: _messageHandler));
-    return _thread!.start();
+    return _thread!.start(runErrorsZone: runErrorsZone, errorsAreFatal: errorsAreFatal);
   }
 
   ///运行一个并发计算任务，[taskType]为计算任务类型名，[taskData]计算任务所需数据
@@ -443,6 +443,8 @@ class EasyClient extends EasyLogger {
   static Future<dynamic> _messageHandler(Map<String, dynamic> config, String type, dynamic data) async {
     Future<dynamic> Function(String taskType, dynamic taskData) customHandler = config['customHandler'];
     switch (type) {
+      case WkMessage.runZonedGuardedError:
+        return null; //暂时先忽略掉
       case _threadTaskEncrypt:
         return EasySecurity.encrypt(data[0], data[1], data[2]);
       case _threadTaskDecrypt:

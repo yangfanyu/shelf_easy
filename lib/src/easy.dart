@@ -41,6 +41,11 @@ class Easy {
   /// * [sslKeyFile] privateKey文件路径
   /// * [sslCerFile] certificate文件路径
   ///
+  /// 子线程异常处理方式
+  ///
+  /// * [runErrorsZone] 在runZonedGuarded函数中运行子线程逻辑
+  /// * [errorsAreFatal] 为true时若在子线程中产生未捕获的异常，将终止子线程的运行
+  ///
   static startClusterServers({
     bool machineBind = false,
     String machineFile = '/etc/hostname',
@@ -60,6 +65,8 @@ class Easy {
     bool? binary,
     String? sslKeyFile,
     String? sslCerFile,
+    bool runErrorsZone = true,
+    bool errorsAreFatal = false,
   }) async {
     final clusterServerConfig = envClusterServerConfig[environment];
     final clusterDatabaseConfig = envClusterDatabaseConfig?[environment];
@@ -138,7 +145,7 @@ class Easy {
       }
     });
     for (var wk in _workerList) {
-      await wk.start();
+      await wk.start(runErrorsZone: runErrorsZone, errorsAreFatal: errorsAreFatal);
     }
   }
 
@@ -184,6 +191,11 @@ class Easy {
   }
 
   static Future<dynamic> _messageHandler(Map<String, dynamic> config, String type, dynamic data) async {
+    if (type == WkMessage.runZonedGuardedError) {
+      final EasyServer? serverInstance = config['serverInstance'];
+      final List dataList = data;
+      serverInstance?.logFatal(['runZonedGuardedError =>', dataList[0], '\n', dataList[1]]);
+    }
     return null;
   }
 }

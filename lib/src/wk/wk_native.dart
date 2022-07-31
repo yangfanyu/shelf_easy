@@ -15,7 +15,7 @@ class WkNative implements WkBase {
   WkNative(this._config);
 
   @override
-  Future<void> start() {
+  Future<void> start({bool runErrorsZone = true, bool errorsAreFatal = false}) {
     if (_receivePort != null) return Future.value();
     final completer = Completer();
     _receivePort = ReceivePort();
@@ -29,8 +29,8 @@ class WkNative implements WkBase {
         final task = _taskMap.remove(message.id);
         task?.completer.complete(message.data);
       }
-    });
-    Isolate.spawn(_entryPoint, _config).then((value) {
+    }, cancelOnError: false);
+    Isolate.spawn(runErrorsZone ? _entryPointZone : _entryPoint, _config, errorsAreFatal: errorsAreFatal).then((value) {
       _isolate = value;
       _timer = Timer.periodic(Duration(seconds: 1), (Timer timer) => _onHeartick());
     });
@@ -70,6 +70,14 @@ class WkNative implements WkBase {
   }
 
   ///子线程入口函数
+  static void _entryPointZone(WkConfig config) {
+    runZonedGuarded(() {
+      _entryPoint(config);
+    }, (error, stack) {
+      config.messageHandler(config.serviceConfig, WkMessage.runZonedGuardedError, [error, stack]);
+    });
+  }
+
   static void _entryPoint(WkConfig config) {
     final ReceivePort receivePort = ReceivePort();
     final SendPort sendPort = config.sendPort;
@@ -95,7 +103,7 @@ class WkNative implements WkBase {
             break;
         }
       }
-    });
+    }, cancelOnError: false);
     sendPort.send(receivePort.sendPort);
   }
 }
