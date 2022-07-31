@@ -1,4 +1,4 @@
-## 1.0.18
+## 1.0.19
 
 - Add runZonedGuarded mode for worker.
   

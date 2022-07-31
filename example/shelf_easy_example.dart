@@ -64,8 +64,9 @@ void main() {
     pwd: '123',
     secret: EasySecurity.uuid.v4(),
     binary: true,
+    //Asynchronous error test
     runErrorsZone: false,
-    errorsAreFatal: true,
+    errorsAreFatal: false,
   );
 
   //sigint
@@ -77,7 +78,6 @@ void main() {
 void httpServerEntryPoint(String environment, String cluster, EasyServer server, EasyUniDb? database) {
   final rootPath = '${Directory.current.path}/example';
   server.httpRoute('/login/<user>/<pwd>', (request, packet) async {
-    server.logWarn([packet]);
     return packet.responseOk(data: {'hello': 1, 'world': 2});
   });
   server.httpUpload('/upload', (request, packet, files) async {
@@ -97,7 +97,6 @@ void httpServerEntryPoint(String environment, String cluster, EasyServer server,
 
 void outerServerEntryPoint(String environment, String cluster, EasyServer server, EasyUniDb? database) {
   server.websocketRoute('enter', (session, packet) async {
-    server.logWarn([packet]);
     return packet.responseOk(data: {'aaa': 1, 'bbb': 2});
   });
   server.websocketRoute('leave', (session, packet) async {
@@ -115,7 +114,6 @@ void outerServerEntryPoint(String environment, String cluster, EasyServer server
 
 void innerServerEntryPoint(String environment, String cluster, EasyServer server, EasyUniDb? database) {
   server.websocketRemote('now', (session, packet) async {
-    server.logWarn([packet]);
     // return packet.responseOk(data: {'time': DateTime.now()});// error because of DateTime not implements toJson() method
     return packet.responseOk(data: {'time': DateTime.now().toString()});
   });
