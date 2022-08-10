@@ -1,3 +1,7 @@
+## 1.0.20
+
+- Optimize encryption and decryption methods.
+  
 ## 1.0.19
 
 - Add runZonedGuarded mode for worker.

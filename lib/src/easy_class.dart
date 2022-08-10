@@ -452,7 +452,7 @@ class EasySecurity {
     return md5.convert(utf8.encode(data)).toString();
   }
 
-  ///将数据包进行加密，采用随机生成iv和key的AES加密算法，CBC、Pkcs7
+  ///将数据包进行加密，采用随机生成iv和key的AES加密算法（CBC、Pkcs7）
   ///
   /// * [data] 要加密的数据包
   /// * [pwd] 加密的密码
@@ -470,9 +470,9 @@ class EasySecurity {
         final aesCrypto = Encrypter(AES(Key(key), mode: AESMode.cbc, padding: 'PKCS7'));
         final body = aesCrypto.encrypt(plainText, iv: IV(iv)).bytes;
         final encRes = Uint8List(salt.length + iv.length + body.length);
-        _copyUint8List(binary, encRes, salt, 0);
-        _copyUint8List(binary, encRes, iv, salt.length);
-        _copyUint8List(binary, encRes, body, salt.length + iv.length);
+        _copyUint8List(encRes, salt, 0);
+        _copyUint8List(encRes, iv, salt.length);
+        _copyUint8List(encRes, body, salt.length + iv.length);
         return binary ? encRes : base64Encode(encRes);
       } else {
         return binary ? plainText.codeUnits : plainText;
@@ -482,7 +482,7 @@ class EasySecurity {
     }
   }
 
-  ///将收到的数据进行解密，采用随机生成iv和key的AES解密算法，CBC、Pkcs7
+  ///将收到的数据进行解密，采用随机生成iv和key的AES解密算法（CBC、Pkcs7）
   ///
   /// * [data] 要解密的数据
   /// * [pwd] 解密的密码
@@ -495,12 +495,9 @@ class EasySecurity {
         if (data is String) {
           bytes = base64Decode(data);
         } else if (data is ByteBuffer) {
-          final copy = data.asUint8List(); //Web is NativeByteBuffer
-          bytes = Uint8List(copy.length);
-          _copyUint8List(true, bytes, copy, 0);
+          bytes = data.asUint8List(); //Web is NativeByteBuffer
         } else if (data is Uint8List) {
-          bytes = Uint8List(data.length); //Native is Uint8List
-          _copyUint8List(true, bytes, data, 0);
+          bytes = data; //Native is Uint8List
         } else {
           return null;
         }
@@ -521,24 +518,14 @@ class EasySecurity {
 
   ///拷贝字节数组
   ///
-  /// * [swapInt32Endian] 是否交换字节序
   /// * [to] 保存的子节数组
   /// * [from] 来源的子节数组
   /// * [toOffset] 在[to]数组中的从这个位置开始保存
   ///
-  static void _copyUint8List(bool swapInt32Endian, Uint8List to, Uint8List from, int toOffset) {
-    // if (swapInt32Endian) {
-    //   for (int i = 0; i < from.length; i += 4) {
-    //     to[toOffset + i + 0] = from[i + 3];
-    //     to[toOffset + i + 1] = from[i + 2];
-    //     to[toOffset + i + 2] = from[i + 1];
-    //     to[toOffset + i + 3] = from[i + 0];
-    //   }
-    // } else {
+  static void _copyUint8List(Uint8List to, Uint8List from, int toOffset) {
     for (int i = 0; i < from.length; i++) {
       to[toOffset + i] = from[i];
     }
-    // }
   }
 }
 
