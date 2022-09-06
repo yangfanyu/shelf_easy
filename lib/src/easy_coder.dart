@@ -23,7 +23,7 @@ class EasyCoder extends EasyLogger {
   ///生成数据库模型
   void generateModel(EasyCoderModelInfo modelInfo) {
     final indent = _config.indent;
-    final outputPath = '${_config.absFolder}/${modelInfo.className.toLowerCase()}.dart'; //输入文件路径
+    final outputPath = '${_config.absFolder}/${modelInfo.outputFile?.toLowerCase() ?? modelInfo.className.toLowerCase()}.dart'; //输入文件路径
     final buffer = StringBuffer();
     //删除旧文件
     try {
@@ -40,7 +40,7 @@ class EasyCoder extends EasyLogger {
     buffer.write('///${modelInfo.classDesc.join('\n///')}\n'); //类描述信息
     buffer.write('class ${modelInfo.className} extends DbBaseModel {\n'); //类开始
     _generateConstFields(indent, modelInfo, buffer); //常量字段
-    _generateFieldDefine(indent, modelInfo, buffer); //变量字段
+    _generateFieldDefine(indent, modelInfo, buffer); //成员字段
     _generateConstructor(indent, modelInfo, buffer); //构造函数
     _generateFromStringMethod(indent, modelInfo, buffer); //fromString函数
     _generateFromJsonMethod(indent, modelInfo, buffer); //fromJson函数
@@ -268,7 +268,9 @@ class EasyCoder extends EasyLogger {
     buffer.write('${indent}Map<String, dynamic> toJson() {\n');
     buffer.write('$indent${indent}return {\n');
     for (var element in modelInfo.classFields) {
-      buffer.write('$indent$indent$indent\'${element.name}\': DbQueryField.toBaseType(${element.name}),\n');
+      final valTemplate = _config.fieldsToJsonVals[element.type] ?? _config.fieldsToJsonVals[EasyCoderConfig.defaultType]!;
+      final expression = EasyCoderConfig.compileTemplateCode(valTemplate, element.name, element.type);
+      buffer.write('$indent$indent$indent\'${element.name}\': $expression,\n');
     }
     buffer.write('$indent$indent};\n');
     buffer.write('$indent}\n\n');

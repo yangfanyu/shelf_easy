@@ -83,24 +83,24 @@ class DbConfig {
 class DbSession {}
 
 ///
-///基本数据表模型
+///基本数据模型
 ///
 abstract class DbBaseModel {
+  ///jsonEncode(this)抛出的异常被吃掉了，所以需要写成jsonEncode(toJson())
+  @override
+  String toString() => '$runtimeType(${jsonEncode(toJson())})';
+
   ///转换为基本数据类型的Map。转换结果可以直接使用[jsonEncode]进行序列化，可以直接保存到mongo数据库
   Map<String, dynamic> toJson() => throw UnimplementedError();
-
-  ///通过基本数据类型的Map来更新字段。来源[map]可以直接使用[jsonEncode]进行序列化，可以直接保存到mongo数据库
-  void updateByJson(Map<String, dynamic> map) => throw UnimplementedError();
 
   ///转换为用字符串key读取字段值的Map
   Map<String, dynamic> toKValues() => throw UnimplementedError();
 
+  ///通过基本数据类型的Map来更新字段。来源[map]可以直接使用[jsonEncode]进行序列化，可以直接保存到mongo数据库
+  void updateByJson(Map<String, dynamic> map) => throw UnimplementedError();
+
   ///通过用字符串key读取字段值的Map来更新字段
   void updateByKValues(Map<String, dynamic> map) => throw UnimplementedError();
-
-  ///jsonEncode(this)抛出的异常被吃掉了，所以需要写成jsonEncode(toJson())
-  @override
-  String toString() => '$runtimeType(${jsonEncode(toJson())})';
 }
 
 ///
@@ -759,6 +759,8 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
       return v.map((key, value) => MapEntry(key is String ? key : (key is ObjectId ? key.toHexString() : key.toString()), toBaseType(value)));
     } else if (v is List) {
       return v.map((value) => toBaseType(value)).toList();
+    } else if (v is Enum) {
+      return v.name;
     } else if (v is DbBaseModel) {
       return v.toJson();
     } else if (v is ObjectId) {

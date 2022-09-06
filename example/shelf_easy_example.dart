@@ -26,7 +26,7 @@ void main() {
       },
       'production': {
         'http': [
-          EasyServerConfig(host: 'localhost', port: 8080, links: ['outer', 'outer']),
+          EasyServerConfig(host: 'localhost', port: 8080, links: ['outer', 'inner'], instances: 4),
         ],
         'outer': [
           EasyServerConfig(host: 'localhost', port: 8001, links: ['inner']),

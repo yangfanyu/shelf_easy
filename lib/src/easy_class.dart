@@ -969,13 +969,16 @@ class EasyCoderConfig {
   ///代码缩进单位
   final String indent;
 
-  ///基本数据类型fromJson方法-值转换
+  ///成员数据类型toJson方法
+  final Map<String, String> fieldsToJsonVals;
+
+  ///基本数据类型fromJson方法-值转换（用来解析 非List 与 非Map 类型）
   final Map<String, String> baseFromJsonVals;
 
-  ///嵌套数据类型fromJson方法-键转换（经过测试发现：jsonEncode操作Map时只支持以字符串为key，mongo数据库保存Map时只支持以字符串为key）
+  ///嵌套数据类型fromJson方法-键转换（用来解析 Map<KeyType, ValType >的 KeyType 。jsonEncode操作Map时只支持以字符串为key，mongo数据库保存Map时只支持以字符串为key）
   final Map<String, String> nestFromJsonKeys;
 
-  ///嵌套数据类型fromJson方法-值转换
+  ///嵌套数据类型fromJson方法-值转换（用来解析 List<ValType> 与 Map<KeyType, ValType> 的 ValType ）
   final Map<String, String> nestFromJsonVals;
 
   EasyCoderConfig({
@@ -987,10 +990,15 @@ class EasyCoderConfig {
     this.logFileMaxBytes,
     required this.absFolder,
     this.indent = '  ',
+    Map<String, String> customFieldsToJsonVals = const {},
     Map<String, String> customBaseFromJsonVals = const {},
     Map<String, String> customNestFromJsonKeys = const {},
     Map<String, String> customNestFromJsonVals = const {},
-  })  : baseFromJsonVals = {
+  })  : fieldsToJsonVals = {
+          defaultType: 'DbQueryField.toBaseType(#)',
+          ...customFieldsToJsonVals,
+        },
+        baseFromJsonVals = {
           'int': 'DbQueryField.tryParseInt(#)',
           'double': 'DbQueryField.tryParseDouble(#)',
           'num': 'DbQueryField.tryParseNum(#)',
@@ -1030,6 +1038,9 @@ class EasyCoderConfig {
 ///代码生成器模型信息
 ///
 class EasyCoderModelInfo {
+  ///模型类输出文件名称
+  final String? outputFile;
+
   ///模型类的import部分
   final List<String> importList;
 
@@ -1039,16 +1050,16 @@ class EasyCoderModelInfo {
   ///模型类的名称
   final String className;
 
-  ///模型常量字段
+  ///模型类的常量字段
   final List<EasyCoderFieldInfo> constFields;
 
-  ///模型变量字段
+  ///模型实例的成员字段
   final List<EasyCoderFieldInfo> classFields;
 
-  ///模型扩展字段，这一部分字段不参与序列化和查询
+  ///模型实例的扩展字段，这一部分字段不参与序列化和查询
   final List<EasyCoderFieldInfo> extraFields;
 
-  ///是否生成constFields字段的Map映射，为true时每个常量字段类型必须为int
+  ///是否生成[constFields]字段的Map映射，为true时[constFields]的每个子项类型必须为int
   final bool constMap;
 
   ///是否生成写入辅助类
@@ -1058,6 +1069,7 @@ class EasyCoderModelInfo {
   final bool query;
 
   EasyCoderModelInfo({
+    this.outputFile,
     required this.importList,
     required this.classDesc,
     required this.className,

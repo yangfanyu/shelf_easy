@@ -1,3 +1,7 @@
+## 1.0.25
+
+- Adjust part of the code.
+  
 ## 1.0.20
 
 - Optimize encryption and decryption methods.
