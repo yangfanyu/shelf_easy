@@ -1,3 +1,7 @@
+## 1.0.28
+
+- Extension code generation method.
+  
 ## 1.0.25
 
 - Adjust part of the code.

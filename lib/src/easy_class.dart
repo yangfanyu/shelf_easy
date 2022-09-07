@@ -966,8 +966,14 @@ class EasyCoderConfig {
   ///导出文件路径
   final String absFolder;
 
+  ///模型继承类型
+  final String baseClass;
+
   ///代码缩进单位
   final String indent;
+
+  ///成员数据类型builder方法
+  final Map<String, String> fieldsToWrapVals;
 
   ///成员数据类型toJson方法
   final Map<String, String> fieldsToJsonVals;
@@ -989,12 +995,18 @@ class EasyCoderConfig {
     this.logFileBackup,
     this.logFileMaxBytes,
     required this.absFolder,
+    this.baseClass = 'DbBaseModel',
     this.indent = '  ',
+    Map<String, String> customFieldsToWrapVals = const {},
     Map<String, String> customFieldsToJsonVals = const {},
     Map<String, String> customBaseFromJsonVals = const {},
     Map<String, String> customNestFromJsonKeys = const {},
     Map<String, String> customNestFromJsonVals = const {},
-  })  : fieldsToJsonVals = {
+  })  : fieldsToWrapVals = {
+          defaultType: '#',
+          ...customFieldsToWrapVals,
+        },
+        fieldsToJsonVals = {
           defaultType: 'DbQueryField.toBaseType(#)',
           ...customFieldsToJsonVals,
         },
@@ -1059,6 +1071,9 @@ class EasyCoderModelInfo {
   ///模型实例的扩展字段，这一部分字段不参与序列化和查询
   final List<EasyCoderFieldInfo> extraFields;
 
+  ///对应的包装类型。不为null时生成的json格式：{type: xxx, args: {...}}
+  final String? wrapType;
+
   ///是否生成[constFields]字段的Map映射，为true时[constFields]的每个子项类型必须为int
   final bool constMap;
 
@@ -1073,9 +1088,10 @@ class EasyCoderModelInfo {
     required this.importList,
     required this.classDesc,
     required this.className,
-    required this.constFields,
-    required this.classFields,
-    required this.extraFields,
+    this.constFields = const [],
+    this.classFields = const [],
+    this.extraFields = const [],
+    this.wrapType,
     this.constMap = false,
     this.dirty = true,
     this.query = true,

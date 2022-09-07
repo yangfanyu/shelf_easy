@@ -1,6 +1,6 @@
 name: shelf_easy
 description: Lightweight web server, websocket server, websocket client framework. Support cluster, simple and easy to use.
-version: 1.0.25
+version: 1.0.28
 homepage: https://github.com/yangfanyu/shelf_easy
 
 environment:

@@ -38,7 +38,6 @@ void main() {
     importList: ['location.dart'],
     classDesc: ['', '用户地址类', ''],
     className: 'Address',
-    constFields: [],
     classFields: [
       EasyCoderFieldInfo(type: 'String', name: 'country', desc: ['国家']),
       EasyCoderFieldInfo(type: 'String', name: 'province', desc: ['省份']),
@@ -46,25 +45,21 @@ void main() {
       EasyCoderFieldInfo(type: 'String', name: 'area', desc: ['县（区）']),
       EasyCoderFieldInfo(type: 'Location', name: 'location', desc: ['县（区）']),
     ],
-    extraFields: [],
   ));
   coder.generateModel(EasyCoderModelInfo(
     importList: [],
     classDesc: ['', '用户位置类', ''],
     className: 'Location',
-    constFields: [],
     classFields: [
       EasyCoderFieldInfo(type: 'double', name: 'latitude', desc: ['纬度']),
       EasyCoderFieldInfo(type: 'double', name: 'longitude', desc: ['经度']),
       EasyCoderFieldInfo(type: 'double', name: 'accuracy', desc: ['精确度']),
     ],
-    extraFields: [],
   ));
   coder.generateModel(EasyCoderModelInfo(
     importList: ['address.dart'],
     classDesc: ['', '复杂字段类', ''],
     className: 'Complex',
-    constFields: [],
     classFields: [
       //_id
       EasyCoderFieldInfo(type: 'ObjectId', name: '_id', desc: []),
@@ -147,46 +142,62 @@ void main() {
       // EasyCoderFieldInfo(type: 'List', name: 'badList',  desc: []),
       // EasyCoderFieldInfo(type: 'Map', name: 'badMap', desc: []),
     ],
-    extraFields: [],
   ));
   coder.generateModel(EasyCoderModelInfo(
     importList: [],
     classDesc: ['', '只有一个字段类', ''],
     className: 'OnlyOne',
-    constFields: [],
     classFields: [
       EasyCoderFieldInfo(type: 'String', name: 'test1', desc: ['']),
     ],
-    extraFields: [],
   ));
   coder.generateModel(EasyCoderModelInfo(
     importList: [],
     classDesc: ['', '只有两个字段类', ''],
     className: 'OnlyTwo',
-    constFields: [],
     classFields: [
       EasyCoderFieldInfo(type: 'String', name: 'test1', desc: ['']),
       EasyCoderFieldInfo(type: 'String', name: 'test2', desc: ['']),
     ],
-    extraFields: [],
   ));
   coder.generateModel(EasyCoderModelInfo(
     importList: [],
     classDesc: ['', '没有字段类', ''],
     className: 'OnlyNull',
-    constFields: [],
     classFields: [
       EasyCoderFieldInfo(type: 'String', name: 'test1', desc: [''], nullAble: true),
       EasyCoderFieldInfo(type: 'String', name: 'test2', desc: [''], nullAble: true),
     ],
-    extraFields: [],
   ));
   coder.generateModel(EasyCoderModelInfo(
     importList: [],
     classDesc: ['', '没有字段类', ''],
     className: 'Empty',
-    constFields: [],
-    classFields: [],
-    extraFields: [],
   ));
+  coder.generateModel(EasyCoderModelInfo(
+    outputFile: 'wrapper_location',
+    importList: ['location.dart'],
+    classDesc: ['', '位置包装类', ''],
+    className: 'WrapperLocation',
+    classFields: [
+      EasyCoderFieldInfo(type: 'double', name: 'latitude', desc: ['纬度']),
+      EasyCoderFieldInfo(type: 'double', name: 'longitude', desc: ['经度']),
+      EasyCoderFieldInfo(type: 'double', name: 'accuracy', desc: ['精确度']),
+    ],
+    wrapType: 'Location',
+    dirty: false,
+    query: false,
+  ));
+  coder.generateModel(EasyCoderModelInfo(
+    outputFile: 'wrapper_empty',
+    importList: ['empty.dart'],
+    classDesc: ['', '无字段包装类', ''],
+    className: 'WrapperEmpty',
+    wrapType: 'Empty',
+    dirty: false,
+    query: false,
+  ));
+  coder.generateBuilder(
+    outputFile: 'wrapper_builder',
+  );
 }

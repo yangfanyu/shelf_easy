@@ -101,6 +101,9 @@ abstract class DbBaseModel {
 
   ///通过用字符串key读取字段值的Map来更新字段
   void updateByKValues(Map<String, dynamic> map) => throw UnimplementedError();
+
+  ///使用本实例字段成员的值生成包装的目标类实例
+  dynamic buildTarget() => throw UnimplementedError();
 }
 
 ///

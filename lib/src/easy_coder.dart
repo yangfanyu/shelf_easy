@@ -9,8 +9,12 @@ class EasyCoder extends EasyLogger {
   ///配置信息
   final EasyCoderConfig _config;
 
+  ///历史操作
+  final List<EasyCoderModelInfo> _wrapList;
+
   EasyCoder({required EasyCoderConfig config})
       : _config = config,
+        _wrapList = [],
         super(
           logger: config.logger,
           logLevel: config.logLevel,
@@ -38,7 +42,7 @@ class EasyCoder extends EasyLogger {
     //拼接类内容
     _generateImports(indent, modelInfo, buffer); //import内容
     buffer.write('///${modelInfo.classDesc.join('\n///')}\n'); //类描述信息
-    buffer.write('class ${modelInfo.className} extends DbBaseModel {\n'); //类开始
+    buffer.write('class ${modelInfo.className} extends ${_config.baseClass} {\n'); //类开始
     _generateConstFields(indent, modelInfo, buffer); //常量字段
     _generateFieldDefine(indent, modelInfo, buffer); //成员字段
     _generateConstructor(indent, modelInfo, buffer); //构造函数
@@ -49,11 +53,76 @@ class EasyCoder extends EasyLogger {
     _generateToKValuesMethod(indent, modelInfo, buffer); //toKValues函数
     _generateUpdateByJsonMethod(indent, modelInfo, buffer); //updateByJson函数
     _generateUpdateByKValuesMethod(indent, modelInfo, buffer); //updateByKValues函数
+    if (modelInfo.wrapType != null) {
+      _generateBuildTargetMethod(indent, modelInfo, buffer);
+    }
     buffer.write('}\n'); //类结束
     //写入辅助类
     _generateDirtyClass(indent, modelInfo, buffer);
     //查询辅助类
     _generateQueryClass(indent, modelInfo, buffer);
+    //写入到文件
+    try {
+      File(outputPath)
+        ..createSync(recursive: true)
+        ..writeAsStringSync(buffer.toString());
+      logInfo(['write to file', outputPath, 'success.\n']);
+    } catch (error, stack) {
+      logError(['write to file', outputPath, 'error:', error, '\n', stack]);
+    }
+    //保存历史记录
+    if (modelInfo.wrapType != null) {
+      _wrapList.add(modelInfo);
+    }
+  }
+
+  ///生成通用构建器
+  void generateBuilder({String? outputFile, List<String> importList = const [], String className = 'WrapBuilder', String? wrapClass}) {
+    final indent = _config.indent;
+    final outputPath = '${_config.absFolder}/${outputFile?.toLowerCase() ?? className.toLowerCase()}.dart'; //输入文件路径
+    final buffer = StringBuffer();
+    //删除旧文件
+    try {
+      final oldFile = File(outputPath); //旧文件
+      if (oldFile.existsSync()) {
+        oldFile.deleteSync();
+        logDebug(['delete file', outputPath, 'success.']);
+      }
+    } catch (error, stack) {
+      logError(['delete file', outputPath, 'error:', error, '\n', stack]);
+    }
+    if (_wrapList.isEmpty) return;
+    //拼接类内容
+    buffer.write('import \'package:shelf_easy/shelf_easy.dart\';\n');
+    //导入自定义文件
+    for (var element in importList) {
+      buffer.write('import \'$element\';\n');
+    }
+    buffer.write('\n');
+    for (var element in _wrapList) {
+      final path = '${element.outputFile?.toLowerCase() ?? element.className.toLowerCase()}.dart'; //输入文件路径
+      buffer.write('import \'$path\';\n');
+    }
+    buffer.write('\n');
+    buffer.write('///Parsing class generated\n');
+    buffer.write('class $className {\n'); //类开始
+    buffer.write('$indent///Parsing mapdata generated\n');
+    buffer.write('${indent}static final _recordBuilder = <String, ${_config.baseClass} Function(Map<String, dynamic> map)>{\n');
+    for (var element in _wrapList) {
+      buffer.write('$indent$indent\'${element.className}\': (Map<String, dynamic> map) => ${element.className}.fromJson(map),\n');
+    }
+    buffer.write('$indent};\n\n');
+    buffer.write('$indent///Parsing mapdata generated\n');
+    buffer.write('${indent}static final _targetBuilder = <String, ${wrapClass ?? _config.baseClass} Function(${_config.baseClass} record)>{\n');
+    for (var element in _wrapList) {
+      buffer.write('$indent$indent\'${element.className}\': (${_config.baseClass} record) => record.buildTarget(),\n');
+    }
+    buffer.write('$indent};\n\n');
+    buffer.write('$indent///Parsing method generated\n');
+    buffer.write('${indent}static ${_config.baseClass} buildRecord(Map<String, dynamic> map) => _recordBuilder[map[\'type\']]!(map);\n\n');
+    buffer.write('$indent///Parsing method generated\n');
+    buffer.write('${indent}static ${wrapClass ?? _config.baseClass} buildTarget(${_config.baseClass} record) => _targetBuilder[record.runtimeType]!(record);\n');
+    buffer.write('}\n'); //类结束
     //写入到文件
     try {
       File(outputPath)
@@ -186,6 +255,9 @@ class EasyCoder extends EasyLogger {
       return;
     }
     buffer.write('${indent}factory ${modelInfo.className}.fromJson(Map<String, dynamic> map) {\n');
+    if (modelInfo.wrapType != null) {
+      buffer.write('$indent${indent}map = map[\'args\'];\n');
+    }
     buffer.write('$indent${indent}return ${modelInfo.className}(\n');
     for (var element in modelInfo.classFields) {
       final publicName = _getFieldPublicName(element.name);
@@ -260,19 +332,36 @@ class EasyCoder extends EasyLogger {
     if (modelInfo.classFields.isEmpty) {
       buffer.write('$indent@override\n');
       buffer.write('${indent}Map<String, dynamic> toJson() {\n');
-      buffer.write('$indent${indent}return {};\n');
+      if (modelInfo.wrapType != null) {
+        buffer.write('$indent${indent}return {\'type\': ${modelInfo.className}, \'args\': {}};\n');
+      } else {
+        buffer.write('$indent${indent}return {};\n');
+      }
       buffer.write('$indent}\n\n');
       return;
     }
     buffer.write('$indent@override\n');
     buffer.write('${indent}Map<String, dynamic> toJson() {\n');
-    buffer.write('$indent${indent}return {\n');
-    for (var element in modelInfo.classFields) {
-      final valTemplate = _config.fieldsToJsonVals[element.type] ?? _config.fieldsToJsonVals[EasyCoderConfig.defaultType]!;
-      final expression = EasyCoderConfig.compileTemplateCode(valTemplate, element.name, element.type);
-      buffer.write('$indent$indent$indent\'${element.name}\': $expression,\n');
+    if (modelInfo.wrapType != null) {
+      buffer.write('$indent${indent}return {\n');
+      buffer.write('$indent$indent$indent\'type\': \'${modelInfo.className}\',\n');
+      buffer.write('$indent$indent$indent\'args\': {\n');
+      for (var element in modelInfo.classFields) {
+        final valTemplate = _config.fieldsToJsonVals[element.type] ?? _config.fieldsToJsonVals[EasyCoderConfig.defaultType]!;
+        final expression = EasyCoderConfig.compileTemplateCode(valTemplate, element.name, element.type);
+        buffer.write('$indent$indent$indent$indent\'${element.name}\': $expression,\n');
+      }
+      buffer.write('$indent$indent$indent},\n');
+      buffer.write('$indent$indent};\n');
+    } else {
+      buffer.write('$indent${indent}return {\n');
+      for (var element in modelInfo.classFields) {
+        final valTemplate = _config.fieldsToJsonVals[element.type] ?? _config.fieldsToJsonVals[EasyCoderConfig.defaultType]!;
+        final expression = EasyCoderConfig.compileTemplateCode(valTemplate, element.name, element.type);
+        buffer.write('$indent$indent$indent\'${element.name}\': $expression,\n');
+      }
+      buffer.write('$indent$indent};\n');
     }
-    buffer.write('$indent$indent};\n');
     buffer.write('$indent}\n\n');
   }
 
@@ -323,6 +412,27 @@ class EasyCoder extends EasyLogger {
     }
     buffer.write('$indent}\n');
     return;
+  }
+
+  void _generateBuildTargetMethod(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
+    buffer.write('\n');
+    if (modelInfo.classFields.isEmpty) {
+      buffer.write('$indent@override\n');
+      buffer.write('$indent${modelInfo.wrapType} buildTarget() {\n');
+      buffer.write('$indent${indent}return ${modelInfo.wrapType}();\n');
+      buffer.write('$indent}\n\n');
+      return;
+    }
+    buffer.write('$indent@override\n');
+    buffer.write('$indent${modelInfo.wrapType} buildTarget() {\n');
+    buffer.write('$indent${indent}return ${modelInfo.wrapType}(\n');
+    for (var element in modelInfo.classFields) {
+      final valTemplate = _config.fieldsToWrapVals[element.type] ?? _config.fieldsToWrapVals[EasyCoderConfig.defaultType]!;
+      final expression = EasyCoderConfig.compileTemplateCode(valTemplate, element.name, element.type);
+      buffer.write('$indent$indent$indent${element.name}: $expression,\n');
+    }
+    buffer.write('$indent$indent);\n');
+    buffer.write('$indent}\n');
   }
 
   void _generateDirtyClass(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
