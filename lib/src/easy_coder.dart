@@ -77,7 +77,7 @@ class EasyCoder extends EasyLogger {
   }
 
   ///生成通用构建器
-  void generateBuilder({String? outputFile, List<String> importList = const [], String className = 'WrapBuilder', String? wrapClass}) {
+  void generateBuilder({String? outputFile, List<String> importList = const [], String className = 'WrapBuilder', String? wrapClass, bool exportFile = true}) {
     final indent = _config.indent;
     final outputPath = '${_config.absFolder}/${outputFile?.toLowerCase() ?? className.toLowerCase()}.dart'; //输入文件路径
     final buffer = StringBuffer();
@@ -94,7 +94,6 @@ class EasyCoder extends EasyLogger {
     if (_wrapList.isEmpty) return;
     //拼接类内容
     buffer.write('import \'package:shelf_easy/shelf_easy.dart\';\n');
-    //导入自定义文件
     for (var element in importList) {
       buffer.write('import \'$element\';\n');
     }
@@ -104,6 +103,13 @@ class EasyCoder extends EasyLogger {
       buffer.write('import \'$path\';\n');
     }
     buffer.write('\n');
+    if (exportFile) {
+      for (var element in _wrapList) {
+        final path = '${element.outputFile?.toLowerCase() ?? element.className.toLowerCase()}.dart'; //输入文件路径
+        buffer.write('export \'$path\';\n');
+      }
+      buffer.write('\n');
+    }
     buffer.write('///Parsing class generated\n');
     buffer.write('class $className {\n'); //类开始
     buffer.write('$indent///Parsing mapdata generated\n');

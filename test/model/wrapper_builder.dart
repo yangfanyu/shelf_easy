@@ -3,6 +3,9 @@ import 'package:shelf_easy/shelf_easy.dart';
 import 'wrapper_location.dart';
 import 'wrapper_empty.dart';
 
+export 'wrapper_location.dart';
+export 'wrapper_empty.dart';
+
 ///Parsing class generated
 class WrapBuilder {
   ///Parsing mapdata generated
