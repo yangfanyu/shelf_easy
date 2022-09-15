@@ -1117,6 +1117,9 @@ class EasyCoderFieldInfo {
   ///是否可以为null
   final bool nullAble;
 
+  ///包装字段不使用键值对
+  final bool wrapFlat;
+
   ///字段默认值
   final String? defVal;
 
@@ -1132,6 +1135,7 @@ class EasyCoderFieldInfo {
     required this.desc,
     this.secrecy = false,
     this.nullAble = false,
+    this.wrapFlat = false,
     this.defVal,
     this.zhText,
     this.enText,

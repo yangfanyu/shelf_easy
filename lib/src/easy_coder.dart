@@ -435,7 +435,11 @@ class EasyCoder extends EasyLogger {
     for (var element in modelInfo.classFields) {
       final valTemplate = _config.fieldsToWrapVals[element.type] ?? _config.fieldsToWrapVals[EasyCoderConfig.defaultType]!;
       final expression = EasyCoderConfig.compileTemplateCode(valTemplate, element.name, element.type);
-      buffer.write('$indent$indent$indent${element.name}: $expression,\n');
+      if (element.wrapFlat) {
+        buffer.write('$indent$indent$indent$expression,\n');
+      } else {
+        buffer.write('$indent$indent$indent${element.name}: $expression,\n');
+      }
     }
     buffer.write('$indent$indent);\n');
     buffer.write('$indent}\n');
