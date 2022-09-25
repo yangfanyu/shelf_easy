@@ -1,3 +1,7 @@
+## 1.0.31
+
+- Upgrade dependencies.
+  
 ## 1.0.30
 
 - Extension code generation method.
