@@ -1,4 +1,4 @@
-## 1.0.31
+## 1.0.32
 
 - Upgrade dependencies.
   

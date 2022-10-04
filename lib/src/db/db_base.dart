@@ -788,8 +788,8 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
   ///解析String，失败返回''
   static String parseString(dynamic v) => tryParseString(v) ?? '';
 
-  ///解析ObjectId，失败返回ObjectId('000000000000000000000000')
-  static ObjectId parseObjectId(dynamic v) => tryParseObjectId(v) ?? ObjectId.fromHexString('000000000000000000000000');
+  ///解析ObjectId，失败返回[emptyObjectId]
+  static ObjectId parseObjectId(dynamic v) => tryParseObjectId(v) ?? emptyObjectId;
 
   ///解析int，失败返回null
   static int? tryParseInt(dynamic v) {
@@ -868,18 +868,13 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
   }
 
   ///创建一个新的ObjectId
-  static ObjectId createObjectId() {
-    return ObjectId();
-  }
+  static ObjectId createObjectId() => ObjectId();
 
-  ///将HexString转换为ObjectId
-  static ObjectId hexstr2ObjectId(String hexstr) {
-    try {
-      return ObjectId.fromHexString(hexstr);
-    } catch (error) {
-      return ObjectId.fromHexString('000000000000000000000000');
-    }
-  }
+  ///将HexString转换为ObjectId，失败返回[emptyObjectId]
+  static ObjectId hexstr2ObjectId(String hexstr) => parseObjectId(hexstr);
+
+  ///创建一个空的ObjectId
+  static ObjectId get emptyObjectId => ObjectId.fromHexString('000000000000000000000000');
 }
 
 ///
