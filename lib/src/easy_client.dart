@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -146,7 +147,7 @@ class EasyClient extends EasyLogger {
     });
   }
 
-  ///发起http的请求
+  ///发起AES加密通讯的http请求
   Future<EasyPacket> httpRequest(String route, {Map<String, dynamic>? data, List<List<int>>? fileBytes, MediaType? mediaType, Map<String, String>? headers}) async {
     final requestId = _reqIdInc++;
     final requestPacket = EasyPacket.request(route: route, id: requestId, desc: DateTime.now().millisecondsSinceEpoch.toString(), data: data);
@@ -205,7 +206,7 @@ class EasyClient extends EasyLogger {
     }
   }
 
-  ///发起websocket请求，[waitCompleter]为true时等待服务器响应请求，为false时发送完毕后立即返回
+  ///发起AES加密通讯的websocket请求，[waitCompleter]为true时等待服务器响应请求，为false时发送完毕后立即返回
   Future<EasyPacket> websocketRequest(String route, {Map<String, dynamic>? data, bool waitCompleter = true}) async {
     final requestId = _reqIdInc++;
     final requestPacket = EasyPacket.request(route: route, id: requestId, desc: DateTime.now().millisecondsSinceEpoch.toString(), data: data);
@@ -435,6 +436,12 @@ class EasyClient extends EasyLogger {
     //心跳周期回调
     if (_onheart != null) _onheart!(_timerInc, _netDelay);
   }
+
+  ///发起任意的GET请求
+  static Future<http.Response> get(Uri url, {Map<String, String>? headers}) => http.get(url, headers: headers);
+
+  ///发起任意的POST请求
+  static Future<http.Response> post(Uri url, {Map<String, String>? headers, Object? body, Encoding? encoding}) => http.post(url, headers: headers, body: body, encoding: encoding);
 
   static Future<bool> _serviceHandler(WkSignal signal, Map<String, dynamic> config) async {
     return true;

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 import 'package:shelf_cors_headers/shelf_cors_headers.dart';
@@ -79,9 +80,6 @@ class EasyServer extends EasyLogger {
   ///http请求路由
   Router? _router;
 
-  ///读取http路由器实例
-  Router get router => _router ??= Router();
-
   ///读取配置信息
   EasyServerConfig get config => _config;
 
@@ -112,8 +110,36 @@ class EasyServer extends EasyLogger {
     _sessionCloseListener = sessionCloseListener;
   }
 
-  ///设置Http服务的动态请求路由，当设置过http路由时启动为web服务器。否则启动为websocket服务器
-  void httpRoute(String route, HttpRouteHandler handler, {HttpTokenConverter? tokenConverter, Map<String, Object>? headers}) {
+  ///挂载http服务的自定义的GET请求路由，调用过此方法后过启动为web服务器
+  void get(String route, Function handler) {
+    _router ??= Router();
+    _router?.get(route, handler);
+  }
+
+  ///挂载http服务的自定义的POST请求路由，调用过此方法后过启动为web服务器
+  void post(String route, Function handler) {
+    _router ??= Router();
+    _router?.post(route, handler);
+  }
+
+  ///挂载http服务的自定义的静态文件路由，调用过此方法后过启动为web服务器
+  void mount(String route, String path, {bool serveFilesOutsidePath = false, String? defaultDocument, bool listDirectories = false, bool useHeaderBytesForContentType = false, MimeTypeResolver? contentTypeResolver}) {
+    _router ??= Router();
+    _router?.mount(
+      route,
+      createStaticHandler(
+        path,
+        serveFilesOutsidePath: serveFilesOutsidePath,
+        defaultDocument: defaultDocument,
+        listDirectories: listDirectories,
+        useHeaderBytesForContentType: useHeaderBytesForContentType,
+        contentTypeResolver: contentTypeResolver,
+      ),
+    );
+  }
+
+  ///设置http服务的AES加密通讯的动态请求路由，调用过此方法后过启动为web服务器
+  void httpRoute(String route, HttpRouteHandler handler, {HttpTokenConverter? tokenConverter, Map<String, Object>? responseHeaders}) {
     _router ??= Router();
     _router?.post(route, (Request request) async {
       logTrace(['_onHttpRoute <=', request.headers]);
@@ -124,7 +150,7 @@ class EasyServer extends EasyLogger {
       final requestToken = (tokenConverter == null || requestUid.isEmpty) ? null : await tokenConverter(requestUid);
       final requestPacket = EasySecurity.decrypt(requestData, requestToken ?? _config.pwd);
       if (requestPacket == null) {
-        return Response.internalServerError(headers: headers);
+        return Response.internalServerError(headers: responseHeaders);
       }
       logDebug(['_onHttpRoute <<<<<<', requestPacket]);
       //路由响应数据
@@ -132,15 +158,15 @@ class EasyServer extends EasyLogger {
       logDebug(['_onHttpRoute >>>>>>', responsePacket]);
       final responseData = EasySecurity.encrypt(responsePacket, requestToken ?? _config.pwd, _config.binary);
       if (responseData == null) {
-        return Response.internalServerError(headers: headers);
+        return Response.internalServerError(headers: responseHeaders);
       }
       logTrace(['_onHttpRoute =>', responseData]);
-      return Response.ok(responseData, headers: {'content-type': _config.binary ? 'application/octet-stream' : 'text/plain'}..addAll(headers ?? {}));
+      return Response.ok(responseData, headers: {'content-type': _config.binary ? 'application/octet-stream' : 'text/plain'}..addAll(responseHeaders ?? {}));
     });
   }
 
-  ///设置Http服务的文件上传路由，当设置过http路由时启动为web服务器。否则启动为websocket服务器
-  void httpUpload(String route, HttpUploadHandler handler, {required String Function() destinationFolder, String defaultMediatype = 'application/octet-stream', HttpTokenConverter? tokenConverter, Map<String, Object>? headers}) {
+  ///设置http服务的AES加密通讯的文件上传路由，调用过此方法后过启动为web服务器
+  void httpUpload(String route, HttpUploadHandler handler, {required String Function() destinationFolder, String defaultMediatype = 'application/octet-stream', HttpTokenConverter? tokenConverter, Map<String, Object>? responseHeaders}) {
     _router ??= Router();
     _router?.post(route, (Request request) async {
       logTrace(['_onHttpUpload <=', request.headers]);
@@ -164,7 +190,7 @@ class EasyServer extends EasyLogger {
         requestFiles.add(file);
       }
       if (requestPacket == null) {
-        return Response.internalServerError(headers: headers);
+        return Response.internalServerError(headers: responseHeaders);
       }
       logDebug(['_onHttpUpload <<<<<<', requestPacket, '\n', requestFiles]);
       //路由响应数据
@@ -172,32 +198,17 @@ class EasyServer extends EasyLogger {
       logDebug(['_onHttpUpload >>>>>>', responsePacket]);
       final responseData = EasySecurity.encrypt(responsePacket, requestToken ?? _config.pwd, _config.binary);
       if (responseData == null) {
-        return Response.internalServerError(headers: headers);
+        return Response.internalServerError(headers: responseHeaders);
       }
       logTrace(['_onHttpUpload =>', responseData]);
-      return Response.ok(responseData, headers: {'content-type': _config.binary ? 'application/octet-stream' : 'text/plain'}..addAll(headers ?? {}));
+      return Response.ok(responseData, headers: {'content-type': _config.binary ? 'application/octet-stream' : 'text/plain'}..addAll(responseHeaders ?? {}));
     });
   }
 
-  ///设置Http服务的静态文件路由，当设置过http路由时启动为web服务器。否则启动为websocket服务器
-  void httpMount(String route, String path, {bool serveFilesOutsidePath = false, String? defaultDocument, bool listDirectories = false, bool useHeaderBytesForContentType = false}) {
-    _router ??= Router();
-    _router?.mount(
-      route,
-      createStaticHandler(
-        path,
-        serveFilesOutsidePath: serveFilesOutsidePath,
-        defaultDocument: defaultDocument,
-        listDirectories: listDirectories,
-        useHeaderBytesForContentType: useHeaderBytesForContentType,
-      ),
-    );
-  }
-
-  ///设置Websocket服务的路由监听器
+  ///设置websocket服务的AES加密通讯的路由监听器
   void websocketRoute(String route, WebsocketRouteHandler handler) => _websocketRouteMap[route] = handler;
 
-  ///设置Websocket服务的远程监听器
+  ///设置websocket服务的MD5签名校验的远程监听器
   void websocketRemote(String route, WebsocketRouteHandler handler) => _websoketRemoteMap[route] = handler;
 
   ///关闭[uid]对应的session
@@ -541,8 +552,8 @@ class EasyServer extends EasyLogger {
 
   void _onWebSocketMessage(EasyServerSession session, dynamic data) {
     final watch = Stopwatch()..start();
-    final packet = EasySecurity.decrypt(data, session.token ?? _config.pwd);
     //解析数据包
+    final packet = EasySecurity.decrypt(data, session.token ?? _config.pwd);
     if (packet == null) {
       logError(['_onWebSocketMessage <<<<<<', session.info, EasyConstant.serverCloseByParseError.codeDesc, packet]);
       session.close(EasyConstant.serverCloseByParseError.code, EasyConstant.serverCloseByParseError.desc);

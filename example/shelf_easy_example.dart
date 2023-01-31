@@ -83,11 +83,8 @@ void httpServerEntryPoint(String environment, String cluster, EasyServer server,
   server.httpUpload('/upload', (request, packet, files) async {
     return packet.responseOk(data: {'hello': 1, 'upload': 2});
   }, destinationFolder: () => '$rootPath/upload');
-  server.httpMount(
-    '/',
-    rootPath,
-    listDirectories: true,
-  );
+
+  server.mount('/', rootPath, listDirectories: true);
 
   //Asynchronous error test
   Future.delayed(Duration(seconds: 13), () {

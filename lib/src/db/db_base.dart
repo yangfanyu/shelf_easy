@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:bson/bson.dart';
 
-export 'dart:convert' show JsonEncoder, jsonDecode, jsonEncode;
+export 'dart:convert' show jsonDecode, jsonEncode, JsonEncoder;
 
 export 'package:bson/bson.dart' show ObjectId;
 

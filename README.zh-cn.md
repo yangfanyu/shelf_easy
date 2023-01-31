@@ -11,8 +11,8 @@ and the Flutter guide for
 [developing packages and plugins](https://flutter.dev/developing-packages). 
 -->
 
-Lightweight web server, websocket server, websocket client framework. Support cluster, simple and easy to use.
+轻量级web服务器、websocket服务器、websocket客户端框架。支持集群，简单易用。
 
-## Usage
+## 用法
 
-Please look at the `/example` folder. 
+请查看 `/example` 文件夹。 
