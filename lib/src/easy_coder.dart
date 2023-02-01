@@ -9,11 +9,15 @@ class EasyCoder extends EasyLogger {
   ///配置信息
   final EasyCoderConfig _config;
 
-  ///历史操作
+  ///普通模型列表
+  final List<EasyCoderModelInfo> _baseList;
+
+  ///包装模型列表
   final List<EasyCoderModelInfo> _wrapList;
 
   EasyCoder({required EasyCoderConfig config})
       : _config = config,
+        _baseList = [],
         _wrapList = [],
         super(
           logger: config.logger,
@@ -71,15 +75,47 @@ class EasyCoder extends EasyLogger {
       logError(['write to file', outputPath, 'error:', error, '\n', stack]);
     }
     //保存历史记录
-    if (modelInfo.wrapType != null) {
+    if (modelInfo.wrapType == null) {
+      _baseList.add(modelInfo);
+    } else {
       _wrapList.add(modelInfo);
     }
   }
 
-  ///生成通用构建器
-  void generateBuilder({String? outputFile, List<String> importList = const [], String className = 'WrapBuilder', String? wrapClass, bool exportFile = true}) {
+  ///生成基本模型导出文件
+  void generateBaseExports({String outputFile = 'all'}) {
+    final outputPath = '${_config.absFolder}/$outputFile.dart'; //输入文件路径
+    final buffer = StringBuffer();
+    //删除旧文件
+    try {
+      final oldFile = File(outputPath); //旧文件
+      if (oldFile.existsSync()) {
+        oldFile.deleteSync();
+        logDebug(['delete file', outputPath, 'success.']);
+      }
+    } catch (error, stack) {
+      logError(['delete file', outputPath, 'error:', error, '\n', stack]);
+    }
+    if (_baseList.isEmpty) return;
+    for (var element in _baseList) {
+      final path = '${element.outputFile?.toLowerCase() ?? element.className.toLowerCase()}.dart'; //输入文件路径
+      buffer.write('export \'$path\';\n');
+    }
+    //写入到文件
+    try {
+      File(outputPath)
+        ..createSync(recursive: true)
+        ..writeAsStringSync(buffer.toString());
+      logInfo(['write to file', outputPath, 'success.\n']);
+    } catch (error, stack) {
+      logError(['write to file', outputPath, 'error:', error, '\n', stack]);
+    }
+  }
+
+  ///生成包装模型构建器类
+  void generateWrapBuilder({String outputFile = 'wrapper_builder', List<String> importList = const [], String className = 'WrapBuilder', String? wrapBaseClass, bool exportFile = true}) {
     final indent = _config.indent;
-    final outputPath = '${_config.absFolder}/${outputFile?.toLowerCase() ?? className.toLowerCase()}.dart'; //输入文件路径
+    final outputPath = '${_config.absFolder}/$outputFile.dart'; //输入文件路径
     final buffer = StringBuffer();
     //删除旧文件
     try {
@@ -119,7 +155,7 @@ class EasyCoder extends EasyLogger {
     }
     buffer.write('$indent};\n\n');
     buffer.write('$indent///Parsing mapdata generated\n');
-    buffer.write('${indent}static final _targetBuilder = <String, ${wrapClass ?? _config.baseClass} Function(${_config.baseClass} record)>{\n');
+    buffer.write('${indent}static final _targetBuilder = <String, ${wrapBaseClass ?? _config.baseClass} Function(${_config.baseClass} record)>{\n');
     for (var element in _wrapList) {
       buffer.write('$indent$indent\'${element.className}\': (${_config.baseClass} record) => record.buildTarget(),\n');
     }
@@ -127,7 +163,7 @@ class EasyCoder extends EasyLogger {
     buffer.write('$indent///Parsing method generated\n');
     buffer.write('${indent}static ${_config.baseClass} buildRecord(Map<String, dynamic> map) => _recordBuilder[map[\'type\']]!(map);\n\n');
     buffer.write('$indent///Parsing method generated\n');
-    buffer.write('${indent}static ${wrapClass ?? _config.baseClass} buildTarget(${_config.baseClass} record) => _targetBuilder[record.runtimeType]!(record);\n');
+    buffer.write('${indent}static ${wrapBaseClass ?? _config.baseClass} buildTarget(${_config.baseClass} record) => _targetBuilder[record.runtimeType]!(record);\n');
     buffer.write('}\n'); //类结束
     //写入到文件
     try {

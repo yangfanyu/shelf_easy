@@ -1,3 +1,7 @@
+## 1.0.61
+
+- Add generateBaseExports method for code generator.
+  
 ## 1.0.60
 
 - Add custom http route for server and custom http request for client. Optimize the export structure of code.

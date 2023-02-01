@@ -197,7 +197,6 @@ void main() {
     dirty: false,
     query: false,
   ));
-  coder.generateBuilder(
-    outputFile: 'wrapper_builder',
-  );
+  coder.generateBaseExports();
+  coder.generateWrapBuilder();
 }
