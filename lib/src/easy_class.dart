@@ -159,38 +159,53 @@ class EasyLogger {
 
   void logTrace(List<dynamic> args) {
     if (EasyLogLevel.trace.index >= _logLevel.index) {
-      _logger(this, '[TRACE] ${DateTime.now().toIso8601String().padRight(26, '0')} $_logTag ${args.join(' ')}', EasyLogLevel.trace);
+      _logger(this, '[TRACE] ${DateTime.now().toIso8601String().padRight(26, '0')} $_logTag ${_joinArgs(args)}', EasyLogLevel.trace);
     }
   }
 
   void logDebug(List<dynamic> args) {
     if (EasyLogLevel.debug.index >= _logLevel.index) {
-      _logger(this, '[DEBUG] ${DateTime.now().toIso8601String().padRight(26, '0')} $_logTag ${args.join(' ')}', EasyLogLevel.debug);
+      _logger(this, '[DEBUG] ${DateTime.now().toIso8601String().padRight(26, '0')} $_logTag ${_joinArgs(args)}', EasyLogLevel.debug);
     }
   }
 
   void logInfo(List<dynamic> args) {
     if (EasyLogLevel.info.index >= _logLevel.index) {
-      _logger(this, '[INFO] ${DateTime.now().toIso8601String().padRight(26, '0')} $_logTag ${args.join(' ')}', EasyLogLevel.info);
+      _logger(this, '[INFO] ${DateTime.now().toIso8601String().padRight(26, '0')} $_logTag ${_joinArgs(args)}', EasyLogLevel.info);
     }
   }
 
   void logWarn(List<dynamic> args) {
     if (EasyLogLevel.warn.index >= _logLevel.index) {
-      _logger(this, '[WARN] ${DateTime.now().toIso8601String().padRight(26, '0')} $_logTag ${args.join(' ')}', EasyLogLevel.warn);
+      _logger(this, '[WARN] ${DateTime.now().toIso8601String().padRight(26, '0')} $_logTag ${_joinArgs(args)}', EasyLogLevel.warn);
     }
   }
 
   void logError(List<dynamic> args) {
     if (EasyLogLevel.error.index >= _logLevel.index) {
-      _logger(this, '[ERROR] ${DateTime.now().toIso8601String().padRight(26, '0')} $_logTag ${args.join(' ')}', EasyLogLevel.error);
+      _logger(this, '[ERROR] ${DateTime.now().toIso8601String().padRight(26, '0')} $_logTag ${_joinArgs(args)}', EasyLogLevel.error);
     }
   }
 
   void logFatal(List<dynamic> args) {
     if (EasyLogLevel.fatal.index >= _logLevel.index) {
-      _logger(this, '[FATAL] ${DateTime.now().toIso8601String().padRight(26, '0')} $_logTag ${args.join(' ')}', EasyLogLevel.fatal);
+      _logger(this, '[FATAL] ${DateTime.now().toIso8601String().padRight(26, '0')} $_logTag ${_joinArgs(args)}', EasyLogLevel.fatal);
     }
+  }
+
+  ///格式化输出参数数组，参考[List.join]函数
+  static String _joinArgs(List<dynamic> args) {
+    final iterator = args.iterator;
+    if (!iterator.moveNext()) return '';
+    final buffer = StringBuffer();
+    String element = iterator.current.toString();
+    buffer.write(element);
+    while (iterator.moveNext()) {
+      buffer.write(element.endsWith('\n') ? '' : ' ');
+      element = iterator.current.toString();
+      buffer.write(element);
+    }
+    return buffer.toString();
   }
 
   ///当前输出文件缓存

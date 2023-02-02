@@ -1,3 +1,7 @@
+## 1.0.63
+
+- Optimize the format of logger. Modify .gitignore.
+  
 ## 1.0.61
 
 - Add generateBaseExports method for code generator.
