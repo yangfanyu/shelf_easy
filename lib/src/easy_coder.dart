@@ -146,24 +146,18 @@ class EasyCoder extends EasyLogger {
       }
       buffer.write('\n');
     }
-    buffer.write('///Parsing class generated\n');
+    buffer.write('///\n');
+    buffer.write('///Parsing class\n');
+    buffer.write('///\n');
     buffer.write('class $className {\n'); //类开始
-    buffer.write('$indent///Parsing mapdata generated\n');
+    buffer.write('$indent///Parsing fields\n');
     buffer.write('${indent}static final _recordBuilder = <String, ${_config.baseClass} Function(Map<String, dynamic> map)>{\n');
     for (var element in _wrapList) {
       buffer.write('$indent$indent\'${element.className}\': (Map<String, dynamic> map) => ${element.className}.fromJson(map),\n');
     }
     buffer.write('$indent};\n\n');
-    buffer.write('$indent///Parsing mapdata generated\n');
-    buffer.write('${indent}static final _targetBuilder = <String, ${wrapBaseClass ?? _config.baseClass} Function(${_config.baseClass} record)>{\n');
-    for (var element in _wrapList) {
-      buffer.write('$indent$indent\'${element.className}\': (${_config.baseClass} record) => record.buildTarget(),\n');
-    }
-    buffer.write('$indent};\n\n');
-    buffer.write('$indent///Parsing method generated\n');
-    buffer.write('${indent}static ${_config.baseClass} buildRecord(Map<String, dynamic> map) => _recordBuilder[map[\'type\']]!(map);\n\n');
-    buffer.write('$indent///Parsing method generated\n');
-    buffer.write('${indent}static ${wrapBaseClass ?? _config.baseClass} buildTarget(${_config.baseClass} record) => _targetBuilder[record.runtimeType]!(record);\n');
+    buffer.write('$indent///Parsing method\n');
+    buffer.write('${indent}static ${_config.baseClass} buildRecord(Map<String, dynamic> map) => _recordBuilder[map[\'type\']]!(map);\n');
     buffer.write('}\n'); //类结束
     //写入到文件
     try {
@@ -210,7 +204,11 @@ class EasyCoder extends EasyLogger {
   void _generateFieldDefine(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
     final privateFields = <EasyCoderFieldInfo>[];
     for (var element in modelInfo.classFields) {
-      buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
+      if (element.desc.isEmpty) {
+        buffer.write('$indent///Field ${element.name}\n');
+      } else {
+        buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
+      }
       if (element.nullAble) {
         buffer.write('$indent${element.type}? ${element.name};\n\n');
       } else {
@@ -462,7 +460,7 @@ class EasyCoder extends EasyLogger {
       buffer.write('$indent@override\n');
       buffer.write('$indent${modelInfo.wrapType} buildTarget() {\n');
       buffer.write('$indent${indent}return ${modelInfo.wrapType}();\n');
-      buffer.write('$indent}\n\n');
+      buffer.write('$indent}\n');
       return;
     }
     buffer.write('$indent@override\n');

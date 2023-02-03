@@ -1,3 +1,7 @@
+## 1.0.66
+
+- Modify code generator.
+  
 ## 1.0.63
 
 - Optimize the format of logger. Modify .gitignore.

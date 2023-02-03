@@ -5,196 +5,196 @@ import 'address.dart';
 ///复杂字段类
 ///
 class Complex extends DbBaseModel {
-  ///
+  ///Field _id
   ObjectId _id;
 
-  ///
+  ///Field baseInt
   int baseInt;
 
-  ///
+  ///Field baseDouble
   double baseDouble;
 
-  ///
+  ///Field baseNum
   num baseNum;
 
-  ///
+  ///Field baseBool
   bool baseBool;
 
-  ///
+  ///Field baseString
   String baseString;
 
-  ///
+  ///Field baseAddress
   Address baseAddress;
 
-  ///
+  ///Field baseObjectId
   ObjectId baseObjectId;
 
-  ///
+  ///Field baseJsonWraper
   DbJsonWraper baseJsonWraper;
 
-  ///
+  ///Field listInt
   List<int> listInt;
 
-  ///
+  ///Field listDouble
   List<double> listDouble;
 
-  ///
+  ///Field listNum
   List<num> listNum;
 
-  ///
+  ///Field listBool
   List<bool> listBool;
 
-  ///
+  ///Field listString
   List<String> listString;
 
-  ///
+  ///Field listAddress
   List<Address> listAddress;
 
-  ///
+  ///Field listObjectId
   List<ObjectId> listObjectId;
 
-  ///
+  ///Field mapInt
   Map<String, int> mapInt;
 
-  ///
+  ///Field mapDouble
   Map<String, double> mapDouble;
 
-  ///
+  ///Field mapNum
   Map<String, num> mapNum;
 
-  ///
+  ///Field mapBool
   Map<String, bool> mapBool;
 
-  ///
+  ///Field mapString
   Map<String, String> mapString;
 
-  ///
+  ///Field mapAddress
   Map<String, Address> mapAddress;
 
-  ///
+  ///Field mapObjectId
   Map<String, ObjectId> mapObjectId;
 
-  ///
+  ///Field map2Int
   Map<int, int> map2Int;
 
-  ///
+  ///Field map2Double
   Map<int, double> map2Double;
 
-  ///
+  ///Field map2Num
   Map<int, num> map2Num;
 
-  ///
+  ///Field map2Bool
   Map<int, bool> map2Bool;
 
-  ///
+  ///Field map2String
   Map<int, String> map2String;
 
-  ///
+  ///Field map2Address
   Map<int, Address> map2Address;
 
-  ///
+  ///Field map2ObjectId
   Map<int, ObjectId> map2ObjectId;
 
-  ///
+  ///Field map3Int
   Map<double, int> map3Int;
 
-  ///
+  ///Field map3Double
   Map<double, double> map3Double;
 
-  ///
+  ///Field map3Num
   Map<double, num> map3Num;
 
-  ///
+  ///Field map3Bool
   Map<double, bool> map3Bool;
 
-  ///
+  ///Field map3String
   Map<double, String> map3String;
 
-  ///
+  ///Field map3Address
   Map<double, Address> map3Address;
 
-  ///
+  ///Field map3ObjectId
   Map<double, ObjectId> map3ObjectId;
 
-  ///
+  ///Field map4Int
   Map<bool, int> map4Int;
 
-  ///
+  ///Field map4Double
   Map<bool, double> map4Double;
 
-  ///
+  ///Field map4Num
   Map<bool, num> map4Num;
 
-  ///
+  ///Field map4Bool
   Map<bool, bool> map4Bool;
 
-  ///
+  ///Field map4String
   Map<bool, String> map4String;
 
-  ///
+  ///Field map4Address
   Map<bool, Address> map4Address;
 
-  ///
+  ///Field map4ObjectId
   Map<bool, ObjectId> map4ObjectId;
 
-  ///
+  ///Field map5Int
   Map<ObjectId, int> map5Int;
 
-  ///
+  ///Field map5Double
   Map<ObjectId, double> map5Double;
 
-  ///
+  ///Field map5Num
   Map<ObjectId, num> map5Num;
 
-  ///
+  ///Field map5Bool
   Map<ObjectId, bool> map5Bool;
 
-  ///
+  ///Field map5String
   Map<ObjectId, String> map5String;
 
-  ///
+  ///Field map5Address
   Map<ObjectId, Address> map5Address;
 
-  ///
+  ///Field map5ObjectId
   Map<ObjectId, ObjectId> map5ObjectId;
 
-  ///
+  ///Field map6Int
   Map<Address, int> map6Int;
 
-  ///
+  ///Field map6Double
   Map<Address, double> map6Double;
 
-  ///
+  ///Field map6Num
   Map<Address, num> map6Num;
 
-  ///
+  ///Field map6Bool
   Map<Address, bool> map6Bool;
 
-  ///
+  ///Field map6String
   Map<Address, String> map6String;
 
-  ///
+  ///Field map6Address
   Map<Address, Address> map6Address;
 
-  ///
+  ///Field map6ObjectId
   Map<Address, ObjectId> map6ObjectId;
 
-  ///
+  ///Field listListMapMapListMapDouble
   List<List<Map<String, Map<String, List<Map<String, double>>>>>> listListMapMapListMapDouble;
 
-  ///
+  ///Field listListMapMapListMapAddress
   List<List<Map<String, Map<String, List<Map<String, Address>>>>>> listListMapMapListMapAddress;
 
-  ///
+  ///Field listListMapMapListMapObjectId
   List<List<Map<String, Map<String, List<Map<String, ObjectId>>>>>> listListMapMapListMapObjectId;
 
-  ///
+  ///Field mapMapListListMapListDouble
   Map<String, Map<String, List<List<Map<String, List<double>>>>>> mapMapListListMapListDouble;
 
-  ///
+  ///Field mapMapListListMapListAddress
   Map<String, Map<String, List<List<Map<String, List<Address>>>>>> mapMapListListMapListAddress;
 
-  ///
+  ///Field mapMapListListMapListObjectId
   Map<String, Map<String, List<List<Map<String, List<ObjectId>>>>>> mapMapListListMapListObjectId;
 
   ///

@@ -40,5 +40,4 @@ class WrapperEmpty extends DbBaseModel {
   Empty buildTarget() {
     return Empty();
   }
-
 }
