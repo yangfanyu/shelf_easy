@@ -1,3 +1,7 @@
+## 1.1.0
+
+- Implemented a dart-lang runtime virtual machine.
+  
 ## 1.0.66
 
 - Modify code generator.

@@ -103,7 +103,7 @@ class EasyClient extends EasyLogger {
 
   ///运行一个并发计算任务，[taskType]为计算任务类型名，[taskData]计算任务所需数据
   Future<T?> runThreadTask<T>(String taskType, dynamic taskData) {
-    if (threadEnable()) {
+    if (threadEnable) {
       return _thread!.runTask(taskType: taskType, taskData: taskData);
     } else {
       return Future.value(null);
@@ -113,7 +113,7 @@ class EasyClient extends EasyLogger {
   ///开始进行网络连接，[now]为true时立即尝试连接，为false时将会推迟[EasyClientConfig.conntick]秒连接
   void connect({void Function()? onopen, void Function(int code, String reason)? onclose, void Function(String error)? onerror, void Function(int count)? onretry, void Function(int second, int delay)? onheart, bool now = true}) {
     if (_expired) return;
-    if (isConnected()) return;
+    if (isConnected) return;
     logDebug(['connect...']);
     _onopen = onopen;
     _onclose = onclose;
@@ -151,7 +151,7 @@ class EasyClient extends EasyLogger {
   Future<EasyPacket> httpRequest(String route, {Map<String, dynamic>? data, List<List<int>>? fileBytes, MediaType? mediaType, Map<String, String>? headers}) async {
     final requestId = _reqIdInc++;
     final requestPacket = EasyPacket.request(route: route, id: requestId, desc: DateTime.now().millisecondsSinceEpoch.toString(), data: data);
-    final requestData = threadEnable()
+    final requestData = threadEnable
         ? await _thread!.runTask(
             taskType: _threadTaskEncrypt,
             taskData: [requestPacket, _token ?? _config.pwd, _config.binary],
@@ -182,7 +182,7 @@ class EasyClient extends EasyLogger {
         logError(['httpResponse <<<<<<', responsePacket]);
         return responsePacket;
       }
-      final responseData = threadEnable()
+      final responseData = threadEnable
           ? await _thread!.runTask(
               taskType: _threadTaskDecrypt,
               taskData: [responseBody, _token ?? _config.pwd],
@@ -215,12 +215,12 @@ class EasyClient extends EasyLogger {
       logError(['websocketRequest =>', responsePacket.codeDesc, requestPacket]);
       return responsePacket;
     }
-    if (!isConnected()) {
+    if (!isConnected) {
       final responsePacket = requestPacket.requestNotConnected();
       logError(['websocketRequest =>', responsePacket.codeDesc, requestPacket]);
       return responsePacket;
     }
-    final requestData = threadEnable()
+    final requestData = threadEnable
         ? await _thread!.runTask(
             taskType: _threadTaskEncrypt,
             taskData: [requestPacket, _token ?? _config.pwd, _config.binary],
@@ -316,14 +316,14 @@ class EasyClient extends EasyLogger {
     logDebug(['unbindUser =>', _uid, _token]);
   }
 
-  ///是否已经建立隔离线程
-  bool threadEnable() => _thread != null;
-
-  ///是否已经建立网络连接
-  bool isConnected() => _socket != null && _socketInited;
-
   ///读取websocket连接url
   String get url => _config.url;
+
+  ///是否已经建立网络连接
+  bool get isConnected => _socket != null && _socketInited;
+
+  ///是否已经建立隔离线程
+  bool get threadEnable => _thread != null;
 
   void _safeOpen() {
     if (_expired) return;
@@ -344,7 +344,7 @@ class EasyClient extends EasyLogger {
 
   void _onWebSocketData(dynamic data) async {
     if (_expired) return;
-    final packet = threadEnable()
+    final packet = threadEnable
         ? await _thread!.runTask(
             taskType: _threadTaskDecrypt,
             taskData: [data, _token ?? _config.pwd],
@@ -422,7 +422,7 @@ class EasyClient extends EasyLogger {
       _requesterMap.remove(requestId);
     }
     //心跳和断线重连
-    if (isConnected()) {
+    if (isConnected) {
       if (_timerInc % _config.heartick == 0) {
         websocketRequest(EasyConstant.routeHeartick, waitCompleter: false); //发送心跳包
       }
