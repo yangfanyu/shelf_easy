@@ -2,13 +2,10 @@ import 'dart:io';
 
 import 'package:shelf_easy/shelf_easy.dart';
 import 'package:shelf_easy/src/vm/vm_keys.dart';
-import 'package:shelf_easy/src/vm/vm_library.dart';
 import 'package:shelf_easy/src/vm/vm_parser.dart';
 import 'package:shelf_easy/src/vm/vm_runner.dart';
 
 main() {
-  VmLibrary.importDartCore();
-
   final source = File('${Directory.current.path}/test/test_vmfile.dart').readAsStringSync();
   final routeList = <String>[];
   final parseResult = VmParser.parseSource(source, routeList: routeList, routeLogger: (route) => print(route));
@@ -20,7 +17,8 @@ main() {
   print(VmKeys.values.length);
 
   final runner = VmRunner();
-  runner.scanAstTree(parseResult);
+  runner.initLibrary();
+  runner.initRuntime(parseResult);
   print(encoder.convert(runner));
 
   // int? a;

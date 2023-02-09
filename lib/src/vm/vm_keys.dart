@@ -40,12 +40,6 @@ enum VmKeys {
   ///对应[VariableDeclarationList.type]
   $VariableDeclarationListType,
 
-  ///对应[VariableDeclarationList.type].question
-  $VariableDeclarationListTypeQuestion,
-
-  ///对应[VariableDeclarationList.type].toSource()
-  $VariableDeclarationListTypeToSource,
-
   ///对应[VariableDeclarationList.variables]
   $VariableDeclarationListVariables,
 
@@ -60,6 +54,26 @@ enum VmKeys {
   ///对应[VariableDeclaration.initializer]
   $VariableDeclarationInitializer,
 
+  /** ******** FunctionDeclaration ******** **/
+
+  ///对应[FunctionDeclaration]
+  $FunctionDeclaration,
+
+  ///对应[FunctionDeclaration.isGetter]
+  $FunctionDeclarationIsGetter,
+
+  ///对应[FunctionDeclaration.isSetter]
+  $FunctionDeclarationIsSetter,
+
+  ///对应[FunctionDeclaration.name]
+  $FunctionDeclarationName,
+
+  ///对应[FunctionDeclaration.returnType]
+  $FunctionDeclarationReturnType,
+
+  ///对应[FunctionDeclaration.functionExpression]
+  $FunctionDeclarationFunctionExpression,
+
   /** ******** NamedType ******** **/
 
   ///对应[NamedType]
@@ -67,6 +81,9 @@ enum VmKeys {
 
   ///对应[NamedType.name]
   $NamedTypeName,
+
+  ///对应[NamedType.question]
+  $NamedTypeQuestion,
 
   /** ******** SimpleIdentifier ******** **/
 
@@ -253,9 +270,6 @@ enum VmKeys {
   ///对应[IndexExpression.target]
   $IndexExpressionTarget,
 
-  ///对应[IndexExpression.realTarget]
-  $IndexExpressionRealTarget,
-
   ///对应[IndexExpression.index]
   $IndexExpressionIndex,
 
@@ -267,6 +281,77 @@ enum VmKeys {
   ///对应[InterpolationExpression.expression]
   $InterpolationExpressionExpression,
 
+  /** ******** FunctionExpression ******** **/
+
+  ///对应[FunctionExpression]
+  $FunctionExpression,
+
+  ///对应[FunctionExpression.parameters]
+  $FunctionExpressionParameters,
+
+  ///对应[FunctionExpression.body]
+  $FunctionExpressionBody,
+
+  /** ******** NamedExpression ******** **/
+
+  ///对应[NamedExpression]
+  $NamedExpression,
+
+  ///对应[NamedExpression.name]
+  $NamedExpressionName,
+
+  ///对应[NamedExpression.expression]
+  $NamedExpressionExpression,
+
+  /** ******** FormalParameterList ******** **/
+
+  ///对应[FormalParameterList]
+  $FormalParameterList,
+
+  ///对应[FormalParameterList.parameters]
+  $FormalParameterListParameters,
+
+  /** ******** SimpleFormalParameter ******** **/
+
+  ///对应[SimpleFormalParameter]
+  $SimpleFormalParameter,
+
+  ///对应[SimpleFormalParameter.type]
+  $SimpleFormalParameterType,
+
+  ///对应[SimpleFormalParameter.name]
+  $SimpleFormalParameterName,
+
+  /** ******** DefaultFormalParameter ******** **/
+
+  ///对应[DefaultFormalParameter]
+  $DefaultFormalParameter,
+
+  ///对应[DefaultFormalParameter.name]
+  $DefaultFormalParameterName,
+
+  ///对应[DefaultFormalParameter.parameter]
+  $DefaultFormalParameterParameter,
+
+  ///对应[DefaultFormalParameter.defaultValue]
+  $DefaultFormalParameterDefaultValue,
+
+  /** ******** BlockFunctionBody ******** **/
+
+  ///对应[BlockFunctionBody]
+  $BlockFunctionBody,
+
+  ///对应[BlockFunctionBody.block]
+  $BlockFunctionBodyBlock,
+
+  /** ******** Block ******** **/
+
+  ///对应[Block]
+  $Block,
+
+  ///对应[Block.statements]
+  $BlockStatements,
+
   /** ******** MethodInvocation ******** **/
 
   ///对应[MethodInvocation]
@@ -274,9 +359,6 @@ enum VmKeys {
 
   ///对应[MethodInvocation.target]
   $MethodInvocationTarget,
-
-  ///对应[MethodInvocation.realTarget]
-  $MethodInvocationRealTarget,
 
   ///对应[MethodInvocation.methodName]
   $MethodInvocationMethodName,
@@ -291,4 +373,15 @@ enum VmKeys {
 
   ///对应[ArgumentList.arguments]
   $ArgumentListArguments,
+
+  /** ******** PropertyAccess ******** **/
+
+  ///对应[PropertyAccess]
+  $PropertyAccess,
+
+  ///对应[PropertyAccess.target]
+  $PropertyAccessTarget,
+
+  ///对应[PropertyAccess.propertyName]
+  $PropertyAccessPropertyName,
 }

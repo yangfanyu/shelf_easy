@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_if_null_operators, unnecessary_type_check, unnecessary_cast, prefer_typing_uninitialized_variables, unnecessary_null_in_if_null_operators, avoid_init_to_null, unnecessary_null_comparison, prefer_collection_literals
 
 ///
-/// 普通变量定义测试区
+/// 变量定义测试区
 ///
 
 int? a;
@@ -78,7 +78,13 @@ final Set mmm1 = {};
 var nnn1 = const {1: 'a'}, nnn2 = const {2};
 
 ///
-/// 普通运算表达式测试区
+/// 函数定义测试区
+///
+
+dynamic funcA1(int a, int b, {required int c, int d = 0, int? e}) {}
+
+///
+/// 运算表达式测试区
 ///
 
 final aaaaa1 = 11 + 22; //33
@@ -101,7 +107,8 @@ final qqqqq1 = 0x0001 << 1, qqqqq2 = 0x0001 << 2; //2, 4
 final rrrrr1 = 0x0001 & 0x0003; //0b00000001 & 0b00000011 => 1
 final sssss1 = 0x0001 | 0x0003; //0b00000001 | 0b00000011 => 3
 final ttttt1 = 0x0001 ^ 0x0003; //0b00000001 ^ 0b00000011 => 2
-final uuuuu1 = aaaaa1 + bbbbb1 + 55; //99
+final uuuuu1 = 0x22 >>> 4; //0x000000100010 >>> 4 => 2
+final vvvvv1 = aaaaa1 + bbbbb1 + 55; //99
 
 final aaaaaaa1 = -22, aaaaaaa2 = -aaaaaaa1; //-22, 22
 final bbbbbbb1 = false, bbbbbbb2 = !bbbbbbb1; //false, true
@@ -126,6 +133,7 @@ final assign9 = assignZ <<= 1; //32
 final assignA = assignZ &= 32; //32
 final assignB = assignZ |= 3; //35
 final assignC = assignZ ^= 7; //36
+final assignD = assignZ >>>= 1; //18
 
 final conditionalN = null; //null
 const conditionalY = 2; //2
@@ -145,16 +153,35 @@ const interpolationA = 18;
 const interpolation3 = '$interpolation1 $interpolation2, I am $interpolationA years old. ${interpolation2.length + 1} hei.';
 
 ///
-/// 试区
+/// 属性与方法调用测试区
 ///
 final methodInvocationSymbol = Symbol('aaa');
 final methodInvocationList = List.from([4, 5, 6]);
 final methodInvocationSet1 = Set.from({7, 8, 9, 10});
+final methodInvocationMap1 = Map.of({1: 'a', 2: 'b', 3: 'c'});
 final methodInvocationRes1 = methodInvocationList.removeAt(1); //5
 final methodInvocationRes2 = methodInvocationSet1.remove(8); //true
 final methodInvocationRes3 = methodInvocationList.length; //2
-final methodInvocationRes4 = methodInvocationSet1.length;//3
+final methodInvocationRes4 = methodInvocationSet1.length; //3
+final methodInvocationRes5 = methodInvocationMap1.keys.first.bitLength.toDouble().toString().length; //3
+final methodInvocationRes6 = List.from.runtimeType.toString().length; //52
+final methodInvocationRes7 = methodInvocationList.first += List.from([4, 5, 6]).last = 88; //92
+final methodInvocationRes8 = Duration(days: 0, hours: 1, minutes: 2, seconds: 3); //Duration 1:02:03.000000
+final methodInvocationRes9 = DateTime(2023, 08, 01); //DateTime 2023-08-01 00:00:00.000
 
+// dynamic m() {}
+
+// class N {
+//   static int? s1;
+
+//   N();
+
+//   int? p1;
+
+//   void f1() {}
+
+//   dynamic f2() {}
+// }
 
 // int f0(int a, {int b = 1, required int c, int? d}) => d ?? (a + b + c);
 

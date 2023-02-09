@@ -73,10 +73,8 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
           VmKeys.$VariableDeclarationListIsLate: node.isLate,
           VmKeys.$VariableDeclarationListIsFinal: node.isFinal,
           VmKeys.$VariableDeclarationListIsConst: node.isConst,
-          VmKeys.$VariableDeclarationListKeyword: node.keyword.toString(),
+          VmKeys.$VariableDeclarationListKeyword: node.keyword?.toString(),
           VmKeys.$VariableDeclarationListType: node.type?.accept(this),
-          VmKeys.$VariableDeclarationListTypeQuestion: node.type?.question?.toString(),
-          VmKeys.$VariableDeclarationListTypeToSource: node.type?.toSource(),
           VmKeys.$VariableDeclarationListVariables: node.variables.map((e) => e.accept(this)).toList(),
         },
       };
@@ -90,9 +88,21 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, String>> visitNamedType(NamedType node) => {
+  Map<VmKeys, Map<VmKeys, dynamic>> visitFunctionDeclaration(FunctionDeclaration node) => {
+        VmKeys.$FunctionDeclaration: {
+          VmKeys.$FunctionDeclarationIsGetter: node.isGetter,
+          VmKeys.$FunctionDeclarationIsSetter: node.isSetter,
+          VmKeys.$FunctionDeclarationName: node.name.toString(),
+          VmKeys.$FunctionDeclarationReturnType: node.returnType?.accept(this),
+          VmKeys.$FunctionDeclarationFunctionExpression: node.functionExpression.accept(this),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitNamedType(NamedType node) => {
         VmKeys.$NamedType: {
-          VmKeys.$NamedTypeName: node.name.name,
+          VmKeys.$NamedTypeName: node.name.accept(this),
+          VmKeys.$NamedTypeQuestion: node.question?.toString(),
         }
       };
 
@@ -119,9 +129,9 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, int>> visitIntegerLiteral(IntegerLiteral node) => {
+  Map<VmKeys, Map<VmKeys, int?>> visitIntegerLiteral(IntegerLiteral node) => {
         VmKeys.$IntegerLiteral: {
-          VmKeys.$IntegerLiteralValue: node.value ?? 0,
+          VmKeys.$IntegerLiteralValue: node.value,
         }
       };
 
@@ -236,8 +246,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitIndexExpression(IndexExpression node) => {
         VmKeys.$IndexExpression: {
-          VmKeys.$IndexExpressionTarget: node.target?.accept(this),
-          VmKeys.$IndexExpressionRealTarget: node.realTarget.accept(this),
+          VmKeys.$IndexExpressionTarget: node.realTarget.accept(this),
           VmKeys.$IndexExpressionIndex: node.index.accept(this),
         }
       };
@@ -250,10 +259,63 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
       };
 
   @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitFunctionExpression(FunctionExpression node) => {
+        VmKeys.$FunctionExpression: {
+          VmKeys.$FunctionExpressionParameters: node.parameters?.accept(this),
+          VmKeys.$FunctionExpressionBody: node.body.accept(this),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitNamedExpression(NamedExpression node) => {
+        VmKeys.$NamedExpression: {
+          VmKeys.$NamedExpressionName: node.name.label.name,
+          VmKeys.$NamedExpressionExpression: node.expression.accept(this),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, List>> visitFormalParameterList(FormalParameterList node) => {
+        VmKeys.$FormalParameterList: {
+          VmKeys.$FormalParameterListParameters: node.parameters.map((e) => e.accept(this)).toList(),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitSimpleFormalParameter(SimpleFormalParameter node) => {
+        VmKeys.$SimpleFormalParameter: {
+          VmKeys.$SimpleFormalParameterType: node.type?.accept(this),
+          VmKeys.$SimpleFormalParameterName: node.name?.toString(),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitDefaultFormalParameter(DefaultFormalParameter node) => {
+        VmKeys.$DefaultFormalParameter: {
+          VmKeys.$DefaultFormalParameterName: node.name?.toString(),
+          VmKeys.$DefaultFormalParameterParameter: node.parameter.accept(this),
+          VmKeys.$DefaultFormalParameterDefaultValue: node.defaultValue?.accept(this),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitBlockFunctionBody(BlockFunctionBody node) => {
+        VmKeys.$BlockFunctionBody: {
+          VmKeys.$BlockFunctionBodyBlock: node.block.accept(this),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, List>> visitBlock(Block node) => {
+        VmKeys.$Block: {
+          VmKeys.$BlockStatements: node.statements.map((e) => e.accept(this)).toList(),
+        }
+      };
+
+  @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitMethodInvocation(MethodInvocation node) => {
         VmKeys.$MethodInvocation: {
-          VmKeys.$MethodInvocationTarget: node.target?.toString(),
-          VmKeys.$MethodInvocationRealTarget: node.realTarget?.toString(),
+          VmKeys.$MethodInvocationTarget: node.realTarget?.accept(this),
           VmKeys.$MethodInvocationMethodName: node.methodName.name,
           VmKeys.$MethodInvocationArgumentList: node.argumentList.accept(this),
         }
@@ -263,6 +325,14 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
   Map<VmKeys, Map<VmKeys, List>> visitArgumentList(ArgumentList node) => {
         VmKeys.$ArgumentList: {
           VmKeys.$ArgumentListArguments: node.arguments.map((e) => e.accept(this)).toList(),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitPropertyAccess(PropertyAccess node) => {
+        VmKeys.$PropertyAccess: {
+          VmKeys.$PropertyAccessTarget: node.realTarget.accept(this),
+          VmKeys.$PropertyAccessPropertyName: node.propertyName.name,
         }
       };
 }

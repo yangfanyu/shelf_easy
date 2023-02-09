@@ -1,590 +1,634 @@
-///
-///Dart代码模拟类库
-///
+import 'vm_object.dart';
 
+///
+///Dart基本库
+///
 class VmLibrary {
-  ///构造函数访问表
-  static final Map<String, Map<String, VmLibraryClassConstructor>> _classConstructorsMap = {};
+  ///标准类型[int]
+  static final classInt = VmClass<int>(
+    identifier: 'int',
+    externalProxyMap: {
+      'fromEnvironment': VmProxy(identifier: 'fromEnvironment', externalStaticPropertyReader: () => int.fromEnvironment),
+      'parse': VmProxy(identifier: 'parse', externalStaticPropertyReader: () => int.parse),
+      'tryParse': VmProxy(identifier: 'tryParse', externalStaticPropertyReader: () => int.tryParse),
+      'abs': VmProxy(identifier: 'abs', externalInstancePropertyReader: (instance) => instance.abs),
+      'bitLength': VmProxy(identifier: 'bitLength', externalInstancePropertyReader: (instance) => instance.bitLength),
+      'ceil': VmProxy(identifier: 'ceil', externalInstancePropertyReader: (instance) => instance.ceil),
+      'ceilToDouble': VmProxy(identifier: 'ceilToDouble', externalInstancePropertyReader: (instance) => instance.ceilToDouble),
+      'clamp': VmProxy(identifier: 'clamp', externalInstancePropertyReader: (instance) => instance.clamp),
+      'compareTo': VmProxy(identifier: 'compareTo', externalInstancePropertyReader: (instance) => instance.compareTo),
+      'floor': VmProxy(identifier: 'floor', externalInstancePropertyReader: (instance) => instance.floor),
+      'floorToDouble': VmProxy(identifier: 'floorToDouble', externalInstancePropertyReader: (instance) => instance.floorToDouble),
+      'gcd': VmProxy(identifier: 'gcd', externalInstancePropertyReader: (instance) => instance.gcd),
+      'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
+      'isEven': VmProxy(identifier: 'isEven', externalInstancePropertyReader: (instance) => instance.isEven),
+      'isFinite': VmProxy(identifier: 'isFinite', externalInstancePropertyReader: (instance) => instance.isFinite),
+      'isInfinite': VmProxy(identifier: 'isInfinite', externalInstancePropertyReader: (instance) => instance.isInfinite),
+      'isNaN': VmProxy(identifier: 'isNaN', externalInstancePropertyReader: (instance) => instance.isNaN),
+      'isNegative': VmProxy(identifier: 'isNegative', externalInstancePropertyReader: (instance) => instance.isNegative),
+      'isOdd': VmProxy(identifier: 'isOdd', externalInstancePropertyReader: (instance) => instance.isOdd),
+      'modInverse': VmProxy(identifier: 'modInverse', externalInstancePropertyReader: (instance) => instance.modInverse),
+      'modPow': VmProxy(identifier: 'modPow', externalInstancePropertyReader: (instance) => instance.modPow),
+      'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
+      'remainder': VmProxy(identifier: 'remainder', externalInstancePropertyReader: (instance) => instance.remainder),
+      'round': VmProxy(identifier: 'round', externalInstancePropertyReader: (instance) => instance.round),
+      'roundToDouble': VmProxy(identifier: 'roundToDouble', externalInstancePropertyReader: (instance) => instance.roundToDouble),
+      'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
+      'sign': VmProxy(identifier: 'sign', externalInstancePropertyReader: (instance) => instance.sign),
+      'toDouble': VmProxy(identifier: 'toDouble', externalInstancePropertyReader: (instance) => instance.toDouble),
+      'toInt': VmProxy(identifier: 'toInt', externalInstancePropertyReader: (instance) => instance.toInt),
+      'toRadixString': VmProxy(identifier: 'toRadixString', externalInstancePropertyReader: (instance) => instance.toRadixString),
+      'toSigned': VmProxy(identifier: 'toSigned', externalInstancePropertyReader: (instance) => instance.toSigned),
+      'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
+      'toStringAsExponential': VmProxy(identifier: 'toStringAsExponential', externalInstancePropertyReader: (instance) => instance.toStringAsExponential),
+      'toStringAsFixed': VmProxy(identifier: 'toStringAsFixed', externalInstancePropertyReader: (instance) => instance.toStringAsFixed),
+      'toStringAsPrecision': VmProxy(identifier: 'toStringAsPrecision', externalInstancePropertyReader: (instance) => instance.toStringAsPrecision),
+      'toUnsigned': VmProxy(identifier: 'toUnsigned', externalInstancePropertyReader: (instance) => instance.toUnsigned),
+      'truncate': VmProxy(identifier: 'truncate', externalInstancePropertyReader: (instance) => instance.truncate),
+      'truncateToDouble': VmProxy(identifier: 'truncateToDouble', externalInstancePropertyReader: (instance) => instance.truncateToDouble),
+    },
+  );
 
-  ///静态属性访问表
-  static final Map<String, Map<String, VmLibraryClassProperty>> _classPropertiesMap = {};
+  ///标准类型[double]
+  static final classDouble = VmClass<double>(
+    identifier: 'double',
+    externalProxyMap: {
+      'infinity': VmProxy(identifier: 'infinity', externalStaticPropertyReader: () => double.infinity),
+      'maxFinite': VmProxy(identifier: 'maxFinite', externalStaticPropertyReader: () => double.maxFinite),
+      'minPositive': VmProxy(identifier: 'minPositive', externalStaticPropertyReader: () => double.minPositive),
+      'nan': VmProxy(identifier: 'nan', externalStaticPropertyReader: () => double.nan),
+      'negativeInfinity': VmProxy(identifier: 'negativeInfinity', externalStaticPropertyReader: () => double.negativeInfinity),
+      'parse': VmProxy(identifier: 'parse', externalStaticPropertyReader: () => double.parse),
+      'tryParse': VmProxy(identifier: 'tryParse', externalStaticPropertyReader: () => double.tryParse),
+      'abs': VmProxy(identifier: 'abs', externalInstancePropertyReader: (instance) => instance.abs),
+      'ceil': VmProxy(identifier: 'ceil', externalInstancePropertyReader: (instance) => instance.ceil),
+      'ceilToDouble': VmProxy(identifier: 'ceilToDouble', externalInstancePropertyReader: (instance) => instance.ceilToDouble),
+      'clamp': VmProxy(identifier: 'clamp', externalInstancePropertyReader: (instance) => instance.clamp),
+      'compareTo': VmProxy(identifier: 'compareTo', externalInstancePropertyReader: (instance) => instance.compareTo),
+      'floor': VmProxy(identifier: 'floor', externalInstancePropertyReader: (instance) => instance.floor),
+      'floorToDouble': VmProxy(identifier: 'floorToDouble', externalInstancePropertyReader: (instance) => instance.floorToDouble),
+      'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
+      'isFinite': VmProxy(identifier: 'isFinite', externalInstancePropertyReader: (instance) => instance.isFinite),
+      'isInfinite': VmProxy(identifier: 'isInfinite', externalInstancePropertyReader: (instance) => instance.isInfinite),
+      'isNaN': VmProxy(identifier: 'isNaN', externalInstancePropertyReader: (instance) => instance.isNaN),
+      'isNegative': VmProxy(identifier: 'isNegative', externalInstancePropertyReader: (instance) => instance.isNegative),
+      'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
+      'remainder': VmProxy(identifier: 'remainder', externalInstancePropertyReader: (instance) => instance.remainder),
+      'round': VmProxy(identifier: 'round', externalInstancePropertyReader: (instance) => instance.round),
+      'roundToDouble': VmProxy(identifier: 'roundToDouble', externalInstancePropertyReader: (instance) => instance.roundToDouble),
+      'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
+      'sign': VmProxy(identifier: 'sign', externalInstancePropertyReader: (instance) => instance.sign),
+      'toDouble': VmProxy(identifier: 'toDouble', externalInstancePropertyReader: (instance) => instance.toDouble),
+      'toInt': VmProxy(identifier: 'toInt', externalInstancePropertyReader: (instance) => instance.toInt),
+      'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
+      'toStringAsExponential': VmProxy(identifier: 'toStringAsExponential', externalInstancePropertyReader: (instance) => instance.toStringAsExponential),
+      'toStringAsFixed': VmProxy(identifier: 'toStringAsFixed', externalInstancePropertyReader: (instance) => instance.toStringAsFixed),
+      'toStringAsPrecision': VmProxy(identifier: 'toStringAsPrecision', externalInstancePropertyReader: (instance) => instance.toStringAsPrecision),
+      'truncate': VmProxy(identifier: 'truncate', externalInstancePropertyReader: (instance) => instance.truncate),
+      'truncateToDouble': VmProxy(identifier: 'truncateToDouble', externalInstancePropertyReader: (instance) => instance.truncateToDouble),
+    },
+  );
 
-  ///静态函数访问表
-  static final Map<String, Map<String, VmLibraryclassFunction>> _classFunctionsMap = {};
+  ///标准类型[num]
+  static final classNum = VmClass<num>(
+    identifier: 'num',
+    externalProxyMap: {
+      'parse': VmProxy(identifier: 'parse', externalStaticPropertyReader: () => num.parse),
+      'tryParse': VmProxy(identifier: 'tryParse', externalStaticPropertyReader: () => num.tryParse),
+      'abs': VmProxy(identifier: 'abs', externalInstancePropertyReader: (instance) => instance.abs),
+      'ceil': VmProxy(identifier: 'ceil', externalInstancePropertyReader: (instance) => instance.ceil),
+      'ceilToDouble': VmProxy(identifier: 'ceilToDouble', externalInstancePropertyReader: (instance) => instance.ceilToDouble),
+      'clamp': VmProxy(identifier: 'clamp', externalInstancePropertyReader: (instance) => instance.clamp),
+      'compareTo': VmProxy(identifier: 'compareTo', externalInstancePropertyReader: (instance) => instance.compareTo),
+      'floor': VmProxy(identifier: 'floor', externalInstancePropertyReader: (instance) => instance.floor),
+      'floorToDouble': VmProxy(identifier: 'floorToDouble', externalInstancePropertyReader: (instance) => instance.floorToDouble),
+      'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
+      'isFinite': VmProxy(identifier: 'isFinite', externalInstancePropertyReader: (instance) => instance.isFinite),
+      'isInfinite': VmProxy(identifier: 'isInfinite', externalInstancePropertyReader: (instance) => instance.isInfinite),
+      'isNaN': VmProxy(identifier: 'isNaN', externalInstancePropertyReader: (instance) => instance.isNaN),
+      'isNegative': VmProxy(identifier: 'isNegative', externalInstancePropertyReader: (instance) => instance.isNegative),
+      'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
+      'remainder': VmProxy(identifier: 'remainder', externalInstancePropertyReader: (instance) => instance.remainder),
+      'round': VmProxy(identifier: 'round', externalInstancePropertyReader: (instance) => instance.round),
+      'roundToDouble': VmProxy(identifier: 'roundToDouble', externalInstancePropertyReader: (instance) => instance.roundToDouble),
+      'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
+      'sign': VmProxy(identifier: 'sign', externalInstancePropertyReader: (instance) => instance.sign),
+      'toDouble': VmProxy(identifier: 'toDouble', externalInstancePropertyReader: (instance) => instance.toDouble),
+      'toInt': VmProxy(identifier: 'toInt', externalInstancePropertyReader: (instance) => instance.toInt),
+      'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
+      'toStringAsExponential': VmProxy(identifier: 'toStringAsExponential', externalInstancePropertyReader: (instance) => instance.toStringAsExponential),
+      'toStringAsFixed': VmProxy(identifier: 'toStringAsFixed', externalInstancePropertyReader: (instance) => instance.toStringAsFixed),
+      'toStringAsPrecision': VmProxy(identifier: 'toStringAsPrecision', externalInstancePropertyReader: (instance) => instance.toStringAsPrecision),
+      'truncate': VmProxy(identifier: 'truncate', externalInstancePropertyReader: (instance) => instance.truncate),
+      'truncateToDouble': VmProxy(identifier: 'truncateToDouble', externalInstancePropertyReader: (instance) => instance.truncateToDouble),
+    },
+  );
 
-  ///实例属性访问表
-  static final Map<String, Map<String, Function>> _instancePropertiesMap = {};
-  // static final Map<String, Map<String, VmLibraryInstanceProperty>> _instancePropertiesMap = {};
+  ///标准类型[bool]
+  static final classBool = VmClass<bool>(
+    identifier: 'bool',
+    externalProxyMap: {
+      'fromEnvironment': VmProxy(identifier: 'fromEnvironment', externalStaticPropertyReader: () => bool.fromEnvironment),
+      'hasEnvironment': VmProxy(identifier: 'hasEnvironment', externalStaticPropertyReader: () => bool.hasEnvironment),
+      'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
+      'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
+      'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
+      'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
+    },
+  );
 
-  ///实例函数访问表
-  static final Map<String, Map<String, Function>> _instanceFunctionsMap = {};
-  // static final Map<String, Map<String, VmLibraryInstanceFunction>> _instanceFunctionsMap = {};
+  ///标准类型[String]
+  static final classString = VmClass<String>(
+    identifier: 'String',
+    externalProxyMap: {
+      'fromCharCode': VmProxy(identifier: 'fromCharCode', externalStaticPropertyReader: () => String.fromCharCode),
+      'fromCharCodes': VmProxy(identifier: 'fromCharCodes', externalStaticPropertyReader: () => String.fromCharCodes),
+      'fromEnvironment': VmProxy(identifier: 'fromEnvironment', externalStaticPropertyReader: () => String.fromEnvironment),
+      'allMatches': VmProxy(identifier: 'allMatches', externalInstancePropertyReader: (instance) => instance.allMatches),
+      'codeUnitAt': VmProxy(identifier: 'codeUnitAt', externalInstancePropertyReader: (instance) => instance.codeUnitAt),
+      'codeUnits': VmProxy(identifier: 'codeUnits', externalInstancePropertyReader: (instance) => instance.codeUnits),
+      'compareTo': VmProxy(identifier: 'compareTo', externalInstancePropertyReader: (instance) => instance.compareTo),
+      'contains': VmProxy(identifier: 'contains', externalInstancePropertyReader: (instance) => instance.contains),
+      'endsWith': VmProxy(identifier: 'endsWith', externalInstancePropertyReader: (instance) => instance.endsWith),
+      'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
+      'indexOf': VmProxy(identifier: 'indexOf', externalInstancePropertyReader: (instance) => instance.indexOf),
+      'isEmpty': VmProxy(identifier: 'isEmpty', externalInstancePropertyReader: (instance) => instance.isEmpty),
+      'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (instance) => instance.isNotEmpty),
+      'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (instance) => instance.lastIndexOf),
+      'length': VmProxy(identifier: 'length', externalInstancePropertyReader: (instance) => instance.length),
+      'matchAsPrefix': VmProxy(identifier: 'matchAsPrefix', externalInstancePropertyReader: (instance) => instance.matchAsPrefix),
+      'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
+      'padLeft': VmProxy(identifier: 'padLeft', externalInstancePropertyReader: (instance) => instance.padLeft),
+      'padRight': VmProxy(identifier: 'padRight', externalInstancePropertyReader: (instance) => instance.padRight),
+      'replaceAll': VmProxy(identifier: 'replaceAll', externalInstancePropertyReader: (instance) => instance.replaceAll),
+      'replaceAllMapped': VmProxy(identifier: 'replaceAllMapped', externalInstancePropertyReader: (instance) => instance.replaceAllMapped),
+      'replaceFirst': VmProxy(identifier: 'replaceFirst', externalInstancePropertyReader: (instance) => instance.replaceFirst),
+      'replaceFirstMapped': VmProxy(identifier: 'replaceFirstMapped', externalInstancePropertyReader: (instance) => instance.replaceFirstMapped),
+      'replaceRange': VmProxy(identifier: 'replaceRange', externalInstancePropertyReader: (instance) => instance.replaceRange),
+      'runes': VmProxy(identifier: 'runes', externalInstancePropertyReader: (instance) => instance.runes),
+      'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
+      'split': VmProxy(identifier: 'split', externalInstancePropertyReader: (instance) => instance.split),
+      'splitMapJoin': VmProxy(identifier: 'splitMapJoin', externalInstancePropertyReader: (instance) => instance.splitMapJoin),
+      'startsWith': VmProxy(identifier: 'startsWith', externalInstancePropertyReader: (instance) => instance.startsWith),
+      'substring': VmProxy(identifier: 'substring', externalInstancePropertyReader: (instance) => instance.substring),
+      'toLowerCase': VmProxy(identifier: 'toLowerCase', externalInstancePropertyReader: (instance) => instance.toLowerCase),
+      'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
+      'toUpperCase': VmProxy(identifier: 'toUpperCase', externalInstancePropertyReader: (instance) => instance.toUpperCase),
+      'trim': VmProxy(identifier: 'trim', externalInstancePropertyReader: (instance) => instance.trim),
+      'trimLeft': VmProxy(identifier: 'trimLeft', externalInstancePropertyReader: (instance) => instance.trimLeft),
+      'trimRight': VmProxy(identifier: 'trimRight', externalInstancePropertyReader: (instance) => instance.trimRight),
+    },
+  );
 
-  ///导入外部类
-  static void importClass<T>(
-    String type, {
-    Map<String, VmLibraryClassConstructor> classConstructors = const {},
-    Map<String, VmLibraryClassProperty> classProperties = const {},
-    Map<String, VmLibraryclassFunction> classFunctions = const {},
-    Map<String, VmLibraryInstanceProperty<T>> instanceProperties = const {},
-    Map<String, VmLibraryInstanceFunction<T>> instanceFunctions = const {},
-  }) {
-    _classConstructorsMap[type] = classConstructors;
-    _classPropertiesMap[type] = classProperties;
-    _classFunctionsMap[type] = classFunctions;
-    _instancePropertiesMap[type] = instanceProperties;
-    _instanceFunctionsMap[type] = instanceFunctions;
-  }
+  ///标准类型[List]
+  static final classList = VmClass<List>(
+    identifier: 'List',
+    externalProxyMap: {
+      'List': VmProxy(identifier: 'List', externalStaticPropertyReader: () => List.new),
+      'empty': VmProxy(identifier: 'empty', externalStaticPropertyReader: () => List.empty),
+      'filled': VmProxy(identifier: 'filled', externalStaticPropertyReader: () => List.filled),
+      'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => List.from),
+      'generate': VmProxy(identifier: 'generate', externalStaticPropertyReader: () => List.generate),
+      'of': VmProxy(identifier: 'of', externalStaticPropertyReader: () => List.of),
+      'unmodifiable': VmProxy(identifier: 'unmodifiable', externalStaticPropertyReader: () => List.unmodifiable),
+      'castFrom': VmProxy(identifier: 'castFrom', externalStaticPropertyReader: () => List.castFrom),
+      'copyRange': VmProxy(identifier: 'copyRange', externalStaticPropertyReader: () => List.copyRange),
+      'writeIterable': VmProxy(identifier: 'writeIterable', externalStaticPropertyReader: () => List.writeIterable),
+      'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (instance) => instance.add),
+      'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (instance) => instance.addAll),
+      'any': VmProxy(identifier: 'any', externalInstancePropertyReader: (instance) => instance.any),
+      'asMap': VmProxy(identifier: 'asMap', externalInstancePropertyReader: (instance) => instance.asMap),
+      'cast': VmProxy(identifier: 'cast', externalInstancePropertyReader: (instance) => instance.cast),
+      'clear': VmProxy(identifier: 'clear', externalInstancePropertyReader: (instance) => instance.clear),
+      'contains': VmProxy(identifier: 'contains', externalInstancePropertyReader: (instance) => instance.contains),
+      'elementAt': VmProxy(identifier: 'elementAt', externalInstancePropertyReader: (instance) => instance.elementAt),
+      'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (instance) => instance.every),
+      'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (instance) => instance.expand),
+      'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (instance) => instance.fillRange),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (instance) => instance.first, externalInstancePropertyWriter: (instance, value) => instance.first = value),
+      'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (instance) => instance.firstWhere),
+      'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (instance) => instance.fold),
+      'followedBy': VmProxy(identifier: 'followedBy', externalInstancePropertyReader: (instance) => instance.followedBy),
+      'forEach': VmProxy(identifier: 'forEach', externalInstancePropertyReader: (instance) => instance.forEach),
+      'getRange': VmProxy(identifier: 'getRange', externalInstancePropertyReader: (instance) => instance.getRange),
+      'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
+      'indexOf': VmProxy(identifier: 'indexOf', externalInstancePropertyReader: (instance) => instance.indexOf),
+      'indexWhere': VmProxy(identifier: 'indexWhere', externalInstancePropertyReader: (instance) => instance.indexWhere),
+      'insert': VmProxy(identifier: 'insert', externalInstancePropertyReader: (instance) => instance.insert),
+      'insertAll': VmProxy(identifier: 'insertAll', externalInstancePropertyReader: (instance) => instance.insertAll),
+      'isEmpty': VmProxy(identifier: 'isEmpty', externalInstancePropertyReader: (instance) => instance.isEmpty),
+      'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (instance) => instance.isNotEmpty),
+      'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (instance) => instance.iterator),
+      'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (instance) => instance.join),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (instance) => instance.last, externalInstancePropertyWriter: (instance, value) => instance.last = value),
+      'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (instance) => instance.lastIndexOf),
+      'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (instance) => instance.lastIndexWhere),
+      'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (instance) => instance.lastWhere),
+      'length': VmProxy(identifier: 'length', externalInstancePropertyReader: (instance) => instance.length, externalInstancePropertyWriter: (instance, value) => instance.length = value),
+      'map': VmProxy(identifier: 'map', externalInstancePropertyReader: (instance) => instance.map),
+      'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
+      'reduce': VmProxy(identifier: 'reduce', externalInstancePropertyReader: (instance) => instance.reduce),
+      'remove': VmProxy(identifier: 'remove', externalInstancePropertyReader: (instance) => instance.remove),
+      'removeAt': VmProxy(identifier: 'removeAt', externalInstancePropertyReader: (instance) => instance.removeAt),
+      'removeLast': VmProxy(identifier: 'removeLast', externalInstancePropertyReader: (instance) => instance.removeLast),
+      'removeRange': VmProxy(identifier: 'removeRange', externalInstancePropertyReader: (instance) => instance.removeRange),
+      'removeWhere': VmProxy(identifier: 'removeWhere', externalInstancePropertyReader: (instance) => instance.removeWhere),
+      'replaceRange': VmProxy(identifier: 'replaceRange', externalInstancePropertyReader: (instance) => instance.replaceRange),
+      'retainWhere': VmProxy(identifier: 'retainWhere', externalInstancePropertyReader: (instance) => instance.retainWhere),
+      'reversed': VmProxy(identifier: 'reversed', externalInstancePropertyReader: (instance) => instance.reversed),
+      'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
+      'setAll': VmProxy(identifier: 'setAll', externalInstancePropertyReader: (instance) => instance.setAll),
+      'setRange': VmProxy(identifier: 'setRange', externalInstancePropertyReader: (instance) => instance.setRange),
+      'shuffle': VmProxy(identifier: 'shuffle', externalInstancePropertyReader: (instance) => instance.shuffle),
+      'single': VmProxy(identifier: 'single', externalInstancePropertyReader: (instance) => instance.single),
+      'singleWhere': VmProxy(identifier: 'singleWhere', externalInstancePropertyReader: (instance) => instance.singleWhere),
+      'skip': VmProxy(identifier: 'skip', externalInstancePropertyReader: (instance) => instance.skip),
+      'skipWhile': VmProxy(identifier: 'skipWhile', externalInstancePropertyReader: (instance) => instance.skipWhile),
+      'sort': VmProxy(identifier: 'sort', externalInstancePropertyReader: (instance) => instance.sort),
+      'sublist': VmProxy(identifier: 'sublist', externalInstancePropertyReader: (instance) => instance.sublist),
+      'take': VmProxy(identifier: 'take', externalInstancePropertyReader: (instance) => instance.take),
+      'takeWhile': VmProxy(identifier: 'takeWhile', externalInstancePropertyReader: (instance) => instance.takeWhile),
+      'toList': VmProxy(identifier: 'toList', externalInstancePropertyReader: (instance) => instance.toList),
+      'toSet': VmProxy(identifier: 'toSet', externalInstancePropertyReader: (instance) => instance.toSet),
+      'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
+      'where': VmProxy(identifier: 'where', externalInstancePropertyReader: (instance) => instance.where),
+      'whereType': VmProxy(identifier: 'whereType', externalInstancePropertyReader: (instance) => instance.whereType),
+    },
+  );
 
-  // ///读取[classType]类的[functionName]构造函数
-  // static dynamic applyClassConstructor(String classType, String functionName, List<dynamic>? positionalArguments, [Map<Symbol, dynamic>? namedArguments]) {
-  //   final method = _classConstructorsMap[classType]?[functionName];
-  //   if (method == null) throw ('Not round class constructor: $classType.$functionName');
-  //   return method(positionalArguments, namedArguments);
-  // }
+  ///标准类型[Set]
+  static final classSet = VmClass<Set>(
+    identifier: 'Set',
+    externalProxyMap: {
+      'Set': VmProxy(identifier: 'Set', externalStaticPropertyReader: () => Set.new),
+      'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => Set.from),
+      'identity': VmProxy(identifier: 'identity', externalStaticPropertyReader: () => Set.identity),
+      'of': VmProxy(identifier: 'of', externalStaticPropertyReader: () => Set.of),
+      'unmodifiable': VmProxy(identifier: 'unmodifiable', externalStaticPropertyReader: () => Set.unmodifiable),
+      'castFrom': VmProxy(identifier: 'castFrom', externalStaticPropertyReader: () => Set.castFrom),
+      'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (instance) => instance.add),
+      'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (instance) => instance.addAll),
+      'any': VmProxy(identifier: 'any', externalInstancePropertyReader: (instance) => instance.any),
+      'cast': VmProxy(identifier: 'cast', externalInstancePropertyReader: (instance) => instance.cast),
+      'clear': VmProxy(identifier: 'clear', externalInstancePropertyReader: (instance) => instance.clear),
+      'contains': VmProxy(identifier: 'contains', externalInstancePropertyReader: (instance) => instance.contains),
+      'containsAll': VmProxy(identifier: 'containsAll', externalInstancePropertyReader: (instance) => instance.containsAll),
+      'difference': VmProxy(identifier: 'difference', externalInstancePropertyReader: (instance) => instance.difference),
+      'elementAt': VmProxy(identifier: 'elementAt', externalInstancePropertyReader: (instance) => instance.elementAt),
+      'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (instance) => instance.every),
+      'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (instance) => instance.expand),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (instance) => instance.first),
+      'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (instance) => instance.firstWhere),
+      'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (instance) => instance.fold),
+      'followedBy': VmProxy(identifier: 'followedBy', externalInstancePropertyReader: (instance) => instance.followedBy),
+      'forEach': VmProxy(identifier: 'forEach', externalInstancePropertyReader: (instance) => instance.forEach),
+      'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
+      'intersection': VmProxy(identifier: 'intersection', externalInstancePropertyReader: (instance) => instance.intersection),
+      'isEmpty': VmProxy(identifier: 'isEmpty', externalInstancePropertyReader: (instance) => instance.isEmpty),
+      'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (instance) => instance.isNotEmpty),
+      'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (instance) => instance.iterator),
+      'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (instance) => instance.join),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (instance) => instance.last),
+      'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (instance) => instance.lastWhere),
+      'length': VmProxy(identifier: 'length', externalInstancePropertyReader: (instance) => instance.length),
+      'lookup': VmProxy(identifier: 'lookup', externalInstancePropertyReader: (instance) => instance.lookup),
+      'map': VmProxy(identifier: 'map', externalInstancePropertyReader: (instance) => instance.map),
+      'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
+      'reduce': VmProxy(identifier: 'reduce', externalInstancePropertyReader: (instance) => instance.reduce),
+      'remove': VmProxy(identifier: 'remove', externalInstancePropertyReader: (instance) => instance.remove),
+      'removeAll': VmProxy(identifier: 'removeAll', externalInstancePropertyReader: (instance) => instance.removeAll),
+      'removeWhere': VmProxy(identifier: 'removeWhere', externalInstancePropertyReader: (instance) => instance.removeWhere),
+      'retainAll': VmProxy(identifier: 'retainAll', externalInstancePropertyReader: (instance) => instance.retainAll),
+      'retainWhere': VmProxy(identifier: 'retainWhere', externalInstancePropertyReader: (instance) => instance.retainWhere),
+      'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
+      'single': VmProxy(identifier: 'single', externalInstancePropertyReader: (instance) => instance.single),
+      'singleWhere': VmProxy(identifier: 'singleWhere', externalInstancePropertyReader: (instance) => instance.singleWhere),
+      'skip': VmProxy(identifier: 'skip', externalInstancePropertyReader: (instance) => instance.skip),
+      'skipWhile': VmProxy(identifier: 'skipWhile', externalInstancePropertyReader: (instance) => instance.skipWhile),
+      'take': VmProxy(identifier: 'take', externalInstancePropertyReader: (instance) => instance.take),
+      'takeWhile': VmProxy(identifier: 'takeWhile', externalInstancePropertyReader: (instance) => instance.takeWhile),
+      'toList': VmProxy(identifier: 'toList', externalInstancePropertyReader: (instance) => instance.toList),
+      'toSet': VmProxy(identifier: 'toSet', externalInstancePropertyReader: (instance) => instance.toSet),
+      'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
+      'union': VmProxy(identifier: 'union', externalInstancePropertyReader: (instance) => instance.union),
+      'where': VmProxy(identifier: 'where', externalInstancePropertyReader: (instance) => instance.where),
+      'whereType': VmProxy(identifier: 'whereType', externalInstancePropertyReader: (instance) => instance.whereType),
+    },
+  );
 
-  ///读取[classType]类的[propertyName]属性
-  static dynamic queryClassProperty(String classType, String propertyName) {
-    final method = _classPropertiesMap[classType]?[propertyName];
-    if (method == null) throw ('Not round class property: $classType.$propertyName');
-    return method();
-  }
+  ///标准类型[Map]
+  static final classMap = VmClass<Map>(
+    identifier: 'Map',
+    externalProxyMap: {
+      'Map': VmProxy(identifier: 'Map', externalStaticPropertyReader: () => Map.new),
+      'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => Map.from),
+      'fromEntries': VmProxy(identifier: 'fromEntries', externalStaticPropertyReader: () => Map.fromEntries),
+      'fromIterable': VmProxy(identifier: 'fromIterable', externalStaticPropertyReader: () => Map.fromIterable),
+      'fromIterables': VmProxy(identifier: 'fromIterables', externalStaticPropertyReader: () => Map.fromIterables),
+      'identity': VmProxy(identifier: 'identity', externalStaticPropertyReader: () => Map.identity),
+      'of': VmProxy(identifier: 'of', externalStaticPropertyReader: () => Map.of),
+      'unmodifiable': VmProxy(identifier: 'unmodifiable', externalStaticPropertyReader: () => Map.unmodifiable),
+      'castFrom': VmProxy(identifier: 'castFrom', externalStaticPropertyReader: () => Map.castFrom),
+      'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (instance) => instance.addAll),
+      'addEntries': VmProxy(identifier: 'addEntries', externalInstancePropertyReader: (instance) => instance.addEntries),
+      'cast': VmProxy(identifier: 'cast', externalInstancePropertyReader: (instance) => instance.cast),
+      'clear': VmProxy(identifier: 'clear', externalInstancePropertyReader: (instance) => instance.clear),
+      'containsKey': VmProxy(identifier: 'containsKey', externalInstancePropertyReader: (instance) => instance.containsKey),
+      'containsValue': VmProxy(identifier: 'containsValue', externalInstancePropertyReader: (instance) => instance.containsValue),
+      'entries': VmProxy(identifier: 'entries', externalInstancePropertyReader: (instance) => instance.entries),
+      'forEach': VmProxy(identifier: 'forEach', externalInstancePropertyReader: (instance) => instance.forEach),
+      'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
+      'isEmpty': VmProxy(identifier: 'isEmpty', externalInstancePropertyReader: (instance) => instance.isEmpty),
+      'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (instance) => instance.isNotEmpty),
+      'keys': VmProxy(identifier: 'keys', externalInstancePropertyReader: (instance) => instance.keys),
+      'length': VmProxy(identifier: 'length', externalInstancePropertyReader: (instance) => instance.length),
+      'map': VmProxy(identifier: 'map', externalInstancePropertyReader: (instance) => instance.map),
+      'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
+      'putIfAbsent': VmProxy(identifier: 'putIfAbsent', externalInstancePropertyReader: (instance) => instance.putIfAbsent),
+      'remove': VmProxy(identifier: 'remove', externalInstancePropertyReader: (instance) => instance.remove),
+      'removeWhere': VmProxy(identifier: 'removeWhere', externalInstancePropertyReader: (instance) => instance.removeWhere),
+      'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
+      'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
+      'update': VmProxy(identifier: 'update', externalInstancePropertyReader: (instance) => instance.update),
+      'updateAll': VmProxy(identifier: 'updateAll', externalInstancePropertyReader: (instance) => instance.updateAll),
+      'values': VmProxy(identifier: 'values', externalInstancePropertyReader: (instance) => instance.values),
+    },
+  );
 
-  ///调用[classType]类的[functionName]方法
-  static dynamic applyClassFunction(String classType, String functionName, List<dynamic>? positionalArguments, [Map<Symbol, dynamic>? namedArguments]) {
-    final method = _classFunctionsMap[classType]?[functionName] ?? _classConstructorsMap[classType]?[functionName];
-    if (method == null) throw ('Not round class function: $classType.$functionName');
-    return method(positionalArguments, namedArguments);
-  }
+  ///标准类型[Runes]
+  static final classRunes = VmClass<Runes>(
+    identifier: 'Runes',
+    externalProxyMap: {
+      'Runes': VmProxy(identifier: 'Runes', externalStaticPropertyReader: () => Runes.new),
+      'any': VmProxy(identifier: 'any', externalInstancePropertyReader: (instance) => instance.any),
+      'cast': VmProxy(identifier: 'cast', externalInstancePropertyReader: (instance) => instance.cast),
+      'contains': VmProxy(identifier: 'contains', externalInstancePropertyReader: (instance) => instance.contains),
+      'elementAt': VmProxy(identifier: 'elementAt', externalInstancePropertyReader: (instance) => instance.elementAt),
+      'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (instance) => instance.every),
+      'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (instance) => instance.expand),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (instance) => instance.first),
+      'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (instance) => instance.firstWhere),
+      'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (instance) => instance.fold),
+      'followedBy': VmProxy(identifier: 'followedBy', externalInstancePropertyReader: (instance) => instance.followedBy),
+      'forEach': VmProxy(identifier: 'forEach', externalInstancePropertyReader: (instance) => instance.forEach),
+      'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
+      'isEmpty': VmProxy(identifier: 'isEmpty', externalInstancePropertyReader: (instance) => instance.isEmpty),
+      'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (instance) => instance.isNotEmpty),
+      'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (instance) => instance.iterator),
+      'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (instance) => instance.join),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (instance) => instance.last),
+      'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (instance) => instance.lastWhere),
+      'length': VmProxy(identifier: 'length', externalInstancePropertyReader: (instance) => instance.length),
+      'map': VmProxy(identifier: 'map', externalInstancePropertyReader: (instance) => instance.map),
+      'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
+      'reduce': VmProxy(identifier: 'reduce', externalInstancePropertyReader: (instance) => instance.reduce),
+      'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
+      'single': VmProxy(identifier: 'single', externalInstancePropertyReader: (instance) => instance.single),
+      'singleWhere': VmProxy(identifier: 'singleWhere', externalInstancePropertyReader: (instance) => instance.singleWhere),
+      'skip': VmProxy(identifier: 'skip', externalInstancePropertyReader: (instance) => instance.skip),
+      'skipWhile': VmProxy(identifier: 'skipWhile', externalInstancePropertyReader: (instance) => instance.skipWhile),
+      'string': VmProxy(identifier: 'string', externalInstancePropertyReader: (instance) => instance.string),
+      'take': VmProxy(identifier: 'take', externalInstancePropertyReader: (instance) => instance.take),
+      'takeWhile': VmProxy(identifier: 'takeWhile', externalInstancePropertyReader: (instance) => instance.takeWhile),
+      'toList': VmProxy(identifier: 'toList', externalInstancePropertyReader: (instance) => instance.toList),
+      'toSet': VmProxy(identifier: 'toSet', externalInstancePropertyReader: (instance) => instance.toSet),
+      'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
+      'where': VmProxy(identifier: 'where', externalInstancePropertyReader: (instance) => instance.where),
+      'whereType': VmProxy(identifier: 'whereType', externalInstancePropertyReader: (instance) => instance.whereType),
+    },
+  );
 
-  ///读取[classType]类的[instance]实例的[propertyName]属性
-  static dynamic queryInstanceProperty(dynamic instance, String classType, String propertyName) {
-    final method = _instancePropertiesMap[classType]?[propertyName];
-    if (method == null) throw ('Not round instance property: $classType.$propertyName => instance.runtimeType: ${instance.runtimeType}');
-    return method(instance);
-  }
+  ///标准类型[Symbol]
+  static final classSymbol = VmClass<Symbol>(
+    identifier: 'Symbol',
+    externalProxyMap: {
+      'Symbol': VmProxy(identifier: 'Symbol', externalStaticPropertyReader: () => Symbol.new),
+      'empty': VmProxy(identifier: 'empty', externalStaticPropertyReader: () => Symbol.empty),
+      'unaryMinus': VmProxy(identifier: 'unaryMinus', externalStaticPropertyReader: () => Symbol.unaryMinus),
+      'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
+      'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
+      'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
+      'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
+    },
+  );
 
-  ///调用[classType]类的[instance]实例的[functionName]方法
-  static dynamic applyInstanceFunction(dynamic instance, String classType, String functionName, List<dynamic>? positionalArguments, [Map<Symbol, dynamic>? namedArguments]) {
-    final method = _instanceFunctionsMap[classType]?[functionName];
-    if (method == null) throw ('Not round instance function: $classType.$functionName => instance.runtimeType: ${instance.runtimeType}');
-    return method(instance, positionalArguments, namedArguments);
-  }
+  ///标准类型[Function]
+  static final classFunction = VmClass<Function>(
+    identifier: 'Function',
+    externalProxyMap: {
+      'apply': VmProxy(identifier: 'apply', externalStaticPropertyReader: () => Function.apply),
+      'call': VmProxy(identifier: 'call', externalInstancePropertyReader: (instance) => instance.call),
+      'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
+      'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
+      'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
+      'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
+    },
+  );
 
-  ///导入Dart核心类
-  static void importDartCore() {
-    _importClassInt();
-    _importClassDouble();
-    _importClassNum();
-    _importClassBool();
-    _importClassString();
-    _importClassList();
-    _importClassSet();
-    _importClassMap();
-    _importClassRunes();
-    _importClassSymbol();
-  }
+  ///标准类型[Iterable]
+  static final classIterable = VmClass<Iterable>(
+    identifier: 'Iterable',
+    externalProxyMap: {
+      'empty': VmProxy(identifier: 'empty', externalStaticPropertyReader: () => Iterable.empty),
+      'generate': VmProxy(identifier: 'generate', externalStaticPropertyReader: () => Iterable.generate),
+      'castFrom': VmProxy(identifier: 'castFrom', externalStaticPropertyReader: () => Iterable.castFrom),
+      'any': VmProxy(identifier: 'any', externalInstancePropertyReader: (instance) => instance.any),
+      'cast': VmProxy(identifier: 'cast', externalInstancePropertyReader: (instance) => instance.cast),
+      'contains': VmProxy(identifier: 'contains', externalInstancePropertyReader: (instance) => instance.contains),
+      'elementAt': VmProxy(identifier: 'elementAt', externalInstancePropertyReader: (instance) => instance.elementAt),
+      'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (instance) => instance.every),
+      'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (instance) => instance.expand),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (instance) => instance.first),
+      'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (instance) => instance.firstWhere),
+      'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (instance) => instance.fold),
+      'followedBy': VmProxy(identifier: 'followedBy', externalInstancePropertyReader: (instance) => instance.followedBy),
+      'forEach': VmProxy(identifier: 'forEach', externalInstancePropertyReader: (instance) => instance.forEach),
+      'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
+      'isEmpty': VmProxy(identifier: 'isEmpty', externalInstancePropertyReader: (instance) => instance.isEmpty),
+      'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (instance) => instance.isNotEmpty),
+      'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (instance) => instance.iterator),
+      'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (instance) => instance.join),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (instance) => instance.last),
+      'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (instance) => instance.lastWhere),
+      'length': VmProxy(identifier: 'length', externalInstancePropertyReader: (instance) => instance.length),
+      'map': VmProxy(identifier: 'map', externalInstancePropertyReader: (instance) => instance.map),
+      'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
+      'reduce': VmProxy(identifier: 'reduce', externalInstancePropertyReader: (instance) => instance.reduce),
+      'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
+      'single': VmProxy(identifier: 'single', externalInstancePropertyReader: (instance) => instance.single),
+      'singleWhere': VmProxy(identifier: 'singleWhere', externalInstancePropertyReader: (instance) => instance.singleWhere),
+      'skip': VmProxy(identifier: 'skip', externalInstancePropertyReader: (instance) => instance.skip),
+      'skipWhile': VmProxy(identifier: 'skipWhile', externalInstancePropertyReader: (instance) => instance.skipWhile),
+      'take': VmProxy(identifier: 'take', externalInstancePropertyReader: (instance) => instance.take),
+      'takeWhile': VmProxy(identifier: 'takeWhile', externalInstancePropertyReader: (instance) => instance.takeWhile),
+      'toList': VmProxy(identifier: 'toList', externalInstancePropertyReader: (instance) => instance.toList),
+      'toSet': VmProxy(identifier: 'toSet', externalInstancePropertyReader: (instance) => instance.toSet),
+      'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
+      'where': VmProxy(identifier: 'where', externalInstancePropertyReader: (instance) => instance.where),
+      'whereType': VmProxy(identifier: 'whereType', externalInstancePropertyReader: (instance) => instance.whereType),
+    },
+  );
 
-  static void _importClassInt() {
-    importClass<int>(
-      'int',
-      classConstructors: {
-        'fromEnvironment': (positionalArguments, [namedArguments]) => Function.apply(int.fromEnvironment, positionalArguments, namedArguments),
-      },
-      classProperties: {},
-      classFunctions: {
-        'parse': (positionalArguments, [namedArguments]) => Function.apply(int.parse, positionalArguments, namedArguments),
-        'tryParse': (positionalArguments, [namedArguments]) => Function.apply(int.tryParse, positionalArguments, namedArguments),
-      },
-      instanceProperties: {
-        'bitLength': (instance) => instance.bitLength,
-        'hashCode': (instance) => instance.hashCode,
-        'isEven': (instance) => instance.isEven,
-        'isFinite': (instance) => instance.isFinite,
-        'isInfinite': (instance) => instance.isInfinite,
-        'isNaN': (instance) => instance.isNaN,
-        'isNegative': (instance) => instance.isNegative,
-        'isOdd': (instance) => instance.isOdd,
-        'runtimeType': (instance) => instance.runtimeType,
-        'sign': (instance) => instance.sign,
-      },
-      instanceFunctions: {
-        'abs': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.abs, positionalArguments, namedArguments),
-        'ceil': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.ceil, positionalArguments, namedArguments),
-        'ceilToDouble': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.ceilToDouble, positionalArguments, namedArguments),
-        'clamp': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.clamp, positionalArguments, namedArguments),
-        'compareTo': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.compareTo, positionalArguments, namedArguments),
-        'floor': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.floor, positionalArguments, namedArguments),
-        'floorToDouble': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.floorToDouble, positionalArguments, namedArguments),
-        'gcd': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.gcd, positionalArguments, namedArguments),
-        'modInverse': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.modInverse, positionalArguments, namedArguments),
-        'modPow': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.modPow, positionalArguments, namedArguments),
-        'noSuchMethod': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.noSuchMethod, positionalArguments, namedArguments),
-        'remainder': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.remainder, positionalArguments, namedArguments),
-        'round': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.round, positionalArguments, namedArguments),
-        'roundToDouble': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.roundToDouble, positionalArguments, namedArguments),
-        'toDouble': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toDouble, positionalArguments, namedArguments),
-        'toInt': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toInt, positionalArguments, namedArguments),
-        'toRadixString': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toRadixString, positionalArguments, namedArguments),
-        'toSigned': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toSigned, positionalArguments, namedArguments),
-        'toString': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toString, positionalArguments, namedArguments),
-        'toStringAsExponential': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toStringAsExponential, positionalArguments, namedArguments),
-        'toStringAsFixed': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toStringAsFixed, positionalArguments, namedArguments),
-        'toStringAsPrecision': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toStringAsPrecision, positionalArguments, namedArguments),
-        'toUnsigned': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toUnsigned, positionalArguments, namedArguments),
-        'truncate': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.truncate, positionalArguments, namedArguments),
-        'truncateToDouble': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.truncateToDouble, positionalArguments, namedArguments),
-      },
-    );
-  }
+  ///标准类型[Duration]
+  static final classDuration = VmClass<Duration>(
+    identifier: 'Duration',
+    externalProxyMap: {
+      'Duration': VmProxy(identifier: 'Duration', externalStaticPropertyReader: () => Duration.new),
+      'hoursPerDay': VmProxy(identifier: 'hoursPerDay', externalStaticPropertyReader: () => Duration.hoursPerDay),
+      'microsecondsPerDay': VmProxy(identifier: 'microsecondsPerDay', externalStaticPropertyReader: () => Duration.microsecondsPerDay),
+      'microsecondsPerHour': VmProxy(identifier: 'microsecondsPerHour', externalStaticPropertyReader: () => Duration.microsecondsPerHour),
+      'microsecondsPerMillisecond': VmProxy(identifier: 'microsecondsPerMillisecond', externalStaticPropertyReader: () => Duration.microsecondsPerMillisecond),
+      'microsecondsPerMinute': VmProxy(identifier: 'microsecondsPerMinute', externalStaticPropertyReader: () => Duration.microsecondsPerMinute),
+      'microsecondsPerSecond': VmProxy(identifier: 'microsecondsPerSecond', externalStaticPropertyReader: () => Duration.microsecondsPerSecond),
+      'millisecondsPerDay': VmProxy(identifier: 'millisecondsPerDay', externalStaticPropertyReader: () => Duration.millisecondsPerDay),
+      'millisecondsPerHour': VmProxy(identifier: 'millisecondsPerHour', externalStaticPropertyReader: () => Duration.millisecondsPerHour),
+      'millisecondsPerMinute': VmProxy(identifier: 'millisecondsPerMinute', externalStaticPropertyReader: () => Duration.millisecondsPerMinute),
+      'millisecondsPerSecond': VmProxy(identifier: 'millisecondsPerSecond', externalStaticPropertyReader: () => Duration.millisecondsPerSecond),
+      'minutesPerDay': VmProxy(identifier: 'minutesPerDay', externalStaticPropertyReader: () => Duration.minutesPerDay),
+      'minutesPerHour': VmProxy(identifier: 'minutesPerHour', externalStaticPropertyReader: () => Duration.minutesPerHour),
+      'secondsPerDay': VmProxy(identifier: 'secondsPerDay', externalStaticPropertyReader: () => Duration.secondsPerDay),
+      'secondsPerHour': VmProxy(identifier: 'secondsPerHour', externalStaticPropertyReader: () => Duration.secondsPerHour),
+      'secondsPerMinute': VmProxy(identifier: 'secondsPerMinute', externalStaticPropertyReader: () => Duration.secondsPerMinute),
+      'zero': VmProxy(identifier: 'zero', externalStaticPropertyReader: () => Duration.zero),
+      'abs': VmProxy(identifier: 'abs', externalInstancePropertyReader: (instance) => instance.abs),
+      'compareTo': VmProxy(identifier: 'compareTo', externalInstancePropertyReader: (instance) => instance.compareTo),
+      'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
+      'inDays': VmProxy(identifier: 'inDays', externalInstancePropertyReader: (instance) => instance.inDays),
+      'inHours': VmProxy(identifier: 'inHours', externalInstancePropertyReader: (instance) => instance.inHours),
+      'inMicroseconds': VmProxy(identifier: 'inMicroseconds', externalInstancePropertyReader: (instance) => instance.inMicroseconds),
+      'inMilliseconds': VmProxy(identifier: 'inMilliseconds', externalInstancePropertyReader: (instance) => instance.inMilliseconds),
+      'inMinutes': VmProxy(identifier: 'inMinutes', externalInstancePropertyReader: (instance) => instance.inMinutes),
+      'inSeconds': VmProxy(identifier: 'inSeconds', externalInstancePropertyReader: (instance) => instance.inSeconds),
+      'isNegative': VmProxy(identifier: 'isNegative', externalInstancePropertyReader: (instance) => instance.isNegative),
+      'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
+      'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
+      'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
+    },
+  );
 
-  static void _importClassDouble() {
-    importClass<double>(
-      'double',
-      classConstructors: {
-        // 'double': (positionalArguments, [namedArguments]) => Function.apply(double.new, positionalArguments, namedArguments),
-      },
-      classProperties: {
-        'infinity': () => double.infinity,
-        'maxFinite': () => double.maxFinite,
-        'minPositive': () => double.minPositive,
-        'nan': () => double.nan,
-        'negativeInfinity': () => double.negativeInfinity,
-      },
-      classFunctions: {
-        'parse': (positionalArguments, [namedArguments]) => Function.apply(double.parse, positionalArguments, namedArguments),
-        'tryParse': (positionalArguments, [namedArguments]) => Function.apply(double.tryParse, positionalArguments, namedArguments),
-      },
-      instanceProperties: {
-        'hashCode': (instance) => instance.hashCode,
-        'isFinite': (instance) => instance.isFinite,
-        'isInfinite': (instance) => instance.isInfinite,
-        'isNaN': (instance) => instance.isNaN,
-        'isNegative': (instance) => instance.isNegative,
-        'runtimeType': (instance) => instance.runtimeType,
-        'sign': (instance) => instance.sign,
-      },
-      instanceFunctions: {
-        'abs': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.abs, positionalArguments, namedArguments),
-        'ceil': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.ceil, positionalArguments, namedArguments),
-        'ceilToDouble': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.ceilToDouble, positionalArguments, namedArguments),
-        'clamp': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.clamp, positionalArguments, namedArguments),
-        'compareTo': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.compareTo, positionalArguments, namedArguments),
-        'floor': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.floor, positionalArguments, namedArguments),
-        'floorToDouble': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.floorToDouble, positionalArguments, namedArguments),
-        'noSuchMethod': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.noSuchMethod, positionalArguments, namedArguments),
-        'remainder': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.remainder, positionalArguments, namedArguments),
-        'round': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.round, positionalArguments, namedArguments),
-        'roundToDouble': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.roundToDouble, positionalArguments, namedArguments),
-        'toDouble': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toDouble, positionalArguments, namedArguments),
-        'toInt': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toInt, positionalArguments, namedArguments),
-        'toString': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toString, positionalArguments, namedArguments),
-        'toStringAsExponential': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toStringAsExponential, positionalArguments, namedArguments),
-        'toStringAsFixed': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toStringAsFixed, positionalArguments, namedArguments),
-        'toStringAsPrecision': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toStringAsPrecision, positionalArguments, namedArguments),
-        'truncate': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.truncate, positionalArguments, namedArguments),
-        'truncateToDouble': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.truncateToDouble, positionalArguments, namedArguments),
-      },
-    );
-  }
+  ///标准类型[DateTime]
+  static final classDateTime = VmClass<DateTime>(
+    identifier: 'DateTime',
+    externalProxyMap: {
+      'DateTime': VmProxy(identifier: 'DateTime', externalStaticPropertyReader: () => DateTime.new),
+      'fromMicrosecondsSinceEpoch': VmProxy(identifier: 'fromMicrosecondsSinceEpoch', externalStaticPropertyReader: () => DateTime.fromMicrosecondsSinceEpoch),
+      'fromMillisecondsSinceEpoch': VmProxy(identifier: 'fromMillisecondsSinceEpoch', externalStaticPropertyReader: () => DateTime.fromMillisecondsSinceEpoch),
+      'now': VmProxy(identifier: 'now', externalStaticPropertyReader: () => DateTime.now),
+      'utc': VmProxy(identifier: 'utc', externalStaticPropertyReader: () => DateTime.utc),
+      'april': VmProxy(identifier: 'april', externalStaticPropertyReader: () => DateTime.april),
+      'august': VmProxy(identifier: 'august', externalStaticPropertyReader: () => DateTime.august),
+      'daysPerWeek': VmProxy(identifier: 'daysPerWeek', externalStaticPropertyReader: () => DateTime.daysPerWeek),
+      'december': VmProxy(identifier: 'december', externalStaticPropertyReader: () => DateTime.december),
+      'february': VmProxy(identifier: 'february', externalStaticPropertyReader: () => DateTime.february),
+      'friday': VmProxy(identifier: 'friday', externalStaticPropertyReader: () => DateTime.friday),
+      'january': VmProxy(identifier: 'january', externalStaticPropertyReader: () => DateTime.january),
+      'july': VmProxy(identifier: 'july', externalStaticPropertyReader: () => DateTime.july),
+      'june': VmProxy(identifier: 'june', externalStaticPropertyReader: () => DateTime.june),
+      'march': VmProxy(identifier: 'march', externalStaticPropertyReader: () => DateTime.march),
+      'may': VmProxy(identifier: 'may', externalStaticPropertyReader: () => DateTime.may),
+      'monday': VmProxy(identifier: 'monday', externalStaticPropertyReader: () => DateTime.monday),
+      'monthsPerYear': VmProxy(identifier: 'monthsPerYear', externalStaticPropertyReader: () => DateTime.monthsPerYear),
+      'november': VmProxy(identifier: 'november', externalStaticPropertyReader: () => DateTime.november),
+      'october': VmProxy(identifier: 'october', externalStaticPropertyReader: () => DateTime.october),
+      'parse': VmProxy(identifier: 'parse', externalStaticPropertyReader: () => DateTime.parse),
+      'saturday': VmProxy(identifier: 'saturday', externalStaticPropertyReader: () => DateTime.saturday),
+      'september': VmProxy(identifier: 'september', externalStaticPropertyReader: () => DateTime.september),
+      'sunday': VmProxy(identifier: 'sunday', externalStaticPropertyReader: () => DateTime.sunday),
+      'thursday': VmProxy(identifier: 'thursday', externalStaticPropertyReader: () => DateTime.thursday),
+      'tryParse': VmProxy(identifier: 'tryParse', externalStaticPropertyReader: () => DateTime.tryParse),
+      'tuesday': VmProxy(identifier: 'tuesday', externalStaticPropertyReader: () => DateTime.tuesday),
+      'wednesday': VmProxy(identifier: 'wednesday', externalStaticPropertyReader: () => DateTime.wednesday),
+      'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (instance) => instance.add),
+      'compareTo': VmProxy(identifier: 'compareTo', externalInstancePropertyReader: (instance) => instance.compareTo),
+      'day': VmProxy(identifier: 'day', externalInstancePropertyReader: (instance) => instance.day),
+      'difference': VmProxy(identifier: 'difference', externalInstancePropertyReader: (instance) => instance.difference),
+      'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
+      'hour': VmProxy(identifier: 'hour', externalInstancePropertyReader: (instance) => instance.hour),
+      'isAfter': VmProxy(identifier: 'isAfter', externalInstancePropertyReader: (instance) => instance.isAfter),
+      'isAtSameMomentAs': VmProxy(identifier: 'isAtSameMomentAs', externalInstancePropertyReader: (instance) => instance.isAtSameMomentAs),
+      'isBefore': VmProxy(identifier: 'isBefore', externalInstancePropertyReader: (instance) => instance.isBefore),
+      'isUtc': VmProxy(identifier: 'isUtc', externalInstancePropertyReader: (instance) => instance.isUtc),
+      'microsecond': VmProxy(identifier: 'microsecond', externalInstancePropertyReader: (instance) => instance.microsecond),
+      'microsecondsSinceEpoch': VmProxy(identifier: 'microsecondsSinceEpoch', externalInstancePropertyReader: (instance) => instance.microsecondsSinceEpoch),
+      'millisecond': VmProxy(identifier: 'millisecond', externalInstancePropertyReader: (instance) => instance.millisecond),
+      'millisecondsSinceEpoch': VmProxy(identifier: 'millisecondsSinceEpoch', externalInstancePropertyReader: (instance) => instance.millisecondsSinceEpoch),
+      'minute': VmProxy(identifier: 'minute', externalInstancePropertyReader: (instance) => instance.minute),
+      'month': VmProxy(identifier: 'month', externalInstancePropertyReader: (instance) => instance.month),
+      'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
+      'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
+      'second': VmProxy(identifier: 'second', externalInstancePropertyReader: (instance) => instance.second),
+      'subtract': VmProxy(identifier: 'subtract', externalInstancePropertyReader: (instance) => instance.subtract),
+      'timeZoneName': VmProxy(identifier: 'timeZoneName', externalInstancePropertyReader: (instance) => instance.timeZoneName),
+      'timeZoneOffset': VmProxy(identifier: 'timeZoneOffset', externalInstancePropertyReader: (instance) => instance.timeZoneOffset),
+      'toIso8601String': VmProxy(identifier: 'toIso8601String', externalInstancePropertyReader: (instance) => instance.toIso8601String),
+      'toLocal': VmProxy(identifier: 'toLocal', externalInstancePropertyReader: (instance) => instance.toLocal),
+      'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
+      'toUtc': VmProxy(identifier: 'toUtc', externalInstancePropertyReader: (instance) => instance.toUtc),
+      'weekday': VmProxy(identifier: 'weekday', externalInstancePropertyReader: (instance) => instance.weekday),
+      'year': VmProxy(identifier: 'year', externalInstancePropertyReader: (instance) => instance.year),
+    },
+  );
 
-  static void _importClassNum() {
-    importClass<num>(
-      'num',
-      classConstructors: {
-        // 'num': (positionalArguments, [namedArguments]) => Function.apply(num.new, positionalArguments, namedArguments),
-      },
-      classProperties: {},
-      classFunctions: {
-        'parse': (positionalArguments, [namedArguments]) => Function.apply(num.parse, positionalArguments, namedArguments),
-        'tryParse': (positionalArguments, [namedArguments]) => Function.apply(num.tryParse, positionalArguments, namedArguments),
-      },
-      instanceProperties: {
-        'hashCode': (instance) => instance.hashCode,
-        'isFinite': (instance) => instance.isFinite,
-        'isInfinite': (instance) => instance.isInfinite,
-        'isNaN': (instance) => instance.isNaN,
-        'isNegative': (instance) => instance.isNegative,
-        'runtimeType': (instance) => instance.runtimeType,
-        'sign': (instance) => instance.sign,
-      },
-      instanceFunctions: {
-        'abs': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.abs, positionalArguments, namedArguments),
-        'ceil': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.ceil, positionalArguments, namedArguments),
-        'ceilToDouble': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.ceilToDouble, positionalArguments, namedArguments),
-        'clamp': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.clamp, positionalArguments, namedArguments),
-        'compareTo': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.compareTo, positionalArguments, namedArguments),
-        'floor': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.floor, positionalArguments, namedArguments),
-        'floorToDouble': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.floorToDouble, positionalArguments, namedArguments),
-        'noSuchMethod': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.noSuchMethod, positionalArguments, namedArguments),
-        'remainder': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.remainder, positionalArguments, namedArguments),
-        'round': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.round, positionalArguments, namedArguments),
-        'roundToDouble': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.roundToDouble, positionalArguments, namedArguments),
-        'toDouble': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toDouble, positionalArguments, namedArguments),
-        'toInt': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toInt, positionalArguments, namedArguments),
-        'toString': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toString, positionalArguments, namedArguments),
-        'toStringAsExponential': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toStringAsExponential, positionalArguments, namedArguments),
-        'toStringAsFixed': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toStringAsFixed, positionalArguments, namedArguments),
-        'toStringAsPrecision': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toStringAsPrecision, positionalArguments, namedArguments),
-        'truncate': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.truncate, positionalArguments, namedArguments),
-        'truncateToDouble': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.truncateToDouble, positionalArguments, namedArguments),
-      },
-    );
-  }
+  ///标准类型[Object]
+  static final classObject = VmClass<Object>(
+    identifier: 'Object',
+    externalProxyMap: {
+      'Object': VmProxy(identifier: 'Object', externalStaticPropertyReader: () => Object.new),
+      'hash': VmProxy(identifier: 'hash', externalStaticPropertyReader: () => Object.hash),
+      'hashAll': VmProxy(identifier: 'hashAll', externalStaticPropertyReader: () => Object.hashAll),
+      'hashAllUnordered': VmProxy(identifier: 'hashAllUnordered', externalStaticPropertyReader: () => Object.hashAllUnordered),
+      'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
+      'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
+      'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
+      'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
+    },
+  );
 
-  static void _importClassBool() {
-    importClass<bool>(
-      'bool',
-      classConstructors: {
-        'fromEnvironment': (positionalArguments, [namedArguments]) => Function.apply(bool.fromEnvironment, positionalArguments, namedArguments),
-        'hasEnvironment': (positionalArguments, [namedArguments]) => Function.apply(bool.hasEnvironment, positionalArguments, namedArguments),
-      },
-      classProperties: {},
-      classFunctions: {},
-      instanceProperties: {
-        'hashCode': (instance) => instance.hashCode,
-        'runtimeType': (instance) => instance.runtimeType,
-      },
-      instanceFunctions: {
-        'noSuchMethod': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.noSuchMethod, positionalArguments, namedArguments),
-        'toString': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toString, positionalArguments, namedArguments),
-      },
-    );
-  }
+  ///标准类型[Type]
+  static final classType = VmClass<Type>(
+    identifier: 'Type',
+    externalProxyMap: {
+      'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
+      'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
+      'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
+      'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
+    },
+  );
 
-  static void _importClassString() {
-    importClass<String>(
-      'String',
-      classConstructors: {
-        'fromCharCode': (positionalArguments, [namedArguments]) => Function.apply(String.fromCharCode, positionalArguments, namedArguments),
-        'fromCharCodes': (positionalArguments, [namedArguments]) => Function.apply(String.fromCharCodes, positionalArguments, namedArguments),
-        'fromEnvironment': (positionalArguments, [namedArguments]) => Function.apply(String.fromEnvironment, positionalArguments, namedArguments),
-      },
-      classProperties: {},
-      classFunctions: {},
-      instanceProperties: {
-        'codeUnits': (instance) => instance.codeUnits,
-        'hashCode': (instance) => instance.hashCode,
-        'isEmpty': (instance) => instance.isEmpty,
-        'isNotEmpty': (instance) => instance.isNotEmpty,
-        'length': (instance) => instance.length,
-        'runes': (instance) => instance.runes,
-        'runtimeType': (instance) => instance.runtimeType,
-      },
-      instanceFunctions: {
-        'allMatches': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.allMatches, positionalArguments, namedArguments),
-        'codeUnitAt': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.codeUnitAt, positionalArguments, namedArguments),
-        'compareTo': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.compareTo, positionalArguments, namedArguments),
-        'contains': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.contains, positionalArguments, namedArguments),
-        'endsWith': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.endsWith, positionalArguments, namedArguments),
-        'indexOf': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.indexOf, positionalArguments, namedArguments),
-        'lastIndexOf': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.lastIndexOf, positionalArguments, namedArguments),
-        'matchAsPrefix': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.matchAsPrefix, positionalArguments, namedArguments),
-        'noSuchMethod': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.noSuchMethod, positionalArguments, namedArguments),
-        'padLeft': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.padLeft, positionalArguments, namedArguments),
-        'padRight': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.padRight, positionalArguments, namedArguments),
-        'replaceAll': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.replaceAll, positionalArguments, namedArguments),
-        'replaceAllMapped': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.replaceAllMapped, positionalArguments, namedArguments),
-        'replaceFirst': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.replaceFirst, positionalArguments, namedArguments),
-        'replaceFirstMapped': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.replaceFirstMapped, positionalArguments, namedArguments),
-        'replaceRange': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.replaceRange, positionalArguments, namedArguments),
-        'split': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.split, positionalArguments, namedArguments),
-        'splitMapJoin': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.splitMapJoin, positionalArguments, namedArguments),
-        'startsWith': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.startsWith, positionalArguments, namedArguments),
-        'substring': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.substring, positionalArguments, namedArguments),
-        'toLowerCase': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toLowerCase, positionalArguments, namedArguments),
-        'toString': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toString, positionalArguments, namedArguments),
-        'toUpperCase': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toUpperCase, positionalArguments, namedArguments),
-        'trim': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.trim, positionalArguments, namedArguments),
-        'trimLeft': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.trimLeft, positionalArguments, namedArguments),
-        'trimRight': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.trimRight, positionalArguments, namedArguments),
-      },
-    );
-  }
+  ///标准类型[dynamic]
+  static final classDynamic = VmClass<dynamic>(
+    identifier: 'dynamic',
+    externalProxyMap: {
+      'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
+      'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
+      'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
+      'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
+    },
+  );
 
-  static void _importClassList() {
-    importClass<List>(
-      'List',
-      classConstructors: {
-        'List': (positionalArguments, [namedArguments]) => Function.apply(List.new, positionalArguments, namedArguments),
-        'empty': (positionalArguments, [namedArguments]) => Function.apply(List.empty, positionalArguments, namedArguments),
-        'filled': (positionalArguments, [namedArguments]) => Function.apply(List.filled, positionalArguments, namedArguments),
-        'from': (positionalArguments, [namedArguments]) => Function.apply(List.from, positionalArguments, namedArguments),
-        'generate': (positionalArguments, [namedArguments]) => Function.apply(List.generate, positionalArguments, namedArguments),
-        'of': (positionalArguments, [namedArguments]) => Function.apply(List.of, positionalArguments, namedArguments),
-        'unmodifiable': (positionalArguments, [namedArguments]) => Function.apply(List.unmodifiable, positionalArguments, namedArguments),
-      },
-      classProperties: {},
-      classFunctions: {
-        'castFrom': (positionalArguments, [namedArguments]) => Function.apply(List.castFrom, positionalArguments, namedArguments),
-        'copyRange': (positionalArguments, [namedArguments]) => Function.apply(List.copyRange, positionalArguments, namedArguments),
-        'writeIterable': (positionalArguments, [namedArguments]) => Function.apply(List.writeIterable, positionalArguments, namedArguments),
-      },
-      instanceProperties: {
-        'first': (instance) => instance.first,
-        'hashCode': (instance) => instance.hashCode,
-        'isEmpty': (instance) => instance.isEmpty,
-        'isNotEmpty': (instance) => instance.isNotEmpty,
-        'iterator': (instance) => instance.iterator,
-        'last': (instance) => instance.last,
-        'length': (instance) => instance.length,
-        'reversed': (instance) => instance.reversed,
-        'runtimeType': (instance) => instance.runtimeType,
-        'single': (instance) => instance.single,
-      },
-      instanceFunctions: {
-        'add': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.add, positionalArguments, namedArguments),
-        'addAll': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.addAll, positionalArguments, namedArguments),
-        'any': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.any, positionalArguments, namedArguments),
-        'asMap': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.asMap, positionalArguments, namedArguments),
-        'cast': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.cast, positionalArguments, namedArguments),
-        'clear': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.clear, positionalArguments, namedArguments),
-        'contains': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.contains, positionalArguments, namedArguments),
-        'elementAt': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.elementAt, positionalArguments, namedArguments),
-        'every': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.every, positionalArguments, namedArguments),
-        'expand': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.expand, positionalArguments, namedArguments),
-        'fillRange': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.fillRange, positionalArguments, namedArguments),
-        'firstWhere': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.firstWhere, positionalArguments, namedArguments),
-        'fold': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.fold, positionalArguments, namedArguments),
-        'followedBy': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.followedBy, positionalArguments, namedArguments),
-        'forEach': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.forEach, positionalArguments, namedArguments),
-        'getRange': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.getRange, positionalArguments, namedArguments),
-        'indexOf': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.indexOf, positionalArguments, namedArguments),
-        'indexWhere': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.indexWhere, positionalArguments, namedArguments),
-        'insert': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.insert, positionalArguments, namedArguments),
-        'insertAll': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.insertAll, positionalArguments, namedArguments),
-        'join': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.join, positionalArguments, namedArguments),
-        'lastIndexOf': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.lastIndexOf, positionalArguments, namedArguments),
-        'lastIndexWhere': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.lastIndexWhere, positionalArguments, namedArguments),
-        'lastWhere': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.lastWhere, positionalArguments, namedArguments),
-        'map': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.map, positionalArguments, namedArguments),
-        'noSuchMethod': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.noSuchMethod, positionalArguments, namedArguments),
-        'reduce': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.reduce, positionalArguments, namedArguments),
-        'remove': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.remove, positionalArguments, namedArguments),
-        'removeAt': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.removeAt, positionalArguments, namedArguments),
-        'removeLast': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.removeLast, positionalArguments, namedArguments),
-        'removeRange': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.removeRange, positionalArguments, namedArguments),
-        'removeWhere': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.removeWhere, positionalArguments, namedArguments),
-        'replaceRange': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.replaceRange, positionalArguments, namedArguments),
-        'retainWhere': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.retainWhere, positionalArguments, namedArguments),
-        'setAll': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.setAll, positionalArguments, namedArguments),
-        'setRange': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.setRange, positionalArguments, namedArguments),
-        'shuffle': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.shuffle, positionalArguments, namedArguments),
-        'singleWhere': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.singleWhere, positionalArguments, namedArguments),
-        'skip': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.skip, positionalArguments, namedArguments),
-        'skipWhile': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.skipWhile, positionalArguments, namedArguments),
-        'sort': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.sort, positionalArguments, namedArguments),
-        'sublist': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.sublist, positionalArguments, namedArguments),
-        'take': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.take, positionalArguments, namedArguments),
-        'takeWhile': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.takeWhile, positionalArguments, namedArguments),
-        'toList': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toList, positionalArguments, namedArguments),
-        'toSet': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toSet, positionalArguments, namedArguments),
-        'toString': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toString, positionalArguments, namedArguments),
-        'where': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.where, positionalArguments, namedArguments),
-        'whereType': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.whereType, positionalArguments, namedArguments),
-      },
-    );
-  }
+  ///全部类型列表
+  static final libraryClassList = <VmClass>[
+    classInt,
+    classDouble,
+    classNum,
+    classBool,
+    classString,
+    classList,
+    classSet,
+    classMap,
+    classRunes,
+    classSymbol,
+    classFunction,
+    classIterable,
+    classDuration,
+    classDateTime,
+    classObject,
+    classType,
+    classDynamic,
+  ];
 
-  static void _importClassSet() {
-    importClass<Set>(
-      'Set',
-      classConstructors: {
-        'Set': (positionalArguments, [namedArguments]) => Function.apply(Set.new, positionalArguments, namedArguments),
-        'from': (positionalArguments, [namedArguments]) => Function.apply(Set.from, positionalArguments, namedArguments),
-        'identity': (positionalArguments, [namedArguments]) => Function.apply(Set.identity, positionalArguments, namedArguments),
-        'of': (positionalArguments, [namedArguments]) => Function.apply(Set.of, positionalArguments, namedArguments),
-        'unmodifiable': (positionalArguments, [namedArguments]) => Function.apply(Set.unmodifiable, positionalArguments, namedArguments),
-      },
-      classProperties: {},
-      classFunctions: {
-        'castFrom': (positionalArguments, [namedArguments]) => Function.apply(Set.castFrom, positionalArguments, namedArguments),
-      },
-      instanceProperties: {
-        'first': (instance) => instance.first,
-        'hashCode': (instance) => instance.hashCode,
-        'isEmpty': (instance) => instance.isEmpty,
-        'isNotEmpty': (instance) => instance.isNotEmpty,
-        'iterator': (instance) => instance.iterator,
-        'last': (instance) => instance.last,
-        'length': (instance) => instance.length,
-        'runtimeType': (instance) => instance.runtimeType,
-        'single': (instance) => instance.single,
-      },
-      instanceFunctions: {
-        'add': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.add, positionalArguments, namedArguments),
-        'addAll': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.addAll, positionalArguments, namedArguments),
-        'any': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.any, positionalArguments, namedArguments),
-        'cast': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.cast, positionalArguments, namedArguments),
-        'clear': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.clear, positionalArguments, namedArguments),
-        'contains': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.contains, positionalArguments, namedArguments),
-        'containsAll': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.containsAll, positionalArguments, namedArguments),
-        'difference': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.difference, positionalArguments, namedArguments),
-        'elementAt': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.elementAt, positionalArguments, namedArguments),
-        'every': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.every, positionalArguments, namedArguments),
-        'expand': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.expand, positionalArguments, namedArguments),
-        'firstWhere': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.firstWhere, positionalArguments, namedArguments),
-        'fold': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.fold, positionalArguments, namedArguments),
-        'followedBy': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.followedBy, positionalArguments, namedArguments),
-        'forEach': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.forEach, positionalArguments, namedArguments),
-        'intersection': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.intersection, positionalArguments, namedArguments),
-        'join': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.join, positionalArguments, namedArguments),
-        'lastWhere': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.lastWhere, positionalArguments, namedArguments),
-        'lookup': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.lookup, positionalArguments, namedArguments),
-        'map': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.map, positionalArguments, namedArguments),
-        'noSuchMethod': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.noSuchMethod, positionalArguments, namedArguments),
-        'reduce': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.reduce, positionalArguments, namedArguments),
-        'remove': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.remove, positionalArguments, namedArguments),
-        'removeAll': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.removeAll, positionalArguments, namedArguments),
-        'removeWhere': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.removeWhere, positionalArguments, namedArguments),
-        'retainAll': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.retainAll, positionalArguments, namedArguments),
-        'retainWhere': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.retainWhere, positionalArguments, namedArguments),
-        'singleWhere': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.singleWhere, positionalArguments, namedArguments),
-        'skip': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.skip, positionalArguments, namedArguments),
-        'skipWhile': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.skipWhile, positionalArguments, namedArguments),
-        'take': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.take, positionalArguments, namedArguments),
-        'takeWhile': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.takeWhile, positionalArguments, namedArguments),
-        'toList': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toList, positionalArguments, namedArguments),
-        'toSet': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toSet, positionalArguments, namedArguments),
-        'toString': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toString, positionalArguments, namedArguments),
-        'union': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.union, positionalArguments, namedArguments),
-        'where': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.where, positionalArguments, namedArguments),
-        'whereType': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.whereType, positionalArguments, namedArguments),
-      },
-    );
-  }
-
-  static void _importClassMap() {
-    importClass<Map>(
-      'Map',
-      classConstructors: {
-        'Map': (positionalArguments, [namedArguments]) => Function.apply(Map.new, positionalArguments, namedArguments),
-        'from': (positionalArguments, [namedArguments]) => Function.apply(Map.from, positionalArguments, namedArguments),
-        'fromEntries': (positionalArguments, [namedArguments]) => Function.apply(Map.fromEntries, positionalArguments, namedArguments),
-        'fromIterable': (positionalArguments, [namedArguments]) => Function.apply(Map.fromIterable, positionalArguments, namedArguments),
-        'fromIterables': (positionalArguments, [namedArguments]) => Function.apply(Map.fromIterables, positionalArguments, namedArguments),
-        'identity': (positionalArguments, [namedArguments]) => Function.apply(Map.identity, positionalArguments, namedArguments),
-        'of': (positionalArguments, [namedArguments]) => Function.apply(Map.of, positionalArguments, namedArguments),
-        'unmodifiable': (positionalArguments, [namedArguments]) => Function.apply(Map.unmodifiable, positionalArguments, namedArguments),
-      },
-      classProperties: {},
-      classFunctions: {
-        'castFrom': (positionalArguments, [namedArguments]) => Function.apply(Map.castFrom, positionalArguments, namedArguments),
-      },
-      instanceProperties: {
-        'entries': (instance) => instance.entries,
-        'hashCode': (instance) => instance.hashCode,
-        'isEmpty': (instance) => instance.isEmpty,
-        'isNotEmpty': (instance) => instance.isNotEmpty,
-        'keys': (instance) => instance.keys,
-        'length': (instance) => instance.length,
-        'runtimeType': (instance) => instance.runtimeType,
-        'values': (instance) => instance.values,
-      },
-      instanceFunctions: {
-        'addAll': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.addAll, positionalArguments, namedArguments),
-        'addEntries': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.addEntries, positionalArguments, namedArguments),
-        'cast': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.cast, positionalArguments, namedArguments),
-        'clear': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.clear, positionalArguments, namedArguments),
-        'containsKey': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.containsKey, positionalArguments, namedArguments),
-        'containsValue': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.containsValue, positionalArguments, namedArguments),
-        'forEach': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.forEach, positionalArguments, namedArguments),
-        'map': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.map, positionalArguments, namedArguments),
-        'noSuchMethod': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.noSuchMethod, positionalArguments, namedArguments),
-        'putIfAbsent': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.putIfAbsent, positionalArguments, namedArguments),
-        'remove': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.remove, positionalArguments, namedArguments),
-        'removeWhere': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.removeWhere, positionalArguments, namedArguments),
-        'toString': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toString, positionalArguments, namedArguments),
-        'update': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.update, positionalArguments, namedArguments),
-        'updateAll': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.updateAll, positionalArguments, namedArguments),
-      },
-    );
-  }
-
-  static void _importClassRunes() {
-    importClass<Runes>(
-      'Runes',
-      classConstructors: {
-        'Runes': (positionalArguments, [namedArguments]) => Function.apply(Runes.new, positionalArguments, namedArguments),
-      },
-      classProperties: {},
-      classFunctions: {},
-      instanceProperties: {
-        'first': (instance) => instance.first,
-        'hashCode': (instance) => instance.hashCode,
-        'isEmpty': (instance) => instance.isEmpty,
-        'isNotEmpty': (instance) => instance.isNotEmpty,
-        'iterator': (instance) => instance.iterator,
-        'last': (instance) => instance.last,
-        'length': (instance) => instance.length,
-        'runtimeType': (instance) => instance.runtimeType,
-        'single': (instance) => instance.single,
-        'string': (instance) => instance.string,
-      },
-      instanceFunctions: {
-        'any': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.any, positionalArguments, namedArguments),
-        'cast': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.cast, positionalArguments, namedArguments),
-        'contains': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.contains, positionalArguments, namedArguments),
-        'elementAt': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.elementAt, positionalArguments, namedArguments),
-        'every': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.every, positionalArguments, namedArguments),
-        'expand': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.expand, positionalArguments, namedArguments),
-        'firstWhere': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.firstWhere, positionalArguments, namedArguments),
-        'fold': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.fold, positionalArguments, namedArguments),
-        'followedBy': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.followedBy, positionalArguments, namedArguments),
-        'forEach': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.forEach, positionalArguments, namedArguments),
-        'join': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.join, positionalArguments, namedArguments),
-        'lastWhere': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.lastWhere, positionalArguments, namedArguments),
-        'map': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.map, positionalArguments, namedArguments),
-        'noSuchMethod': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.noSuchMethod, positionalArguments, namedArguments),
-        'reduce': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.reduce, positionalArguments, namedArguments),
-        'singleWhere': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.singleWhere, positionalArguments, namedArguments),
-        'skip': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.skip, positionalArguments, namedArguments),
-        'skipWhile': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.skipWhile, positionalArguments, namedArguments),
-        'take': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.take, positionalArguments, namedArguments),
-        'takeWhile': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.takeWhile, positionalArguments, namedArguments),
-        'toList': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toList, positionalArguments, namedArguments),
-        'toSet': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toSet, positionalArguments, namedArguments),
-        'toString': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toString, positionalArguments, namedArguments),
-        'where': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.where, positionalArguments, namedArguments),
-        'whereType': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.whereType, positionalArguments, namedArguments),
-      },
-    );
-  }
-
-  static void _importClassSymbol() {
-    importClass<Symbol>(
-      'Symbol',
-      classConstructors: {
-        'Symbol': (positionalArguments, [namedArguments]) => Function.apply(Symbol.new, positionalArguments, namedArguments),
-      },
-      classProperties: {
-        'empty': () => Symbol.empty,
-        'unaryMinus': () => Symbol.unaryMinus,
-      },
-      classFunctions: {},
-      instanceProperties: {
-        'hashCode': (instance) => instance.hashCode,
-        'runtimeType': (instance) => instance.runtimeType,
-      },
-      instanceFunctions: {
-        'noSuchMethod': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.noSuchMethod, positionalArguments, namedArguments),
-        'toString': (instance, positionalArguments, [namedArguments]) => Function.apply(instance.toString, positionalArguments, namedArguments),
-      },
-    );
-  }
+  ///代理函数列表
+  static final libraryProxyList = <VmProxy>[
+    VmProxy(identifier: 'print', externalStaticPropertyReader: () => print),
+  ];
 }
-
-///构造函数
-typedef VmLibraryClassConstructor = dynamic Function(List<dynamic>? positionalArguments, [Map<Symbol, dynamic>? namedArguments]);
-
-///静态属性
-typedef VmLibraryClassProperty = dynamic Function();
-
-///静态函数
-typedef VmLibraryclassFunction = dynamic Function(List<dynamic>? positionalArguments, [Map<Symbol, dynamic>? namedArguments]);
-
-///实例属性
-typedef VmLibraryInstanceProperty<T> = dynamic Function(T instance);
-
-///实例函数
-typedef VmLibraryInstanceFunction<T> = dynamic Function(T instance, List<dynamic>? positionalArguments, [Map<Symbol, dynamic>? namedArguments]);

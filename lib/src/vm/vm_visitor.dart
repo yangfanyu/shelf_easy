@@ -1253,3 +1253,68 @@
 
   // ///对应[NullLiteral]
   // $NullLiteral,
+
+
+
+//   ///获取[classType]类的[propertyName]属性
+//   static dynamic getClassProperty(String classType, String propertyName) {
+//     final method = _classPropertiesReaderMap[classType]?[propertyName] ?? _classConstructorsMap[classType]?[propertyName];
+//     if (method == null) throw ('Not round class property reader: $classType.$propertyName');
+//     return method();
+//   }
+
+//   ///设置[classType]类的[propertyName]属性的值为[propertyValue]
+//   static dynamic setClassProperty(String classType, String propertyName, dynamic propertyValue) {
+//     final method = _classPropertiesWriterMap[classType]?[propertyName];
+//     if (method == null) throw ('Not round class property writer: $classType.$propertyName');
+//     return method(propertyValue);
+//   }
+
+//   ///执行[classType]类的[functionName]方法
+//   static dynamic runClassFunction(String classType, String functionName, List<dynamic>? positionalArguments, [Map<Symbol, dynamic>? namedArguments]) {
+//     final method = _classPropertiesReaderMap[classType]?[functionName] ?? _classConstructorsMap[classType]?[functionName];
+//     if (method == null) throw ('Not round class function reader: $classType.$functionName');
+//     return Function.apply(method(), positionalArguments, namedArguments);
+//   }
+
+//   ///获取[instance]实例的[propertyName]属性
+//   static dynamic getInstanceProperty(dynamic instance, String propertyName) {
+//     final classType = getInstanceClassType(instance);
+//     final method = _instancePropertiesReaderMap[classType]?[propertyName];
+//     if (method == null) throw ('Not round instance property reader: $classType.$propertyName => instance.runtimeType: ${instance.runtimeType}');
+//     return method(instance);
+//   }
+
+//   ///设置[instance]实例的[propertyName]属性的值为[propertyValue]
+//   static dynamic setInstanceProperty(dynamic instance, String propertyName, dynamic propertyValue) {
+//     final classType = getInstanceClassType(instance);
+//     final method = _instancePropertiesWriterMap[classType]?[propertyName];
+//     if (method == null) throw ('Not round instance property writer: $classType.$propertyName => instance.runtimeType: ${instance.runtimeType}');
+//     return method(instance, propertyValue);
+//   }
+
+//   ///执行[instance]实例的[functionName]方法
+//   static dynamic runInstanceFunction(dynamic instance, String functionName, List<dynamic>? positionalArguments, [Map<Symbol, dynamic>? namedArguments]) {
+//     final classType = getInstanceClassType(instance);
+//     final method = _instancePropertiesReaderMap[classType]?[functionName];
+//     if (method == null) throw ('Not round instance function: $classType.$functionName => instance.runtimeType: ${instance.runtimeType}');
+//     return Function.apply(method(instance), positionalArguments, namedArguments);
+//   }
+
+//   ///[Set]与[Map]的[runtimeType]并不准确，这里用来来保持与导入时定义的类型一致
+//   static String getInstanceClassType(dynamic instance) {
+//     if (instance is int || instance is int?) return 'int';
+//     if (instance is double || instance is double?) return 'double';
+//     if (instance is num || instance is num?) return 'num';
+//     if (instance is bool || instance is bool?) return 'bool';
+//     if (instance is String || instance is String?) return 'String';
+//     if (instance is List || instance is List?) return 'List';
+//     if (instance is Set || instance is Set?) return 'Set';
+//     if (instance is Map || instance is Map?) return 'Map';
+//     if (instance is Runes || instance is Runes?) return 'Runes';
+//     if (instance is Symbol || instance is Symbol?) return 'Symbol';
+//     if (instance is Function || instance is Function?) return 'Function';
+//     if (instance is Iterable || instance is Iterable?) return 'Iterable';
+//     if (instance is Type || instance is Type?) return 'Type';
+//     return instance.runtimeType.toString();
+//   }
