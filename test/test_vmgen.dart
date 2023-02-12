@@ -57,6 +57,9 @@ void main() {
   //DateTime
   final DateTime dateTimeVar = DateTime.now();
   generateInstance(reflect(dateTimeVar).type, generateClass(reflectClass(DateTime)));
+  //Future
+  final Future futureVar = Future.delayed(Duration.zero);
+  generateInstance(reflect(futureVar).type, generateClass(reflectClass(Future)));
   //Object
   final Object objectVar = Object();
   generateInstance(reflect(objectVar).type, generateClass(reflectClass(Object)));
@@ -69,6 +72,9 @@ void main() {
   //dynamic
   final dynamicVal = null;
   generateInstance(reflect(dynamicVal).type, generateClass(reflectClass(Null), hardName: 'dynamic'));
+  //void
+  final voidVal = null;
+  generateInstance(reflect(voidVal).type, generateClass(reflectClass(Null), hardName: 'void', noBody: true), noBody: true);
   //all
   generateLibraryList();
 
@@ -81,22 +87,30 @@ void main() {
     ..writeAsStringSync(codeBuffer.toString());
 }
 
-String generateClass(ClassMirror target, {String? hardName, String? typeName}) {
+String generateClass(ClassMirror target, {String? hardName, bool noBody = false}) {
   final className = hardName ?? geSymbolName(target.simpleName);
   final fieldName = 'class${className[0].toUpperCase()}${className.substring(1)}';
   libraryMap[fieldName] = fieldName;
   codeBuffer.writeln('');
-  codeBuffer.writeln('  ///标准类型[$className]');
-  codeBuffer.writeln('  static final $fieldName = VmClass<${typeName ?? className}>(');
+  if (hardName == null) {
+    codeBuffer.writeln('  ///标准类型[$className]');
+  } else {
+    codeBuffer.writeln('  ///类型$className');
+  }
+  codeBuffer.writeln('  static final $fieldName = VmClass<$className>(');
   codeBuffer.writeln('    identifier: \'$className\',');
   codeBuffer.writeln('    externalProxyMap: {');
-  generateClassConstructors(target, className);
-  generateClassProperties(target, className);
+  if (!noBody) {
+    generateClassConstructors(target, className);
+    generateClassProperties(target, className);
+  }
   return className;
 }
 
-void generateInstance(ClassMirror target, String className) {
-  generateInstanceProperties(target, className);
+void generateInstance(ClassMirror target, String className, {bool noBody = false}) {
+  if (!noBody) {
+    generateInstanceProperties(target, className);
+  }
   codeBuffer.writeln('    },');
   codeBuffer.writeln('  );');
 }
@@ -128,6 +142,9 @@ void generateClassConstructors(ClassMirror target, String className) {
         final keyName = conName.isEmpty ? className : conName;
         final funcName = conName.isEmpty ? 'new' : conName;
         codeBuffer.writeln('      \'$keyName\': VmProxy(identifier:\'$keyName\', externalStaticPropertyReader: () => $className.$funcName),');
+        if (conName.isEmpty) {
+          codeBuffer.writeln('      \'new\': VmProxy(identifier:\'new\', externalStaticPropertyReader: () => $className.$funcName),');
+        }
       }
     }
   }

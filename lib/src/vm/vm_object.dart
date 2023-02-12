@@ -30,31 +30,31 @@ class VmClass<T> extends VmObject {
     this.internalProxyMap,
   });
 
-  ///执行本包装类型的静态函数
-  dynamic runStaticFunction(String functionName, List? positionalArguments, Map<Symbol, dynamic>? namedArguments) => _getProxy(functionName).runStaticFunction(positionalArguments, namedArguments);
+  ///被包装的类型
+  Type get typeValue => T;
 
-  ///读取本包装类型的静态属性
-  dynamic getStaticProperty(String propertyName) => _getProxy(propertyName).getStaticProperty();
+  ///判断指定实例是否匹配该包装类型
+  bool isMatched(dynamic instance) => instance is T;
 
-  ///设置本包装类型的静态属性
-  dynamic setStaticProperty(String propertyName, propertyValue) => _getProxy(propertyName).setStaticProperty(propertyValue);
-
-  ///转换为容易理解的可读字符串描述
-  @override
-  String toString() => 'VmClass<$T> ===> $identifier';
-
-  ///判断指定实例是否为本包装类型的实例
-  bool _matchClass(dynamic instance) => instance is T;
-
-  ///获取本包装类型的指定字段的代理对象
-  VmProxy<T> _getProxy(String propertyName) {
+  ///获取该包装类型的指定字段的代理
+  VmProxy<T> getProxy(String propertyName) {
     final proxy = isExternal ? (externalProxyMap?[propertyName]) : (internalProxyMap?[propertyName]);
     if (proxy == null) throw ('Not found proxy: $identifier.$propertyName');
     return proxy;
   }
 
-  ///缺省包装类型
-  static const _defaultClass = VmClass(identifier: '___defaultProxyClass___');
+  ///执行该包装类型的静态函数
+  dynamic runStaticFunction(String functionName, List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments) => getProxy(functionName).runStaticFunction(positionalArguments, namedArguments);
+
+  ///读取该包装类型的静态属性
+  dynamic getStaticProperty(String propertyName) => getProxy(propertyName).getStaticProperty();
+
+  ///设置该包装类型的静态属性
+  dynamic setStaticProperty(String propertyName, propertyValue) => getProxy(propertyName).setStaticProperty(propertyValue);
+
+  ///转换为易读的字符串
+  @override
+  String toString() => 'VmClass<$T> ===> $identifier';
 
   ///包装类型集合
   static final _libraryMap = <String, VmClass>{};
@@ -64,7 +64,7 @@ class VmClass<T> extends VmObject {
 
   ///添加包装类型
   static void addClass(VmClass vmclass) {
-    if (_libraryMap.containsKey(vmclass.identifier)) throw ('Already exists class: ${vmclass.identifier}');
+    if (_libraryMap.containsKey(vmclass.identifier)) throw ('Already exists VmClass: ${vmclass.identifier}');
     _libraryMap[vmclass.identifier] = vmclass;
     _libraryList.add(vmclass);
   }
@@ -72,36 +72,40 @@ class VmClass<T> extends VmObject {
   ///获取指定名称对应的包装类型
   static VmClass getClassByTypeName(String typeName) {
     final vmclass = _libraryMap[typeName];
-    if (vmclass == null) throw ('Not found class: $typeName');
+    if (vmclass == null) throw ('Not found VmClass: $typeName');
     return vmclass;
   }
 
-  ///获取指定实例对应的包装类型
+  ///获取任意非[VmObject]实例[instance]的对应[VmClass]包装类型
   static VmClass getClassByInstance(dynamic instance) {
+    if (instance is VmObject) throw ('Instance type cannot be VmObject: ${instance.runtimeType}');
     //先通过运行时字符串类型名查找
     final typeName = instance.runtimeType.toString();
     final vmclass = _libraryMap[typeName];
     if (vmclass != null) return vmclass;
     //再通过_matchClass方法匹配
     for (var item in _libraryList) {
-      if (item._matchClass(instance)) return item;
+      if (item.isMatched(instance)) return item;
     }
-    throw ('Not found class: $typeName');
+    throw ('Not found VmClass: $typeName');
   }
 
-  ///执行被包装类型的实例的函数
+  ///执行任意非[VmObject]实例[instance]的[functionName]函数
   static dynamic runInstanceFunction(dynamic instance, String functionName, List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments) {
-    return getClassByInstance(instance)._getProxy(functionName).runInstanceFunction(instance, positionalArguments, namedArguments);
+    if (instance is VmObject) throw ('Instance type cannot be VmObject: ${instance.runtimeType}');
+    return getClassByInstance(instance).getProxy(functionName).runInstanceFunction(instance, positionalArguments, namedArguments);
   }
 
-  ///读取被包装类型的实例的属性
+  ///读取任意非[VmObject]实例[instance]的[propertyName]属性
   static dynamic getInstanceProperty(dynamic instance, String propertyName) {
-    return getClassByInstance(instance)._getProxy(propertyName).getInstanceProperty(instance);
+    if (instance is VmObject) throw ('Instance type cannot be VmObject: ${instance.runtimeType}');
+    return getClassByInstance(instance).getProxy(propertyName).getInstanceProperty(instance);
   }
 
-  ///设置被包装类型的实例的属性
+  ///设置任意非[VmObject]实例[instance]的[propertyName]属性
   static dynamic setInstanceProperty(dynamic instance, String propertyName, dynamic propertyValue) {
-    return getClassByInstance(instance)._getProxy(propertyName).setInstanceProperty(instance, propertyValue);
+    if (instance is VmObject) throw ('Instance type cannot be VmObject: ${instance.runtimeType}');
+    return getClassByInstance(instance).getProxy(propertyName).setInstanceProperty(instance, propertyValue);
   }
 }
 
@@ -169,77 +173,91 @@ class VmProxy<T> extends VmObject {
 
   ///执行实例函数
   dynamic runInstanceFunction(dynamic instance, List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments) {
+    if (instance is VmObject) throw ('Instance type cannot be VmObject: ${instance.runtimeType}');
     if (externalInstancePropertyReader == null) throw ('Not found externalInstancePropertyReader: $identifier => instance.runtimeType is ${instance.runtimeType}');
     return Function.apply(externalInstancePropertyReader!(instance), positionalArguments, namedArguments);
   }
 
   ///读取实例属性
   dynamic getInstanceProperty(dynamic instance) {
+    if (instance is VmObject) throw ('Instance type cannot be VmObject: ${instance.runtimeType}');
     if (externalInstancePropertyReader == null) throw ('Not found externalInstancePropertyReader: $identifier => instance.runtimeType is ${instance.runtimeType}');
     return externalInstancePropertyReader!(instance);
   }
 
   ///写入实例属性
   dynamic setInstanceProperty(dynamic instance, dynamic value) {
+    if (instance is VmObject) throw ('Instance type cannot be VmObject: ${instance.runtimeType}');
     if (externalInstancePropertyWriter == null) throw ('Not found externalInstancePropertyWriter: $identifier => instance.runtimeType is ${instance.runtimeType}');
     return externalInstancePropertyWriter!(instance, value);
   }
+
+  ///转换为易读的字符串
+  @override
+  String toString() => 'VmProxy<$T> ===> $identifier';
 }
 
 ///
 ///虚拟机目标操作类
 ///
 class VmCaller extends VmObject {
-  ///要操作的目标对象
-  final dynamic target;
+  ///要操作的目标实例
+  final dynamic _instance;
 
-  ///要操作的目标对象的函数名
+  ///要操作的目标的函数名
   String get functionName => identifier;
 
-  ///要操作的目标对象的属性名
+  ///要操作的目标的属性名
   String get propertyname => identifier;
 
   VmCaller({
     required dynamic target,
     required super.identifier,
-  }) : target = target is VmCaller ? target.getProperty() : target;
+  }) : _instance = target;
 
-  ///执行[target]的[identifier]函数
-  dynamic runFunction(List? positionalArguments, Map<Symbol, dynamic>? namedArguments) {
-    if (target is VmClass) return (target as VmClass).runStaticFunction(identifier, positionalArguments, namedArguments);
-    if (target is VmVariable) return (target as VmVariable).runInstanceFunction(identifier, positionalArguments, namedArguments);
-    if (target is VmObject) throw ('Unsupport runFunction target: ${target.runtimeType}.$identifier');
-    return VmClass.runInstanceFunction(target, identifier, positionalArguments, namedArguments);
-  }
-
-  ///读取[target]的[identifier]属性
+  ///读取目标的[identifier]属性
   dynamic getProperty() {
-    if (target is VmClass) return (target as VmClass).getStaticProperty(identifier);
-    if (target is VmVariable) return (target as VmVariable).getInstanceProperty(identifier);
-    if (target is VmObject) throw ('Unsupport getProperty target: ${target.runtimeType}.$identifier');
+    final target = _instance;
+    if (target is VmClass) return target.getStaticProperty(identifier);
+    if (target is VmProxy) return VmClass.getInstanceProperty(target.getStaticProperty(), identifier);
+    if (target is VmCaller) return VmClass.getInstanceProperty(target.getProperty(), identifier);
+    if (target is VmHelper) return VmClass.getInstanceProperty(target.fieldValue, identifier);
+    if (target is VmSignal) return VmClass.getInstanceProperty(target.signalValue, identifier);
+    if (target is VmVariable) return target.getInstanceProperty(identifier);
+    if (target is VmFunction) return VmClass.getInstanceProperty(target._template, identifier);
     return VmClass.getInstanceProperty(target, identifier);
   }
 
-  ///设置[target]的[identifier]属性
+  ///设置目标的[identifier]属性
   dynamic setProperty(dynamic value) {
-    if (target is VmClass) return (target as VmClass).setStaticProperty(identifier, value);
-    if (target is VmVariable) return (target as VmVariable).setInstanceProperty(identifier, value);
-    if (target is VmObject) throw ('Unsupport setProperty target: ${target.runtimeType}.$identifier');
+    final target = _instance;
+    if (target is VmClass) return target.setStaticProperty(identifier, value);
+    if (target is VmProxy) return VmClass.setInstanceProperty(target.getStaticProperty(), identifier, value);
+    if (target is VmCaller) return VmClass.setInstanceProperty(target.getProperty(), identifier, value);
+    if (target is VmHelper) return VmClass.setInstanceProperty(target.fieldValue, identifier, value);
+    if (target is VmSignal) return VmClass.setInstanceProperty(target.signalValue, identifier, value);
+    if (target is VmVariable) return target.setInstanceProperty(identifier, value);
+    if (target is VmFunction) return VmClass.setInstanceProperty(target._template, identifier, value);
     return VmClass.setInstanceProperty(target, identifier, value);
   }
 
   ///获取[target]的值
   static dynamic getValue(dynamic target) {
-    if (target is VmCaller) return target.getProperty();
-    if (target is VmVariable) return target.value;
+    if (target is VmClass) return target.typeValue; //读取被包装的类型值
+    if (target is VmProxy) return target.getStaticProperty(); //读取代理的属性值
+    if (target is VmCaller) return target.getProperty(); //读取封装的属性值
+    if (target is VmHelper) return target.fieldValue; //读取字段值
+    if (target is VmSignal) return target.signalValue; //读取信号值
+    if (target is VmVariable) return target._instance; //读取实例值
+    if (target is VmFunction) return target._template; //读取模板值
     if (target is VmObject) throw ('Unsupport getValue target: ${target.runtimeType}');
     return target;
   }
 
   ///设置[target]的值
   static dynamic setValue(dynamic target, dynamic value) {
-    if (target is VmCaller) return target.setProperty(value);
-    if (target is VmVariable) return target.value = value;
+    if (target is VmCaller) return target.setProperty(value); //设置封装的属性值
+    if (target is VmVariable) return target._setValue(value); //设置实例值
     throw ('Unsupport setValue target: ${target.runtimeType} $value');
   }
 }
@@ -249,46 +267,73 @@ class VmCaller extends VmObject {
 ///
 class VmHelper extends VmObject {
   ///声明时明确指定的类型如：int、double、bool等
-  String get typeName => identifier;
+  final String? typeName;
 
   ///声明时明确指定的类型如果有问号则该值为：'?'，否则为：null
   final String? typeQuestion;
 
-  ///声明字段的名称
-  final String? fieldName;
+  ///声明的字段名称
+  final String fieldName;
 
-  ///声明字段的默认值
+  ///声明的字段默认值
   final dynamic fieldValue;
 
-  ///声明字段是否为命名参数
+  ///声明的字段是否为命名参数
   final bool isNamedField;
 
   VmHelper({
-    String? identifier,
+    this.typeName,
     this.typeQuestion,
-    this.fieldName,
-    this.fieldValue,
+    String? fieldName,
+    dynamic fieldValue,
     this.isNamedField = false,
-  }) : super(identifier: identifier ?? VmClass._defaultClass.identifier);
+  })  : fieldName = fieldName ?? '___anonymousVmField___',
+        fieldValue = VmCaller.getValue(fieldValue),
+        super(identifier: '___anonymousVmHelper___');
+}
+
+///
+///虚拟机运行信号类
+///
+class VmSignal extends VmObject {
+  ///是否为break信号
+  final bool isBreak;
+
+  ///是否为return信号
+  final bool isReturn;
+
+  ///信号关键字如：break、return等
+  final String? keyword;
+
+  ///附带值如：函数返回值等
+  final dynamic signalValue;
+
+  ///是否为中断语句信号
+  bool get isInterrupt => isBreak || isReturn;
+
+  VmSignal({
+    this.isBreak = false,
+    this.isReturn = false,
+    this.keyword,
+    dynamic signalValue,
+  })  : signalValue = VmCaller.getValue(signalValue),
+        super(identifier: '___anonymousVmSignal___');
 }
 
 ///
 ///虚拟机虚拟变量
 ///
 class VmVariable extends VmObject {
-  ///匿名变量名称
-  static const _anonymousVariable = '_anonymousVariable';
-
   ///声明时是否有late
   final bool isLate;
 
-  ////声明时是否有final
+  ///声明时是否有final
   final bool isFinal;
 
-  ////声明时是否有const
+  ///声明时是否有const
   final bool isConst;
 
-  ////声明时用的关键字如：var、const、final等
+  ///声明时用的关键字如：var、const、final等
   final String? keyword;
 
   ///声明时明确指定的类型如：int、double、bool等
@@ -300,17 +345,14 @@ class VmVariable extends VmObject {
   ///初始值
   final dynamic initValue;
 
-  ///是否已经初始化过
-  bool _inited;
+  ///根据[typeName]与[_instance]推算出来的包装类型
+  late final VmClass _vmclass;
 
-  ///根据[typeName]与[_instance]推算出来的的代理包装类
-  VmClass _vmclass;
-
-  ///对应类型的当前实例
+  ///对应[_vmclass]包装类型的实例，这个实例不能是[VmObject]的任何子类型
   dynamic _instance;
 
   VmVariable({
-    super.identifier = _anonymousVariable,
+    super.identifier = '___anonymousVariable___',
     this.isLate = false,
     this.isFinal = false,
     this.isConst = false,
@@ -318,24 +360,13 @@ class VmVariable extends VmObject {
     this.typeName,
     this.typeQuestion,
     this.initValue,
-  })  : _inited = false,
-        _vmclass = VmClass._defaultClass,
-        _instance = null;
-
-  void _ensureInited() {
-    if (!_inited) throw ('Not inited VmVariable: $identifier');
+  }) {
+    _setValue(initValue); //先设置实例值
+    _vmclass = typeName == null ? VmClass.getClassByInstance(_instance) : VmClass.getClassByTypeName(typeName!); //后推算对应类型
   }
 
-  void init() {
-    if (_inited) throw ('Already inited VmVariable: $identifier');
-    _inited = true;
-    value = initValue; //注意这里调用的 set 方法
-    _vmclass = typeName == null ? VmClass.getClassByInstance(_instance) : VmClass.getClassByTypeName(typeName!); //初始化绑定的类型
-  }
-
-  ///设置实例
-  set value(dynamic val) {
-    _ensureInited();
+  ///设置实例值
+  void _setValue(dynamic val) {
     final v = VmCaller.getValue(val);
     switch (typeName) {
       case 'int':
@@ -368,43 +399,34 @@ class VmVariable extends VmObject {
     }
   }
 
-  ///读取实例
-  dynamic get value {
-    _ensureInited();
-    return _instance;
-  }
-
   ///执行实例的函数
-  dynamic runInstanceFunction(String functionName, List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments) {
-    _ensureInited();
-    return _vmclass._getProxy(functionName).runInstanceFunction(_instance, positionalArguments, namedArguments);
-  }
+  dynamic runInstanceFunction(String functionName, List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments) => _vmclass.getProxy(functionName).runInstanceFunction(_instance, positionalArguments, namedArguments);
 
   ///读取实例的属性
-  dynamic getInstanceProperty(String propertyName) {
-    _ensureInited();
-    return _vmclass._getProxy(propertyName).getInstanceProperty(_instance);
-  }
+  dynamic getInstanceProperty(String propertyName) => _vmclass.getProxy(propertyName).getInstanceProperty(_instance);
 
   ///设置实例的属性
-  dynamic setInstanceProperty(String propertyName, dynamic propertyValue) {
-    _ensureInited();
-    return _vmclass._getProxy(propertyName).setInstanceProperty(_instance, propertyValue);
+  dynamic setInstanceProperty(String propertyName, dynamic propertyValue) => _vmclass.getProxy(propertyName).setInstanceProperty(_instance, propertyValue);
+
+  ///将实例作为函数执行
+  dynamic apply(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments) {
+    if (_instance is Function) return Function.apply(_instance, positionalArguments, namedArguments);
+    throw ('Instance type must be Function: ${_instance.runtimeType}');
   }
 
-  ///转换为字符串描述
+  ///转换为易读的字符串
   @override
   String toString() {
     final keyList = <String>[];
-    final defList = <String>[];
+    // final defList = <String>[];
     keyList.add('VmVariable');
     keyList.add('===>');
-    if (isLate) defList.add('late');
-    if (isFinal) defList.add('final');
-    if (isConst) defList.add('const');
-    keyList.add('Describe(${defList.join(', ')})');
-    keyList.add('Keyword(${typeName ?? keyword.toString()}${typeQuestion ?? ''})');
-    keyList.add('--->');
+    // if (isLate) defList.add('late');
+    // if (isFinal) defList.add('final');
+    // if (isConst) defList.add('const');
+    // keyList.add('Describe(${defList.join(', ')})');
+    // keyList.add('Keyword(${typeName ?? keyword.toString()}${typeQuestion ?? ''})');
+    // keyList.add('--->');
     keyList.add('VmClass(${_vmclass.identifier}) $identifier');
     keyList.add('--->');
     keyList.add('${_instance.runtimeType} $_instance');
@@ -416,17 +438,14 @@ class VmVariable extends VmObject {
 ///虚拟机函数模版
 ///
 class VmFunction extends VmObject {
-  ///匿名函数名称
-  static const _anonymousFunction = '_anonymousFunction';
-
-  ///默认模板函数
-  static void _defaultTemplate() => throw ('Not inited VmFunction');
-
   ///声明时是否有get
   final bool isGetter;
 
-  ////声明时是否有set
+  ///声明时是否有set
   final bool isSetter;
+
+  ///声明时是否有async
+  final bool isAsynchronous;
 
   ///声明时明确指定的返回值类型如：int、double、bool等
   final String? returnTypeName;
@@ -441,79 +460,74 @@ class VmFunction extends VmObject {
   final List<VmHelper> nameArguments;
 
   ///函数体语法树
-  final Map<VmKeys, dynamic> blockBodyAstTree;
+  final Map<VmKeys, dynamic> functionBodyTree;
 
   ///模板回调监听
-  final dynamic Function(List argumentList)? callbackListener;
-
-  ///是否已经初始化过
-  bool _inited;
+  final dynamic Function(List argumentList, VmFunction vmfunction) callbackListener;
 
   ///对应位置参数数量的模版函数
-  Function _templater;
+  late final Function _template;
 
   VmFunction({
-    super.identifier = _anonymousFunction,
+    super.identifier = '___anonymousFunction___',
     this.isGetter = false,
     this.isSetter = false,
+    this.isAsynchronous = false,
     this.returnTypeName,
     this.returnTypeQuestion,
     this.listArguments = const [],
     this.nameArguments = const [],
-    this.blockBodyAstTree = const {},
-    this.callbackListener,
-  })  : _inited = false,
-        _templater = _defaultTemplate;
-
-  void _ensureInited() {
-    if (!_inited) throw ('Not inited VmFunction: $identifier');
+    this.functionBodyTree = const {},
+    required this.callbackListener,
+  }) {
+    _initTemplate();
   }
 
-  void init() {
-    if (_inited) throw ('Already inited VmFunction: $identifier');
-    _inited = true;
-    switch (listArguments.length) {
-      case 0:
-        _templater = _template0;
-        break;
-      case 1:
-        _templater = _template1;
-        break;
-      case 2:
-        _templater = _template2;
-        break;
-      case 3:
-        _templater = _template3;
-        break;
-      case 4:
-        _templater = _template4;
-        break;
-      case 5:
-        _templater = _template5;
-        break;
-      case 6:
-        _templater = _template6;
-        break;
-      case 7:
-        _templater = _template7;
-        break;
-      case 8:
-        _templater = _template8;
-        break;
-      case 9:
-        _templater = _template9;
-        break;
-      default:
-        throw ('Not found template: $identifier._template${listArguments.length}');
+  ///准备调用该函数所需的参数列表
+  List<VmObject> prepareForApply(List? arguments) {
+    if (arguments == null) return [];
+    final result = <VmObject>[];
+    //匹配列表参数
+    for (var i = 0; i < listArguments.length; i++) {
+      final item = listArguments[i];
+      final target = i < arguments.length ? arguments[i] : item.fieldValue; //列表参数按照索引一一对应即可
+      if (target is VmFunction) {
+        result.add(target._cloneWithIdentifier(item.fieldName));
+      } else {
+        result.add(VmVariable(typeName: item.typeName, typeQuestion: item.typeQuestion, identifier: item.fieldName, initValue: target));
+      }
     }
+    //匹配命名参数
+    for (var i = 0; i < nameArguments.length; i++) {
+      final item = nameArguments[i];
+      final index = arguments.indexWhere((e) => e is VmHelper && e.fieldName == item.fieldName); //命名参数按照字段名称进行匹配
+      final target = index >= 0 ? (arguments[index] as VmHelper).fieldValue : item.fieldValue;
+      if (target is VmFunction) {
+        result.add(target._cloneWithIdentifier(item.fieldName));
+      } else {
+        result.add(VmVariable(typeName: item.typeName, typeQuestion: item.typeQuestion, identifier: item.fieldName, initValue: target));
+      }
+    }
+    return result;
   }
 
-  ///获取可以作为参数传递给其他函数的模版值
-  Function get value {
-    _ensureInited();
-    return _templater;
+  ///创建以[identifier]为标识符的副本
+  VmFunction _cloneWithIdentifier(String identifier) {
+    return VmFunction(
+      identifier: identifier,
+      isGetter: isGetter,
+      isSetter: isSetter,
+      isAsynchronous: isAsynchronous,
+      returnTypeName: returnTypeName,
+      returnTypeQuestion: returnTypeQuestion,
+      listArguments: listArguments,
+      nameArguments: nameArguments,
+      functionBodyTree: functionBodyTree,
+      callbackListener: callbackListener,
+    );
   }
 
+  ///转换为易读的字符串
   @override
   String toString() {
     final keyList = <String>[];
@@ -523,28 +537,66 @@ class VmFunction extends VmObject {
     if (isGetter) keyList.add('get');
     if (isSetter) keyList.add('set');
     keyList.add(identifier);
-    keyList.add('[${listArguments.map((e) => '${e.identifier}${e.typeQuestion ?? ''} ${e.fieldName}').toList().join(', ')}]');
-    keyList.add('{${nameArguments.map((e) => '${e.identifier}${e.typeQuestion ?? ''} ${e.fieldName}${e.fieldValue == null ? '' : ' = ${e.fieldValue}'}').toList().join(', ')}}');
+    keyList.add('[${listArguments.map((e) => '${e.typeName}${e.typeQuestion ?? ''} ${e.fieldName}').toList().join(', ')}]');
+    keyList.add('{${nameArguments.map((e) => '${e.typeName}${e.typeQuestion ?? ''} ${e.fieldName}${e.fieldValue == null ? '' : ' = ${e.fieldValue}'}').toList().join(', ')}}');
     return keyList.join(' ');
   }
 
-  dynamic _template0() => callbackListener == null ? null : callbackListener!([]);
+  ///初始化[_template]
+  void _initTemplate() {
+    switch (listArguments.length) {
+      case 0:
+        _template = _template0;
+        break;
+      case 1:
+        _template = _template1;
+        break;
+      case 2:
+        _template = _template2;
+        break;
+      case 3:
+        _template = _template3;
+        break;
+      case 4:
+        _template = _template4;
+        break;
+      case 5:
+        _template = _template5;
+        break;
+      case 6:
+        _template = _template6;
+        break;
+      case 7:
+        _template = _template7;
+        break;
+      case 8:
+        _template = _template8;
+        break;
+      case 9:
+        _template = _template9;
+        break;
+      default:
+        throw ('Not found templater: $identifier._template${listArguments.length}');
+    }
+  }
 
-  dynamic _template1(a) => callbackListener == null ? null : callbackListener!([a]);
+  dynamic _template0() => callbackListener([], this);
 
-  dynamic _template2(a, b) => callbackListener == null ? null : callbackListener!([a, b]);
+  dynamic _template1(a) => callbackListener([a], this);
 
-  dynamic _template3(a, b, c) => callbackListener == null ? null : callbackListener!([a, b, c]);
+  dynamic _template2(a, b) => callbackListener([a, b], this);
 
-  dynamic _template4(a, b, c, d) => callbackListener == null ? null : callbackListener!([a, b, c, d]);
+  dynamic _template3(a, b, c) => callbackListener([a, b, c], this);
 
-  dynamic _template5(a, b, c, d, e) => callbackListener == null ? null : callbackListener!([a, b, c, d, e]);
+  dynamic _template4(a, b, c, d) => callbackListener([a, b, c, d], this);
 
-  dynamic _template6(a, b, c, d, e, f) => callbackListener == null ? null : callbackListener!([a, b, c, d, e, f]);
+  dynamic _template5(a, b, c, d, e) => callbackListener([a, b, c, d, e], this);
 
-  dynamic _template7(a, b, c, d, e, f, g) => callbackListener == null ? null : callbackListener!([a, b, c, d, e, f, g]);
+  dynamic _template6(a, b, c, d, e, f) => callbackListener([a, b, c, d, e, f], this);
 
-  dynamic _template8(a, b, c, d, e, f, g, h) => callbackListener == null ? null : callbackListener!([a, b, c, d, e, f, g, h]);
+  dynamic _template7(a, b, c, d, e, f, g) => callbackListener([a, b, c, d, e, f, g], this);
 
-  dynamic _template9(a, b, c, d, e, f, g, h, i) => callbackListener == null ? null : callbackListener!([a, b, c, d, e, f, g, h, i]);
+  dynamic _template8(a, b, c, d, e, f, g, h) => callbackListener([a, b, c, d, e, f, g, h], this);
+
+  dynamic _template9(a, b, c, d, e, f, g, h, i) => callbackListener([a, b, c, d, e, f, g, h, i], this);
 }

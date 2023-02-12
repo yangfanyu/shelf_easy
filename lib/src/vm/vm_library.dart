@@ -185,6 +185,7 @@ class VmLibrary {
     identifier: 'List',
     externalProxyMap: {
       'List': VmProxy(identifier: 'List', externalStaticPropertyReader: () => List.new),
+      'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => List.new),
       'empty': VmProxy(identifier: 'empty', externalStaticPropertyReader: () => List.empty),
       'filled': VmProxy(identifier: 'filled', externalStaticPropertyReader: () => List.filled),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => List.from),
@@ -261,6 +262,7 @@ class VmLibrary {
     identifier: 'Set',
     externalProxyMap: {
       'Set': VmProxy(identifier: 'Set', externalStaticPropertyReader: () => Set.new),
+      'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Set.new),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => Set.from),
       'identity': VmProxy(identifier: 'identity', externalStaticPropertyReader: () => Set.identity),
       'of': VmProxy(identifier: 'of', externalStaticPropertyReader: () => Set.of),
@@ -321,6 +323,7 @@ class VmLibrary {
     identifier: 'Map',
     externalProxyMap: {
       'Map': VmProxy(identifier: 'Map', externalStaticPropertyReader: () => Map.new),
+      'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Map.new),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => Map.from),
       'fromEntries': VmProxy(identifier: 'fromEntries', externalStaticPropertyReader: () => Map.fromEntries),
       'fromIterable': VmProxy(identifier: 'fromIterable', externalStaticPropertyReader: () => Map.fromIterable),
@@ -360,6 +363,7 @@ class VmLibrary {
     identifier: 'Runes',
     externalProxyMap: {
       'Runes': VmProxy(identifier: 'Runes', externalStaticPropertyReader: () => Runes.new),
+      'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Runes.new),
       'any': VmProxy(identifier: 'any', externalInstancePropertyReader: (instance) => instance.any),
       'cast': VmProxy(identifier: 'cast', externalInstancePropertyReader: (instance) => instance.cast),
       'contains': VmProxy(identifier: 'contains', externalInstancePropertyReader: (instance) => instance.contains),
@@ -403,6 +407,7 @@ class VmLibrary {
     identifier: 'Symbol',
     externalProxyMap: {
       'Symbol': VmProxy(identifier: 'Symbol', externalStaticPropertyReader: () => Symbol.new),
+      'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Symbol.new),
       'empty': VmProxy(identifier: 'empty', externalStaticPropertyReader: () => Symbol.empty),
       'unaryMinus': VmProxy(identifier: 'unaryMinus', externalStaticPropertyReader: () => Symbol.unaryMinus),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
@@ -474,6 +479,7 @@ class VmLibrary {
     identifier: 'Duration',
     externalProxyMap: {
       'Duration': VmProxy(identifier: 'Duration', externalStaticPropertyReader: () => Duration.new),
+      'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Duration.new),
       'hoursPerDay': VmProxy(identifier: 'hoursPerDay', externalStaticPropertyReader: () => Duration.hoursPerDay),
       'microsecondsPerDay': VmProxy(identifier: 'microsecondsPerDay', externalStaticPropertyReader: () => Duration.microsecondsPerDay),
       'microsecondsPerHour': VmProxy(identifier: 'microsecondsPerHour', externalStaticPropertyReader: () => Duration.microsecondsPerHour),
@@ -511,6 +517,7 @@ class VmLibrary {
     identifier: 'DateTime',
     externalProxyMap: {
       'DateTime': VmProxy(identifier: 'DateTime', externalStaticPropertyReader: () => DateTime.new),
+      'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => DateTime.new),
       'fromMicrosecondsSinceEpoch': VmProxy(identifier: 'fromMicrosecondsSinceEpoch', externalStaticPropertyReader: () => DateTime.fromMicrosecondsSinceEpoch),
       'fromMillisecondsSinceEpoch': VmProxy(identifier: 'fromMillisecondsSinceEpoch', externalStaticPropertyReader: () => DateTime.fromMillisecondsSinceEpoch),
       'now': VmProxy(identifier: 'now', externalStaticPropertyReader: () => DateTime.now),
@@ -569,11 +576,39 @@ class VmLibrary {
     },
   );
 
+  ///标准类型[Future]
+  static final classFuture = VmClass<Future>(
+    identifier: 'Future',
+    externalProxyMap: {
+      'Future': VmProxy(identifier: 'Future', externalStaticPropertyReader: () => Future.new),
+      'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Future.new),
+      'delayed': VmProxy(identifier: 'delayed', externalStaticPropertyReader: () => Future.delayed),
+      'error': VmProxy(identifier: 'error', externalStaticPropertyReader: () => Future.error),
+      'microtask': VmProxy(identifier: 'microtask', externalStaticPropertyReader: () => Future.microtask),
+      'sync': VmProxy(identifier: 'sync', externalStaticPropertyReader: () => Future.sync),
+      'value': VmProxy(identifier: 'value', externalStaticPropertyReader: () => Future.value),
+      'any': VmProxy(identifier: 'any', externalStaticPropertyReader: () => Future.any),
+      'doWhile': VmProxy(identifier: 'doWhile', externalStaticPropertyReader: () => Future.doWhile),
+      'forEach': VmProxy(identifier: 'forEach', externalStaticPropertyReader: () => Future.forEach),
+      'wait': VmProxy(identifier: 'wait', externalStaticPropertyReader: () => Future.wait),
+      'asStream': VmProxy(identifier: 'asStream', externalInstancePropertyReader: (instance) => instance.asStream),
+      'catchError': VmProxy(identifier: 'catchError', externalInstancePropertyReader: (instance) => instance.catchError),
+      'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
+      'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
+      'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
+      'then': VmProxy(identifier: 'then', externalInstancePropertyReader: (instance) => instance.then),
+      'timeout': VmProxy(identifier: 'timeout', externalInstancePropertyReader: (instance) => instance.timeout),
+      'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
+      'whenComplete': VmProxy(identifier: 'whenComplete', externalInstancePropertyReader: (instance) => instance.whenComplete),
+    },
+  );
+
   ///标准类型[Object]
   static final classObject = VmClass<Object>(
     identifier: 'Object',
     externalProxyMap: {
       'Object': VmProxy(identifier: 'Object', externalStaticPropertyReader: () => Object.new),
+      'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Object.new),
       'hash': VmProxy(identifier: 'hash', externalStaticPropertyReader: () => Object.hash),
       'hashAll': VmProxy(identifier: 'hashAll', externalStaticPropertyReader: () => Object.hashAll),
       'hashAllUnordered': VmProxy(identifier: 'hashAllUnordered', externalStaticPropertyReader: () => Object.hashAllUnordered),
@@ -595,7 +630,7 @@ class VmLibrary {
     },
   );
 
-  ///标准类型[dynamic]
+  ///类型dynamic
   static final classDynamic = VmClass<dynamic>(
     identifier: 'dynamic',
     externalProxyMap: {
@@ -604,6 +639,12 @@ class VmLibrary {
       'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
       'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
     },
+  );
+
+  ///类型void
+  static final classVoid = VmClass<void>(
+    identifier: 'void',
+    externalProxyMap: {},
   );
 
   ///全部类型列表
@@ -622,9 +663,11 @@ class VmLibrary {
     classIterable,
     classDuration,
     classDateTime,
+    classFuture,
     classObject,
     classType,
     classDynamic,
+    classVoid,
   ];
 
   ///代理函数列表

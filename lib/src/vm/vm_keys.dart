@@ -85,6 +85,17 @@ enum VmKeys {
   ///对应[NamedType.question]
   $NamedTypeQuestion,
 
+  /** ******** GenericFunctionType ******** **/
+
+  ///对应[GenericFunctionType]
+  $GenericFunctionType,
+
+  ///对应[GenericFunctionType].name
+  $GenericFunctionTypeName,
+
+  ///对应[GenericFunctionType.question]
+  $GenericFunctionTypeQuestion,
+
   /** ******** SimpleIdentifier ******** **/
 
   ///对应[SimpleIdentifier]
@@ -103,6 +114,17 @@ enum VmKeys {
 
   ///对应[PrefixedIdentifier.identifier]
   $PrefixedIdentifierIdentifier,
+
+  /** ******** DeclaredIdentifier ******** **/
+
+  ///对应[DeclaredIdentifier]
+  $DeclaredIdentifier,
+
+  ///对应[DeclaredIdentifier.type]
+  $DeclaredIdentifierType,
+
+  ///对应[DeclaredIdentifier.name]
+  $DeclaredIdentifierName,
 
   /** ******** NullLiteral ******** **/
 
@@ -292,6 +314,9 @@ enum VmKeys {
   ///对应[FunctionExpression.body]
   $FunctionExpressionBody,
 
+  ///对应[FunctionExpression.body].isAsynchronous
+  $FunctionExpressionBodyIsAsynchronous,
+
   /** ******** NamedExpression ******** **/
 
   ///对应[NamedExpression]
@@ -336,6 +361,14 @@ enum VmKeys {
   ///对应[DefaultFormalParameter.defaultValue]
   $DefaultFormalParameterDefaultValue,
 
+  /** ******** ExpressionFunctionBody ******** **/
+
+  ///对应[ExpressionFunctionBody]
+  $ExpressionFunctionBody,
+
+  ///对应[ExpressionFunctionBody.expression]
+  $ExpressionFunctionBodyExpression,
+
   /** ******** BlockFunctionBody ******** **/
 
   ///对应[BlockFunctionBody]
@@ -343,14 +376,6 @@ enum VmKeys {
 
   ///对应[BlockFunctionBody.block]
   $BlockFunctionBodyBlock,
-
-  /** ******** Block ******** **/
-
-  ///对应[Block]
-  $Block,
-
-  ///对应[Block.statements]
-  $BlockStatements,
 
   /** ******** MethodInvocation ******** **/
 
@@ -384,4 +409,149 @@ enum VmKeys {
 
   ///对应[PropertyAccess.propertyName]
   $PropertyAccessPropertyName,
+
+  /** ******** Block ******** **/
+
+  ///对应[Block]
+  $Block,
+
+  ///对应[Block.statements]
+  $BlockStatements,
+
+  /** ******** VariableDeclarationStatement ******** **/
+
+  ///对应[VariableDeclarationStatement]
+  $VariableDeclarationStatement,
+
+  ///对应[VariableDeclarationStatement.variables]
+  $VariableDeclarationStatementVariables,
+
+  /** ******** ExpressionStatement ******** **/
+
+  ///对应[ExpressionStatement]
+  $ExpressionStatement,
+
+  ///对应[ExpressionStatement.expression]
+  $ExpressionStatementExpression,
+
+  /** ******** IfStatement ******** **/
+
+  ///对应[IfStatement]
+  $IfStatement,
+
+  ///对应[IfStatement.condition]
+  $IfStatementCondition,
+
+  ///对应[IfStatement.thenStatement]
+  $IfStatementThenStatement,
+
+  ///对应[IfStatement.elseStatement]
+  $IfStatementElseStatement,
+
+  /** ******** SwitchStatement ******** **/
+
+  ///对应[SwitchStatement]
+  $SwitchStatement,
+
+  ///对应[SwitchStatement.expression]
+  $SwitchStatementExpression,
+
+  ///对应[SwitchStatement.members]
+  $SwitchStatementMembers,
+
+  /** ******** SwitchCase ******** **/
+
+  ///对应[SwitchCase]
+  $SwitchCase,
+
+  ///对应[SwitchCase.expression]
+  $SwitchCaseExpression,
+
+  ///对应[SwitchCase.statements]
+  $SwitchCaseStatements,
+
+  /** ******** SwitchDefault ******** **/
+
+  ///对应[SwitchDefault]
+  $SwitchDefault,
+
+  ///对应[SwitchDefault.statements]
+  $SwitchDefaultStatements,
+
+  /** ******** ForStatement ******** **/
+
+  ///对应[ForStatement]
+  $ForStatement,
+
+  ///对应[ForStatement.forLoopParts]
+  $ForStatementForLoopParts,
+
+  ///对应[ForStatement.body]
+  $ForStatementBody,
+
+  /** ******** ForPartsWithDeclarations ******** **/
+
+  ///对应[ForPartsWithDeclarations]
+  $ForPartsWithDeclarations,
+
+  ///对应[ForPartsWithDeclarations.variables]
+  $ForPartsWithDeclarationsVariables,
+
+  ///对应[ForPartsWithDeclarations.condition]
+  $ForPartsWithDeclarationsCondition,
+
+  ///对应[ForPartsWithDeclarations.updaters]
+  $ForPartsWithDeclarationsUpdaters,
+
+  /** ******** ForEachPartsWithDeclaration ******** **/
+
+  ///对应[ForEachPartsWithDeclaration]
+  $ForEachPartsWithDeclaration,
+
+  ///对应[ForEachPartsWithDeclaration.loopVariable]
+  $ForEachPartsWithDeclarationLoopVariable,
+
+  ///对应[ForEachPartsWithDeclaration.iterable]
+  $ForEachPartsWithDeclarationIterable,
+
+  /** ******** WhileStatement ******** **/
+
+  ///对应[WhileStatement]
+  $WhileStatement,
+
+  ///对应[WhileStatement.condition]
+  $WhileStatementCondition,
+
+  ///对应[WhileStatement.body]
+  $WhileStatementBody,
+
+  /** ******** DoStatement ******** **/
+
+  ///对应[DoStatement]
+  $DoStatement,
+
+  ///对应[WhileStatement.body]
+  $DoStatementBody,
+
+  ///对应[DoStatement.condition]
+  $DoStatementCondition,
+
+  /** ******** BreakStatement ******** **/
+
+  ///对应[BreakStatement]
+  $BreakStatement,
+
+  ///对应[BreakStatement.breakKeyword]
+  $BreakStatementBreakKeyword,
+
+  /** ******** ReturnStatement ******** **/
+
+  ///对应[ReturnStatement]
+  $ReturnStatement,
+
+  ///对应[ReturnStatement.expression]
+  $ReturnStatementExpression,
+
+  ///对应[ReturnStatement.returnKeyword]
+  $ReturnStatementReturnKeyword,
 }

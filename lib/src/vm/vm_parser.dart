@@ -107,6 +107,14 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
       };
 
   @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitGenericFunctionType(GenericFunctionType node) => {
+        VmKeys.$GenericFunctionType: {
+          VmKeys.$GenericFunctionTypeName: node.functionKeyword.toString(), //Function
+          VmKeys.$GenericFunctionTypeQuestion: node.question?.toString(),
+        }
+      };
+
+  @override
   Map<VmKeys, Map<VmKeys, String>> visitSimpleIdentifier(SimpleIdentifier node) => {
         VmKeys.$SimpleIdentifier: {
           VmKeys.$SimpleIdentifierName: node.name,
@@ -118,6 +126,14 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
         VmKeys.$PrefixedIdentifier: {
           VmKeys.$PrefixedIdentifierPrefix: node.prefix.name,
           VmKeys.$PrefixedIdentifierIdentifier: node.identifier.name,
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitDeclaredIdentifier(DeclaredIdentifier node) => {
+        VmKeys.$DeclaredIdentifier: {
+          VmKeys.$DeclaredIdentifierType: node.type?.accept(this),
+          VmKeys.$DeclaredIdentifierName: node.name.toString(),
         }
       };
 
@@ -263,6 +279,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
         VmKeys.$FunctionExpression: {
           VmKeys.$FunctionExpressionParameters: node.parameters?.accept(this),
           VmKeys.$FunctionExpressionBody: node.body.accept(this),
+          VmKeys.$FunctionExpressionBodyIsAsynchronous: node.body.isAsynchronous,
         }
       };
 
@@ -299,16 +316,16 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, dynamic>> visitBlockFunctionBody(BlockFunctionBody node) => {
-        VmKeys.$BlockFunctionBody: {
-          VmKeys.$BlockFunctionBodyBlock: node.block.accept(this),
+  Map<VmKeys, Map<VmKeys, dynamic>> visitExpressionFunctionBody(ExpressionFunctionBody node) => {
+        VmKeys.$ExpressionFunctionBody: {
+          VmKeys.$ExpressionFunctionBodyExpression: node.expression.accept(this),
         }
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, List>> visitBlock(Block node) => {
-        VmKeys.$Block: {
-          VmKeys.$BlockStatements: node.statements.map((e) => e.accept(this)).toList(),
+  Map<VmKeys, Map<VmKeys, dynamic>> visitBlockFunctionBody(BlockFunctionBody node) => {
+        VmKeys.$BlockFunctionBody: {
+          VmKeys.$BlockFunctionBodyBlock: node.block.accept(this),
         }
       };
 
@@ -333,6 +350,115 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
         VmKeys.$PropertyAccess: {
           VmKeys.$PropertyAccessTarget: node.realTarget.accept(this),
           VmKeys.$PropertyAccessPropertyName: node.propertyName.name,
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, List>> visitBlock(Block node) => {
+        VmKeys.$Block: {
+          VmKeys.$BlockStatements: node.statements.map((e) => e.accept(this)).toList(),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitVariableDeclarationStatement(VariableDeclarationStatement node) => {
+        VmKeys.$VariableDeclarationStatement: {
+          VmKeys.$VariableDeclarationStatementVariables: node.variables.accept(this),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitExpressionStatement(ExpressionStatement node) => {
+        VmKeys.$ExpressionStatement: {
+          VmKeys.$ExpressionStatementExpression: node.expression.accept(this),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitIfStatement(IfStatement node) => {
+        VmKeys.$IfStatement: {
+          VmKeys.$IfStatementCondition: node.condition.accept(this),
+          VmKeys.$IfStatementThenStatement: node.thenStatement.accept(this),
+          VmKeys.$IfStatementElseStatement: node.elseStatement?.accept(this),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitSwitchStatement(SwitchStatement node) => {
+        VmKeys.$SwitchStatement: {
+          VmKeys.$SwitchStatementExpression: node.expression.accept(this),
+          VmKeys.$SwitchStatementMembers: node.members.map((e) => e.accept(this)).toList(),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitSwitchCase(SwitchCase node) => {
+        VmKeys.$SwitchCase: {
+          VmKeys.$SwitchCaseExpression: node.expression.accept(this),
+          VmKeys.$SwitchCaseStatements: node.statements.map((e) => e.accept(this)).toList(),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitSwitchDefault(SwitchDefault node) => {
+        VmKeys.$SwitchDefault: {
+          VmKeys.$SwitchDefaultStatements: node.statements.map((e) => e.accept(this)).toList(),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitForStatement(ForStatement node) => {
+        VmKeys.$ForStatement: {
+          VmKeys.$ForStatementForLoopParts: node.forLoopParts.accept(this),
+          VmKeys.$ForStatementBody: node.body.accept(this),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitForPartsWithDeclarations(ForPartsWithDeclarations node) => {
+        VmKeys.$ForPartsWithDeclarations: {
+          VmKeys.$ForPartsWithDeclarationsVariables: node.variables.accept(this),
+          VmKeys.$ForPartsWithDeclarationsCondition: node.condition?.accept(this),
+          VmKeys.$ForPartsWithDeclarationsUpdaters: node.updaters.map((e) => e.accept(this)).toList(),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitForEachPartsWithDeclaration(ForEachPartsWithDeclaration node) => {
+        VmKeys.$ForEachPartsWithDeclaration: {
+          VmKeys.$ForEachPartsWithDeclarationLoopVariable: node.loopVariable.accept(this),
+          VmKeys.$ForEachPartsWithDeclarationIterable: node.iterable.accept(this),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitWhileStatement(WhileStatement node) => {
+        VmKeys.$WhileStatement: {
+          VmKeys.$WhileStatementCondition: node.condition.accept(this),
+          VmKeys.$WhileStatementBody: node.body.accept(this),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitDoStatement(DoStatement node) => {
+        VmKeys.$DoStatement: {
+          VmKeys.$DoStatementBody: node.body.accept(this),
+          VmKeys.$DoStatementCondition: node.condition.accept(this),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitBreakStatement(BreakStatement node) => {
+        VmKeys.$BreakStatement: {
+          VmKeys.$BreakStatementBreakKeyword: node.breakKeyword.toString(),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitReturnStatement(ReturnStatement node) => {
+        VmKeys.$ReturnStatement: {
+          VmKeys.$ReturnStatementReturnKeyword: node.returnKeyword.toString(),
+          VmKeys.$ReturnStatementExpression: node.expression?.accept(this),
         }
       };
 }

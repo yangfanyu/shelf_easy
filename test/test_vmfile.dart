@@ -78,12 +78,6 @@ final Set mmm1 = {};
 var nnn1 = const {1: 'a'}, nnn2 = const {2};
 
 ///
-/// 函数定义测试区
-///
-
-dynamic funcA1(int a, int b, {required int c, int d = 0, int? e}) {}
-
-///
 /// 运算表达式测试区
 ///
 
@@ -168,175 +162,122 @@ final methodInvocationRes6 = List.from.runtimeType.toString().length; //52
 final methodInvocationRes7 = methodInvocationList.first += List.from([4, 5, 6]).last = 88; //92
 final methodInvocationRes8 = Duration(days: 0, hours: 1, minutes: 2, seconds: 3); //Duration 1:02:03.000000
 final methodInvocationRes9 = DateTime(2023, 08, 01); //DateTime 2023-08-01 00:00:00.000
+final methodInvocationResA = print;
+final methodInvocationResB = print.runtimeType;
+final methodInvocationResC = Set.new.toString().length;
+final methodInvocationResD = Set;
+final methodInvocationResE = methodInvocationResC.toString();
 
-// dynamic m() {}
+///
+/// 普通函数定义与语句测试区
+///
 
-// class N {
-//   static int? s1;
+int funcA1(int a, {int b = 2, required int c, int? d}) => d ?? (a + b + c);
 
-//   N();
+dynamic funcA2(int a, int b, {required int c, int d = 0, int? e}) {
+  final aaa = 888;
+  final str = 'hello world a=$a, b=$b, c=$c, d=$d, e=$e, aaa=$aaa';
+  print('\n');
+  print(str);
 
-//   int? p1;
+  if (a == 0) print('if a == 0');
 
-//   void f1() {}
+  if (a == 1) {
+    print('if a == 1');
+    return 1;
+  } else if (a == 2) {
+    print('if a == 2');
+    return 2;
+  } else if (a == 3) {
+    print('if a == 3');
+    return 3;
+  } else {
+    final str = 'else';
+    print(str);
+  }
 
-//   dynamic f2() {}
-// }
+  switch (a) {
+    case 4:
+      final str = 'haha';
+      print('case a: 4 $str');
+      break;
+    case 5:
+      print('case a: 5');
+      break;
+    case 6:
+      print('case a: 6');
+      break;
+    default:
+      final str = 'default';
+      print(str);
+      break;
+  }
 
-// int f0(int a, {int b = 1, required int c, int? d}) => d ?? (a + b + c);
+  int sum = 0;
+  for (var i = 0; i < a; i++) {
+    final str = 'for part';
+    sum += i;
+    print('$str sum is $sum');
+  }
 
-// num f1(int a, [int b = 1, double? c, String? d]) {
-//   final e = a + b;
-//   if (c == null) {
-//     b++;
-//   } else if (d == null) {
-//     b--;
-//   } else {
-//     b = 0;
-//   }
+  final arr = ['a', 'b', 'c'];
+  for (String s in arr) {
+    final str = 'for each';
+    print('$str arr item $s');
+  }
 
-//   switch (a) {
-//     case 1:
-//       b++;
-//       break;
-//     case 2:
-//       b--;
-//       break;
-//     default:
-//       b = 0;
-//       break;
-//   }
+  int kkk = 0;
+  while (kkk < 3) {
+    final str = 'while';
+    print('$str kkk is $kkk < 3');
+    kkk++;
+  }
 
-//   for (int i = 0, j = 1; i < 10; i++, j += 2) {
-//     b++;
-//     b += j;
-//   }
+  int mmm = 0;
+  do {
+    final str = 'do while';
+    print('$str mmm is $mmm < 2');
+    mmm++;
+  } while (mmm < 2);
 
-//   var data = [1, 2, 3, 4];
-//   for (int e in data) {
-//     b += e;
-//   }
+  if (a >= 8) {
+    funcA4(funcA3, (str) {
+      final nnn = [1, 2, 3, 4];
+      final ppp = nnn.reduce((value, element) => value + element);
+      print('$str --- $ppp ${print.toString()}');
+    });
 
-//   b = 0;
-//   while (b < 10) {
-//     b++;
-//     break;
-//   }
+    for (int zzz1 = 0; zzz1 < 6; zzz1++) {
+      print('zzz1 $zzz1');
+      if (zzz1 >= 1) break;
+      for (int zzz2 = 0; zzz2 < 6; zzz2++) {
+        print('zzz1 $zzz1 zzz2 $zzz2');
+        if (zzz2 >= 2) break;
+        for (int zzz3 = 0; zzz3 < 6; zzz3++) {
+          print('zzz1 $zzz1 zzz2 $zzz2 zzz3 $zzz3');
+          if (zzz3 >= 3) break;
+        }
+      }
+    }
+  }
 
-//   b = 0;
-//   do {
-//     b++;
-//   } while (b < 10);
+  return str;
+}
 
-//   return c ?? e;
-// }
+int funcA3(int a, {required int b}) => a * b;
 
-// T f2<T>(T a, {T? b}) => b ?? a;
+void funcA4(int Function(int a, {required int b}) cb, void Function(String val) pipline) {
+  pipline('funcA4: ${cb(3, b: 7)}');
+}
 
-// Function ff=f2;
+final funcResA1_1 = funcA1(1, c: 3); //6
+final funcResA2_0 = funcA2(0, 100, c: 200); //hello world a=0, b=100, c=200, d=0, e=null, aaa=888
+final funcResA2_1 = funcA2(1, 100, c: 200); //1
+final funcResA2_2 = funcA2(2, 100, c: 200); //2
+final funcResA2_3 = funcA2(3, 100, c: 200); //3
+final funcResA2_4 = funcA2(4, 100, c: 200); //hello world a=4, b=100, c=200, d=0, e=null, aaa=888
+final funcResA2_5 = funcA2(5, 100, c: 200); //hello world a=5, b=100, c=200, d=0, e=null, aaa=888
+final funcResA2_6 = funcA2(6, 100, c: 200); //hello world a=6, b=100, c=200, d=0, e=null, aaa=888
+final funcResA2_7 = funcA2(7, 100, c: 200); //hello world a=7, b=100, c=200, d=0, e=null, aaa=888
+final funcResA2_8 = funcA2(8, 100, c: 200);//hello world a=8, b=100, c=200, d=0, e=null, aaa=888
 
-// Future<T> f3<T>(T a, {T? b}) async => b ?? a;
-
-// Future<int> f3(int a, {int b = 2}) async {
-//   await Future.delayed(Duration(seconds: 1), () async {
-//     a++;
-//     return a;
-//   });
-//   // await (f2<int>(a, b: b)) ;
-//   return a + b;
-// }
-
-// String f4(String name, int sex, {required int age, String country = 'China'}) {
-//   int time = 1;
-//   return 'My name is $name and I am $sex and $age yeas old. I am in $country. Current time is $time.';
-// }
-
-// const z0 = 0;
-
-// final z1 = a1 << 1;
-
-// var z2 = ++a1;
-
-// dynamic z3 = a1++;
-
-// final z4 = a1 & a2;
-
-// final z5 = a1 ^ a2;
-
-// final z6 = a1 | a2;
-
-// final z7 = a1 += 2;
-
-// final z8 = a1 >= 2;
-
-// final z9 = a1 as num;
-
-// final z10 = a1 is num;
-
-// final z11 = a1 is! num;
-
-// final z12 = a ?? a1;
-
-// final z13 = a == null ? a1 : a;
-
-// final z14 = a..runtimeType;
-
-// enum Vehicle implements Comparable<Vehicle> {
-//   car(tires: 4, passengers: 5, carbonPerKilometer: 400),
-//   bus(tires: 6, passengers: 50, carbonPerKilometer: 800),
-//   bicycle(tires: 2, passengers: 1, carbonPerKilometer: 0);
-
-//   const Vehicle({
-//     required this.tires,
-//     required this.passengers,
-//     required this.carbonPerKilometer,
-//   });
-
-//   final int tires;
-//   final int passengers;
-//   final int carbonPerKilometer;
-
-//   int get carbonFootprint => (carbonPerKilometer / passengers).round();
-
-//   @override
-//   int compareTo(Vehicle other) => carbonFootprint - other.carbonFootprint;
-// }
-
-// enum Sex {
-//   male,
-//   female,
-//   unkow,
-// }
-
-// abstract class Base<T extends Sex> {
-//   void say(int age);
-// }
-
-// class User<T> implements Base<Sex> {
-//   final int zzz;
-
-//   User({required this.zzz});
-
-//   @override
-//   void say(int age) {
-//     print(age);
-//   }
-// }
-
-// class Role extends User<int> implements Base<Sex> {
-//   static const String type = 'Role';
-//   static final String type2 = 'Name';
-
-//   int a = 0;
-//   final int b;
-
-//   Role({required super.zzz, required this.b,required int c}) : a = 2;
-
-//   @override
-//   void say(int age) {
-//     super.say(age);
-//     print(age + 10);
-//   }
-
-//   int get aaa => a;
-// }
