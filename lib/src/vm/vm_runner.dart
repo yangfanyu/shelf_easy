@@ -111,6 +111,9 @@ class VmRunnerCore {
     VmKeys.$ParenthesizedExpression: _scanParenthesizedExpression,
     VmKeys.$IndexExpression: _scanIndexExpression,
     VmKeys.$InterpolationExpression: _scanInterpolationExpression,
+    VmKeys.$AsExpression: _scanAsExpression,
+    VmKeys.$IsExpression: _scanIsExpression,
+    VmKeys.$ThrowExpression: _scanThrowExpression,
     VmKeys.$FunctionExpression: _scanFunctionExpression,
     VmKeys.$NamedExpression: _scanNamedExpression,
     VmKeys.$FormalParameterList: _scanFormalParameterList,
@@ -512,6 +515,34 @@ class VmRunnerCore {
     final expression = node[VmKeys.$InterpolationExpressionExpression] as Map<VmKeys, dynamic>?;
     final expressionResult = _scanMap(runner, expression);
     return VmCaller.getValue(expressionResult);
+  }
+
+  static dynamic _scanAsExpression(VmRunner runner, Map<VmKeys, dynamic> node) {
+    final expression = node[VmKeys.$AsExpressionExpression] as Map<VmKeys, dynamic>?;
+    final type = node[VmKeys.$AsExpressionType] as Map<VmKeys, dynamic>?;
+    final expressionResult = _scanMap(runner, expression);
+    final expressionValue = VmCaller.getValue(expressionResult);
+    final typeResult = _scanMap(runner, type) as VmHelper; // => _scanNamedType
+    final typeValue = runner.getVmObject(typeResult.typeName.toString()) as VmClass;
+    return typeValue.asThisType(expressionValue); //类型转换
+  }
+
+  static bool _scanIsExpression(VmRunner runner, Map<VmKeys, dynamic> node) {
+    final notOperator = node[VmKeys.$IsExpressionNotOperator] as String?;
+    final expression = node[VmKeys.$IsExpressionExpression] as Map<VmKeys, dynamic>?;
+    final type = node[VmKeys.$IsExpressionType] as Map<VmKeys, dynamic>?;
+    final expressionResult = _scanMap(runner, expression);
+    final expressionValue = VmCaller.getValue(expressionResult);
+    final typeResult = _scanMap(runner, type) as VmHelper; // => _scanNamedType
+    final typeValue = runner.getVmObject(typeResult.typeName.toString()) as VmClass;
+    return notOperator == '!' ? !typeValue.isMatched(expressionValue) : typeValue.isMatched(expressionValue);
+  }
+
+  static void _scanThrowExpression(VmRunner runner, Map<VmKeys, dynamic> node) {
+    final expression = node[VmKeys.$ThrowExpressionExpression] as Map<VmKeys, dynamic>?;
+    final expressionResult = _scanMap(runner, expression);
+    final expressionValue = VmCaller.getValue(expressionResult);
+    throw (expressionValue);
   }
 
   static VmFunction _scanFunctionExpression(VmRunner runner, Map<VmKeys, dynamic> node) {

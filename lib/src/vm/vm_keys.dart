@@ -303,6 +303,39 @@ enum VmKeys {
   ///对应[InterpolationExpression.expression]
   $InterpolationExpressionExpression,
 
+  /** ******** AsExpression ******** **/
+
+  ///对应[AsExpression]
+  $AsExpression,
+
+  ///对应[AsExpression.expression]
+  $AsExpressionExpression,
+
+  ///对应[AsExpression.type]
+  $AsExpressionType,
+
+  /** ******** IsExpression ******** **/
+
+  ///对应[IsExpression]
+  $IsExpression,
+
+  ///对应[IsExpression.notOperator]
+  $IsExpressionNotOperator,
+
+  ///对应[IsExpression.expression]
+  $IsExpressionExpression,
+
+  ///对应[IsExpression.type]
+  $IsExpressionType,
+
+  /** ******** ThrowExpression ******** **/
+
+  ///对应[ThrowExpression]
+  $ThrowExpression,
+
+  ///对应[ThrowExpression.expression]
+  $ThrowExpressionExpression,
+
   /** ******** FunctionExpression ******** **/
 
   ///对应[FunctionExpression]

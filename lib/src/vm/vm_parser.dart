@@ -275,6 +275,30 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
       };
 
   @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitAsExpression(AsExpression node) => {
+        VmKeys.$AsExpression: {
+          VmKeys.$AsExpressionExpression: node.expression.accept(this),
+          VmKeys.$AsExpressionType: node.type.accept(this),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitIsExpression(IsExpression node) => {
+        VmKeys.$IsExpression: {
+          VmKeys.$IsExpressionNotOperator: node.notOperator?.toString(),
+          VmKeys.$IsExpressionExpression: node.expression.accept(this),
+          VmKeys.$IsExpressionType: node.type.accept(this),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitThrowExpression(ThrowExpression node) => {
+        VmKeys.$ThrowExpression: {
+          VmKeys.$ThrowExpressionExpression: node.expression.accept(this),
+        }
+      };
+
+  @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitFunctionExpression(FunctionExpression node) => {
         VmKeys.$FunctionExpression: {
           VmKeys.$FunctionExpressionParameters: node.parameters?.accept(this),

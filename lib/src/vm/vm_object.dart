@@ -33,6 +33,9 @@ class VmClass<T> extends VmObject {
   ///被包装的类型
   Type get typeValue => T;
 
+  ///将指定实例转换为该包装类型
+  T asThisType(dynamic instance) => instance as T;
+
   ///判断指定实例是否匹配该包装类型
   bool isMatched(dynamic instance) => instance is T;
 

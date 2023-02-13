@@ -9,7 +9,8 @@ import 'package:shelf_easy/src/vm/vm_runner.dart';
 
 void main() {
   // watchDartEval();
-  watchShelfEasy();
+  // watchShelfEasy();
+  testFromFile();
 }
 
 // void watchDartEval() {
@@ -47,11 +48,11 @@ void watchShelfEasy() {
 }
 
 void testFromFile() {
+  final encoder = JsonEncoder.withIndent('  ');
   final source = File('${Directory.current.path}/test/test_vmfile.dart').readAsStringSync();
   final routeList = <String>[];
   final parseResult = VmParser.parseSource(source, routeList: routeList, routeLogger: (route) => print(route));
 
-  final encoder = JsonEncoder.withIndent('  ');
   print(encoder.convert(DbQueryField.toBaseType(parseResult)));
   print(encoder.convert(routeList));
 

@@ -149,6 +149,7 @@ const interpolation3 = '$interpolation1 $interpolation2, I am $interpolationA ye
 ///
 /// 属性与方法调用测试区
 ///
+
 final methodInvocationSymbol = Symbol('aaa');
 final methodInvocationList = List.from([4, 5, 6]);
 final methodInvocationSet1 = Set.from({7, 8, 9, 10});
@@ -270,6 +271,40 @@ void funcA4(int Function(int a, {required int b}) cb, void Function(String val) 
   pipline('funcA4: ${cb(3, b: 7)}');
 }
 
+int funcA5() {
+  print('-----> Future start');
+  Future.delayed(Duration(seconds: 2)).then((value) {
+    print('-----> Future end 1');
+    // throw ('I am Future then error 1');
+  }).then((value) {
+    print('-----> Future end 2');
+    throw ('-----> I am Future then error 2');
+  }).catchError((error, stack) {
+    print('-----> Future catchError $error');
+  }).whenComplete(() {
+    int a = 100;
+    print('++++++> try a is String: ${a is String}'); //false
+    print('++++++> try a is int: ${a is int}'); //true
+    print('++++++> try a is num: ${a is num}'); //true
+    print('++++++> try a is! int: ${a is! int}'); //false
+    print('++++++> try a is! bool: ${a is! bool}'); //true
+  });
+
+  // Future.sync(() {
+  //   int a = 100;
+  //   print('++++++> try a is String: ${a is String}');
+  //   print('++++++> try a is int: ${a is int}');
+  //   print('++++++> try a is num: ${a is num}');
+  //   print('++++++> try a is! int: ${a is! int}');
+  //   print('++++++> try a is! bool: ${a is! bool}');
+  //   print((a as String).length);
+  // }).catchError((error, stack) {
+  //   print('++++++> Future catchError $error');
+  // });
+
+  return 1;
+}
+
 final funcResA1_1 = funcA1(1, c: 3); //6
 final funcResA2_0 = funcA2(0, 100, c: 200); //hello world a=0, b=100, c=200, d=0, e=null, aaa=888
 final funcResA2_1 = funcA2(1, 100, c: 200); //1
@@ -279,5 +314,5 @@ final funcResA2_4 = funcA2(4, 100, c: 200); //hello world a=4, b=100, c=200, d=0
 final funcResA2_5 = funcA2(5, 100, c: 200); //hello world a=5, b=100, c=200, d=0, e=null, aaa=888
 final funcResA2_6 = funcA2(6, 100, c: 200); //hello world a=6, b=100, c=200, d=0, e=null, aaa=888
 final funcResA2_7 = funcA2(7, 100, c: 200); //hello world a=7, b=100, c=200, d=0, e=null, aaa=888
-final funcResA2_8 = funcA2(8, 100, c: 200);//hello world a=8, b=100, c=200, d=0, e=null, aaa=888
-
+final funcResA2_8 = funcA2(8, 100, c: 200); //hello world a=8, b=100, c=200, d=0, e=null, aaa=888
+final funcResA5_0 = funcA5();
