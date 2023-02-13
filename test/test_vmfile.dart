@@ -272,35 +272,64 @@ void funcA4(int Function(int a, {required int b}) cb, void Function(String val) 
 }
 
 int funcA5() {
+  Future(() {
+    return 'I am Future.new';
+  }).then((value) => print(value));
+
+  Future.delayed(Duration.zero, () {
+    return 'I am Future.delayed';
+  }).then((value) => print(value));
+
+  Future.microtask(() {
+    return 'I am Future.microtask';
+  }).then((value) => print(value));
+
+  Future.sync(() {
+    return 'I am Future.sync';
+  }).then((value) => print(value));
+
+  Future.doWhile(() {
+    return false;
+  }).then((value) => print('I am Future.doWhile $value'));
+
   print('-----> Future start');
-  Future.delayed(Duration(seconds: 2)).then((value) {
-    print('-----> Future end 1');
-    // throw ('I am Future then error 1');
+  Future.delayed(Duration(seconds: 2), () {
+    print('-----> Future end 0');
+    return true;
   }).then((value) {
-    print('-----> Future end 2');
+    print('-----> Future end 1 $value');
+    return 'hi';
+  }).then<int?>((value) {
+    print('-----> Future end 2 $value');
     throw ('-----> I am Future then error 2');
   }).catchError((error, stack) {
-    print('-----> Future catchError $error');
+    print('-----> Future catchError 3 $error');
+    return 10000;
+  }).then((value) {
+    print('-----> Future end 4 $value');
   }).whenComplete(() {
-    int a = 100;
-    print('++++++> try a is String: ${a is String}'); //false
-    print('++++++> try a is int: ${a is int}'); //true
-    print('++++++> try a is num: ${a is num}'); //true
-    print('++++++> try a is! int: ${a is! int}'); //false
-    print('++++++> try a is! bool: ${a is! bool}'); //true
+    int a = 66;
+    print('-----> whenComplete $a is String: ${a is String}'); //false
+    print('-----> whenComplete $a is int: ${a is int}'); //true
+    print('-----> whenComplete $a is num: ${a is num}'); //true
+    print('-----> whenComplete $a is! int: ${a is! int}'); //false
+    print('-----> whenComplete $a is! bool: ${a is! bool}'); //true
   });
 
-  // Future.sync(() {
-  //   int a = 100;
-  //   print('++++++> try a is String: ${a is String}');
-  //   print('++++++> try a is int: ${a is int}');
-  //   print('++++++> try a is num: ${a is num}');
-  //   print('++++++> try a is! int: ${a is! int}');
-  //   print('++++++> try a is! bool: ${a is! bool}');
-  //   print((a as String).length);
-  // }).catchError((error, stack) {
-  //   print('++++++> Future catchError $error');
-  // });
+  Future.value('hello').then((value) => '$value world').then((a) {
+    print('++++++> then $a is String: ${a is String}'); //true
+    print('++++++> then $a is int: ${a is int}'); //false
+    print('++++++> then $a is num: ${a is num}'); //false
+    print('++++++> then $a is! int: ${a is! int}'); //true
+    print('++++++> then $a is! bool: ${a is! bool}'); //true
+    print((a as double).toString());
+  }).catchError((error, stack) {
+    print('++++++> Future catchError $error');
+  }).then((value) {
+    final names = {1: 'a', 2: 'b', 3: 'c'};
+    final namesStr = names.map((key, value) => MapEntry(key, '$key -> $value')).toString();
+    print(namesStr);
+  });
 
   return 1;
 }

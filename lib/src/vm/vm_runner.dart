@@ -59,7 +59,7 @@ class VmRunner {
     final vmfunction = getVmObject(functionName) as VmFunction;
     final arguments = [...positionalArguments];
     namedArguments?.forEach((key, value) => arguments.add(VmHelper(fieldName: key, fieldValue: value, isNamedField: true)));
-    return VmCaller.getValue(VmRunnerCore._scanVmFunction(this, vmfunction, arguments));
+    return VmRunnerCore._scanVmFunction(this, vmfunction, arguments);
   }
 
   ///创建作用域
@@ -158,7 +158,7 @@ class VmRunnerCore {
     runner.addVmObjectList(vmfunction.prepareForApply(arguments)); //准备局部变量
     final result = _scanMap(runner, vmfunction.functionBodyTree); //运行语法树
     runner._delScope(); //释放作用域
-    return result;
+    return VmCaller.getValue(result);
   }
 
   static void _scanCompilationUnit(VmRunner runner, Map<VmKeys, dynamic> node) => _scanList(runner, node[VmKeys.$CompilationUnitDeclarations]);

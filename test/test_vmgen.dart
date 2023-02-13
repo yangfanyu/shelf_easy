@@ -5,9 +5,10 @@ import 'dart:mirrors';
 
 final codeBuffer = StringBuffer();
 
-final ignoreNews = ['double', 'num', 'Function', 'Iterable', 'Type'];
-final ignoreFuncs = ['>>>'];
-final libraryMap = <String, String>{};
+final ignoreNews = ['double', 'num', 'List', 'Function', 'Iterable', 'Type']; //要忽略new函数的类
+final ignoreFuncs = ['>>>']; //要忽略的函数
+final ignoreCaller = ['Set.castFrom']; //要忽略caller的函数
+final libraryMap = <String, String>{}; //全部生成的类型集合
 void main() {
   codeBuffer.writeln('import \'vm_object.dart\';');
   codeBuffer.writeln('///');
@@ -45,12 +46,15 @@ void main() {
   //Symbol
   final Symbol symbolVar = Symbol('aaa');
   generateInstance(reflect(symbolVar).type, generateClass(reflectClass(Symbol)));
+  //MapEntry
+  final MapEntry mapEntryVar = MapEntry('a', 'b');
+  generateInstance(reflect(mapEntryVar).type, generateClass(reflectClass(MapEntry)));
+  //Iterable
+  final Iterable iterableVar = mapVar.keys;
+  generateInstance(reflect(iterableVar).type, generateClass(reflectClass(Iterable)));
   //Function
   final Function functionVar = () {};
   generateInstance(reflect(functionVar).type, generateClass(reflectClass(Function)));
-  //Iterable
-  final Iterable iterable = mapVar.keys;
-  generateInstance(reflect(iterable).type, generateClass(reflectClass(Iterable)));
   //Duration
   final Duration durationVar = Duration();
   generateInstance(reflect(durationVar).type, generateClass(reflectClass(Duration)));
@@ -60,15 +64,15 @@ void main() {
   //Future
   final Future futureVar = Future.delayed(Duration.zero);
   generateInstance(reflect(futureVar).type, generateClass(reflectClass(Future)));
-  //Object
-  final Object objectVar = Object();
-  generateInstance(reflect(objectVar).type, generateClass(reflectClass(Object)));
   //Type
   final Type typeVar = int;
   generateInstance(reflect(typeVar).type, generateClass(reflectClass(Type)));
   // //Null
   // final nullVal = null;
   // generateInstance(reflect(nullVal).type, generateClass(reflectClass(Null)));
+  //Object
+  final Object objectVar = Object();
+  generateInstance(reflect(objectVar).type, generateClass(reflectClass(Object)));
   //dynamic
   final dynamicVal = null;
   generateInstance(reflect(dynamicVal).type, generateClass(reflectClass(Null), hardName: 'dynamic'));
@@ -141,9 +145,11 @@ void generateClassConstructors(ClassMirror target, String className) {
       if (conName.isNotEmpty || !ignoreNews.contains(className)) {
         final keyName = conName.isEmpty ? className : conName;
         final funcName = conName.isEmpty ? 'new' : conName;
-        codeBuffer.writeln('      \'$keyName\': VmProxy(identifier:\'$keyName\', externalStaticPropertyReader: () => $className.$funcName),');
+        final caller = callerAnalyzer(className, conName, value, instance: false);
+        final wrapper = caller == null ? '' : ', $caller';
+        codeBuffer.writeln('      \'$keyName\': VmProxy(identifier:\'$keyName\', externalStaticPropertyReader: () => $className.$funcName $wrapper),');
         if (conName.isEmpty) {
-          codeBuffer.writeln('      \'new\': VmProxy(identifier:\'new\', externalStaticPropertyReader: () => $className.$funcName),');
+          codeBuffer.writeln('      \'new\': VmProxy(identifier:\'new\', externalStaticPropertyReader: () => $className.$funcName $wrapper),');
         }
       }
     }
@@ -159,10 +165,12 @@ void generateClassProperties(ClassMirror target, String className) {
     final value = members[key]!;
     if (!value.isPrivate && !value.isSetter && !value.isOperator) {
       final keyName = geSymbolName(key);
+      final caller = callerAnalyzer(className, keyName, value, instance: false);
+      final wrapper = caller == null ? '' : ', $caller';
       if (memberResults.containsKey(keyName)) {
-        memberResults[keyName] = '${memberResults[keyName]}, externalStaticPropertyReader: () => $className.$keyName';
+        memberResults[keyName] = '${memberResults[keyName]}, externalStaticPropertyReader: () => $className.$keyName $wrapper';
       } else {
-        memberResults[keyName] = 'externalStaticPropertyReader: () => $className.$keyName';
+        memberResults[keyName] = 'externalStaticPropertyReader: () => $className.$keyName $wrapper';
       }
     }
   }
@@ -196,10 +204,12 @@ void generateInstanceProperties(ClassMirror target, String className) {
     final value = members[key]!;
     if (!value.isPrivate && !value.isSetter && !value.isOperator) {
       final keyName = geSymbolName(key);
+      final caller = callerAnalyzer(className, keyName, value, instance: true);
+      final wrapper = caller == null ? '' : ', $caller';
       if (memberResults.containsKey(keyName)) {
-        memberResults[keyName] = '${memberResults[keyName]}, externalInstancePropertyReader: (instance) => instance.$keyName';
+        memberResults[keyName] = '${memberResults[keyName]}, externalInstancePropertyReader: (instance) => instance.$keyName $wrapper';
       } else {
-        memberResults[keyName] = 'externalInstancePropertyReader: (instance) => instance.$keyName';
+        memberResults[keyName] = 'externalInstancePropertyReader: (instance) => instance.$keyName $wrapper';
       }
     }
   }
@@ -222,6 +232,58 @@ void generateInstanceProperties(ClassMirror target, String className) {
     if (ignoreFuncs.contains(key)) continue;
     codeBuffer.writeln('      \'$key\': VmProxy(identifier:\'$key\', $value),');
   }
+}
+
+String? callerAnalyzer(String className, String funcName, MethodMirror value, {required bool instance}) {
+  if (ignoreCaller.contains('$className.$funcName')) return null;
+  final parameters = value.parameters;
+  final needWrapArgs = <String>[];
+  //拥有函数作为参数，且这个函数参数的返回值带有模版
+  for (var item in parameters) {
+    final type = item.type;
+    if (type is FunctionTypeMirror && type.returnType.typeArguments.isNotEmpty) {
+      needWrapArgs.add(geSymbolName(item.simpleName));
+    }
+  }
+  if (needWrapArgs.isNotEmpty) {
+    final listArgs = <String>[];
+    final listArgsWrap = <String, String>{};
+    final nameArgs = <String>{};
+    final nameArgsWrap = <String, String>{};
+    final parameters = value.parameters;
+    for (var item in parameters) {
+      final itemName = geSymbolName(item.simpleName);
+      if (item.isNamed) {
+        final outName = itemName;
+        nameArgs.add(outName);
+        if (needWrapArgs.contains(itemName)) {
+          final itemFunc = item.type as FunctionTypeMirror;
+          int i = 0;
+          final inNames = itemFunc.parameters.map((e) => 'b${i++}').toList();
+          nameArgsWrap[outName] = '(${inNames.join(',')}) => $outName == null ? null: $outName(${inNames.join(',')})';
+        }
+      } else {
+        final outName = 'a${listArgs.length}';
+        listArgs.add(outName);
+        if (needWrapArgs.contains(itemName)) {
+          final itemFunc = item.type as FunctionTypeMirror;
+          int i = 0;
+          final inNames = itemFunc.parameters.map((e) => 'b${i++}').toList();
+          listArgsWrap[outName] = '(${inNames.join(',')}) => $outName == null ? null: $outName(${inNames.join(',')})';
+        }
+      }
+    }
+    final headStr = '${listArgs.join(', ')}${listArgs.isNotEmpty && nameArgs.isNotEmpty ? ',' : ''}${nameArgs.isNotEmpty ? '{' : ''}${nameArgs.join(',')}${nameArgs.isNotEmpty ? '}' : ''}';
+    final bodystr = '$funcName(${listArgs.map((e) => listArgsWrap.containsKey(e) ? listArgsWrap[e] : e).join(', ')}${listArgs.isNotEmpty && nameArgs.isNotEmpty ? ',' : ''}${nameArgs.map((e) => '$e:${nameArgsWrap.containsKey(e) ? nameArgsWrap[e] : e}').join(',')})';
+    if (instance) {
+      final wrapper = 'externalInstancePropertyCaller: ($className instance, $headStr) => instance.$bodystr';
+      return wrapper;
+    } else {
+      final wrapper = 'externalStaticPropertyCaller: ($headStr) => $className${funcName.isEmpty ? '' : '.'}$bodystr';
+      return wrapper;
+    }
+  }
+  return null;
 }
 
 String geSymbolName(Symbol val) {

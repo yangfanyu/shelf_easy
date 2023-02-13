@@ -125,11 +125,17 @@ class VmProxy<T> extends VmObject {
   ///外部导入类型的静态属性写入函数
   final dynamic Function(dynamic value)? externalStaticPropertyWriter;
 
+  ///外部导入类型的静态属性调用函数
+  final Function? externalStaticPropertyCaller;
+
   ///外部导入类型的实例属性读取函数
   final dynamic Function(T instance)? externalInstancePropertyReader;
 
   ///外部导入类型的实例属性写入函数
   final dynamic Function(T instance, dynamic value)? externalInstancePropertyWriter;
+
+  ///外部导入类型的实例属性调用函数
+  final Function? externalInstancePropertyCaller;
 
   ///内部定义类型的静态属性读取函数
   final Map<VmKeys, dynamic>? internalStaticPropertyReader;
@@ -148,8 +154,10 @@ class VmProxy<T> extends VmObject {
     this.isExternal = true,
     this.externalStaticPropertyReader,
     this.externalStaticPropertyWriter,
+    this.externalStaticPropertyCaller,
     this.externalInstancePropertyReader,
     this.externalInstancePropertyWriter,
+    this.externalInstancePropertyCaller,
     this.internalStaticPropertyReader,
     this.internalStaticPropertyWriter,
     this.internalInstancePropertyReader,
@@ -158,6 +166,7 @@ class VmProxy<T> extends VmObject {
 
   ///执行静态函数
   dynamic runStaticFunction(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments) {
+    if (externalStaticPropertyCaller != null) return Function.apply(externalStaticPropertyCaller!, positionalArguments, namedArguments);
     if (externalStaticPropertyReader == null) throw ('Not found externalStaticPropertyReader: $identifier');
     return Function.apply(externalStaticPropertyReader!(), positionalArguments, namedArguments);
   }
@@ -177,6 +186,7 @@ class VmProxy<T> extends VmObject {
   ///执行实例函数
   dynamic runInstanceFunction(dynamic instance, List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments) {
     if (instance is VmObject) throw ('Instance type cannot be VmObject: ${instance.runtimeType}');
+    if (externalInstancePropertyCaller != null) return Function.apply(externalInstancePropertyCaller!, [instance, ...(positionalArguments ?? const [])], namedArguments);
     if (externalInstancePropertyReader == null) throw ('Not found externalInstancePropertyReader: $identifier => instance.runtimeType is ${instance.runtimeType}');
     return Function.apply(externalInstancePropertyReader!(instance), positionalArguments, namedArguments);
   }
