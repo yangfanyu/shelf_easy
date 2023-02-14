@@ -70,10 +70,6 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitVariableDeclarationList(VariableDeclarationList node) => {
         VmKeys.$VariableDeclarationList: {
-          VmKeys.$VariableDeclarationListIsLate: node.isLate,
-          VmKeys.$VariableDeclarationListIsFinal: node.isFinal,
-          VmKeys.$VariableDeclarationListIsConst: node.isConst,
-          VmKeys.$VariableDeclarationListKeyword: node.keyword?.toString(),
           VmKeys.$VariableDeclarationListType: node.type?.accept(this),
           VmKeys.$VariableDeclarationListVariables: node.variables.map((e) => e.accept(this)).toList(),
         },
@@ -93,7 +89,6 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
           VmKeys.$FunctionDeclarationIsGetter: node.isGetter,
           VmKeys.$FunctionDeclarationIsSetter: node.isSetter,
           VmKeys.$FunctionDeclarationName: node.name.toString(),
-          VmKeys.$FunctionDeclarationReturnType: node.returnType?.accept(this),
           VmKeys.$FunctionDeclarationFunctionExpression: node.functionExpression.accept(this),
         }
       };
@@ -262,7 +257,8 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitIndexExpression(IndexExpression node) => {
         VmKeys.$IndexExpression: {
-          VmKeys.$IndexExpressionTarget: node.realTarget.accept(this),
+          VmKeys.$IndexExpressionTarget: node.target?.accept(this),
+          VmKeys.$IndexExpressionIsCascaded: node.isCascaded,
           VmKeys.$IndexExpressionIndex: node.index.accept(this),
         }
       };
@@ -292,6 +288,14 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
       };
 
   @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitCascadeExpression(CascadeExpression node) => {
+        VmKeys.$CascadeExpression: {
+          VmKeys.$CascadeExpressionTarget: node.target.accept(this),
+          VmKeys.$CascadeExpressionCascadeSections: node.cascadeSections.map((e) => e.accept(this)).toList(),
+        }
+      };
+
+  @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitThrowExpression(ThrowExpression node) => {
         VmKeys.$ThrowExpression: {
           VmKeys.$ThrowExpressionExpression: node.expression.accept(this),
@@ -303,7 +307,6 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
         VmKeys.$FunctionExpression: {
           VmKeys.$FunctionExpressionParameters: node.parameters?.accept(this),
           VmKeys.$FunctionExpressionBody: node.body.accept(this),
-          VmKeys.$FunctionExpressionBodyIsAsynchronous: node.body.isAsynchronous,
         }
       };
 
@@ -320,6 +323,14 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
         VmKeys.$FormalParameterList: {
           VmKeys.$FormalParameterListParameters: node.parameters.map((e) => e.accept(this)).toList(),
         }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitFieldFormalParameter(FieldFormalParameter node) => {
+        VmKeys.$FieldFormalParameter: {
+          VmKeys.$FieldFormalParameterType: node.type?.accept(this),
+          VmKeys.$FieldFormalParameterName: node.name.toString(),
+        },
       };
 
   @override
@@ -354,9 +365,15 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
       };
 
   @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitEmptyFunctionBody(EmptyFunctionBody node) => {
+        VmKeys.$EmptyFunctionBody: {},
+      };
+
+  @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitMethodInvocation(MethodInvocation node) => {
         VmKeys.$MethodInvocation: {
-          VmKeys.$MethodInvocationTarget: node.realTarget?.accept(this),
+          VmKeys.$MethodInvocationTarget: node.target?.accept(this),
+          VmKeys.$MethodInvocationIsCascaded: node.isCascaded,
           VmKeys.$MethodInvocationMethodName: node.methodName.name,
           VmKeys.$MethodInvocationArgumentList: node.argumentList.accept(this),
         }
@@ -372,7 +389,8 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitPropertyAccess(PropertyAccess node) => {
         VmKeys.$PropertyAccess: {
-          VmKeys.$PropertyAccessTarget: node.realTarget.accept(this),
+          VmKeys.$PropertyAccessTarget: node.target?.accept(this),
+          VmKeys.$PropertyAccessIsCascaded: node.isCascaded,
           VmKeys.$PropertyAccessPropertyName: node.propertyName.name,
         }
       };
@@ -473,16 +491,63 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitBreakStatement(BreakStatement node) => {
-        VmKeys.$BreakStatement: {
-          VmKeys.$BreakStatementBreakKeyword: node.breakKeyword.toString(),
-        }
+        VmKeys.$BreakStatement: {},
       };
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitReturnStatement(ReturnStatement node) => {
         VmKeys.$ReturnStatement: {
-          VmKeys.$ReturnStatementReturnKeyword: node.returnKeyword.toString(),
           VmKeys.$ReturnStatementExpression: node.expression?.accept(this),
         }
+      };
+
+  ///
+  ///类相关，下面的内容去掉后对上面的内容无任何影响
+  ///
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitClassDeclaration(ClassDeclaration node) => {
+        VmKeys.$ClassDeclaration: {
+          VmKeys.$ClassDeclarationName: node.name.toString(),
+          VmKeys.$ClassDeclarationMembers: node.members.map((e) => e.accept(this)).toList(),
+        },
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitFieldDeclaration(FieldDeclaration node) => {
+        VmKeys.$FieldDeclaration: {
+          VmKeys.$FieldDeclarationIsStatic: node.isStatic,
+          VmKeys.$FieldDeclarationFields: node.fields.accept(this),
+        },
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitConstructorDeclaration(ConstructorDeclaration node) => {
+        VmKeys.$ConstructorDeclaration: {
+          VmKeys.$ConstructorDeclarationName: node.name?.toString(),
+          VmKeys.$ConstructorDeclarationParameters: node.parameters.accept(this),
+          VmKeys.$ConstructorDeclarationInitializers: node.initializers.map((e) => e.accept(this)).toList(),
+          VmKeys.$ConstructorDeclarationBody: node.body.accept(this),
+        },
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitConstructorFieldInitializer(ConstructorFieldInitializer node) => {
+        VmKeys.$ConstructorFieldInitializer: {
+          VmKeys.$ConstructorFieldInitializerFieldName: node.fieldName.name,
+          VmKeys.$ConstructorFieldInitializerExpression: node.expression.accept(this),
+        },
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitMethodDeclaration(MethodDeclaration node) => {
+        VmKeys.$MethodDeclaration: {
+          VmKeys.$MethodDeclarationIsStatic: node.isStatic,
+          VmKeys.$MethodDeclarationIsGetter: node.isGetter,
+          VmKeys.$MethodDeclarationIsSetter: node.isSetter,
+          VmKeys.$MethodDeclarationName: node.name.toString(),
+          VmKeys.$MethodDeclarationParameters: node.parameters?.accept(this),
+          VmKeys.$MethodDeclarationBody: node.body.accept(this),
+        },
       };
 }

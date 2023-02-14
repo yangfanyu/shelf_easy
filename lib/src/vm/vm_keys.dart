@@ -25,18 +25,6 @@ enum VmKeys {
   ///对应[VariableDeclarationList]
   $VariableDeclarationList,
 
-  ///对应[VariableDeclarationList.isLate]
-  $VariableDeclarationListIsLate,
-
-  ///对应[VariableDeclarationList.isFinal]
-  $VariableDeclarationListIsFinal,
-
-  ///对应[VariableDeclarationList.isConst]
-  $VariableDeclarationListIsConst,
-
-  ///对应[VariableDeclarationList.keyword]
-  $VariableDeclarationListKeyword,
-
   ///对应[VariableDeclarationList.type]
   $VariableDeclarationListType,
 
@@ -67,9 +55,6 @@ enum VmKeys {
 
   ///对应[FunctionDeclaration.name]
   $FunctionDeclarationName,
-
-  ///对应[FunctionDeclaration.returnType]
-  $FunctionDeclarationReturnType,
 
   ///对应[FunctionDeclaration.functionExpression]
   $FunctionDeclarationFunctionExpression,
@@ -292,6 +277,9 @@ enum VmKeys {
   ///对应[IndexExpression.target]
   $IndexExpressionTarget,
 
+  ///对应[IndexExpression.isCascaded]
+  $IndexExpressionIsCascaded,
+
   ///对应[IndexExpression.index]
   $IndexExpressionIndex,
 
@@ -328,6 +316,17 @@ enum VmKeys {
   ///对应[IsExpression.type]
   $IsExpressionType,
 
+  /** ******** CascadeExpression ******** **/
+
+  ///对应[CascadeExpression]
+  $CascadeExpression,
+
+  ///对应[CascadeExpression.target]
+  $CascadeExpressionTarget,
+
+  ///对应[CascadeExpression.cascadeSections]
+  $CascadeExpressionCascadeSections,
+
   /** ******** ThrowExpression ******** **/
 
   ///对应[ThrowExpression]
@@ -347,9 +346,6 @@ enum VmKeys {
   ///对应[FunctionExpression.body]
   $FunctionExpressionBody,
 
-  ///对应[FunctionExpression.body].isAsynchronous
-  $FunctionExpressionBodyIsAsynchronous,
-
   /** ******** NamedExpression ******** **/
 
   ///对应[NamedExpression]
@@ -368,6 +364,17 @@ enum VmKeys {
 
   ///对应[FormalParameterList.parameters]
   $FormalParameterListParameters,
+
+  /** ******** FieldFormalParameter ******** **/
+
+  ///对应[FieldFormalParameter]
+  $FieldFormalParameter,
+
+  ///对应[FieldFormalParameter.name]
+  $FieldFormalParameterName,
+
+  ///对应[FieldFormalParameter.type]
+  $FieldFormalParameterType,
 
   /** ******** SimpleFormalParameter ******** **/
 
@@ -410,6 +417,11 @@ enum VmKeys {
   ///对应[BlockFunctionBody.block]
   $BlockFunctionBodyBlock,
 
+  /** ******** EmptyFunctionBody ******** **/
+
+  ///对应[EmptyFunctionBody]
+  $EmptyFunctionBody,
+
   /** ******** MethodInvocation ******** **/
 
   ///对应[MethodInvocation]
@@ -417,6 +429,9 @@ enum VmKeys {
 
   ///对应[MethodInvocation.target]
   $MethodInvocationTarget,
+
+  ///对应[MethodInvocation.isCascaded]
+  $MethodInvocationIsCascaded,
 
   ///对应[MethodInvocation.methodName]
   $MethodInvocationMethodName,
@@ -439,6 +454,9 @@ enum VmKeys {
 
   ///对应[PropertyAccess.target]
   $PropertyAccessTarget,
+
+  ///对应[PropertyAccess.isCascaded]
+  $PropertyAccessIsCascaded,
 
   ///对应[PropertyAccess.propertyName]
   $PropertyAccessPropertyName,
@@ -574,9 +592,6 @@ enum VmKeys {
   ///对应[BreakStatement]
   $BreakStatement,
 
-  ///对应[BreakStatement.breakKeyword]
-  $BreakStatementBreakKeyword,
-
   /** ******** ReturnStatement ******** **/
 
   ///对应[ReturnStatement]
@@ -585,6 +600,76 @@ enum VmKeys {
   ///对应[ReturnStatement.expression]
   $ReturnStatementExpression,
 
-  ///对应[ReturnStatement.returnKeyword]
-  $ReturnStatementReturnKeyword,
+  /** ******** ClassDeclaration ******** **/
+
+  ///对应[ClassDeclaration]
+  $ClassDeclaration,
+
+  ///对应[ClassDeclaration.name]
+  $ClassDeclarationName,
+
+  ///对应[ClassDeclaration.members]
+  $ClassDeclarationMembers,
+
+  /** ******** FieldDeclaration ******** **/
+
+  ///对应[FieldDeclaration]
+  $FieldDeclaration,
+
+  ///对应[FieldDeclaration.isStatic]
+  $FieldDeclarationIsStatic,
+
+  ///对应[FieldDeclaration.fields]
+  $FieldDeclarationFields,
+
+  /** ******** ConstructorDeclaration ******** **/
+
+  ///对应[ConstructorDeclaration]
+  $ConstructorDeclaration,
+
+  ///对应[ConstructorDeclaration.name]
+  $ConstructorDeclarationName,
+
+  ///对应[ConstructorDeclaration.parameters]
+  $ConstructorDeclarationParameters,
+
+  ///对应[ConstructorDeclaration.initializers]
+  $ConstructorDeclarationInitializers,
+
+  ///对应[ConstructorDeclaration.body]
+  $ConstructorDeclarationBody,
+
+  /** ******** ConstructorFieldInitializer ******** **/
+
+  ///对应[ConstructorFieldInitializer]
+  $ConstructorFieldInitializer,
+
+  ///对应[ConstructorFieldInitializer.fieldName]
+  $ConstructorFieldInitializerFieldName,
+
+  ///对应[ConstructorFieldInitializer.expression]
+  $ConstructorFieldInitializerExpression,
+
+  /** ******** MethodDeclaration ******** **/
+
+  ///对应[MethodDeclaration]
+  $MethodDeclaration,
+
+  ///对应[MethodDeclaration.isStatic]
+  $MethodDeclarationIsStatic,
+
+  ///对应[MethodDeclaration.isGetter]
+  $MethodDeclarationIsGetter,
+
+  ///对应[MethodDeclaration.isSetter]
+  $MethodDeclarationIsSetter,
+
+  ///对应[MethodDeclaration.name]
+  $MethodDeclarationName,
+
+  ///对应[MethodDeclaration.parameters]
+  $MethodDeclarationParameters,
+
+  ///对应[MethodDeclaration.body]
+  $MethodDeclarationBody,
 }

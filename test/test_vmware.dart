@@ -51,7 +51,9 @@ void testFromFile() {
   final encoder = JsonEncoder.withIndent('  ');
   final source = File('${Directory.current.path}/test/test_vmfile.dart').readAsStringSync();
   final routeList = <String>[];
-  final parseResult = VmParser.parseSource(source, routeList: routeList, routeLogger: (route) => print(route));
+  final parseResult = VmParser.parseSource(source, routeList: routeList, routeLogger: (route) {
+    //  print(route);
+  });
 
   print(encoder.convert(DbQueryField.toBaseType(parseResult)));
   print(encoder.convert(routeList));

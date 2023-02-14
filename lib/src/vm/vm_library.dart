@@ -202,7 +202,7 @@ class VmLibrary {
       'contains': VmProxy(identifier: 'contains', externalInstancePropertyReader: (instance) => instance.contains),
       'elementAt': VmProxy(identifier: 'elementAt', externalInstancePropertyReader: (instance) => instance.elementAt),
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (instance) => instance.every),
-      'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (instance) => instance.expand, externalInstancePropertyCaller: (List instance, a0) => instance.expand((b0) => a0 == null ? null : a0(b0))),
+      'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (instance) => instance.expand, externalInstanceFunctionCaller: (List instance, a0) => instance.expand((b0) => a0 == null ? null : a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (instance) => instance.fillRange),
       'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (instance) => instance.first, externalInstancePropertyWriter: (instance, value) => instance.first = value),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (instance) => instance.firstWhere),
@@ -276,7 +276,7 @@ class VmLibrary {
       'difference': VmProxy(identifier: 'difference', externalInstancePropertyReader: (instance) => instance.difference),
       'elementAt': VmProxy(identifier: 'elementAt', externalInstancePropertyReader: (instance) => instance.elementAt),
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (instance) => instance.every),
-      'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (instance) => instance.expand, externalInstancePropertyCaller: (Set instance, a0) => instance.expand((b0) => a0 == null ? null : a0(b0))),
+      'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (instance) => instance.expand, externalInstanceFunctionCaller: (Set instance, a0) => instance.expand((b0) => a0 == null ? null : a0(b0))),
       'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (instance) => instance.first),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (instance) => instance.firstWhere),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (instance) => instance.fold),
@@ -343,7 +343,7 @@ class VmLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (instance) => instance.isNotEmpty),
       'keys': VmProxy(identifier: 'keys', externalInstancePropertyReader: (instance) => instance.keys),
       'length': VmProxy(identifier: 'length', externalInstancePropertyReader: (instance) => instance.length),
-      'map': VmProxy(identifier: 'map', externalInstancePropertyReader: (instance) => instance.map, externalInstancePropertyCaller: (Map instance, a0) => instance.map((b0, b1) => a0 == null ? null : a0(b0, b1))),
+      'map': VmProxy(identifier: 'map', externalInstancePropertyReader: (instance) => instance.map, externalInstanceFunctionCaller: (Map instance, a0) => instance.map((b0, b1) => a0 == null ? null : a0(b0, b1))),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
       'putIfAbsent': VmProxy(identifier: 'putIfAbsent', externalInstancePropertyReader: (instance) => instance.putIfAbsent),
       'remove': VmProxy(identifier: 'remove', externalInstancePropertyReader: (instance) => instance.remove),
@@ -367,7 +367,7 @@ class VmLibrary {
       'contains': VmProxy(identifier: 'contains', externalInstancePropertyReader: (instance) => instance.contains),
       'elementAt': VmProxy(identifier: 'elementAt', externalInstancePropertyReader: (instance) => instance.elementAt),
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (instance) => instance.every),
-      'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (instance) => instance.expand, externalInstancePropertyCaller: (Runes instance, a0) => instance.expand((b0) => a0 == null ? null : a0(b0))),
+      'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (instance) => instance.expand, externalInstanceFunctionCaller: (Runes instance, a0) => instance.expand((b0) => a0 == null ? null : a0(b0))),
       'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (instance) => instance.first),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (instance) => instance.firstWhere),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (instance) => instance.fold),
@@ -442,7 +442,7 @@ class VmLibrary {
       'contains': VmProxy(identifier: 'contains', externalInstancePropertyReader: (instance) => instance.contains),
       'elementAt': VmProxy(identifier: 'elementAt', externalInstancePropertyReader: (instance) => instance.elementAt),
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (instance) => instance.every),
-      'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (instance) => instance.expand, externalInstancePropertyCaller: (Iterable instance, a0) => instance.expand((b0) => a0 == null ? null : a0(b0))),
+      'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (instance) => instance.expand, externalInstanceFunctionCaller: (Iterable instance, a0) => instance.expand((b0) => a0 == null ? null : a0(b0))),
       'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (instance) => instance.first),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (instance) => instance.firstWhere),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (instance) => instance.fold),
@@ -593,15 +593,15 @@ class VmLibrary {
   static final classFuture = VmClass<Future>(
     identifier: 'Future',
     externalProxyMap: {
-      'Future': VmProxy(identifier: 'Future', externalStaticPropertyReader: () => Future.new, externalStaticPropertyCaller: (a0) => Future(() => a0 == null ? null : a0())),
-      'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Future.new, externalStaticPropertyCaller: (a0) => Future(() => a0 == null ? null : a0())),
-      'delayed': VmProxy(identifier: 'delayed', externalStaticPropertyReader: () => Future.delayed, externalStaticPropertyCaller: (a0, a1) => Future.delayed(a0, () => a1 == null ? null : a1())),
+      'Future': VmProxy(identifier: 'Future', externalStaticPropertyReader: () => Future.new, externalStaticFunctionCaller: (a0) => Future(() => a0 == null ? null : a0())),
+      'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Future.new, externalStaticFunctionCaller: (a0) => Future(() => a0 == null ? null : a0())),
+      'delayed': VmProxy(identifier: 'delayed', externalStaticPropertyReader: () => Future.delayed, externalStaticFunctionCaller: (a0, a1) => Future.delayed(a0, () => a1 == null ? null : a1())),
       'error': VmProxy(identifier: 'error', externalStaticPropertyReader: () => Future.error),
-      'microtask': VmProxy(identifier: 'microtask', externalStaticPropertyReader: () => Future.microtask, externalStaticPropertyCaller: (a0) => Future.microtask(() => a0 == null ? null : a0())),
-      'sync': VmProxy(identifier: 'sync', externalStaticPropertyReader: () => Future.sync, externalStaticPropertyCaller: (a0) => Future.sync(() => a0 == null ? null : a0())),
+      'microtask': VmProxy(identifier: 'microtask', externalStaticPropertyReader: () => Future.microtask, externalStaticFunctionCaller: (a0) => Future.microtask(() => a0 == null ? null : a0())),
+      'sync': VmProxy(identifier: 'sync', externalStaticPropertyReader: () => Future.sync, externalStaticFunctionCaller: (a0) => Future.sync(() => a0 == null ? null : a0())),
       'value': VmProxy(identifier: 'value', externalStaticPropertyReader: () => Future.value),
       'any': VmProxy(identifier: 'any', externalStaticPropertyReader: () => Future.any),
-      'doWhile': VmProxy(identifier: 'doWhile', externalStaticPropertyReader: () => Future.doWhile, externalStaticPropertyCaller: (a0) => Future.doWhile(() => a0 == null ? null : a0())),
+      'doWhile': VmProxy(identifier: 'doWhile', externalStaticPropertyReader: () => Future.doWhile, externalStaticFunctionCaller: (a0) => Future.doWhile(() => a0 == null ? null : a0())),
       'forEach': VmProxy(identifier: 'forEach', externalStaticPropertyReader: () => Future.forEach),
       'wait': VmProxy(identifier: 'wait', externalStaticPropertyReader: () => Future.wait),
       'asStream': VmProxy(identifier: 'asStream', externalInstancePropertyReader: (instance) => instance.asStream),
@@ -685,7 +685,7 @@ class VmLibrary {
   ];
 
   ///代理函数列表
-  static final libraryProxyList = <VmProxy>[
-    VmProxy(identifier: 'print', externalStaticPropertyReader: () => print),
+  static final libraryProxyList = <VmProxy<void>>[
+    VmProxy(identifier: 'print', externalStaticPropertyReader: () => print)..bindVmClass(classVoid),
   ];
 }

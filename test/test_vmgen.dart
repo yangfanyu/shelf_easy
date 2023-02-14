@@ -128,8 +128,8 @@ void generateLibraryList() {
   codeBuffer.writeln('  ];');
 
   codeBuffer.writeln('  ///代理函数列表');
-  codeBuffer.writeln('  static final libraryProxyList = <VmProxy>[');
-  codeBuffer.writeln('    VmProxy(identifier: \'print\', externalStaticPropertyReader: () => print),');
+  codeBuffer.writeln('  static final libraryProxyList = <VmProxy<void>>[');
+  codeBuffer.writeln('    VmProxy(identifier: \'print\', externalStaticPropertyReader: () => print)..bindVmClass(classVoid),');
   codeBuffer.writeln('  ];');
 }
 
@@ -276,10 +276,10 @@ String? callerAnalyzer(String className, String funcName, MethodMirror value, {r
     final headStr = '${listArgs.join(', ')}${listArgs.isNotEmpty && nameArgs.isNotEmpty ? ',' : ''}${nameArgs.isNotEmpty ? '{' : ''}${nameArgs.join(',')}${nameArgs.isNotEmpty ? '}' : ''}';
     final bodystr = '$funcName(${listArgs.map((e) => listArgsWrap.containsKey(e) ? listArgsWrap[e] : e).join(', ')}${listArgs.isNotEmpty && nameArgs.isNotEmpty ? ',' : ''}${nameArgs.map((e) => '$e:${nameArgsWrap.containsKey(e) ? nameArgsWrap[e] : e}').join(',')})';
     if (instance) {
-      final wrapper = 'externalInstancePropertyCaller: ($className instance, $headStr) => instance.$bodystr';
+      final wrapper = 'externalInstanceFunctionCaller: ($className instance, $headStr) => instance.$bodystr';
       return wrapper;
     } else {
-      final wrapper = 'externalStaticPropertyCaller: ($headStr) => $className${funcName.isEmpty ? '' : '.'}$bodystr';
+      final wrapper = 'externalStaticFunctionCaller: ($headStr) => $className${funcName.isEmpty ? '' : '.'}$bodystr';
       return wrapper;
     }
   }

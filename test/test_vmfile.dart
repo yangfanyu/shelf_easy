@@ -164,14 +164,17 @@ final methodInvocationRes7 = methodInvocationList.first += List.from([4, 5, 6]).
 final methodInvocationRes8 = Duration(days: 0, hours: 1, minutes: 2, seconds: 3); //Duration 1:02:03.000000
 final methodInvocationRes9 = DateTime(2023, 08, 01); //DateTime 2023-08-01 00:00:00.000
 final methodInvocationResA = print;
-final methodInvocationResB = print.runtimeType;
-final methodInvocationResC = Set.new.toString().length;
+final methodInvocationResB = print.runtimeType; //Type (Object?) => void
+final methodInvocationResC = Set.new.toString().length; //56
 final methodInvocationResD = Set;
 final methodInvocationResE = methodInvocationResC.toString();
+final methodInvocationResF = methodInvocationResD.runtimeType;
 
 ///
-/// 普通函数定义与语句测试区
+/// 函数定义与语句测试区
 ///
+
+void funcA0() {}
 
 int funcA1(int a, {int b = 2, required int c, int? d}) => d ?? (a + b + c);
 
@@ -303,12 +306,12 @@ int funcA5() {
     print('-----> Future end 2 $value');
     throw ('-----> I am Future then error 2');
   }).catchError((error, stack) {
-    print('-----> Future catchError 3 $error');
+    print('-----> Future catchError: 3 $error');
     return 10000;
   }).then((value) {
     print('-----> Future end 4 $value');
   }).whenComplete(() {
-    int a = 66;
+    final a = 66;
     print('-----> whenComplete $a is String: ${a is String}'); //false
     print('-----> whenComplete $a is int: ${a is int}'); //true
     print('-----> whenComplete $a is num: ${a is num}'); //true
@@ -324,7 +327,7 @@ int funcA5() {
     print('++++++> then $a is! bool: ${a is! bool}'); //true
     print((a as double).toString());
   }).catchError((error, stack) {
-    print('++++++> Future catchError $error');
+    print('++++++> Future catchError: $error');
   }).then((value) {
     final names = {1: 'a', 2: 'b', 3: 'c'};
     final namesStr = names.map((key, value) => MapEntry(key, '$key -> $value')).toString();
@@ -344,4 +347,71 @@ final funcResA2_5 = funcA2(5, 100, c: 200); //hello world a=5, b=100, c=200, d=0
 final funcResA2_6 = funcA2(6, 100, c: 200); //hello world a=6, b=100, c=200, d=0, e=null, aaa=888
 final funcResA2_7 = funcA2(7, 100, c: 200); //hello world a=7, b=100, c=200, d=0, e=null, aaa=888
 final funcResA2_8 = funcA2(8, 100, c: 200); //hello world a=8, b=100, c=200, d=0, e=null, aaa=888
-final funcResA5_0 = funcA5();
+final funcResA5_0 = funcA5(); //1
+
+///
+/// 类定义与实例测试区
+///
+
+class User {
+  static const sexMale = 1;
+  static const sexFemale = 2;
+
+  final int id;
+  final String name;
+  final int sex;
+  final int age;
+  String _desc;
+  String _info;
+  List<int> _haha;
+
+  User(
+    this.id,
+    int no, {
+    required this.name,
+    this.sex = sexMale,
+    int? age,
+    aaa,
+  })  : age = age ?? 18,
+        _desc = '$no desc',
+        _info = '$no info',
+        _haha = [0, 1, 2, 3];
+
+  factory User.fromTest() {
+    return User(11111, 22222, name: 'Test', sex: sexMale, age: 10);
+  }
+
+  void readSex() => sex;
+
+  void writeDesc(String value) => _desc = '666 $value';
+
+  String printInfo() {
+    _haha
+      ..[0] += 10
+      ..[1] *= 100
+      ..[2] -= 100;
+    _haha[3] = 999;
+    final str = 'id=$id, name=$name, sex=$sex, age=$age, desc=$desc, info=$info, _haha=$_haha';
+    print(str);
+    return str;
+  }
+
+  String get desc => _desc;
+
+  String get info => _info;
+
+  set desc(String value) => writeDesc(value);
+
+  static int get getFemaleSexValue => sexFemale;
+}
+
+final userInstance0 = User(1, 2, name: 'Jack', sex: 3, age: 4);
+final userInstance1 = User(10, 20, name: 'Tom', sex: User.getFemaleSexValue);
+final userInstance2 = userInstance0;
+final userInstance4 = userInstance2.printInfo();
+final userInstance5 = User(30, 40, name: 'Rose').printInfo();
+final userInstance6 = User.fromTest().printInfo();
+final userInstance7 = User(50, 60, name: 'Cascade', sex: 3, age: 80)
+  ..desc = 'Hello world!'
+  .._info = 'I am Dart'
+  ..printInfo();
