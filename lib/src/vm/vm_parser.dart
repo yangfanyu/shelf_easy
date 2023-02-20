@@ -96,17 +96,13 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitNamedType(NamedType node) => {
         VmKeys.$NamedType: {
-          VmKeys.$NamedTypeName: node.name.accept(this),
-          VmKeys.$NamedTypeQuestion: node.question?.toString(),
+          VmKeys.$NamedTypeName: node.name.name,
         }
       };
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitGenericFunctionType(GenericFunctionType node) => {
-        VmKeys.$GenericFunctionType: {
-          VmKeys.$GenericFunctionTypeName: node.functionKeyword.toString(), //Function
-          VmKeys.$GenericFunctionTypeQuestion: node.question?.toString(),
-        }
+        VmKeys.$GenericFunctionType: {},
       };
 
   @override

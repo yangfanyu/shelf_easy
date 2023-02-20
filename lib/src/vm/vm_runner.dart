@@ -45,7 +45,7 @@ class VmRunner {
     return vmobject;
   }
 
-  ///插入虚拟机对象[vmobject]到当前作用域
+  ///插入虚拟对象[vmobject]到当前作用域
   VmObject addVmObject(VmObject vmobject) {
     final scopeMap = _objectStack.last; //取栈顶作用域
     if (scopeMap.containsKey(vmobject.identifier)) throw ('Already exists VmObject in current scope, identifier is: ${vmobject.identifier}');
@@ -58,7 +58,8 @@ class VmRunner {
 
   ///执行虚拟机中的[functionName]指定的函数
   T callFunction<T>(String functionName, {List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments}) {
-    return VmRunnerCore._scanVmFunction(this, positionalArguments, namedArguments, getVmObject(functionName) as VmValue, null, null);
+    final result = VmRunnerCore._scanVmFunction(this, positionalArguments, namedArguments, VmObject.readLogic(getVmObject(functionName)), null);
+    return VmObject.deepValue(result); //返回深度递归转换后的值
   }
 
   ///创建作用域
@@ -72,40 +73,47 @@ class VmRunner {
   Map<String, VmObject> _delScope() => _objectStack.removeLast();
 
   ///内部定义类的静态方法的回调监听
-  dynamic _staticListener(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmClass classScope, List<Map<VmKeys, dynamic>>? instanceFields, VmValue method) {
+  dynamic _staticListener(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmClass staticScope, List<Map<VmKeys, dynamic>>? instanceFields, VmValue method) {
     if (instanceFields != null) {
       //原始构造函数
-      final instanceScope = VmValue.forVariable(identifier: VmRunnerCore._classConstructorSelf_, initType: classScope.identifier, initValue: <String, VmValue>{}); //创建新实例
-      _objectStack.add(classScope.internalStaticPropertyMap!); //添加类静态作用域
+      final instanceScope = VmValue.forVariable(identifier: VmRunnerCore._classConstructorSelf_, initType: staticScope.identifier, initValue: <String, VmValue>{}); //创建新实例
+      _objectStack.add(staticScope.internalStaticPropertyMap!); //添加类静态作用域
       _objectStack.add(instanceScope.internalInstancePropertyMap); //添加实例作用域
       addVmObject(instanceScope); //添加被构造的关键变量
-      VmRunnerCore._scanVmFunction(this, positionalArguments, namedArguments, method, instanceScope, instanceFields);
+
+      VmRunnerCore._scanList(this, instanceFields); // => _scanFieldDeclaration or _scanMethodDeclaration 构建实例成员字段
+      instanceScope.bindStaticScope(staticScope); //构建实例成员字段完成后，立即绑定实例的静态作用域
+      instanceScope.bindMemberScope(); //构建实例成员字段完成后，绑定成员的全部作用域
+      VmRunnerCore._scanVmFunction(this, positionalArguments, namedArguments, method, instanceScope); //构建实例成员字段完成后，再运行函数的内容
+
       delVmObject(VmRunnerCore._classConstructorSelf_); //删除被构造的关键变量
       _objectStack.removeLast(); //移除实例作用域
       _objectStack.removeLast(); //移除类静态作用域
-      return instanceScope..bindFatherOfChildren(); //绑定成员的父实例
+      return instanceScope;
     } else {
       //普通静态函数
-      _objectStack.add(classScope.internalStaticPropertyMap!); //添加类静态作用域
-      final result = VmRunnerCore._scanVmFunction(this, positionalArguments, namedArguments, method, null, instanceFields);
+      _objectStack.add(staticScope.internalStaticPropertyMap!); //添加类静态作用域
+      final result = VmRunnerCore._scanVmFunction(this, positionalArguments, namedArguments, method, null);
       _objectStack.removeLast(); //移除类静态作用域
       return result;
     }
   }
 
   ///内部定义类的实例方法的回调监听
-  dynamic _instanceListener(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmClass? classScope, VmValue? instanceScope, VmValue method) {
-    if (classScope != null) _objectStack.add(classScope.internalStaticPropertyMap!); //添加类静态作用域
+  dynamic _instanceListener(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmClass? staticScope, VmValue? instanceScope, VmValue method) {
+    if (staticScope != null) _objectStack.add(staticScope.internalStaticPropertyMap!); //添加类静态作用域
     if (instanceScope != null) _objectStack.add(instanceScope.internalInstancePropertyMap); //添加实例作用域
-    final result = VmRunnerCore._scanVmFunction(this, positionalArguments, namedArguments, method, instanceScope, null);
+    final result = VmRunnerCore._scanVmFunction(this, positionalArguments, namedArguments, method, null);
     if (instanceScope != null) _objectStack.removeLast(); //移除实例作用域
-    if (classScope != null) _objectStack.removeLast(); //移除类静态作用域
+    if (staticScope != null) _objectStack.removeLast(); //移除类静态作用域
     return result;
   }
 
-  ///转换为可json序列化的数据
-  // Map<String, dynamic> toJson() => {'_memberStack': _objectStack};
-  Map<String, dynamic> toJson() => {'_memberStack': _objectStack.map((e) => e.map((key, value) => MapEntry(key, value.toString()))).toList()};
+  ///转换为可json序列化的详细数据
+  Map<String, dynamic> toJson() => {'_memberStack': _objectStack};
+
+  ///转换为可json序列化的简单数据
+  Map<String, dynamic> toSimpleJson() => {'_memberStack': _objectStack.map((e) => e.map((key, value) => MapEntry(key, value.toString()))).toList()};
 }
 
 ///
@@ -206,22 +214,21 @@ class VmRunnerCore {
 
   static List<dynamic>? _scanList(VmRunner runner, List<Map<VmKeys, dynamic>?>? nodeList) => nodeList?.map((e) => _scanMap(runner, e)).toList();
 
-  static dynamic _scanVmFunction(VmRunner runner, List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmValue method, VmValue? instanceScope, List<Map<VmKeys, dynamic>>? instanceFields) {
-    if (instanceFields != null) _scanList(runner, instanceFields); // => _scanFieldDeclaration or _scanMethodDeclaration 构建实例成员属性
-    final parameters = method.prepareForRealInvocation(positionalArguments, namedArguments, instanceScope); //准备函数参数
+  static dynamic _scanVmFunction(VmRunner runner, List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmValue method, VmValue? buildTarget) {
+    final parameters = method.prepareInvocation(positionalArguments, namedArguments, buildTarget); //准备函数参数
     runner._newScope(); //创建函数作用域
     for (var element in parameters) {
       runner.addVmObject(element);
     }
-    _scanList(runner, method.methodInitTree); // => _scanConstructorFieldInitializer 运行构造函数的参数初始化树
-    final result = _scanMap(runner, method.methodBodyTree); //运行通用的函数体语法树
+    _scanList(runner, method.metaData.initTree); // => _scanConstructorFieldInitializer 运行构造函数的参数初始化树
+    final result = _scanMap(runner, method.metaData.bodyTree); //运行通用的函数体语法树
     runner._delScope(); //释放函数作用域
-    return result is VmSignal ? result.signalValue : result;
+    return VmObject.readLogic(result); //注意：为了保证能够逻辑处理，此处使用的是逻辑值
   }
 
   static void _scanCompilationUnit(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) => _scanList(runner, node[VmKeys.$CompilationUnitDeclarations]);
 
-  static dynamic _scanTopLevelVariableDeclaration(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) => _scanMap(runner, node[VmKeys.$TopLevelVariableDeclarationVariables]);
+  static void _scanTopLevelVariableDeclaration(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) => _scanMap(runner, node[VmKeys.$TopLevelVariableDeclarationVariables]);
 
   static List<VmValue>? _scanVariableDeclarationList(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
     //属性读取
@@ -234,7 +241,7 @@ class VmRunnerCore {
       return runner.addVmObject(
         VmValue.forVariable(
           identifier: itemResult.fieldName,
-          initType: typeResult?.typeName,
+          initType: typeResult?.fieldType,
           initValue: itemResult.fieldValue,
         ),
       ) as VmValue;
@@ -242,15 +249,10 @@ class VmRunnerCore {
   }
 
   static VmHelper _scanVariableDeclaration(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
-    //属性读取
     final name = node[VmKeys.$VariableDeclarationName] as String;
     final initializer = node[VmKeys.$VariableDeclarationInitializer] as Map<VmKeys, dynamic>?;
-    //逻辑处理
     final initializerResult = _scanMap(runner, initializer);
-    return VmHelper(
-      fieldName: name,
-      fieldValue: initializerResult,
-    );
+    return VmHelper(fieldName: name, fieldValue: initializerResult);
   }
 
   static VmValue _scanFunctionDeclaration(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
@@ -260,46 +262,27 @@ class VmRunnerCore {
     final name = node[VmKeys.$FunctionDeclarationName] as String;
     final functionExpression = node[VmKeys.$FunctionDeclarationFunctionExpression] as Map<VmKeys, dynamic>?;
     //逻辑处理
-    final functionExpressionResult = _scanMap(runner, functionExpression) as VmValue; // => _scanFunctionExpression
-    //创建函数
+    final functionExpressionResult = _scanMap(runner, functionExpression) as VmValue?; // => _scanFunctionExpression or null
     return runner.addVmObject(
       VmValue.forFunction(
         identifier: name,
-        methodIsGetter: isGetter,
-        methodIsSetter: isSetter,
-        methodListArguments: functionExpressionResult.methodListArguments,
-        methodNameArguments: functionExpressionResult.methodNameArguments,
-        methodInitTree: functionExpressionResult.methodInitTree,
-        methodBodyTree: functionExpressionResult.methodBodyTree,
-        methodStaticListener: functionExpressionResult.methodStaticListener,
-        methodInstanceListener: functionExpressionResult.methodInstanceListener,
+        isIniter: functionExpressionResult?.metaData.isIniter,
+        isStatic: functionExpressionResult?.metaData.isStatic,
+        isGetter: isGetter,
+        isSetter: isSetter,
+        listArguments: functionExpressionResult?.metaData.listArguments,
+        nameArguments: functionExpressionResult?.metaData.nameArguments,
+        initTree: functionExpressionResult?.metaData.initTree,
+        bodyTree: functionExpressionResult?.metaData.bodyTree,
+        staticListener: runner._staticListener,
+        instanceListener: runner._instanceListener,
       ),
     ) as VmValue;
   }
 
-  static VmHelper _scanNamedType(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
-    //属性读取
-    final name = node[VmKeys.$NamedTypeName] as Map<VmKeys, dynamic>?;
-    final question = node[VmKeys.$NamedTypeQuestion] as String?;
-    //逻辑处理
-    final nameResult = _scanMap(runner, name) as VmClass; // => _scanSimpleIdentifier 类型名称必然为int之类的某个类型标识符，此处返回结果必然是VmClass
-    return VmHelper(
-      typeName: nameResult.identifier,
-      typeQuestion: question,
-    );
-  }
+  static VmHelper _scanNamedType(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) => VmHelper(fieldType: node[VmKeys.$NamedTypeName]);
 
-  static VmHelper _scanGenericFunctionType(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
-    //属性读取
-    final name = node[VmKeys.$GenericFunctionTypeName] as String; //Function
-    final question = node[VmKeys.$GenericFunctionTypeQuestion] as String?;
-    //逻辑处理
-    final nameResult = runner.getVmObject(name) as VmClass;
-    return VmHelper(
-      typeName: nameResult.identifier,
-      typeQuestion: question,
-    );
-  }
+  static VmHelper _scanGenericFunctionType(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) => VmHelper(fieldType: VmClass.functionTypeName);
 
   static VmObject _scanSimpleIdentifier(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) => runner.getVmObject(node[VmKeys.$SimpleIdentifierName]);
 
@@ -307,23 +290,14 @@ class VmRunnerCore {
     final prefix = node[VmKeys.$PrefixedIdentifierPrefix] as String;
     final identifier = node[VmKeys.$PrefixedIdentifierIdentifier] as String;
     final prefixResult = runner.getVmObject(prefix);
-    return VmLazyer(
-      instance: prefixResult,
-      property: identifier,
-    );
+    return VmLazyer(instance: prefixResult, property: identifier);
   }
 
   static VmHelper _scanDeclaredIdentifier(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
-    //属性读取
     final type = node[VmKeys.$DeclaredIdentifierType] as Map<VmKeys, dynamic>?;
     final name = node[VmKeys.$DeclaredIdentifierName] as String?;
-    //逻辑处理
-    final typeResult = _scanMap(runner, type) as VmHelper; // => _scanNamedType or _scanGenericFunctionType
-    return VmHelper(
-      typeName: typeResult.typeName,
-      typeQuestion: typeResult.typeQuestion,
-      fieldName: name,
-    );
+    final typeResult = _scanMap(runner, type) as VmHelper?; // => _scanNamedType or _scanGenericFunctionType or null
+    return VmHelper(fieldType: typeResult?.fieldType, fieldName: name);
   }
 
   static dynamic _scanNullLiteral(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) => node[VmKeys.$NullLiteralValue];
@@ -338,9 +312,9 @@ class VmRunnerCore {
 
   static String? _scanInterpolationString(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) => node[VmKeys.$InterpolationStringValue];
 
-  static String? _scanStringInterpolation(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) => _scanList(runner, node[VmKeys.$StringInterpolationElements])?.map((e) => VmValue.readValue(e)).join('');
+  static String? _scanStringInterpolation(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) => _scanList(runner, node[VmKeys.$StringInterpolationElements])?.map((e) => VmObject.readValue(e)).join('');
 
-  static List? _scanListLiteral(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) => _scanList(runner, node[VmKeys.$ListLiteralElements]);
+  static List<dynamic>? _scanListLiteral(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) => _scanList(runner, node[VmKeys.$ListLiteralElements])?.map((e) => VmObject.readLogic(e)).toList(); //虽无影响但防嵌套过深，所以取逻辑值，下同
 
   static dynamic _scanSetOrMapLiteral(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
     //属性读取
@@ -351,17 +325,17 @@ class VmRunnerCore {
     //根据<a,b,c>...推断
     if (typeArguments != null) {
       if (typeArguments.length == 2) {
-        return {for (MapEntry e in elementsResults) e.key: e.value}; //runtimeType => Map
+        return {for (MapEntry e in elementsResults) VmObject.readLogic(e.key): VmObject.readLogic(e.value)}; //runtimeType => Map
       } else if (typeArguments.length == 1) {
-        return elementsResults.toSet(); //runtimeType => Set
+        return elementsResults.map((e) => VmObject.readLogic(e)).toSet(); //runtimeType => Set
       }
     }
     //根据子项数据类型推断
     if (elementsResults.isNotEmpty) {
       if (elementsResults.first is MapEntry) {
-        return {for (MapEntry e in elementsResults) e.key: e.value}; //runtimeType => Map
+        return {for (MapEntry e in elementsResults) VmObject.readLogic(e.key): VmObject.readLogic(e.value)}; //runtimeType => Map
       } else {
-        return elementsResults.toSet(); //runtimeType => Set
+        return elementsResults.toSet().map((e) => VmObject.readLogic(e)).toSet(); //runtimeType => Set
       }
     }
     //因为无任何标识参数时，直接定义{}是个Map，另外final test={} 中 test 也为 Map，所以默认返回Map，
@@ -380,51 +354,51 @@ class VmRunnerCore {
     final rightOperand = node[VmKeys.$BinaryExpressionRightOperand] as Map<VmKeys, dynamic>?;
     final leftResult = _scanMap(runner, leftOperand);
     final rightResult = _scanMap(runner, rightOperand);
-    final leftValue = VmValue.readValue(leftResult);
-    final rightValue = VmValue.readValue(rightResult);
+    final leftValue = VmObject.readValue(leftResult);
+    final rightValue = VmObject.readValue(rightResult);
     switch (operator) {
       case '+':
-        return leftValue + rightValue;
+        return leftValue + rightValue; //num
       case '-':
-        return leftValue - rightValue;
+        return leftValue - rightValue; //num
       case '*':
-        return leftValue * rightValue;
+        return leftValue * rightValue; //num
       case '/':
-        return leftValue / rightValue;
+        return leftValue / rightValue; //num
       case '%':
-        return leftValue % rightValue;
+        return leftValue % rightValue; //num
       case '~/':
-        return leftValue ~/ rightValue;
+        return leftValue ~/ rightValue; //num
       case '>':
-        return leftValue > rightValue;
+        return leftValue > rightValue; //bool
       case '<':
-        return leftValue < rightValue;
+        return leftValue < rightValue; //bool
       case '>=':
-        return leftValue >= rightValue;
+        return leftValue >= rightValue; //bool
       case '<=':
-        return leftValue <= rightValue;
+        return leftValue <= rightValue; //bool
       case '==':
-        return leftValue == rightValue;
+        return leftValue == rightValue; //bool
       case '!=':
-        return leftValue != rightValue;
+        return leftValue != rightValue; //bool
       case '&&':
-        return leftValue && rightValue;
+        return leftValue && rightValue; //bool
       case '||':
-        return leftValue || rightValue;
+        return leftValue || rightValue; //bool
       case '??':
-        return leftValue ?? rightValue;
+        return VmObject.readLogic(leftResult) ?? VmObject.readLogic(rightResult); //注意：为了保证能够逻辑处理，此处使用的是逻辑值
       case '>>':
-        return leftValue >> rightValue;
+        return leftValue >> rightValue; //num
       case '<<':
-        return leftValue << rightValue;
+        return leftValue << rightValue; //num
       case '&':
-        return leftValue & rightValue;
+        return leftValue & rightValue; //num
       case '|':
-        return leftValue | rightValue;
+        return leftValue | rightValue; //num
       case '^':
-        return leftValue ^ rightValue;
+        return leftValue ^ rightValue; //num
       case '>>>':
-        return leftValue >>> rightValue;
+        return leftValue >>> rightValue; //num
       default:
         throw ('Unsupport BinaryExpression: $operator');
     }
@@ -434,25 +408,25 @@ class VmRunnerCore {
     final operator = node[VmKeys.$PrefixExpressionOperator] as String?;
     final operand = node[VmKeys.$PrefixExpressionOperand] as Map<VmKeys, dynamic>?;
     final operandResult = _scanMap(runner, operand);
-    final operandValue = VmValue.readValue(operandResult);
+    final operandValue = VmObject.readValue(operandResult);
     dynamic value;
     switch (operator) {
       case '-':
-        value = -operandValue;
+        value = -operandValue; //num
         break;
       case '!':
-        value = !operandValue;
+        value = !operandValue; //bool
         break;
       case '~':
-        value = ~operandValue;
+        value = ~operandValue; //num
         break;
       case '++':
-        value = operandValue + 1;
-        VmValue.saveValue(operandResult, value);
+        value = operandValue + 1; //num
+        VmObject.saveValue(operandResult, value);
         break;
       case '--':
-        value = operandValue - 1;
-        VmValue.saveValue(operandResult, value);
+        value = operandValue - 1; //num
+        VmObject.saveValue(operandResult, value);
         break;
       default:
         throw ('Unsupport PrefixExpression: $operator');
@@ -464,16 +438,16 @@ class VmRunnerCore {
     final operator = node[VmKeys.$PostfixExpressionOperator] as String?;
     final operand = node[VmKeys.$PostfixExpressionOperand] as Map<VmKeys, dynamic>?;
     final operandResult = _scanMap(runner, operand);
-    final operandValue = VmValue.readValue(operandResult);
+    final operandValue = VmObject.readValue(operandResult);
     dynamic value;
     switch (operator) {
       case '++':
-        value = operandValue + 1;
-        VmValue.saveValue(operandResult, value);
+        value = operandValue + 1; //num
+        VmObject.saveValue(operandResult, value);
         break;
       case '--':
-        value = operandValue - 1;
-        VmValue.saveValue(operandResult, value);
+        value = operandValue - 1; //num
+        VmObject.saveValue(operandResult, value);
         break;
       default:
         throw ('Unsupport PostfixExpression: $operator');
@@ -487,56 +461,56 @@ class VmRunnerCore {
     final rightHandSide = node[VmKeys.$AssignmentExpressionRightHandSide] as Map<VmKeys, dynamic>?;
     final leftResult = _scanMap(runner, leftHandSide);
     final rightResult = _scanMap(runner, rightHandSide);
-    final leftValue = VmValue.readValue(leftResult);
-    final rightValue = VmValue.readValue(rightResult);
+    final leftValue = VmObject.readValue(leftResult);
+    final rightValue = VmObject.readValue(rightResult);
     dynamic value;
     switch (operator) {
       case '=':
-        value = rightValue;
+        value = VmObject.readLogic(rightResult); //注意：为了保证能够逻辑处理，此处使用的是逻辑值
         break;
       case '+=':
-        value = leftValue + rightValue;
+        value = leftValue + rightValue; //num
         break;
       case '-=':
-        value = leftValue - rightValue;
+        value = leftValue - rightValue; //num
         break;
       case '*=':
-        value = leftValue * rightValue;
+        value = leftValue * rightValue; //num
         break;
       case '/=':
-        value = leftValue / rightValue;
+        value = leftValue / rightValue; //num
         break;
       case '%=':
-        value = leftValue % rightValue;
+        value = leftValue % rightValue; //num
         break;
       case '~/=':
-        value = leftValue ~/ rightValue;
+        value = leftValue ~/ rightValue; //num
         break;
       case '??=':
-        value = leftValue ?? rightValue;
+        value = VmObject.readLogic(leftResult) ?? VmObject.readLogic(rightResult); //注意：为了保证能够逻辑处理，此处使用的是逻辑值
         break;
       case '>>=':
-        value = leftValue >> rightValue;
+        value = leftValue >> rightValue; //num
         break;
       case '<<=':
-        value = leftValue << rightValue;
+        value = leftValue << rightValue; //num
         break;
       case '&=':
-        value = leftValue & rightValue;
+        value = leftValue & rightValue; //num
         break;
       case '|=':
-        value = leftValue | rightValue;
+        value = leftValue | rightValue; //num
         break;
       case '^=':
-        value = leftValue ^ rightValue;
+        value = leftValue ^ rightValue; //num
         break;
       case '>>>=':
-        value = leftValue >>> rightValue;
+        value = leftValue >>> rightValue; //num
         break;
       default:
         throw ('Unsupport AssignmentExpression: $operator');
     }
-    VmValue.saveValue(leftResult, value);
+    VmObject.saveValue(leftResult, value);
     return value; //返回计算之后的值
   }
 
@@ -545,7 +519,7 @@ class VmRunnerCore {
     final thenExpression = node[VmKeys.$ConditionalExpressionThenExpression] as Map<VmKeys, dynamic>?;
     final elseExpression = node[VmKeys.$ConditionalExpressionElseExpression] as Map<VmKeys, dynamic>?;
     final conditionResult = _scanMap(runner, condition);
-    final conditionValue = VmValue.readValue(conditionResult) as bool;
+    final conditionValue = VmObject.readValue(conditionResult) as bool;
     return conditionValue ? _scanMap(runner, thenExpression) : _scanMap(runner, elseExpression);
   }
 
@@ -560,30 +534,22 @@ class VmRunnerCore {
     final index = node[VmKeys.$IndexExpressionIndex] as Map<VmKeys, dynamic>?;
     final targetResult = _scanMap(runner, target) ?? (isCascaded ? runner.getVmObject(_cascadeOperatorValue_) : null);
     final indexResult = _scanMap(runner, index);
-    final targetValue = VmValue.readValue(targetResult);
-    final indexValue = VmValue.readValue(indexResult);
-    return VmLazyer(
-      isIndexed: true,
-      instance: targetValue,
-      property: indexValue,
-    );
+    return VmLazyer(isIndexed: true, instance: targetResult, property: indexResult);
   }
 
   static dynamic _scanInterpolationExpression(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
     final expression = node[VmKeys.$InterpolationExpressionExpression] as Map<VmKeys, dynamic>?;
     final expressionResult = _scanMap(runner, expression);
-    final expressionValue = VmValue.readValue(expressionResult);
-    return expressionValue; //这里必须解析结果
+    return VmObject.readValue(expressionResult); //这里必须解析结果
   }
 
   static dynamic _scanAsExpression(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
     final expression = node[VmKeys.$AsExpressionExpression] as Map<VmKeys, dynamic>?;
     final type = node[VmKeys.$AsExpressionType] as Map<VmKeys, dynamic>?;
     final expressionResult = _scanMap(runner, expression);
-    final expressionValue = VmValue.readValue(expressionResult);
     final typeResult = _scanMap(runner, type) as VmHelper; // => _scanNamedType or _scanGenericFunctionType
-    final typeValue = runner.getVmObject(typeResult.typeName.toString()) as VmClass;
-    return typeValue.asThisType(expressionValue); //类型转换
+    final typeValue = runner.getVmObject(typeResult.fieldType.toString()) as VmClass;
+    return typeValue.asThisType(expressionResult);
   }
 
   static bool _scanIsExpression(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
@@ -591,18 +557,17 @@ class VmRunnerCore {
     final expression = node[VmKeys.$IsExpressionExpression] as Map<VmKeys, dynamic>?;
     final type = node[VmKeys.$IsExpressionType] as Map<VmKeys, dynamic>?;
     final expressionResult = _scanMap(runner, expression);
-    final expressionValue = VmValue.readValue(expressionResult);
     final typeResult = _scanMap(runner, type) as VmHelper; // => _scanNamedType or _scanGenericFunctionType
-    final typeValue = runner.getVmObject(typeResult.typeName.toString()) as VmClass;
-    return notOperator == '!' ? !typeValue.isThisType(expressionValue) : typeValue.isThisType(expressionValue);
+    final typeValue = runner.getVmObject(typeResult.fieldType.toString()) as VmClass;
+    return notOperator == '!' ? !typeValue.isThisType(expressionResult) : typeValue.isThisType(expressionResult);
   }
 
-  static dynamic _scanCascadeExpression(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
+  static VmValue _scanCascadeExpression(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
     final target = node[VmKeys.$CascadeExpressionTarget] as Map<VmKeys, dynamic>?;
     final cascadeSections = node[VmKeys.$CascadeExpressionCascadeSections] as List<Map<VmKeys, dynamic>?>?;
     final targetResult = _scanMap(runner, target);
     runner._newScope(); //创建作用域，因为可能有嵌套的cascade
-    final targetValue = runner.addVmObject(VmValue.forVariable(identifier: _cascadeOperatorValue_, initValue: targetResult));
+    final targetValue = runner.addVmObject(VmValue.forVariable(identifier: _cascadeOperatorValue_, initValue: targetResult)) as VmValue;
     _scanList(runner, cascadeSections);
     runner._delScope(); //删除作用域
     return targetValue;
@@ -611,8 +576,7 @@ class VmRunnerCore {
   static void _scanThrowExpression(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
     final expression = node[VmKeys.$ThrowExpressionExpression] as Map<VmKeys, dynamic>?;
     final expressionResult = _scanMap(runner, expression);
-    final expressionValue = VmValue.readValue(expressionResult);
-    throw (expressionValue); //这里必须解析结果
+    throw (VmObject.readValue(expressionResult)); //这里必须解析结果
   }
 
   static VmValue _scanFunctionExpression(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
@@ -623,13 +587,13 @@ class VmRunnerCore {
     final parametersResult = _scanMap(runner, parameters) as List?; // => _scanFormalParameterList or null
     final listArguments = <VmHelper>[];
     final nameArguments = <VmHelper>[];
-    VmValue.groupDeclarationParameters(parametersResult, listArguments, nameArguments);
+    VmObject.groupDeclarationParameters(parametersResult, listArguments, nameArguments);
     return VmValue.forFunction(
-      methodListArguments: listArguments,
-      methodNameArguments: nameArguments,
-      methodBodyTree: body ?? const {},
-      methodStaticListener: runner._staticListener,
-      methodInstanceListener: runner._instanceListener,
+      listArguments: listArguments,
+      nameArguments: nameArguments,
+      bodyTree: body,
+      staticListener: runner._staticListener,
+      instanceListener: runner._instanceListener,
     );
   }
 
@@ -644,15 +608,14 @@ class VmRunnerCore {
     );
   }
 
-  static List? _scanFormalParameterList(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) => _scanList(runner, node[VmKeys.$FormalParameterListParameters]);
+  static List<dynamic>? _scanFormalParameterList(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) => _scanList(runner, node[VmKeys.$FormalParameterListParameters]);
 
   static VmHelper _scanFieldFormalParameter(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
     final type = node[VmKeys.$FieldFormalParameterType] as Map<VmKeys, dynamic>?;
     final name = node[VmKeys.$FieldFormalParameterName] as String;
     final typeResult = _scanMap(runner, type) as VmHelper?; // => _scanNamedType or _scanGenericFunctionType or null
     return VmHelper(
-      typeName: typeResult?.typeName,
-      typeQuestion: typeResult?.typeQuestion,
+      fieldType: typeResult?.fieldType,
       fieldName: name,
       isClassField: true,
     );
@@ -663,8 +626,7 @@ class VmRunnerCore {
     final name = node[VmKeys.$SimpleFormalParameterName] as String?;
     final typeResult = _scanMap(runner, type) as VmHelper?; // => _scanNamedType or _scanGenericFunctionType or null
     return VmHelper(
-      typeName: typeResult?.typeName,
-      typeQuestion: typeResult?.typeQuestion,
+      fieldType: typeResult?.fieldType,
       fieldName: name,
     );
   }
@@ -673,11 +635,10 @@ class VmRunnerCore {
     final name = node[VmKeys.$DefaultFormalParameterName] as String?;
     final parameter = node[VmKeys.$DefaultFormalParameterParameter] as Map<VmKeys, dynamic>?;
     final defaultValue = node[VmKeys.$DefaultFormalParameterDefaultValue] as Map<VmKeys, dynamic>?;
-    final parameterResult = _scanMap(runner, parameter) as VmHelper?; // => _scanFieldFormalParameter or _scanSimpleFormalParameter
+    final parameterResult = _scanMap(runner, parameter) as VmHelper?; // => _scanFieldFormalParameter or _scanSimpleFormalParameter or null
     final defaultValueResult = _scanMap(runner, defaultValue);
     return VmHelper(
-      typeName: parameterResult?.typeName,
-      typeQuestion: parameterResult?.typeQuestion,
+      fieldType: parameterResult?.fieldType,
       fieldName: name ?? parameterResult?.fieldName,
       fieldValue: defaultValueResult,
       isNamedField: true,
@@ -697,34 +658,30 @@ class VmRunnerCore {
     final isCascaded = node[VmKeys.$MethodInvocationIsCascaded] as bool;
     final methodName = node[VmKeys.$MethodInvocationMethodName] as String;
     final argumentList = node[VmKeys.$MethodInvocationArgumentList] as Map<VmKeys, dynamic>?;
-    final targetResult = _scanMap(runner, target) ?? (isCascaded ? runner.getVmObject(_cascadeOperatorValue_) : runner.getVmObject(methodName));
-    final argumentsResult = _scanMap(runner, argumentList) as List?; // => _scanArgumentList or null
     //逻辑处理
+    final targetResult = _scanMap(runner, target) ?? (isCascaded ? runner.getVmObject(_cascadeOperatorValue_) : null);
+    final argumentsResult = _scanMap(runner, argumentList) as List?; // => _scanArgumentList or null
     final listArguments = <dynamic>[];
     final nameArguments = <Symbol, dynamic>{};
-    VmValue.groupInvocationParameters(argumentsResult, listArguments, nameArguments);
+    VmObject.groupInvocationParameters(argumentsResult, listArguments, nameArguments);
     return VmLazyer(
       isMethod: true,
-      instance: targetResult,
+      instance: targetResult ?? runner.getVmObject(methodName),
       property: methodName,
+      instanceByProperty: targetResult == null,
       listArguments: listArguments,
       nameArguments: nameArguments,
-    ).orgValue(); //直接调用返回原始结果
+    ).getLogic(); //注意：为了保证能够逻辑处理，此处使用的是逻辑值
   }
 
-  static List? _scanArgumentList(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) => _scanList(runner, node[VmKeys.$ArgumentListArguments]); // => _scanNamedExpression or others
+  static List<dynamic>? _scanArgumentList(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) => _scanList(runner, node[VmKeys.$ArgumentListArguments]); // => _scanNamedExpression or others
 
   static VmLazyer _scanPropertyAccess(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
-    //属性读取
     final target = node[VmKeys.$PropertyAccessTarget] as Map<VmKeys, dynamic>?;
     final isCascaded = node[VmKeys.$PropertyAccessIsCascaded] as bool;
     final propertyName = node[VmKeys.$PropertyAccessPropertyName] as String;
     final targetResult = _scanMap(runner, target) ?? (isCascaded ? runner.getVmObject(_cascadeOperatorValue_) : null);
-    //逻辑处理
-    return VmLazyer(
-      instance: targetResult,
-      property: propertyName,
-    );
+    return VmLazyer(instance: targetResult, property: propertyName);
   }
 
   static dynamic _scanBlock(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
@@ -751,7 +708,7 @@ class VmRunnerCore {
     final thenExpression = node[VmKeys.$IfStatementThenStatement] as Map<VmKeys, dynamic>?;
     final elseExpression = node[VmKeys.$IfStatementElseStatement] as Map<VmKeys, dynamic>?;
     final conditionResult = _scanMap(runner, condition);
-    final conditionValue = VmValue.readValue(conditionResult);
+    final conditionValue = VmObject.readValue(conditionResult) as bool;
     return conditionValue ? _scanMap(runner, thenExpression) : _scanMap(runner, elseExpression);
   }
 
@@ -760,14 +717,14 @@ class VmRunnerCore {
     final members = node[VmKeys.$SwitchStatementMembers] as List<Map<VmKeys, dynamic>?>?;
     if (members == null) return null;
     final expressionResult = _scanMap(runner, expression);
-    final expressionValue = VmValue.readValue(expressionResult);
+    final expressionValue = VmObject.readValue(expressionResult);
     runner._newScope();
     runner.addVmObject(VmValue.forVariable(identifier: _switchConditionValue_, initValue: expressionValue)); //创建关键变量
     for (var item in members) {
       final itemResult = _scanMap(runner, item); // => _scanSwitchCase 或 _scanSwitchDefault
       if (itemResult is VmSignal && itemResult.isInterrupt) {
         runner._delScope();
-        return itemResult.isBreak ? VmValue.readValue(itemResult) : itemResult; //break只跳出本switch范围
+        return itemResult.isBreak ? itemResult.signalValue : itemResult; //break只跳出本switch范围
       }
     }
     runner._delScope();
@@ -779,8 +736,8 @@ class VmRunnerCore {
     final statements = node[VmKeys.$SwitchCaseStatements] as List<Map<VmKeys, dynamic>?>?;
     if (statements == null) return null;
     final expressionResult = _scanMap(runner, expression);
-    final expressionValue = VmValue.readValue(expressionResult);
-    final conditionValue = VmValue.readValue(runner.getVmObject(_switchConditionValue_)); //读取关键变量
+    final expressionValue = VmObject.readValue(expressionResult);
+    final conditionValue = VmObject.readValue(runner.getVmObject(_switchConditionValue_)); //读取关键变量
     if (expressionValue != conditionValue) return null;
     for (var item in statements) {
       final itemResult = _scanMap(runner, item);
@@ -812,7 +769,7 @@ class VmRunnerCore {
       final bodyResult = _scanMap(runner, body);
       if (bodyResult is VmSignal && bodyResult.isInterrupt) {
         runner._delScope();
-        return bodyResult.isBreak ? VmValue.readValue(bodyResult) : bodyResult; //break只跳出本for范围
+        return bodyResult.isBreak ? bodyResult.signalValue : bodyResult; //break只跳出本for范围
       }
       forLoopPartsResult = _scanMap(runner, forLoopParts); // => _scanForPartsWithDeclarations 或 _scanForEachPartsWithDeclaration 必定为bool
     }
@@ -831,27 +788,25 @@ class VmRunnerCore {
       _scanMap(runner, variables); //创建循环变量
     }
     final conditionResult = _scanMap(runner, condition);
-    return VmValue.readValue(conditionResult);
+    return VmObject.readValue(conditionResult);
   }
 
   static bool _scanForEachPartsWithDeclaration(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
     final loopVariable = node[VmKeys.$ForEachPartsWithDeclarationLoopVariable] as Map<VmKeys, dynamic>?;
     final iterable = node[VmKeys.$ForEachPartsWithDeclarationIterable] as Map<VmKeys, dynamic>?;
-    final loopVariableResult = _scanMap(runner, loopVariable) as VmHelper;
+    final loopVariableResult = _scanMap(runner, loopVariable) as VmHelper; // => _scanDeclaredIdentifier
     if (runner.inCurrentScope(_forLoopPartsPrepared_)) {
-      //更新循环变量
-      final iterableValue = VmValue.readValue(runner.getVmObject(_forLoopPartsPrepared_)) as Iterator;
+      final iterableValue = VmObject.readValue(runner.getVmObject(_forLoopPartsPrepared_)) as Iterator;
       if (!iterableValue.moveNext()) return false;
       final loopVariable = runner.getVmObject(loopVariableResult.fieldName);
-      VmValue.saveValue(loopVariable, iterableValue.current);
+      VmObject.saveValue(loopVariable, iterableValue.current); //更新循环变量
       return true;
     } else {
       final iterableResult = _scanMap(runner, iterable);
-      final iterableValue = (VmValue.readValue(iterableResult) as Iterable).iterator;
+      final iterableValue = (VmObject.readValue(iterableResult) as Iterable).iterator;
       if (!iterableValue.moveNext()) return false;
       runner.addVmObject(VmValue.forVariable(identifier: _forLoopPartsPrepared_, initValue: iterableValue)); //创建关键变量
-      //创建循环变量
-      runner.addVmObject(VmValue.forVariable(identifier: loopVariableResult.fieldName, initType: loopVariableResult.typeName, initValue: iterableValue.current));
+      runner.addVmObject(VmValue.forVariable(identifier: loopVariableResult.fieldName, initType: loopVariableResult.fieldType, initValue: iterableValue.current)); //创建循环变量
       return true;
     }
   }
@@ -860,14 +815,14 @@ class VmRunnerCore {
     final condition = node[VmKeys.$WhileStatementCondition] as Map<VmKeys, dynamic>?;
     final body = node[VmKeys.$WhileStatementBody] as Map<VmKeys, dynamic>?;
     dynamic conditionResult = _scanMap(runner, condition);
-    bool conditionValue = VmValue.readValue(conditionResult);
+    bool conditionValue = VmObject.readValue(conditionResult);
     while (conditionValue) {
       final bodyResult = _scanMap(runner, body);
       if (bodyResult is VmSignal && bodyResult.isInterrupt) {
-        return bodyResult.isBreak ? VmValue.readValue(bodyResult) : bodyResult; //break只跳出本while范围
+        return bodyResult.isBreak ? bodyResult.signalValue : bodyResult; //break只跳出本while范围
       }
       conditionResult = _scanMap(runner, condition);
-      conditionValue = VmValue.readValue(conditionResult);
+      conditionValue = VmObject.readValue(conditionResult);
     }
     return null;
   }
@@ -880,10 +835,10 @@ class VmRunnerCore {
     do {
       final bodyResult = _scanMap(runner, body);
       if (bodyResult is VmSignal && bodyResult.isInterrupt) {
-        return bodyResult.isBreak ? VmValue.readValue(bodyResult) : bodyResult; //break只跳出本while范围
+        return bodyResult.isBreak ? bodyResult.signalValue : bodyResult; //break只跳出本while范围
       }
       conditionResult = _scanMap(runner, condition);
-      conditionValue = VmValue.readValue(conditionResult);
+      conditionValue = VmObject.readValue(conditionResult);
     } while (conditionValue);
     return null;
   }
@@ -907,9 +862,9 @@ class VmRunnerCore {
     //逻辑处理
     final staticScope = runner._newScope(); //创建类静态作用域
     runner.addVmObject(VmValue.forVariable(identifier: _classDeclarationName_, initValue: name)); //添加关键变量
-    final proxyMap = <String, VmProxy<VmValue>>{}; //代理集合
-    final fieldTree = <Map<VmKeys, dynamic>>[]; //实例字段初始化树
-    final membersResult = _scanList(runner, members) as List;
+    final proxyMap = <String, VmProxy<VmValue>>{}; //字段操作代理集合
+    final fieldTree = <Map<VmKeys, dynamic>>[]; //实例字段初始化语法树列表
+    final membersResult = _scanList(runner, members) as List; //放在staticScope添加后执行，可自动填入静态成员
     for (var item in membersResult) {
       if (item is List<VmValue>) {
         // => _scanFieldDeclaration 静态变量
@@ -920,15 +875,15 @@ class VmRunnerCore {
         // => _scanFieldDeclaration 实例变量
         for (var vmhelper in item) {
           proxyMap[vmhelper.fieldName] = VmProxy(identifier: vmhelper.fieldName, isExternal: false);
-          fieldTree.add(vmhelper.fieldValue); //添加到语法树列表
+          fieldTree.add(vmhelper.fieldValue); //添加到初始化语法树列表
         }
       } else if (item is VmValue) {
-        // => _scanConstructorFieldInitializer or _scanMethodDeclaration 构造函数、静态函数
+        // => _scanConstructorDeclaration or _scanMethodDeclaration 构造函数、静态函数
         proxyMap[item.identifier] = VmProxy(identifier: item.identifier, isExternal: false, internalStaticPropertyOperator: item);
       } else if (item is VmHelper) {
         // => _scanMethodDeclaration 实例函数
         proxyMap[item.fieldName] = VmProxy(identifier: item.fieldName, isExternal: false);
-        fieldTree.add(item.fieldValue); //添加到语法树列表
+        fieldTree.add(item.fieldValue); //添加到初始化语法树列表
       } else {
         throw ('ClassDeclaration unsupport member: ${item.runtimeType}');
       }
@@ -940,7 +895,7 @@ class VmRunnerCore {
       identifier: name,
       isExternal: false,
       internalProxyMap: proxyMap,
-      internalStaticPropertyMap: staticScope,
+      internalStaticPropertyMap: staticScope.map((key, value) => MapEntry(key, value as VmValue)),
       internalInstanceFieldTree: fieldTree,
     );
     VmClass.addClass(vmclassResult); //添加到底层库
@@ -948,7 +903,7 @@ class VmRunnerCore {
     return vmclassResult;
   }
 
-  static dynamic _scanFieldDeclaration(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
+  static List<VmObject> _scanFieldDeclaration(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
     final isStatic = node[VmKeys.$FieldDeclarationIsStatic] as bool;
     final fields = node[VmKeys.$FieldDeclarationFields] as Map<VmKeys, dynamic>?;
     if (isStatic || runner.inCurrentScope(_classConstructorSelf_)) {
@@ -972,17 +927,17 @@ class VmRunnerCore {
     final parametersResult = _scanMap(runner, parameters) as List?; // => _scanFormalParameterList or null
     final listArguments = <VmHelper>[];
     final nameArguments = <VmHelper>[];
-    VmValue.groupDeclarationParameters(parametersResult, listArguments, nameArguments);
-    //创建函数
+    VmObject.groupDeclarationParameters(parametersResult, listArguments, nameArguments);
     final vmfunctionResult = VmValue.forFunction(
-      identifier: name ?? VmValue.readValue(runner.getVmObject(_classDeclarationName_)),
-      methodIsStatic: true,
-      methodListArguments: listArguments,
-      methodNameArguments: nameArguments,
-      methodInitTree: initializers ?? const [],
-      methodBodyTree: body ?? const {},
-      methodStaticListener: runner._staticListener,
-      methodInstanceListener: runner._instanceListener,
+      identifier: name ?? VmObject.readValue(runner.getVmObject(_classDeclarationName_)),
+      isIniter: name == null || name == '_', //原始构造函数，factory方法也会进入到这个分支，所以用name来判断保证只有一个原始构造函数
+      isStatic: true,
+      listArguments: listArguments,
+      nameArguments: nameArguments,
+      initTree: initializers,
+      bodyTree: body,
+      staticListener: runner._staticListener,
+      instanceListener: runner._instanceListener,
     );
     runner.addVmObject(vmfunctionResult);
     return vmfunctionResult;
@@ -992,14 +947,14 @@ class VmRunnerCore {
     //属性读取
     final fieldName = node[VmKeys.$ConstructorFieldInitializerFieldName] as String;
     final expression = node[VmKeys.$ConstructorFieldInitializerExpression] as Map<VmKeys, dynamic>?;
-    final expressionResult = _scanMap(runner, expression);
     //逻辑处理
+    final expressionResult = _scanMap(runner, expression);
     final targetInstance = runner.getVmObject(_classConstructorSelf_) as VmValue;
-    targetInstance.getField(fieldName).setValue(expressionResult);
+    targetInstance.getProperty(fieldName).setValue(expressionResult);
     return targetInstance;
   }
 
-  static dynamic _scanMethodDeclaration(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
+  static VmObject _scanMethodDeclaration(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
     //属性读取
     final isStatic = node[VmKeys.$MethodDeclarationIsStatic] as bool;
     final isGetter = node[VmKeys.$MethodDeclarationIsGetter] as bool;
@@ -1012,19 +967,18 @@ class VmRunnerCore {
     final parametersResult = _scanMap(runner, parameters) as List?; // => _scanFormalParameterList or null
     final listArguments = <VmHelper>[];
     final nameArguments = <VmHelper>[];
-    VmValue.groupDeclarationParameters(parametersResult, listArguments, nameArguments);
-    //创建函数
+    VmObject.groupDeclarationParameters(parametersResult, listArguments, nameArguments);
     if (isStatic || runner.inCurrentScope(_classConstructorSelf_)) {
       final vmfunctionResult = VmValue.forFunction(
         identifier: nameResult,
-        methodIsStatic: isStatic,
-        methodIsGetter: isGetter,
-        methodIsSetter: isSetter,
-        methodListArguments: listArguments,
-        methodNameArguments: nameArguments,
-        methodBodyTree: body ?? const {},
-        methodStaticListener: runner._staticListener,
-        methodInstanceListener: runner._instanceListener,
+        isStatic: isStatic,
+        isGetter: isGetter,
+        isSetter: isSetter,
+        listArguments: listArguments,
+        nameArguments: nameArguments,
+        bodyTree: body,
+        staticListener: runner._staticListener,
+        instanceListener: runner._instanceListener,
       );
       runner.addVmObject(vmfunctionResult);
       return vmfunctionResult;

@@ -67,19 +67,10 @@ enum VmKeys {
   ///对应[NamedType.name]
   $NamedTypeName,
 
-  ///对应[NamedType.question]
-  $NamedTypeQuestion,
-
   /** ******** GenericFunctionType ******** **/
 
   ///对应[GenericFunctionType]
   $GenericFunctionType,
-
-  ///对应[GenericFunctionType].name
-  $GenericFunctionTypeName,
-
-  ///对应[GenericFunctionType.question]
-  $GenericFunctionTypeQuestion,
 
   /** ******** SimpleIdentifier ******** **/
 

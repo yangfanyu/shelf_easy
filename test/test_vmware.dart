@@ -55,8 +55,8 @@ void testFromFile() {
     //  print(route);
   });
 
-  print(encoder.convert(DbQueryField.toBaseType(parseResult)));
-  print(encoder.convert(routeList));
+  // print(encoder.convert(DbQueryField.toBaseType(parseResult)));
+  // print(encoder.convert(routeList));
 
   print('\n');
   print(VmKeys.values.length);
@@ -66,5 +66,6 @@ void testFromFile() {
   runner.initLibrary();
   runner.initRuntime(parseResult);
   print('\n');
-  print(encoder.convert(runner));
+  // print(encoder.convert(runner));
+  print(encoder.convert(runner.toSimpleJson()));
 }

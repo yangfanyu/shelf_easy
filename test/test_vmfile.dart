@@ -144,16 +144,16 @@ final indexeVal2 = indexeVal1[0] + indexeVal1[1] + [4, 5, 6][2]; //9
 const interpolation1 = 'Hello';
 const interpolation2 = 'world';
 const interpolationA = 18;
-const interpolation3 = '$interpolation1 $interpolation2, I am $interpolationA years old. ${interpolation2.length + 1} hei.';
+const interpolation3 = '$interpolation1 $interpolation2, I am $interpolationA years old. ${interpolation2.length + 1} hei.'; // Hello world, I am 18 years old. 6 hei.
 
 ///
 /// 属性与方法调用测试区
 ///
 
 final methodInvocationSymbol = Symbol('aaa');
-final methodInvocationList = List.from([4, 5, 6]);
-final methodInvocationSet1 = Set.from({7, 8, 9, 10});
-final methodInvocationMap1 = Map.of({1: 'a', 2: 'b', 3: 'c'});
+final methodInvocationList = List.from([4, 5, 6]); // after is => [92, 6]
+final methodInvocationSet1 = Set.from({7, 8, 9, 10}); // after is => {7, 9, 10}
+final methodInvocationMap1 = Map.of({1: 'a', 2: 'b', 3: 'c'}); // after is => {2: b, 3: c}
 final methodInvocationRes1 = methodInvocationList.removeAt(1); //5
 final methodInvocationRes2 = methodInvocationSet1.remove(8); //true
 final methodInvocationRes3 = methodInvocationList.length; //2
@@ -164,11 +164,12 @@ final methodInvocationRes7 = methodInvocationList.first += List.from([4, 5, 6]).
 final methodInvocationRes8 = Duration(days: 0, hours: 1, minutes: 2, seconds: 3); //Duration 1:02:03.000000
 final methodInvocationRes9 = DateTime(2023, 08, 01); //DateTime 2023-08-01 00:00:00.000
 final methodInvocationResA = print;
-final methodInvocationResB = print.runtimeType; //Type (Object?) => void
+final methodInvocationResB = print.runtimeType; // (Object?) => void
 final methodInvocationResC = Set.new.toString().length; //56
-final methodInvocationResD = Set;
+final methodInvocationResD = Set; //Set
 final methodInvocationResE = methodInvocationResC.toString();
-final methodInvocationResF = methodInvocationResD.runtimeType;
+final methodInvocationResF = methodInvocationResD.runtimeType; //VmType
+final methodInvocationResG = methodInvocationMap1.remove(1); //a
 
 ///
 /// 函数定义与语句测试区
@@ -392,7 +393,7 @@ class User {
       ..[2] -= 100;
     _haha[3] = 999;
     final str = 'id=$id, name=$name, sex=$sex, age=$age, desc=$desc, info=$info, _haha=$_haha';
-    print(str);
+    print('$sexMale $str');
     return str;
   }
 
@@ -408,10 +409,18 @@ class User {
 final userInstance0 = User(1, 2, name: 'Jack', sex: 3, age: 4);
 final userInstance1 = User(10, 20, name: 'Tom', sex: User.getFemaleSexValue);
 final userInstance2 = userInstance0;
-final userInstance4 = userInstance2.printInfo();
-final userInstance5 = User(30, 40, name: 'Rose').printInfo();
-final userInstance6 = User.fromTest().printInfo();
-final userInstance7 = User(50, 60, name: 'Cascade', sex: 3, age: 80)
+final userInstance3 = userInstance2.printInfo();
+final userInstance4 = User(30, 40, name: 'Rose').printInfo();
+final userInstance5 = User.fromTest().printInfo();
+final userInstance6 = User(50, 60, name: 'Cascade', sex: 3, age: 80)
   ..desc = 'Hello world!'
   .._info = 'I am Dart'
   ..printInfo();
+dynamic userInstance7;
+var userInstance8 = userInstance7 ??= userInstance0;
+dynamic userInstance9 = userInstance8;
+final userInstance10 = (userInstance9 as User).printInfo();
+final userInstance11 = [userInstance0, userInstance1];
+final userInstance12 = {userInstance0, userInstance1};
+final userInstance13 = {0: userInstance0, 1: userInstance1};
+final userInstance14 = userInstance11.map((e) => e.printInfo()).toList();

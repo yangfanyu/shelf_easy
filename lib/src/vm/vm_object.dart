@@ -1,10 +1,10 @@
 import 'vm_keys.dart';
 
 ///
-///虚拟机数据类型
+///包装类的类型
 ///
 class VmType extends Type {
-  ///虚拟机数据类型名称
+  ///包装类的类型名称
   final String name;
 
   VmType({required this.name});
@@ -24,7 +24,75 @@ class VmType extends Type {
 }
 
 ///
-///虚拟机抽象类
+///数据值的元类型
+///
+enum VmMetaType {
+  ///外部普通类型的对象
+  externalObject,
+
+  ///外部动态类型的对象
+  externalSmarts,
+
+  ///内部定义方法的对象
+  internalMethod,
+
+  ///内部定义类型的对象
+  internalObject,
+
+  ///内部定义对象的别名，即[internalMethod]与[internalObject]元类型的数据值的别名
+  internalByname,
+}
+
+///
+///数据值的元数据
+///
+class VmMetaData {
+  ///作为内部定义方法时声明为: constructor，排除 factory 方法
+  final bool isIniter;
+
+  ///作为内部定义方法时声明为: static，包括 factory 方法
+  final bool isStatic;
+
+  ///作为内部定义方法时声明为: get
+  final bool isGetter;
+
+  ///作为内部定义方法时声明为: set
+  final bool isSetter;
+
+  ///作为内部定义方法时的列表参数
+  final List<VmHelper> listArguments;
+
+  ///作为内部定义方法时的命名参数
+  final List<VmHelper> nameArguments;
+
+  ///作为内部定义方法时的初始化语法树，仅 非factory的constructor 有此内容
+  final List<Map<VmKeys, dynamic>?> initTree;
+
+  ///作为内部定义方法时的函数体语法树
+  final Map<VmKeys, dynamic> bodyTree;
+
+  ///作为内部定义类的静态方法时的回调监听
+  final dynamic Function(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmClass classScope, List<Map<VmKeys, dynamic>>? instanceFields, VmValue method)? staticListener;
+
+  ///作为内部定义类的实例方法时的回调监听
+  final dynamic Function(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmClass? classScope, VmValue? instanceScope, VmValue method)? instanceListener;
+
+  const VmMetaData({
+    this.isIniter = false,
+    this.isStatic = false,
+    this.isGetter = false,
+    this.isSetter = false,
+    this.listArguments = const [],
+    this.nameArguments = const [],
+    this.initTree = const [],
+    this.bodyTree = const {},
+    this.staticListener,
+    this.instanceListener,
+  });
+}
+
+///
+///运行时抽象类
 ///
 abstract class VmObject {
   ///对象的标识符
@@ -32,13 +100,16 @@ abstract class VmObject {
 
   VmObject({required this.identifier});
 
-  ///读取对象的包装类
+  ///读取对象的对应包装类
   VmClass getClass();
 
-  ///读取对象的原生值
+  ///读取对象的逻辑处理值
+  dynamic getLogic();
+
+  ///读取对象的原生数据值
   dynamic getValue();
 
-  ///设置对象的原生值
+  ///设置对象的原生数据值 或 逻辑处理值
   dynamic setValue(dynamic value);
 
   ///转换为易读的字符串描述
@@ -47,14 +118,102 @@ abstract class VmObject {
 
   ///转换为易读的JSON对象
   Map<String, dynamic> toJson();
+
+  ///读取[target]的对应包装类
+  static VmClass readClass(dynamic target, {String? type}) {
+    if (type == null) {
+      return target is VmObject ? target.getClass() : VmClass.getClassByInstance(target);
+    } else {
+      return VmClass.getClassByTypeName(type);
+    }
+  }
+
+  ///读取[target]的逻辑处理值
+  static dynamic readLogic(dynamic target, {String? type}) {
+    final value = target is VmObject ? target.getLogic() : target;
+    switch (type) {
+      case 'double':
+        return value is int ? value.toDouble() : value as double?; //使用int值初始化double时，initValue的运行时类型为int，所以进行了转换
+      case 'Set':
+        return value is Map ? value.values.toSet() : value as Set?; //扫描器获取初始值时，无法识别无类型声明的空'{}'类型，这时默认为Map类型，需要再次进行类型转换
+      default:
+        return value;
+    }
+  }
+
+  ///读取[target]的原生数据值
+  static dynamic readValue(dynamic target, {String? type}) {
+    final value = target is VmObject ? target.getValue() : target;
+    switch (type) {
+      case 'double':
+        return value is int ? value.toDouble() : value as double?; //使用int值初始化double时，initValue的运行时类型为int，所以进行了转换
+      case 'Set':
+        return value is Map ? value.values.toSet() : value as Set?; //扫描器获取初始值时，无法识别无类型声明的空'{}'类型，这时默认为Map类型，需要再次进行类型转换
+      default:
+        return value;
+    }
+  }
+
+  ///保存[target]的原生数据值 或 逻辑处理值
+  static dynamic saveValue(dynamic target, dynamic value) {
+    if (target is VmObject) {
+      return target.setValue(value);
+    } else {
+      throw ('Unsupport saveValue operator for type: ${target.runtimeType}');
+    }
+  }
+
+  ///读取[target]的原生数据值，使用递归深度转换。
+  static dynamic deepValue(dynamic target) {
+    if (target is List) {
+      return target.map((e) => deepValue(e)).toList();
+    } else if (target is Set) {
+      return target.map((e) => deepValue(e)).toSet();
+    } else if (target is Map) {
+      return target.map((key, value) => MapEntry(deepValue(key), deepValue(value)));
+    } else if (target is VmObject) {
+      return target.getValue();
+    } else {
+      return target;
+    }
+  }
+
+  ///对函数声明时的参数进行分组
+  static void groupDeclarationParameters(List<dynamic>? fromParameters, List<VmHelper> toListArguments, List<VmHelper> toNameArguments) {
+    if (fromParameters != null) {
+      for (VmHelper item in fromParameters) {
+        if (item.isNamedField) {
+          toNameArguments.add(item);
+        } else {
+          toListArguments.add(item);
+        }
+      }
+    }
+  }
+
+  ///对函数调用时的参数进行分组
+  static void groupInvocationParameters(List<dynamic>? fromParameters, List<dynamic> toListArguments, Map<Symbol, dynamic> toNameArguments) {
+    if (fromParameters != null) {
+      for (var item in fromParameters) {
+        if (item is VmHelper) {
+          toNameArguments[Symbol(item.fieldName)] = item;
+        } else {
+          toListArguments.add(item);
+        }
+      }
+    }
+  }
 }
 
 ///
-///虚拟机类型包装类
+///运行时类型包装类
 ///
 class VmClass<T> extends VmObject {
   ///是否为外部导入类型
   final bool isExternal;
+
+  ///该包装类的类型实例
+  final VmType vmwareType;
 
   ///外部导入类型的字段代理集合
   final Map<String, VmProxy<T>>? externalProxyMap;
@@ -63,7 +222,7 @@ class VmClass<T> extends VmObject {
   final Map<String, VmProxy<T>>? internalProxyMap;
 
   ///内部定义类型的静态字段的已初始化集合，在相关调用时会将该集合放到作用域栈中
-  final Map<String, VmObject>? internalStaticPropertyMap;
+  final Map<String, VmValue>? internalStaticPropertyMap;
 
   ///内部定义类型的实例字段的初始化树列表，初始化树采用列表可保证初始化顺序不变
   final List<Map<VmKeys, dynamic>>? internalInstanceFieldTree;
@@ -75,18 +234,25 @@ class VmClass<T> extends VmObject {
     this.internalProxyMap,
     this.internalStaticPropertyMap,
     this.internalInstanceFieldTree,
-  }) {
-    //给代理绑定包装类型
+  }) : vmwareType = VmType(name: identifier) {
+    //给代理集合绑定包装类型
     externalProxyMap?.forEach((key, value) => value.bindVmClass(this));
     internalProxyMap?.forEach((key, value) => value.bindVmClass(this));
+    //给类静态成员绑定作用域
+    internalStaticPropertyMap?.forEach((key, value) => value.bindStaticScope(this));
   }
 
   ///判断实例是否为该包装类型的实例
   bool isThisType(dynamic instance) {
-    if (isExternal) {
-      return VmValue.readValue(instance) is T; //如果为外部导入的类型，读取实例的值进行判断
+    final logic = VmObject.readLogic(instance); //先读取逻辑值进行判断
+    if (logic is VmValue) {
+      return logic._valueType == this; //最底层为 internalMethod 或 internalObject 的对象的逻辑值必然为 VmValue
     } else {
-      return instance is VmValue && instance._vmclass.identifier == identifier; //如果为内部定义的类型，使用实例的类型来判断
+      if (isExternal) {
+        return VmObject.readValue(logic) is T; //外部类型需要读取原生值进行判断
+      } else {
+        return false; //内部类型读取出来的逻辑值必定为 VmValue
+      }
     }
   }
 
@@ -111,10 +277,13 @@ class VmClass<T> extends VmObject {
   }
 
   @override
-  VmClass getClass() => VmClass.getClassByInstance(getValue());
+  VmClass getClass() => VmObject.readClass(vmwareType);
 
   @override
-  dynamic getValue() => VmType(name: identifier);
+  dynamic getLogic() => this; //注意：此处返回自身，用于逻辑调用
+
+  @override
+  dynamic getValue() => vmwareType;
 
   @override
   dynamic setValue(value) => throw UnimplementedError();
@@ -128,6 +297,7 @@ class VmClass<T> extends VmObject {
       'toString': toString(),
       'identifier': identifier,
       'isExternal': isExternal,
+      'vmwareType': vmwareType.toString(),
     };
     if (externalProxyMap != null) map['externalProxyMap'] = externalProxyMap?.length;
     if (internalProxyMap != null) map['internalProxyMap'] = internalProxyMap;
@@ -135,6 +305,12 @@ class VmClass<T> extends VmObject {
     if (internalInstanceFieldTree != null) map['internalInstanceFieldTree'] = internalInstanceFieldTree?.map((e) => e.keys.map((e) => e.toString()).toList()).toList();
     return map;
   }
+
+  ///函数的类型名称
+  static const functionTypeName = 'Function';
+
+  ///动态的类型名称
+  static const dynamicTypeNames = ['Object', 'dynamic'];
 
   ///包装类型集合
   static final _libraryMap = <String, VmClass>{};
@@ -158,46 +334,23 @@ class VmClass<T> extends VmObject {
 
   ///获取任意实例[instance]对应的[VmClass]包装类型
   static VmClass getClassByInstance(dynamic instance) {
-    final typeName = instance.runtimeType.toString();
+    //先读取逻辑值进行判断
+    final logic = VmObject.readLogic(instance);
+    if (logic is VmValue) return logic._valueType;
+    //再使用类型名进行查找
+    final typeName = logic.runtimeType.toString();
     final vmclass = _libraryMap[typeName];
     if (vmclass != null) return vmclass;
+    //最后使用实例进行匹配
     for (var item in _libraryList) {
-      if (item.isThisType(instance)) return item;
+      if (item.isThisType(logic)) return item;
     }
     throw ('Not found VmClass: $typeName');
-  }
-
-  ///执行任意实例[instance]的[functionName]函数
-  static dynamic runFunction(dynamic instance, String functionName, List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments) {
-    if (instance is VmProxy && instance.identifier == functionName) {
-      return instance.runFunction(instance, positionalArguments, namedArguments); //执行外部导入的顶级函数
-    }
-    if (instance is VmValue && instance.identifier == functionName && instance.isMethod) {
-      if (instance.methodIsStatic) {
-        final vmclass = VmClass.getClassByTypeName(functionName);
-        return instance.runAsStaticFunction(positionalArguments, namedArguments, vmclass, vmclass.internalInstanceFieldTree); //执行内部定义的构造函数
-      }
-      return instance.runAsFunction(positionalArguments, namedArguments); //执行内部定义的顶级函数
-    }
-    final vmclass = instance is VmClass ? instance : VmValue.readClass(instance);
-    return vmclass.getProxy(functionName, setter: false).runFunction(instance, positionalArguments, namedArguments);
-  }
-
-  ///读取任意实例[instance]的[propertyName]属性
-  static dynamic getProperty(dynamic instance, String propertyName) {
-    final vmclass = instance is VmClass ? instance : VmValue.readClass(instance);
-    return vmclass.getProxy(propertyName, setter: false).getProperty(instance);
-  }
-
-  ///设置任意实例[instance]的[propertyName]属性
-  static dynamic setProperty(dynamic instance, String propertyName, dynamic propertyValue) {
-    final vmclass = instance is VmClass ? instance : VmValue.readClass(instance);
-    return vmclass.getProxy(propertyName, setter: true).setProperty(instance, propertyValue);
   }
 }
 
 ///
-///虚拟机字段代理类
+///运行时字段代理类
 ///
 class VmProxy<T> extends VmObject {
   ///是否为外部导入类型
@@ -247,29 +400,25 @@ class VmProxy<T> extends VmObject {
     if (instance == this || instance == _vmclass) {
       //执行静态函数
       if (isExternal) {
-        final listArgumentsNative = positionalArguments?.map((e) => VmValue.readValue(e)).toList();
-        final nameArgumentsNative = namedArguments?.map((key, value) => MapEntry(key, VmValue.readValue(value)));
+        final listArgumentsNative = positionalArguments?.map((e) => VmObject.readValue(e)).toList();
+        final nameArgumentsNative = namedArguments?.map((key, value) => MapEntry(key, VmObject.readValue(value)));
         if (externalStaticFunctionCaller != null) return Function.apply(externalStaticFunctionCaller!, listArgumentsNative, nameArgumentsNative);
         if (externalStaticPropertyReader != null) return Function.apply(externalStaticPropertyReader!(), listArgumentsNative, nameArgumentsNative);
         throw ('Not found externalStaticFunctionCaller and externalStaticPropertyReader: ${_vmclass.identifier}.$identifier');
       } else {
-        final target = internalStaticPropertyOperator!;
-        if (target.isMethod) return target.runAsStaticFunction(positionalArguments, namedArguments, _vmclass, target.identifier == _vmclass.identifier ? _vmclass.internalInstanceFieldTree : null); //静态普通函数
-        return target.runAsFunction(positionalArguments, namedArguments); //静态变量函数
+        return (internalStaticPropertyOperator as VmValue).runFunction(positionalArguments, namedArguments);
       }
     } else {
       //执行实例函数
       if (isExternal) {
-        final instanceNative = VmValue.readValue(instance);
-        final listArgumentsNative = positionalArguments?.map((e) => VmValue.readValue(e)).toList();
-        final nameArgumentsNative = namedArguments?.map((key, value) => MapEntry(key, VmValue.readValue(value)));
+        final instanceNative = VmObject.readValue(instance);
+        final listArgumentsNative = positionalArguments?.map((e) => VmObject.readValue(e)).toList();
+        final nameArgumentsNative = namedArguments?.map((key, value) => MapEntry(key, VmObject.readValue(value)));
         if (externalInstanceFunctionCaller != null) return Function.apply(externalInstanceFunctionCaller!, [instanceNative, ...(listArgumentsNative ?? const [])], nameArgumentsNative);
         if (externalInstancePropertyReader != null) return Function.apply(externalInstancePropertyReader!(instanceNative), listArgumentsNative, nameArgumentsNative);
         throw ('Not found externalInstanceFunctionCaller and externalInstancePropertyReader: ${_vmclass.identifier}.$identifier');
       } else {
-        final target = (instance as VmValue).getField(identifier);
-        if (target.isMethod) return target.runAsInstanceFunction(positionalArguments, namedArguments); //实例普通函数
-        return target.runAsFunction(positionalArguments, namedArguments); //实例变量函数
+        return (VmObject.readLogic(instance) as VmValue).getProperty(identifier).runFunction(positionalArguments, namedArguments);
       }
     }
   }
@@ -282,20 +431,16 @@ class VmProxy<T> extends VmObject {
         if (externalStaticPropertyReader != null) return externalStaticPropertyReader!();
         throw ('Not found externalStaticPropertyReader: ${_vmclass.identifier}.$identifier');
       } else {
-        final target = internalStaticPropertyOperator!;
-        if (target.isMethod && target.methodIsGetter) return target.runAsStaticFunction(null, null, _vmclass, null); //静态get函数
-        return target.getValue();
+        return (internalStaticPropertyOperator as VmValue).getValue();
       }
     } else {
       //读取实例属性
       if (isExternal) {
-        final instanceNative = VmValue.readValue(instance);
+        final instanceNative = VmObject.readValue(instance);
         if (externalInstancePropertyReader != null) return externalInstancePropertyReader!(instanceNative);
         throw ('Not found externalInstancePropertyReader: ${_vmclass.identifier}.$identifier');
       } else {
-        final target = (instance as VmValue).getField(identifier);
-        if (target.isMethod && target.methodIsGetter) return target.runAsInstanceFunction(null, null); //实例get函数
-        return target.getValue();
+        return (VmObject.readLogic(instance) as VmValue).getProperty(identifier).getValue();
       }
     }
   }
@@ -305,37 +450,36 @@ class VmProxy<T> extends VmObject {
     if (instance == this || instance == _vmclass) {
       //写入静态属性
       if (isExternal) {
-        final valueNative = VmValue.readValue(value);
+        final valueNative = VmObject.readValue(value);
         if (externalStaticPropertyWriter != null) return externalStaticPropertyWriter!(valueNative);
         throw ('Not found externalStaticPropertyWriter: ${_vmclass.identifier}.$identifier');
       } else {
-        final target = internalStaticPropertyOperator!;
-        if (target.isMethod && target.methodIsSetter) return target.runAsStaticFunction([value], null, _vmclass, null); //静态set函数
-        return target.setValue(value);
+        return (internalStaticPropertyOperator as VmValue).setValue(value);
       }
     } else {
       //写入实例属性
       if (isExternal) {
-        final instanceNative = VmValue.readValue(instance);
-        final valueNative = VmValue.readValue(value);
+        final instanceNative = VmObject.readValue(instance);
+        final valueNative = VmObject.readValue(value);
         if (externalInstancePropertyWriter != null) return externalInstancePropertyWriter!(instanceNative, valueNative);
         throw ('Not found externalInstancePropertyWriter: ${_vmclass.identifier}.$identifier');
       } else {
-        final target = (instance as VmValue).getField(identifier);
-        if (target.isMethod && target.methodIsSetter) return target.runAsInstanceFunction([value], null); //实例set函数
-        return target.setValue(value);
+        return (VmObject.readLogic(instance) as VmValue).getProperty(identifier).setValue(value);
       }
     }
   }
 
   @override
-  VmClass getClass() => VmClass.getClassByInstance(getValue());
+  VmClass getClass() => VmObject.readClass(getProperty(this));
+
+  @override
+  dynamic getLogic() => this; //注意：此处返回自身，用于逻辑调用
 
   @override
   dynamic getValue() => getProperty(this);
 
   @override
-  dynamic setValue(value) => setProperty(this, value);
+  dynamic setValue(value) => throw UnimplementedError();
 
   @override
   String toString() => 'VmProxy<$T> ===> $identifier';
@@ -359,193 +503,327 @@ class VmProxy<T> extends VmObject {
 }
 
 ///
-///虚拟机实例值包装
+///运行时实例包装类
 ///
 class VmValue extends VmObject {
-  ///是否为内部定义方法
-  final bool isMethod;
+  ///元类型
+  final VmMetaType metaType;
 
-  ///不是内部定义方法时的初始类型
-  final String? initType;
-
-  ///不是内部定义方法时的初始化值
-  final dynamic initValue;
-
-  ///作为内部定义方法时声明为static
-  final bool methodIsStatic;
-
-  ///作为内部定义方法时声明为get
-  final bool methodIsGetter;
-
-  ///作为内部定义方法时声明为set
-  final bool methodIsSetter;
-
-  ///作为内部定义方法时的列表参数
-  final List<VmHelper> methodListArguments;
-
-  ///作为内部定义方法时的命名参数
-  final List<VmHelper> methodNameArguments;
-
-  ///作为内部定义方法时的初始化语法树（仅原始构造函数有此内容）
-  final List<Map<VmKeys, dynamic>?> methodInitTree;
-
-  ///作为内部定义方法时的函数体语法树
-  final Map<VmKeys, dynamic> methodBodyTree;
-
-  ///作为内部定义类的静态方法时的回调监听
-  final dynamic Function(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmClass classScope, List<Map<VmKeys, dynamic>>? instanceFields, VmValue method)? methodStaticListener;
-
-  ///作为内部定义类的实例方法时的回调监听
-  final dynamic Function(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmClass? classScope, VmValue? instanceScope, VmValue method)? methodInstanceListener;
+  ///元数据
+  final VmMetaData metaData;
 
   ///值类型
-  final VmClass _vmclass;
+  VmClass _valueType;
 
-  ///父实例
-  VmValue? _father;
+  ///值数据
+  dynamic _valueData;
 
-  ///通用值
-  dynamic _value;
+  ///类静态作用域
+  VmClass? _staticScope;
 
-  ///作为内部定义类型的实例的字段集合
-  Map<String, VmValue> get internalInstancePropertyMap => _value;
+  ///父实例作用域
+  VmValue? _instanceScope;
 
   VmValue._({
     required super.identifier,
-    this.isMethod = false,
-    this.initType,
-    this.initValue,
-    this.methodIsStatic = false,
-    this.methodIsGetter = false,
-    this.methodIsSetter = false,
-    this.methodListArguments = const [],
-    this.methodNameArguments = const [],
-    this.methodInitTree = const [],
-    this.methodBodyTree = const {},
-    this.methodStaticListener,
-    this.methodInstanceListener,
-  }) : _vmclass = isMethod ? VmClass.getClassByTypeName('Function') : _formatClass(initType, initValue) {
-    if (isMethod && (methodStaticListener == null || methodInstanceListener == null)) throw ('Method callback listener cannot be null: $identifier');
-    _value = isMethod ? _formatTemplate(this) : _formatValue(initType, initValue);
+    required this.metaType,
+    required this.metaData,
+    required VmClass valueType,
+    required dynamic valueData,
+  })  : _valueType = valueType,
+        _valueData = valueData {
+    if (metaType == VmMetaType.internalMethod) {
+      switch (metaData.listArguments.length) {
+        case 0:
+          _valueData = () => runFunction([], null);
+          break;
+        case 1:
+          _valueData = (a) => runFunction([a], null);
+          break;
+        case 2:
+          _valueData = (a, b) => runFunction([a, b], null);
+          break;
+        case 3:
+          _valueData = (a, b, c) => runFunction([a, b, c], null);
+          break;
+        case 4:
+          _valueData = (a, b, c, d) => runFunction([a, b, c, d], null);
+          break;
+        case 5:
+          _valueData = (a, b, c, d, e) => runFunction([a, b, c, d, e], null);
+          break;
+        case 6:
+          _valueData = (a, b, c, d, e, f) => runFunction([a, b, c, d, e, f], null);
+          break;
+        case 7:
+          _valueData = (a, b, c, d, e, f, g) => runFunction([a, b, c, d, e, f, g], null);
+          break;
+        case 8:
+          _valueData = (a, b, c, d, e, f, g, h) => runFunction([a, b, c, d, e, f, g, h], null);
+          break;
+        case 9:
+          _valueData = (a, b, c, d, e, f, g, h, i) => runFunction([a, b, c, d, e, f, g, h, i], null);
+          break;
+        default:
+          throw ('Unsupport template: $identifier ${metaData.listArguments.length}');
+      }
+    }
   }
 
   ///创建变量值，如果[initValue]是[VmValue]实例，则复制除[identifier]之外的属性
   factory VmValue.forVariable({
-    String identifier = '___anonymousVmValue___',
+    String identifier = '___anonymousVmVariable___',
     String? initType,
     dynamic initValue,
   }) {
-    if (initValue is VmValue) {
+    final realLogic = VmObject.readLogic(initValue, type: initType);
+    if (realLogic is VmValue) {
       return VmValue._(
         identifier: identifier,
-        isMethod: initValue.isMethod,
-        initType: initValue._vmclass.identifier,
-        initValue: initValue,
-        methodIsStatic: initValue.methodIsStatic,
-        methodIsGetter: initValue.methodIsGetter,
-        methodIsSetter: initValue.methodIsSetter,
-        methodListArguments: initValue.methodListArguments,
-        methodNameArguments: initValue.methodNameArguments,
-        methodInitTree: initValue.methodInitTree,
-        methodBodyTree: initValue.methodBodyTree,
-        methodStaticListener: initValue.methodStaticListener,
-        methodInstanceListener: initValue.methodInstanceListener,
-      )..bindFatherOfChildren();
+        metaType: VmClass.dynamicTypeNames.contains(initType) ? VmMetaType.externalSmarts : VmMetaType.internalByname,
+        metaData: const VmMetaData(),
+        valueType: realLogic._valueType,
+        valueData: realLogic,
+      );
     } else {
+      final realClass = VmObject.readClass(initValue, type: initType);
+      final realValue = VmObject.readValue(initValue, type: initType);
       return VmValue._(
         identifier: identifier,
-        initType: initType,
-        initValue: initValue,
-      )..bindFatherOfChildren();
+        metaType: VmClass.dynamicTypeNames.contains(realClass.identifier) ? VmMetaType.externalSmarts : (realClass.isExternal ? VmMetaType.externalObject : VmMetaType.internalObject),
+        metaData: const VmMetaData(),
+        valueType: realClass,
+        valueData: realValue,
+      );
     }
   }
 
+  ///创建函数值
   factory VmValue.forFunction({
-    String identifier = '___anonymousVmValue___',
-    bool methodIsStatic = false,
-    bool methodIsGetter = false,
-    bool methodIsSetter = false,
-    List<VmHelper> methodListArguments = const [],
-    List<VmHelper> methodNameArguments = const [],
-    List<Map<VmKeys, dynamic>?> methodInitTree = const [],
-    Map<VmKeys, dynamic> methodBodyTree = const {},
-    dynamic Function(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmClass classScope, List<Map<VmKeys, dynamic>>? instanceFields, VmValue method)? methodStaticListener,
-    dynamic Function(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmClass? classScope, VmValue? instanceScope, VmValue method)? methodInstanceListener,
+    String identifier = '___anonymousVmFunction___',
+    bool? isIniter,
+    bool? isStatic,
+    bool? isGetter,
+    bool? isSetter,
+    List<VmHelper>? listArguments,
+    List<VmHelper>? nameArguments,
+    List<Map<VmKeys, dynamic>?>? initTree,
+    Map<VmKeys, dynamic>? bodyTree,
+    required dynamic Function(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmClass staticScope, List<Map<VmKeys, dynamic>>? instanceFields, VmValue method) staticListener,
+    required dynamic Function(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmClass? staticScope, VmValue? instanceScope, VmValue method) instanceListener,
   }) {
     return VmValue._(
       identifier: identifier,
-      isMethod: true,
-      methodIsStatic: methodIsStatic,
-      methodIsGetter: methodIsGetter,
-      methodIsSetter: methodIsSetter,
-      methodListArguments: methodListArguments,
-      methodNameArguments: methodNameArguments,
-      methodInitTree: methodInitTree,
-      methodBodyTree: methodBodyTree,
-      methodStaticListener: methodStaticListener,
-      methodInstanceListener: methodInstanceListener,
-    )..bindFatherOfChildren();
+      metaType: VmMetaType.internalMethod,
+      metaData: VmMetaData(
+        isIniter: isIniter ?? false,
+        isStatic: isStatic ?? false,
+        isGetter: isGetter ?? false,
+        isSetter: isSetter ?? false,
+        listArguments: listArguments ?? const [],
+        nameArguments: nameArguments ?? const [],
+        initTree: initTree ?? const [],
+        bodyTree: bodyTree ?? const {},
+        staticListener: staticListener,
+        instanceListener: instanceListener,
+      ),
+      valueType: VmClass.getClassByTypeName(VmClass.functionTypeName),
+      valueData: null,
+    );
   }
 
-  ///作为函数来直接执行
-  dynamic runAsFunction(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments) {
-    if (isMethod) {
-      return methodInstanceListener!(positionalArguments, namedArguments, _father?._vmclass, _father, this);
+  ///作为内部定义类型的实例的字段集合
+  Map<String, VmValue> get internalInstancePropertyMap {
+    final target = _valueData;
+    if (target is VmValue) {
+      return target.internalInstancePropertyMap;
     } else {
-      final listArgumentsNative = positionalArguments?.map((e) => VmValue.readValue(e)).toList();
-      final nameArgumentsNative = namedArguments?.map((key, value) => MapEntry(key, VmValue.readValue(value)));
-      return Function.apply(_value, listArgumentsNative, nameArgumentsNative);
+      return target;
     }
   }
 
-  ///作为内部定义类型的静态函数来执行
-  dynamic runAsStaticFunction(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmClass classScope, List<Map<VmKeys, dynamic>>? instanceFields) {
-    return methodStaticListener!(positionalArguments, namedArguments, classScope, instanceFields, this);
+  ///作为内部定义类型的静态成员来绑定静态作用域
+  void bindStaticScope(VmClass staticScope) {
+    final target = _valueData;
+    if (target is VmValue) {
+      target.bindStaticScope(staticScope);
+    } else {
+      _staticScope ??= staticScope;
+    }
   }
 
-  ///作为内部定义类型的实例的成员函数来执行
-  dynamic runAsInstanceFunction(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments) {
-    return methodInstanceListener!(positionalArguments, namedArguments, _father?._vmclass, _father, this);
+  ///作为内部定义类型的实例绑定成员的相关作用域，注意：在调用前需要先调用[bindStaticScope]绑定静态作用域
+  void bindMemberScope() {
+    final target = _valueData;
+    if (target is VmValue) {
+      target.bindMemberScope();
+    } else {
+      if (_staticScope == null) throw ('Please call bindStaticScope before calling bindMemberScope');
+      internalInstancePropertyMap.forEach((key, value) {
+        value._staticScope ??= _staticScope;
+        value._instanceScope ??= this;
+      });
+    }
   }
 
-  ///作为内部定义类型的实例绑定成员的父实例
-  void bindFatherOfChildren() {
-    if (!_vmclass.isExternal) {
-      internalInstancePropertyMap.forEach((key, value) => value._father ??= this);
+  ///作为任意的函数来直接执行
+  dynamic runFunction(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments) {
+    final target = _valueData;
+    if (target is VmValue) {
+      return target.runFunction(positionalArguments, namedArguments);
+    } else {
+      if (metaType == VmMetaType.internalMethod) {
+        if (metaData.isIniter) {
+          return metaData.staticListener!(positionalArguments, namedArguments, _staticScope!, _staticScope!.internalInstanceFieldTree, this); //原始构造函数
+        } else if (metaData.isStatic) {
+          return metaData.staticListener!(positionalArguments, namedArguments, _staticScope!, null, this); //普通静态函数
+        } else {
+          return metaData.instanceListener!(positionalArguments, namedArguments, _staticScope, _instanceScope, this); //普通定义函数、实例成员函数
+        }
+      } else {
+        final listArgumentsNative = positionalArguments?.map((e) => VmObject.readValue(e)).toList();
+        final nameArgumentsNative = namedArguments?.map((key, value) => MapEntry(key, VmObject.readValue(value)));
+        return Function.apply(target, listArgumentsNative, nameArgumentsNative);
+      }
     }
   }
 
   ///作为内部定义类型的实例来读取字段
-  VmValue getField(String fieldName) => _value[fieldName] as VmValue;
+  VmValue getProperty(String propertyName) {
+    final target = _valueData;
+    if (target is VmValue) {
+      return target.getProperty(propertyName);
+    } else {
+      return target[propertyName];
+    }
+  }
+
+  ///准备调用该函数所需的参数列表。为构造函数做准备时[buildTarget]为要被构建的目标实例
+  List<VmObject> prepareInvocation(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmValue? buildTarget) {
+    final target = _valueData;
+    if (target is VmValue) {
+      return target.prepareInvocation(positionalArguments, namedArguments, buildTarget);
+    } else {
+      final result = <VmObject>[];
+      positionalArguments ??= const [];
+      namedArguments ??= const {};
+      //匹配列表参数
+      for (var i = 0; i < metaData.listArguments.length; i++) {
+        final field = metaData.listArguments[i];
+        final value = i < positionalArguments.length ? positionalArguments[i] : field.fieldValue; //列表参数按照索引一一对应即可
+        if (field.isClassField) {
+          buildTarget!.getProperty(field.fieldName).setValue(value);
+        } else {
+          result.add(VmValue.forVariable(identifier: field.fieldName, initType: field.fieldType, initValue: value));
+        }
+      }
+      //匹配命名参数
+      for (var i = 0; i < metaData.nameArguments.length; i++) {
+        final field = metaData.nameArguments[i];
+        final fieldKey = Symbol(field.fieldName);
+        final value = namedArguments.containsKey(fieldKey) ? namedArguments[fieldKey] : field.fieldValue; //命名参数按照字段名称进行匹配
+        if (field.isClassField) {
+          buildTarget!.getProperty(field.fieldName).setValue(value);
+        } else {
+          result.add(VmValue.forVariable(identifier: field.fieldName, initType: field.fieldType, initValue: value));
+        }
+      }
+      return result;
+    }
+  }
 
   @override
-  VmClass getClass() => _value is VmObject ? (_value as VmObject).getClass() : _vmclass;
+  VmClass getClass() {
+    final target = _valueData;
+    if (target is VmValue) {
+      return target.getClass();
+    } else {
+      return _valueType;
+    }
+  }
+
+  @override
+  dynamic getLogic() {
+    final target = _valueData;
+    if (target is VmValue) {
+      return target.getLogic();
+    } else {
+      if (metaType == VmMetaType.internalMethod) {
+        if (metaData.isGetter) return VmObject.readLogic(runFunction(null, null));
+        return this; //注意：此处返回自身，用于逻辑调用
+      } else if (metaType == VmMetaType.internalObject) {
+        return this; //注意：此处返回自身，用于逻辑调用
+      } else {
+        return target; //数据原生值
+      }
+    }
+  }
 
   @override
   dynamic getValue() {
-    if (isMethod && methodIsGetter) return runAsInstanceFunction(null, null);
-    return _value is VmObject ? (_value as VmObject).getValue() : _value;
+    final target = _valueData;
+    if (target is VmValue) {
+      return target.getValue();
+    } else {
+      if (metaType == VmMetaType.internalMethod) {
+        if (metaData.isGetter) return VmObject.readValue(runFunction(null, null));
+        return target; //函数模板值
+      } else if (metaType == VmMetaType.internalObject) {
+        return target; //字段Map值
+      } else {
+        return target; //数据原生值
+      }
+    }
   }
 
   @override
   dynamic setValue(value) {
-    if (isMethod && methodIsSetter) return runAsInstanceFunction([value], null);
-    if (isMethod || (value is VmValue && value.isMethod)) throw ('Method not support setValue operator'); //方法不支持设置值，防止数据混乱
-    return _value is VmObject ? (_value as VmObject).setValue(value) : (_value = _formatValue(_vmclass.identifier, value));
+    switch (metaType) {
+      case VmMetaType.externalObject:
+        return _valueData = VmObject.readValue(value, type: _valueType.identifier); //保存原生值
+      case VmMetaType.externalSmarts:
+        //与VmValue.forVariable的处理流程是一致的
+        final realLogic = VmObject.readLogic(value);
+        if (realLogic is VmValue) {
+          _valueType = realLogic._valueType;
+          return _valueData = realLogic;
+        } else {
+          final realClass = VmObject.readClass(value);
+          final realValue = VmObject.readValue(value);
+          _valueType = realClass;
+          return _valueData = realValue;
+        }
+      case VmMetaType.internalMethod:
+        if (metaData.isSetter) return runFunction([value], null);
+        throw ('Unsuppport setValue operator for internalMethod: $identifier');
+      case VmMetaType.internalObject:
+        throw ('Unsuppport setValue operator for internalObject: $identifier');
+      case VmMetaType.internalByname:
+        return _valueData = VmObject.readLogic(value, type: _valueType.identifier); //保存逻辑值
+    }
   }
 
   @override
   String toString() {
-    if (isMethod) {
-      final listArgs = '[${methodListArguments.map((e) => '${e.isClassField ? 'this.' : ''}${e.fieldName}').toList().join(', ')}]';
-      final nameArgs = '{${methodNameArguments.map((e) => '${e.isClassField ? 'this.' : ''}${e.fieldName}${e.fieldValue == null ? '' : ' = ${e.getValue()}'}').toList().join(', ')}}';
-      return 'VmValue ===> ${_vmclass.identifier} $identifier --------> $listArgs $nameArgs';
-    } else {
-      if (_vmclass.isExternal) {
-        return 'VmValue ===> ${_vmclass.identifier} $identifier --------> ${_value.runtimeType} $_value';
-      } else {
-        return 'VmValue ===> ${_vmclass.identifier} $identifier --------> ${_value.runtimeType} ${internalInstancePropertyMap.length} Fields';
-      }
+    switch (metaType) {
+      case VmMetaType.externalObject:
+        return 'VmValue<externalObject> ===> ${_valueType.identifier} $identifier --> ${_valueData.runtimeType} $_valueData';
+      case VmMetaType.externalSmarts:
+        if (_valueData is VmValue) {
+          return 'VmValue<externalSmarts> ===> ${_valueType.identifier} $identifier @@@{ $_valueData }@@@';
+        } else {
+          return 'VmValue<externalObject> ===> ${_valueType.identifier} $identifier --> ${_valueData.runtimeType} $_valueData';
+        }
+      case VmMetaType.internalMethod:
+        final typeArg1 = metaData.isIniter ? 'initer' : (metaData.isStatic ? 'static' : 'normal');
+        final typeArg2 = metaData.isGetter ? 'getter' : (metaData.isSetter ? 'setter' : 'normal');
+        final listArgs = '[${metaData.listArguments.map((e) => '${e.isClassField ? 'this.' : ''}${e.fieldName}').toList().join(', ')}]';
+        final nameArgs = '{${metaData.nameArguments.map((e) => '${e.isClassField ? 'this.' : ''}${e.fieldName}${e.fieldValue == null ? '' : ' = ${e.getValue()}'}').toList().join(', ')}}';
+        return 'VmValue<internalMethod> ===> ${_valueType.identifier} $identifier --> $typeArg1 $typeArg2 $listArgs $nameArgs';
+      case VmMetaType.internalObject:
+        return 'VmValue<internalObject> ===> ${_valueType.identifier} $identifier --> (${internalInstancePropertyMap.keys.map((e) => e.toString()).toList().join(', ')})';
+      case VmMetaType.internalByname:
+        return 'VmValue<internalByname> ===> ${_valueType.identifier} $identifier ###{ $_valueData }###';
     }
   }
 
@@ -554,163 +832,55 @@ class VmValue extends VmObject {
     final map = <String, dynamic>{
       'toString': toString(),
       'identifier': identifier,
-      'isMethod': isMethod,
+      'metaType': metaType.toString(),
+      'metaData': metaData.toString(),
     };
-    if (isMethod) {
-      map['methodIsGetter'] = methodIsGetter;
-      map['methodIsSetter'] = methodIsSetter;
-      map['methodListArguments'] = '[${methodListArguments.map((e) => '${e.isClassField ? 'this.' : ''}${e.fieldName}').toList().join(', ')}]';
-      map['methodNameArguments'] = '{${methodNameArguments.map((e) => '${e.isClassField ? 'this.' : ''}${e.fieldName}${e.fieldValue == null ? '' : ' = ${e.getValue()}'}').toList().join(', ')}}';
-      map['methodInitTree'] = methodInitTree.map((e) => e?.keys.map((e) => e.toString()).toList()).toList();
-      map['methodBodyTree'] = methodBodyTree.keys.map((e) => e.toString()).toList();
-      map['methodStaticListener'] = methodStaticListener != null;
-      map['methodInstanceListener'] = methodInstanceListener != null;
-    } else {
-      map['initType'] = initType;
-      map['initValue'] = initValue?.toString();
+    switch (metaType) {
+      case VmMetaType.externalObject:
+        map['_valueType'] = _valueType.toString();
+        map['_valueData'] = _valueData?.toString();
+        break;
+      case VmMetaType.externalSmarts:
+        map['_valueType'] = _valueType.toString();
+        if (_valueData is VmValue) {
+          map['_valueData'] = _valueData;
+        } else {
+          map['_valueData'] = _valueData?.toString();
+        }
+        break;
+      case VmMetaType.internalMethod:
+        map['metaData'] = {
+          'isIniter': metaData.isIniter,
+          'isStatic': metaData.isStatic,
+          'isGetter': metaData.isGetter,
+          'isSetter': metaData.isSetter,
+          'listArguments': '[${metaData.listArguments.map((e) => '${e.isClassField ? 'this.' : ''}${e.fieldName}').toList().join(', ')}]',
+          'nameArguments': '{${metaData.nameArguments.map((e) => '${e.isClassField ? 'this.' : ''}${e.fieldName}${e.fieldValue == null ? '' : ' = ${e.getValue()}'}').toList().join(', ')}}',
+          'initTree': metaData.initTree.map((e) => e?.keys.map((e) => e.toString()).toList()).toList(),
+          'bodyTree': metaData.bodyTree.keys.map((e) => e.toString()).toList(),
+          'staticListener': metaData.staticListener != null,
+          'instanceListener': metaData.instanceListener != null,
+        };
+        map['_valueType'] = _valueType.toString();
+        map['_valueData'] = _valueData?.toString();
+        break;
+      case VmMetaType.internalObject:
+        map['_valueType'] = _valueType.toString();
+        map['_valueData'] = _valueData;
+        break;
+      case VmMetaType.internalByname:
+        map['_valueType'] = _valueType.toString();
+        map['_valueData'] = _valueData;
+        break;
     }
-    map['_father'] = _father?.toString();
-    if (_vmclass.isExternal) {
-      map['_value'] = _value?.toString();
-    } else {
-      map['_value'] = _value;
-    }
+    map['_staticScope'] = _staticScope?.toString();
+    map['_instanceScope'] = _instanceScope?.toString();
     return map;
-  }
-
-  ///读取[target]的包装类
-  static VmClass readClass(dynamic target) => target is VmObject ? target.getClass() : VmClass.getClassByInstance(target);
-
-  ///读取[target]的原生值
-  static dynamic readValue(dynamic target) => target is VmObject ? target.getValue() : target;
-
-  ///保存[target]的原生值
-  static dynamic saveValue(dynamic target, dynamic value) => target is VmObject ? target.setValue(value) : throw ('${target.runtimeType} not support saveValue operator');
-
-  ///准备调用该函数所需的参数列表。为构造函数做准备时[instanceScope]为要被初始化的实例
-  List<VmObject> prepareForRealInvocation(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmValue? instanceScope) {
-    final result = <VmObject>[];
-    positionalArguments ??= const [];
-    namedArguments ??= const {};
-    //匹配列表参数
-    for (var i = 0; i < methodListArguments.length; i++) {
-      final field = methodListArguments[i];
-      final value = i < positionalArguments.length ? positionalArguments[i] : field.fieldValue; //列表参数按照索引一一对应即可
-      if (field.isClassField && instanceScope != null) {
-        instanceScope.getField(field.fieldName).setValue(value);
-      } else {
-        result.add(VmValue.forVariable(identifier: field.fieldName, initType: field.typeName, initValue: value));
-      }
-    }
-    //匹配命名参数
-    for (var i = 0; i < methodNameArguments.length; i++) {
-      final field = methodNameArguments[i];
-      final fieldKey = Symbol(field.fieldName);
-      final value = namedArguments.containsKey(fieldKey) ? namedArguments[fieldKey] : field.fieldValue; //命名参数按照字段名称进行匹配
-      if (field.isClassField && instanceScope != null) {
-        instanceScope.getField(field.fieldName).setValue(value);
-      } else {
-        result.add(VmValue.forVariable(identifier: field.fieldName, initType: field.typeName, initValue: value));
-      }
-    }
-    return result;
-  }
-
-  ///对函数声明时的参数进行分组
-  static void groupDeclarationParameters(List<dynamic>? fromParameters, List<VmHelper> toListArguments, List<VmHelper> toNameArguments) {
-    if (fromParameters != null) {
-      for (VmHelper item in fromParameters) {
-        if (item.isNamedField) {
-          toNameArguments.add(item);
-        } else {
-          toListArguments.add(item);
-        }
-      }
-    }
-  }
-
-  ///对函数调用时的参数进行分组
-  static void groupInvocationParameters(List<dynamic>? fromParameters, List<dynamic> toListArguments, Map<Symbol, dynamic> toNameArguments) {
-    if (fromParameters != null) {
-      for (var item in fromParameters) {
-        if (item is VmHelper) {
-          toNameArguments[Symbol(item.fieldName)] = item;
-        } else {
-          toListArguments.add(item);
-        }
-      }
-    }
-  }
-
-  ///根据[type]与[value]返回正确的类型
-  static VmClass _formatClass(String? type, dynamic value) {
-    if (type != null) return VmClass.getClassByTypeName(type);
-    if (value is VmObject) return value.getClass();
-    return VmClass.getClassByInstance(value);
-  }
-
-  ///根据[type]与[value]返回正确的类型数据
-  static dynamic _formatValue(String? type, dynamic value) {
-    final val = value is VmObject ? value.getValue() : value;
-    switch (type) {
-      case 'int':
-        return val as int?;
-      case 'double':
-        return val is int ? val.toDouble() : val as double?; //使用int值初始化double时，initValue的运行时类型为int，所以进行了转换
-      case 'num':
-        return val as num?;
-      case 'bool':
-        return val as bool?;
-      case 'String':
-        return val as String?;
-      case 'List':
-        return val as List?;
-      case 'Map':
-        return val as Map?;
-      case 'Set':
-        return val is Map ? val.values.toSet() : val as Set?; //扫描器获取初始值时，无法识别无类型声明的空'{}'类型，这时默认为Map类型，需要再次进行类型转换
-      default:
-        return val;
-    }
-  }
-
-  ///根据列表参数的长度返回[method]的正确函数模版
-  static Function _formatTemplate(VmValue method) {
-    final father = method._father;
-    final identifier = method.identifier;
-    final methodListArguments = method.methodListArguments;
-    final methodInstanceListener = method.methodInstanceListener;
-    if (!method.isMethod) throw ('Only method value support template: $identifier');
-    if (methodInstanceListener == null) throw ('Template callback methodInstanceListener cannot be null: $identifier');
-    switch (methodListArguments.length) {
-      case 0:
-        return () => methodInstanceListener([], null, father?._vmclass, father, method);
-      case 1:
-        return (a) => methodInstanceListener([a], null, father?._vmclass, father, method);
-      case 2:
-        return (a, b) => methodInstanceListener([a, b], null, father?._vmclass, father, method);
-      case 3:
-        return (a, b, c) => methodInstanceListener([a, b, c], null, father?._vmclass, father, method);
-      case 4:
-        return (a, b, c, d) => methodInstanceListener([a, b, c, d], null, father?._vmclass, father, method);
-      case 5:
-        return (a, b, c, d, e) => methodInstanceListener([a, b, c, d, e], null, father?._vmclass, father, method);
-      case 6:
-        return (a, b, c, d, e, f) => methodInstanceListener([a, b, c, d, e, f], null, father?._vmclass, father, method);
-      case 7:
-        return (a, b, c, d, e, f, g) => methodInstanceListener([a, b, c, d, e, f, g], null, father?._vmclass, father, method);
-      case 8:
-        return (a, b, c, d, e, f, g, h) => methodInstanceListener([a, b, c, d, e, f, g, h], null, father?._vmclass, father, method);
-      case 9:
-        return (a, b, c, d, e, f, g, h, i) => methodInstanceListener([a, b, c, d, e, f, g, h, i], null, father?._vmclass, father, method);
-      default:
-        throw ('Unsupport template ${methodListArguments.length}: $identifier');
-    }
   }
 }
 
 ///
-///虚拟机延迟操作类
+///运行时延迟操作类
 ///
 class VmLazyer extends VmObject {
   ///是否为方法调用
@@ -722,8 +892,11 @@ class VmLazyer extends VmObject {
   ///延迟操作的目标
   final dynamic instance;
 
-  ///延迟操作的属性
+  ///延迟操作的属性，类型大概是 int 或 String
   final dynamic property;
+
+  ///构造时是否是通过[property]找到的[instance]
+  final bool instanceByProperty;
 
   ///方法调用的列表参数
   final List<dynamic>? listArguments;
@@ -731,40 +904,69 @@ class VmLazyer extends VmObject {
   ///方法调用的命名参数
   final Map<Symbol, dynamic>? nameArguments;
 
-  ///是否为挂起状态
-  bool _pending;
+  ///是否已完成延迟操作
+  bool _completed;
 
-  ///解除挂起的结果
+  ///完成延迟操作的结果
   dynamic _result;
 
   VmLazyer({
     this.isMethod = false,
     this.isIndexed = false,
     required dynamic instance,
-    required this.property,
+    required dynamic property,
+    this.instanceByProperty = false,
     this.listArguments,
     this.nameArguments,
-  })  : instance = instance is VmLazyer ? instance.orgValue() : instance,
-        _pending = true,
+  })  : instance = VmObject.readLogic(instance),
+        property = VmObject.readValue(property),
+        _completed = false,
         super(identifier: '___anonymousVmLazyer___');
 
-  ///解析并读取原始值
-  dynamic orgValue() {
-    if (_pending) {
-      _pending = false;
-      _result = isMethod ? VmClass.runFunction(instance, property, listArguments, nameArguments) : (isIndexed ? instance[property] : VmClass.getProperty(instance, property));
+  @override
+  VmClass getClass() => VmObject.readClass(getLogic());
+
+  @override
+  dynamic getLogic() {
+    if (_completed) return _result;
+    final target = instance;
+    if (isMethod) {
+      if (target is VmClass) {
+        _result = target.getProxy(property, setter: false).runFunction(target, listArguments, nameArguments); //执行静态函数
+      } else if (target is VmProxy && instanceByProperty) {
+        _result = target.runFunction(target, listArguments, nameArguments); //执行顶级函数
+      } else if (target is VmValue && instanceByProperty) {
+        _result = target.runFunction(listArguments, nameArguments); //执行内部函数
+      } else {
+        _result = VmObject.readClass(target).getProxy(property, setter: false).runFunction(target, listArguments, nameArguments); //执行实例方法
+      }
+    } else if (isIndexed) {
+      _result = target[property]; //索引List取值
+    } else if (target is VmClass) {
+      _result = target.getProxy(property, setter: false).getProperty(target); //读取静态属性
+    } else {
+      _result = VmObject.readClass(target).getProxy(property, setter: false).getProperty(target); //读取实例属性
     }
+    _completed = true;
     return _result;
   }
 
   @override
-  VmClass getClass() => VmValue.readClass(orgValue());
+  dynamic getValue() => VmObject.readValue(getLogic());
 
   @override
-  dynamic getValue() => VmValue.readValue(orgValue());
-
-  @override
-  dynamic setValue(value) => isMethod ? throw ('Method not support setValue operator') : (isIndexed ? instance[property] = value : VmClass.setProperty(instance, property, value));
+  dynamic setValue(value) {
+    final target = instance;
+    if (isMethod) {
+      throw ('Unsupport setValue operator for VmLazyer: isMethod = true');
+    } else if (isIndexed) {
+      return target[property] = value; //索引List赋值
+    } else if (target is VmClass) {
+      return target.getProxy(property, setter: true).setProperty(target, value); //写入静态属性
+    } else {
+      return VmObject.readClass(target).getProxy(property, setter: true).setProperty(target, value); //写入实例属性
+    }
+  }
 
   @override
   Map<String, dynamic> toJson() {
@@ -776,7 +978,7 @@ class VmLazyer extends VmObject {
       'property': property,
       'listArguments': listArguments?.length,
       'nameArguments': nameArguments?.length,
-      '_pending': _pending,
+      '_completed': _completed,
       '_result': _result?.toString(),
     };
     return map;
@@ -784,14 +986,11 @@ class VmLazyer extends VmObject {
 }
 
 ///
-///虚拟机声明辅助类
+///运行时声明辅助类
 ///
 class VmHelper extends VmObject {
   ///声明时明确指定的类型如：int、double、bool等
-  final String? typeName;
-
-  ///声明时明确指定的类型如果有问号则该值为：'?'，否则为：null
-  final String? typeQuestion;
+  final String? fieldType;
 
   ///声明的字段名称
   final String fieldName;
@@ -806,20 +1005,23 @@ class VmHelper extends VmObject {
   final bool isClassField;
 
   VmHelper({
-    this.typeName,
-    this.typeQuestion,
+    this.fieldType,
     String? fieldName,
-    this.fieldValue,
+    dynamic fieldValue,
     this.isNamedField = false,
     this.isClassField = false,
   })  : fieldName = fieldName ?? '___anonymousVmField___',
+        fieldValue = VmObject.readLogic(fieldValue),
         super(identifier: '___anonymousVmHelper___');
 
   @override
-  VmClass getClass() => VmValue._formatClass(typeName, fieldValue);
+  VmClass getClass() => VmObject.readClass(fieldValue, type: fieldType);
 
   @override
-  dynamic getValue() => VmValue._formatValue(typeName, fieldValue);
+  dynamic getLogic() => VmObject.readLogic(fieldValue, type: fieldType);
+
+  @override
+  dynamic getValue() => VmObject.readValue(fieldValue, type: fieldType);
 
   @override
   dynamic setValue(value) => throw UnimplementedError();
@@ -829,8 +1031,7 @@ class VmHelper extends VmObject {
     final map = <String, dynamic>{
       'toString': toString(),
       'identifier': identifier,
-      'typeName': typeName,
-      'typeQuestion': typeQuestion,
+      'fieldType': fieldType,
       'fieldName': fieldName,
       'fieldValue': fieldValue?.toString(),
       'isNamedField': isNamedField,
@@ -841,7 +1042,7 @@ class VmHelper extends VmObject {
 }
 
 ///
-///虚拟机运行信号类
+///运行时信号标识类
 ///
 class VmSignal extends VmObject {
   ///是否为break信号
@@ -859,14 +1060,18 @@ class VmSignal extends VmObject {
   VmSignal({
     this.isBreak = false,
     this.isReturn = false,
-    this.signalValue,
-  }) : super(identifier: '___anonymousVmSignal___');
+    dynamic signalValue,
+  })  : signalValue = VmObject.readLogic(signalValue),
+        super(identifier: '___anonymousVmSignal___');
 
   @override
-  VmClass getClass() => VmValue.readClass(signalValue);
+  VmClass getClass() => VmObject.readClass(signalValue);
 
   @override
-  dynamic getValue() => VmValue.readValue(signalValue);
+  dynamic getLogic() => VmObject.readLogic(signalValue);
+
+  @override
+  dynamic getValue() => VmObject.readValue(signalValue);
 
   @override
   dynamic setValue(value) => throw UnimplementedError();
