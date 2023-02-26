@@ -115,7 +115,7 @@ enum EasyLogLevel {
 }
 
 ///
-/// 日志处理方法
+///日志方法
 ///
 typedef EasyLogHandler = void Function(EasyLogger instance, String msg, EasyLogLevel logLevel);
 
@@ -312,6 +312,38 @@ class EasyLogger {
     stdoutLogger(instance, msg, logLevel);
     writeLogger(instance, msg, logLevel);
   }
+}
+
+///
+///基本配置
+///
+class EasyConfig {
+  ///日志处理方法
+  final EasyLogHandler? logger;
+
+  ///日志级别
+  final EasyLogLevel? logLevel;
+
+  ///日志标签
+  final String? logTag;
+
+  ///日志输出文件路径
+  final String? logFilePath;
+
+  ///日志文件保存数量
+  final int? logFileBackup;
+
+  ///日志文件每份大小（字节）
+  final int? logFileMaxBytes;
+
+  EasyConfig({
+    this.logger,
+    this.logLevel,
+    this.logTag,
+    this.logFilePath,
+    this.logFileBackup,
+    this.logFileMaxBytes,
+  });
 }
 
 ///
@@ -547,25 +579,7 @@ class EasySecurity {
 ///
 ///客户端配置
 ///
-class EasyClientConfig {
-  ///日志处理方法
-  final EasyLogHandler? logger;
-
-  ///日志级别
-  final EasyLogLevel? logLevel;
-
-  ///日志标签
-  final String? logTag;
-
-  ///日志输出文件路径
-  final String? logFilePath;
-
-  ///日志文件保存数量
-  final int? logFileBackup;
-
-  ///日志文件每份大小（字节）
-  final int? logFileMaxBytes;
-
+class EasyClientConfig extends EasyConfig {
   ///服务器地址
   final String url;
 
@@ -585,12 +599,12 @@ class EasyClientConfig {
   final int conntick;
 
   EasyClientConfig({
-    this.logger,
-    this.logLevel,
-    this.logTag,
-    this.logFilePath,
-    this.logFileBackup,
-    this.logFileMaxBytes,
+    super.logger,
+    super.logLevel,
+    super.logTag,
+    super.logFilePath,
+    super.logFileBackup,
+    super.logFileMaxBytes,
     required this.url,
     this.pwd,
     this.binary = false,
@@ -632,25 +646,7 @@ class EasyClientRequester {
 ///
 ///服务端配置
 ///
-class EasyServerConfig {
-  ///日志处理方法
-  final EasyLogHandler? logger;
-
-  ///日志级别
-  final EasyLogLevel? logLevel;
-
-  ///日志标签
-  final String? logTag;
-
-  ///日志输出文件路径
-  final String? logFilePath;
-
-  ///日志文件保存数量
-  final int? logFileBackup;
-
-  ///日志文件每份大小（字节）
-  final int? logFileMaxBytes;
-
+class EasyServerConfig extends EasyConfig {
   ///监听域名
   final String host;
 
@@ -709,12 +705,12 @@ class EasyServerConfig {
   String get websocketUrl => sslsEnable ? 'wss://$host:$port' : 'ws://$host:$port';
 
   EasyServerConfig({
-    this.logger,
-    this.logLevel,
-    this.logTag,
-    this.logFilePath,
-    this.logFileBackup,
-    this.logFileMaxBytes,
+    super.logger,
+    super.logLevel,
+    super.logTag,
+    super.logFilePath,
+    super.logFileBackup,
+    super.logFileMaxBytes,
     required this.host,
     required this.port,
     this.instances = 1,
@@ -877,7 +873,7 @@ class EasyServerSession {
 }
 
 ///
-///数据库驱动类型
+///数据库类型
 ///
 enum EasyUniDbDriver {
   ///可用于Native端与Web端
@@ -891,27 +887,9 @@ enum EasyUniDbDriver {
 }
 
 ///
-///数据库配置信息
+///数据库配置
 ///
-class EasyUniDbConfig {
-  ///日志处理方法
-  final EasyLogHandler? logger;
-
-  ///日志级别
-  final EasyLogLevel? logLevel;
-
-  ///日志标签
-  final String? logTag;
-
-  ///日志输出文件路径
-  final String? logFilePath;
-
-  ///日志文件保存数量
-  final int? logFileBackup;
-
-  ///日志文件每份大小（字节）
-  final int? logFileMaxBytes;
-
+class EasyUniDbConfig extends EasyConfig {
   ///驱动类型
   final EasyUniDbDriver driver;
 
@@ -937,12 +915,12 @@ class EasyUniDbConfig {
   final Map<String, String> params;
 
   EasyUniDbConfig({
-    this.logger,
-    this.logLevel,
-    this.logTag,
-    this.logFilePath,
-    this.logFileBackup,
-    this.logFileMaxBytes,
+    super.logger,
+    super.logLevel,
+    super.logTag,
+    super.logFilePath,
+    super.logFileBackup,
+    super.logFileMaxBytes,
     required this.driver,
     required this.host,
     required this.port,
@@ -957,26 +935,8 @@ class EasyUniDbConfig {
 ///
 ///代码生成器配置
 ///
-class EasyCoderConfig {
+class EasyCoderConfig extends EasyConfig {
   static const defaultType = '__defaultType__';
-
-  ///日志处理方法
-  final EasyLogHandler? logger;
-
-  ///日志级别
-  final EasyLogLevel? logLevel;
-
-  ///日志标签
-  final String? logTag;
-
-  ///日志输出文件路径
-  final String? logFilePath;
-
-  ///日志文件保存数量
-  final int? logFileBackup;
-
-  ///日志文件每份大小（字节）
-  final int? logFileMaxBytes;
 
   ///导出文件路径
   final String absFolder;
@@ -1003,12 +963,12 @@ class EasyCoderConfig {
   final Map<String, String> nestFromJsonVals;
 
   EasyCoderConfig({
-    this.logger,
-    this.logLevel,
-    this.logTag,
-    this.logFilePath,
-    this.logFileBackup,
-    this.logFileMaxBytes,
+    super.logger,
+    super.logLevel,
+    super.logTag,
+    super.logFilePath,
+    super.logFileBackup,
+    super.logFileMaxBytes,
     required this.absFolder,
     this.baseClass = 'DbBaseModel',
     this.indent = '  ',
@@ -1154,5 +1114,35 @@ class EasyCoderFieldInfo {
     this.defVal,
     this.zhText,
     this.enText,
+  });
+}
+
+///
+///Dart子集虚拟程序配置
+///
+class EasyVmWareConfig extends EasyConfig {
+  ///打印模块的解析路由
+  final bool debugRoute;
+
+  ///程序源代码模块集合
+  final Map<String, String> allModules;
+
+  ///程序入口模块的名称
+  final String mainModule;
+
+  ///程序入口函数的名称
+  final String mainMethod;
+
+  EasyVmWareConfig({
+    super.logger,
+    super.logLevel,
+    super.logTag,
+    super.logFilePath,
+    super.logFileBackup,
+    super.logFileMaxBytes,
+    this.debugRoute = false,
+    required this.allModules,
+    this.mainModule = 'main',
+    this.mainMethod = 'main',
   });
 }

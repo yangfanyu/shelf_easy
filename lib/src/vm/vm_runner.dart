@@ -3,30 +3,20 @@ import 'vm_object.dart';
 import 'vm_library.dart';
 
 ///
-///Dart代码子集的运行器
+///Dart语言子集的运行器
 ///
 class VmRunner {
-  ///对象栈
+  ///当前[VmRunner]实例的模块语法树
+  final Map<VmKeys, dynamic> _moduleTree;
+
+  ///当前[VmRunner]实例的作用域堆栈
   final List<Map<String, VmObject>> _objectStack;
 
-  VmRunner() : _objectStack = [{}];
-
-  ///初始化类型库
-  void initLibrary() {
-    final scopeMap = _objectStack.first; //取全局作用域
-    for (var vmclass in VmLibrary.libraryClassList) {
-      VmClass.addClass(vmclass); //添加到底层的类型库中
-      if (scopeMap.containsKey(vmclass.identifier)) throw ('Already exists VmObject in global scope, identifier is: ${vmclass.identifier}');
-      scopeMap[vmclass.identifier] = vmclass; //添加到全局作用域中
-    }
-    for (var vmproxy in VmLibrary.libraryProxyList) {
-      if (scopeMap.containsKey(vmproxy.identifier)) throw ('Already exists VmObject in global scope, identifier is: ${vmproxy.identifier}');
-      scopeMap[vmproxy.identifier] = vmproxy; //添加到全局作用域中
-    }
+  VmRunner({required Map<VmKeys, dynamic> moduleTree})
+      : _moduleTree = moduleTree,
+        _objectStack = [_globalScope, {}] {
+    VmRunnerCore._scanMap(this, _moduleTree);
   }
-
-  ///扫描语法树并创建预定义内容
-  void initRuntime(Map<VmKeys, dynamic> astTree) => VmRunnerCore._scanMap(this, astTree);
 
   ///获取标识符[identifier]对应的虚拟对象
   VmObject getVmObject(String identifier) {
@@ -109,15 +99,34 @@ class VmRunner {
     return result;
   }
 
-  ///转换为可json序列化的详细数据
-  Map<String, dynamic> toJson() => {'_memberStack': _objectStack};
+  ///将全部数据转换为详细的JSON对象
+  Map<String, dynamic> toJson() => {'_moduleTree': VmObject.treeValue(_moduleTree), '_objectStack': _objectStack};
 
-  ///转换为可json序列化的简单数据
-  Map<String, dynamic> toSimpleJson() => {'_memberStack': _objectStack.map((e) => e.map((key, value) => MapEntry(key, value.toString()))).toList()};
+  ///将模块语法树转换为易读的JSON对象
+  Map<String, dynamic> toModuleJson() => {'_moduleTree': VmObject.treeValue(_moduleTree)};
+
+  ///将作用域堆栈转换为易读的JSON对象
+  Map<String, dynamic> toObjectJson() => {'_objectStack': _objectStack.map((e) => e.map((key, value) => MapEntry(key, value.toString()))).toList()};
+
+  ///全局作用域
+  static final Map<String, VmObject> _globalScope = {};
+
+  ///加载全局类库
+  static void loadGlobalLibrary() {
+    for (var vmclass in VmLibrary.libraryClassList) {
+      VmClass.addClass(vmclass); //添加到底层的类型库中
+      if (_globalScope.containsKey(vmclass.identifier)) throw ('Already exists VmClass in global scope, identifier is: ${vmclass.identifier}');
+      _globalScope[vmclass.identifier] = vmclass; //添加到全局作用域中
+    }
+    for (var vmproxy in VmLibrary.libraryProxyList) {
+      if (_globalScope.containsKey(vmproxy.identifier)) throw ('Already exists VmProxy in global scope, identifier is: ${vmproxy.identifier}');
+      _globalScope[vmproxy.identifier] = vmproxy; //添加到全局作用域中
+    }
+  }
 }
 
 ///
-///Dart代码子集的运行器核心逻辑
+///Dart语言子集的运行器核心逻辑
 ///
 class VmRunnerCore {
   ///当前cascade操作的操作者
@@ -852,7 +861,7 @@ class VmRunnerCore {
   }
 
   ///
-  ///类相关，下面的内容去掉后对上面的内容无任何影响
+  ///类相关
   ///
 
   static VmClass _scanClassDeclaration(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {

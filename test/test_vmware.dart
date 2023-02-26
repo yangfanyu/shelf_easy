@@ -10,7 +10,7 @@ import 'package:shelf_easy/src/vm/vm_runner.dart';
 void main() {
   // watchDartEval();
   // watchShelfEasy();
-  testFromFile();
+  testEasyVmVare();
 }
 
 // void watchDartEval() {
@@ -39,33 +39,25 @@ void watchShelfEasy() {
         return count;
       }
 ''';
-  final parseResult = VmParser.parseSource(source);
-  final runner = VmRunner();
-  runner.initLibrary();
-  runner.initRuntime(parseResult);
+  VmRunner.loadGlobalLibrary();
+  final runner = VmRunner(moduleTree: VmParser.parseSource(source));
   final result = runner.callFunction<int>('main');
   print('shelf_easy 用时 ${watch.elapsed}; result= ${result.runtimeType} $result');
 }
 
-void testFromFile() {
-  final encoder = JsonEncoder.withIndent('  ');
-  final source = File('${Directory.current.path}/test/test_vmfile.dart').readAsStringSync();
-  final routeList = <String>[];
-  final parseResult = VmParser.parseSource(source, routeList: routeList, routeLogger: (route) {
-    //  print(route);
-  });
-
-  // print(encoder.convert(DbQueryField.toBaseType(parseResult)));
-  // print(encoder.convert(routeList));
-
+void testEasyVmVare() {
   print('\n');
   print(VmKeys.values.length);
   print('\n');
 
-  final runner = VmRunner();
-  runner.initLibrary();
-  runner.initRuntime(parseResult);
-  print('\n');
-  // print(encoder.convert(runner));
-  print(encoder.convert(runner.toSimpleJson()));
+  VmRunner.loadGlobalLibrary();
+  final vmware = EasyVmWare(
+    config: EasyVmWareConfig(
+      allModules: {
+        'main': File('${Directory.current.path}/test/test_vmfile.dart').readAsStringSync(),
+      },
+    ),
+  );
+  vmware.debugObjectStack();
+  vmware.call(moduleName: 'main', methodName: 'funcA2', positionalArguments: [100, 200], namedArguments: {#c: 300, #d: 400, #e: 500});
 }

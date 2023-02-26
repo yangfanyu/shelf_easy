@@ -183,7 +183,7 @@ class EasyClient extends EasyLogger {
         return responsePacket;
       }
       final responseData = threadEnable
-          ? await _thread!.runTask(
+          ? await _thread!.runTask<EasyPacket>(
               taskType: _threadTaskDecrypt,
               taskData: [responseBody, _token ?? _config.pwd],
             )
@@ -345,7 +345,7 @@ class EasyClient extends EasyLogger {
   void _onWebSocketData(dynamic data) async {
     if (_expired) return;
     final packet = threadEnable
-        ? await _thread!.runTask(
+        ? await _thread!.runTask<EasyPacket>(
             taskType: _threadTaskDecrypt,
             taskData: [data, _token ?? _config.pwd],
           )

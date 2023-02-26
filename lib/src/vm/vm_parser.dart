@@ -498,7 +498,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
       };
 
   ///
-  ///类相关，下面的内容去掉后对上面的内容无任何影响
+  ///类相关
   ///
 
   @override

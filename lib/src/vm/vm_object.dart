@@ -178,6 +178,19 @@ abstract class VmObject {
     }
   }
 
+  ///转换[target]语法树为可jsonEncode的数据值
+  static dynamic treeValue(dynamic target) {
+    if (target is Map) {
+      return target.map((key, value) => MapEntry(key is String ? key : (key is VmKeys ? key.name : key.toString()), treeValue(value)));
+    } else if (target is List) {
+      return target.map((value) => treeValue(value)).toList();
+    } else if (target is VmKeys) {
+      return target.name;
+    } else {
+      return target;
+    }
+  }
+
   ///对函数声明时的参数进行分组
   static void groupDeclarationParameters(List<dynamic>? fromParameters, List<VmHelper> toListArguments, List<VmHelper> toNameArguments) {
     if (fromParameters != null) {
@@ -570,7 +583,7 @@ class VmValue extends VmObject {
     }
   }
 
-  ///创建变量值，如果[initValue]是[VmValue]实例，则复制除[identifier]之外的属性
+  ///创建变量值
   factory VmValue.forVariable({
     String identifier = '___anonymousVmVariable___',
     String? initType,
@@ -666,6 +679,16 @@ class VmValue extends VmObject {
     }
   }
 
+  ///作为内部定义类型的实例来读取字段
+  VmValue getProperty(String propertyName) {
+    final target = _valueData;
+    if (target is VmValue) {
+      return target.getProperty(propertyName);
+    } else {
+      return target[propertyName];
+    }
+  }
+
   ///作为任意的函数来直接执行
   dynamic runFunction(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments) {
     final target = _valueData;
@@ -685,16 +708,6 @@ class VmValue extends VmObject {
         final nameArgumentsNative = namedArguments?.map((key, value) => MapEntry(key, VmObject.readValue(value)));
         return Function.apply(target, listArgumentsNative, nameArgumentsNative);
       }
-    }
-  }
-
-  ///作为内部定义类型的实例来读取字段
-  VmValue getProperty(String propertyName) {
-    final target = _valueData;
-    if (target is VmValue) {
-      return target.getProperty(propertyName);
-    } else {
-      return target[propertyName];
     }
   }
 
