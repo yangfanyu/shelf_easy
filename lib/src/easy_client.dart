@@ -6,7 +6,6 @@ import 'package:http_parser/http_parser.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'easy_class.dart';
-import 'wk/wk_base.dart';
 import 'wk/wk_unsupport.dart' if (dart.library.io) 'wk/wk_native.dart' if (dart.library.html) 'wk/wk_html.dart' as worker;
 
 ///
@@ -166,7 +165,7 @@ class EasyClient extends EasyLogger {
     logTrace(['httpRequest =>', requestData]);
     try {
       int fieldId = 0;
-      final url = Uri.parse(route);
+      final url = Uri.parse('${_config.url}$route');
       final response = fileBytes == null || mediaType == null
           ? await http.post(url, body: requestData, headers: {'content-type': _config.binary ? 'application/octet-stream' : 'text/plain', 'easy-security-identity': _uid ?? ''}..addAll(headers ?? {}))
           : await http.Response.fromStream(await (http.MultipartRequest('POST', url)
@@ -438,10 +437,10 @@ class EasyClient extends EasyLogger {
   }
 
   ///发起任意的GET请求
-  static Future<http.Response> get(Uri url, {Map<String, String>? headers}) => http.get(url, headers: headers);
+  static Future<http.Response> get(String url, {Map<String, String>? headers}) => http.get(Uri.parse(url), headers: headers);
 
   ///发起任意的POST请求
-  static Future<http.Response> post(Uri url, {Map<String, String>? headers, Object? body, Encoding? encoding}) => http.post(url, headers: headers, body: body, encoding: encoding);
+  static Future<http.Response> post(String url, {Map<String, String>? headers, Object? body, Encoding? encoding}) => http.post(Uri.parse(url), headers: headers, body: body, encoding: encoding);
 
   static Future<bool> _serviceHandler(WkSignal signal, Map<String, dynamic> config) async {
     return true;

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:shelf_easy/shelf_easy.dart';
-import 'package:shelf_easy/src/wk/wk_base.dart';
 import 'package:shelf_easy/src/wk/wk_unsupport.dart' if (dart.library.io) 'package:shelf_easy/src/wk/wk_native.dart' if (dart.library.html) 'package:shelf_easy/src/wk/wk_html.dart' as worker;
 
 void main() async {

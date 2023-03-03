@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'easy_class.dart';
 import 'vm/vm_parser.dart';
 import 'vm/vm_runner.dart';
@@ -77,5 +75,15 @@ class EasyVmWare extends EasyLogger {
     } else {
       logDebug([_encoder.convert(_runners[moduleName]?.toObjectJson())]);
     }
+  }
+
+  ///加载全局作用域，[customClassList]为自定义导入的类型，[customProxyList]为自定义导入的全局方法或实例
+  static void loadGlobalLibrary({List<VmClass> customClassList = const [], List<VmProxy> customProxyList = const []}) {
+    VmRunner.loadGlobalLibrary(customClassList: customClassList, customProxyList: customProxyList);
+  }
+
+  ///简洁的执行[moduleCode]源代码中的[methodName]函数
+  static T eval<T>({required String moduleCode, required String methodName}) {
+    return VmRunner(moduleTree: VmParser.parseSource(moduleCode)).callFunction(methodName);
   }
 }

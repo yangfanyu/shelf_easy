@@ -8,6 +8,10 @@ import 'package:encrypt/encrypt.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+export 'db/db_base.dart';
+export 'wk/wk_base.dart';
+export 'vm/vm_object.dart';
+
 ///
 ///一些常量
 ///
@@ -809,7 +813,12 @@ class EasyServerSession {
   void quitChannel(String cid) => _channel.remove(cid);
 
   ///遍历已加入的全部推送组
-  void eachChannel(void Function(String cid) callback) => _channel.forEach((key, value) => callback(key));
+  void eachChannel(void Function(String cid) callback) {
+    final keys = _channel.keys.toList(); //callback可能有remove操作，因此将key读取出来转换为List后更安全
+    for (var key in keys) {
+      callback(key);
+    }
+  }
 
   ///更新流量统计信息，同时返回是否收到重复包
   ///

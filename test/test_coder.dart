@@ -1,8 +1,14 @@
 import 'dart:io';
 
 import 'package:shelf_easy/shelf_easy.dart';
+import 'package:shelf_easy/shelf_gens.dart';
 
 void main() {
+  testEasyCoder();
+  // testEasyVmGen();
+}
+
+void testEasyCoder() {
   final coder = EasyCoder(
     config: EasyCoderConfig(
       absFolder: '${Directory.current.path}/test/model',
@@ -199,4 +205,12 @@ void main() {
   ));
   coder.generateBaseExports();
   coder.generateWrapBuilder();
+}
+
+void testEasyVmGen() {
+  final vmgen = EasyVmGen();
+  vmgen.generateBaseLibrary(
+    outputFile: '${Directory.current.path}/lib/src/vm/vm_library.dart',
+    outputClass: 'VmLibrary',
+  );
 }

@@ -46,9 +46,9 @@ class VmRunner {
   ///当前作用域是否已经存在标识符[identifier]指向的对象
   bool inCurrentScope(String identifier) => _objectStack.last.containsKey(identifier);
 
-  ///执行虚拟机中的[functionName]指定的函数
-  T callFunction<T>(String functionName, {List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments}) {
-    final result = VmRunnerCore._scanVmFunction(this, positionalArguments, namedArguments, VmObject.readLogic(getVmObject(functionName)), null);
+  ///执行虚拟机中的[methodName]指定的函数
+  T callFunction<T>(String methodName, {List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments}) {
+    final result = VmRunnerCore._scanVmFunction(this, positionalArguments, namedArguments, VmObject.readLogic(getVmObject(methodName)), null);
     return VmObject.deepValue(result); //返回深度递归转换后的值
   }
 
@@ -112,13 +112,26 @@ class VmRunner {
   static final Map<String, VmObject> _globalScope = {};
 
   ///加载全局类库
-  static void loadGlobalLibrary() {
+  static void loadGlobalLibrary({List<VmClass> customClassList = const [], List<VmProxy> customProxyList = const []}) {
+    //内置核心库
     for (var vmclass in VmLibrary.libraryClassList) {
       VmClass.addClass(vmclass); //添加到底层的类型库中
       if (_globalScope.containsKey(vmclass.identifier)) throw ('Already exists VmClass in global scope, identifier is: ${vmclass.identifier}');
       _globalScope[vmclass.identifier] = vmclass; //添加到全局作用域中
     }
     for (var vmproxy in VmLibrary.libraryProxyList) {
+      vmproxy.bindVmClass(VmLibrary.classVoid); //在此处绑定为void类型
+      if (_globalScope.containsKey(vmproxy.identifier)) throw ('Already exists VmProxy in global scope, identifier is: ${vmproxy.identifier}');
+      _globalScope[vmproxy.identifier] = vmproxy; //添加到全局作用域中
+    }
+    //自定义库
+    for (var vmclass in customClassList) {
+      VmClass.addClass(vmclass); //添加到底层的类型库中
+      if (_globalScope.containsKey(vmclass.identifier)) throw ('Already exists VmClass in global scope, identifier is: ${vmclass.identifier}');
+      _globalScope[vmclass.identifier] = vmclass; //添加到全局作用域中
+    }
+    for (var vmproxy in customProxyList) {
+      vmproxy.bindVmClass(VmLibrary.classVoid); //在此处绑定为void类型
       if (_globalScope.containsKey(vmproxy.identifier)) throw ('Already exists VmProxy in global scope, identifier is: ${vmproxy.identifier}');
       _globalScope[vmproxy.identifier] = vmproxy; //添加到全局作用域中
     }

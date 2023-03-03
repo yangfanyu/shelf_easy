@@ -1,6 +1,6 @@
-## 1.1.0
+## 1.1.2 
 
-- Implemented a dart-lang runtime virtual machine.
+- Implemented a dart-lang runtime virtual machine and improve documents.
   
 ## 1.0.66
 

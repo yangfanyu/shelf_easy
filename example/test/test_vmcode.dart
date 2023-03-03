@@ -354,7 +354,7 @@ final funcResA5_0 = funcA5(); //1
 /// 类定义与实例测试区
 ///
 
-class User {
+class TestUser {
   static const sexMale = 1;
   static const sexFemale = 2;
 
@@ -366,7 +366,7 @@ class User {
   String _info;
   List<int> _haha;
 
-  User(
+  TestUser(
     this.id,
     int no, {
     required this.name,
@@ -378,8 +378,8 @@ class User {
         _info = '$no info',
         _haha = [0, 1, 2, 3];
 
-  factory User.fromTest() {
-    return User(11111, 22222, name: 'Test', sex: sexMale, age: 10);
+  factory TestUser.fromTest() {
+    return TestUser(11111, 22222, name: 'Test', sex: sexMale, age: 10);
   }
 
   void readSex() => sex;
@@ -406,20 +406,20 @@ class User {
   static int get getFemaleSexValue => sexFemale;
 }
 
-final userInstance0 = User(1, 2, name: 'Jack', sex: 3, age: 4);
-final userInstance1 = User(10, 20, name: 'Tom', sex: User.getFemaleSexValue);
+final userInstance0 = TestUser(1, 2, name: 'Jack', sex: 3, age: 4);
+final userInstance1 = TestUser(10, 20, name: 'Tom', sex: TestUser.getFemaleSexValue);
 final userInstance2 = userInstance0;
 final userInstance3 = userInstance2.printInfo();
-final userInstance4 = User(30, 40, name: 'Rose').printInfo();
-final userInstance5 = User.fromTest().printInfo();
-final userInstance6 = User(50, 60, name: 'Cascade', sex: 3, age: 80)
+final userInstance4 = TestUser(30, 40, name: 'Rose').printInfo();
+final userInstance5 = TestUser.fromTest().printInfo();
+final userInstance6 = TestUser(50, 60, name: 'Cascade', sex: 3, age: 80)
   ..desc = 'Hello world!'
   .._info = 'I am Dart'
   ..printInfo();
 dynamic userInstance7;
 var userInstance8 = userInstance7 ??= userInstance0;
 dynamic userInstance9 = userInstance8;
-final userInstance10 = (userInstance9 as User).printInfo();
+final userInstance10 = (userInstance9 as TestUser).printInfo();
 final userInstance11 = [userInstance0, userInstance1];
 final userInstance12 = {userInstance0, userInstance1};
 final userInstance13 = {0: userInstance0, 1: userInstance1};

@@ -1,9 +1,10 @@
 import 'dart:io';
+import 'dart:mirrors';
 
 import 'easy_class.dart';
 
 ///
-///代码生成器
+///序列化数据模型生成器
 ///
 class EasyCoder extends EasyLogger {
   ///配置信息
@@ -182,7 +183,11 @@ class EasyCoder extends EasyLogger {
 
   void _generateConstFields(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
     for (var element in modelInfo.constFields) {
-      buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
+      if (element.desc.isEmpty) {
+        buffer.write('$indent///Field ${element.name}\n');
+      } else {
+        buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
+      }
       buffer.write('${indent}static const ${element.type} ${element.name} = ${element.defVal};\n\n');
     }
     if (modelInfo.constMap && modelInfo.constFields.isNotEmpty) {
@@ -221,14 +226,22 @@ class EasyCoder extends EasyLogger {
     //私有字段生成get函数
     for (var element in privateFields) {
       final publicName = _getFieldPublicName(element.name);
-      buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
+      if (element.desc.isEmpty) {
+        buffer.write('$indent///Field ${element.name}\n');
+      } else {
+        buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
+      }
       buffer.write('$indent${element.type} get $publicName => ${element.name};\n\n');
     }
     //扩展字段
     for (var element in modelInfo.extraFields) {
       final publicName = _getFieldPublicName(element.name);
       final defaultValue = _getFieldDefaultValue(element.name, element.type, element.defVal);
-      buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
+      if (element.desc.isEmpty) {
+        buffer.write('$indent///Field ${element.name}\n');
+      } else {
+        buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
+      }
       if (element.nullAble) {
         buffer.write('$indent${element.type}? $publicName;\n\n');
       } else {
@@ -486,7 +499,11 @@ class EasyCoder extends EasyLogger {
       buffer.write('${indent}final Map<String, dynamic> data = {};\n\n');
       for (var element in modelInfo.classFields) {
         final publicName = _getFieldPublicName(element.name);
-        buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
+        if (element.desc.isEmpty) {
+          buffer.write('$indent///Field ${element.name}\n');
+        } else {
+          buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
+        }
         if (element == modelInfo.classFields.last) {
           buffer.write('${indent}set $publicName(${element.type} value) => data[\'${element.name}\'] = DbQueryField.toBaseType(value);\n');
         } else {
@@ -523,7 +540,11 @@ class EasyCoder extends EasyLogger {
         final currType = element.type.replaceAll(' ', ''); //去除全部空格
         final numType = (currType == 'int' || currType == 'double' || currType == 'num') ? currType : 'DBUnsupportNumberOperate';
         final itemType = currType.startsWith('List<') ? currType.replaceFirst('List<', '').replaceFirst('>', '').replaceAll(',', ', ') : 'DBUnsupportArrayOperate';
-        buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
+        if (element.desc.isEmpty) {
+          buffer.write('$indent///Field ${element.name}\n');
+        } else {
+          buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
+        }
         if (element == modelInfo.classFields.last) {
           buffer.write('${indent}static DbQueryField<${element.type}, $numType, $itemType> get $publicName => DbQueryField(\'${element.name}\');\n');
         } else {
@@ -549,4 +570,371 @@ class EasyCoder extends EasyLogger {
     if (currType.startsWith('Map')) return '{}';
     return '$type()';
   }
+}
+
+///
+///虚拟机桥接类型生成器
+///
+class EasyVmGen {
+  ///要生成的桥接类型列表
+  final List<MapEntry<Type, dynamic>> targetClassList;
+
+  ///要生成的桥接函数列表
+  final List<String> targetProxyList;
+
+  ///要忽略生成new函数的类列表
+  final List<String> ignoreNews;
+
+  ///要忽略生成的函数列表
+  final List<String> ignoreFuncs;
+
+  ///要忽略生成caller的函数列表
+  final List<String> ignoreCaller;
+
+  ///全部的生成桥接类型集合
+  final Map<String, String> _libraryClassMap;
+
+  ///全部的生成桥接函数集合
+  final Map<String, String> _libraryProxyMap;
+
+  ///全部的生成代码的字符串缓冲区
+  final StringBuffer _codeBuffer;
+
+  EasyVmGen({
+    this.targetClassList = const [],
+    this.targetProxyList = const [],
+    this.ignoreNews = const ['double', 'num', 'List', 'Function', 'Iterable', 'Type'],
+    this.ignoreFuncs = const ['>>>'],
+    this.ignoreCaller = const ['Set.castFrom'],
+  })  : _libraryClassMap = {},
+        _libraryProxyMap = {},
+        _codeBuffer = StringBuffer();
+
+  ///生成dart基本库包装类型与函数
+  void generateBaseLibrary({required String outputFile, required String outputClass}) {
+    _codeBuffer.writeln('import \'vm_object.dart\';\n');
+    _codeBuffer.writeln('///');
+    _codeBuffer.writeln('///Dart基本库');
+    _codeBuffer.writeln('///');
+    _codeBuffer.writeln('class $outputClass {');
+
+    //int
+    final int intVar = 1;
+    _generateInstance(reflect(intVar).type, _generateClass(reflectClass(int)));
+    //double
+    final double doubleVar = 1.0;
+    _generateInstance(reflect(doubleVar).type, _generateClass(reflectClass(double)));
+    //num
+    final num numVar = 1.0;
+    _generateInstance(reflect(numVar).type, _generateClass(reflectClass(num)));
+    //bool
+    final bool boolVar = false;
+    _generateInstance(reflect(boolVar).type, _generateClass(reflectClass(bool)));
+    //String
+    final String strVar = 'hello';
+    _generateInstance(reflect(strVar).type, _generateClass(reflectClass(String)));
+    //List
+    final List listVar = [1, 2, 3];
+    _generateInstance(reflect(listVar).type, _generateClass(reflectClass(List)));
+    //Set
+    final Set setVar = <dynamic>{};
+    _generateInstance(reflect(setVar).type, _generateClass(reflectClass(Set)));
+    //Map
+    final Map mapVar = <dynamic, dynamic>{};
+    _generateInstance(reflect(mapVar).type, _generateClass(reflectClass(Map)));
+    //Runes
+    final Runes runesVar = Runes('aaa');
+    _generateInstance(reflect(runesVar).type, _generateClass(reflectClass(Runes)));
+    //Symbol
+    final Symbol symbolVar = Symbol('aaa');
+    _generateInstance(reflect(symbolVar).type, _generateClass(reflectClass(Symbol)));
+    //MapEntry
+    final MapEntry mapEntryVar = MapEntry('a', 'b');
+    _generateInstance(reflect(mapEntryVar).type, _generateClass(reflectClass(MapEntry)));
+    //Iterable
+    final Iterable iterableVar = mapVar.keys;
+    _generateInstance(reflect(iterableVar).type, _generateClass(reflectClass(Iterable)));
+    //Function
+    final Function functionVar = _emptyFunction;
+    _generateInstance(reflect(functionVar).type, _generateClass(reflectClass(Function)));
+    //Duration
+    final Duration durationVar = Duration();
+    _generateInstance(reflect(durationVar).type, _generateClass(reflectClass(Duration)));
+    //DateTime
+    final DateTime dateTimeVar = DateTime.now();
+    _generateInstance(reflect(dateTimeVar).type, _generateClass(reflectClass(DateTime)));
+    //Future
+    final Future futureVar = Future.delayed(Duration.zero);
+    _generateInstance(reflect(futureVar).type, _generateClass(reflectClass(Future)));
+    //Type
+    final Type typeVar = int;
+    _generateInstance(reflect(typeVar).type, _generateClass(reflectClass(Type)));
+    // //Null
+    // final nullVal = null;
+    // _generateInstance(reflect(nullVal).type, _generateClass(reflectClass(Null)));
+    //Object
+    final Object objectVar = Object();
+    _generateInstance(reflect(objectVar).type, _generateClass(reflectClass(Object)));
+    //dynamic
+    final dynamicVal = null;
+    _generateInstance(reflect(dynamicVal).type, _generateClass(reflectClass(Null), hardName: 'dynamic'));
+    //void
+    final voidVal = null;
+    _generateInstance(reflect(voidVal).type, _generateClass(reflectClass(Null), hardName: 'void', noBody: true), noBody: true);
+
+    //print
+    _libraryProxyMap['print'] = 'print';
+
+    //all
+    _generateLibraryList();
+
+    _codeBuffer.writeln('}');
+
+    //写入到文件
+    File(outputFile)
+      ..createSync(recursive: true)
+      ..writeAsStringSync(_codeBuffer.toString());
+  }
+
+  ///生成target目标包装类型与函数
+  void generateTargetLibrary({required String outputFile, required String outputClass, List<String> importList = const []}) {
+    _codeBuffer.writeln('import \'package:shelf_easy/shelf_easy.dart\';');
+
+    for (var element in importList) {
+      _codeBuffer.writeln('import \'$element\';');
+    }
+    if (importList.isNotEmpty) _codeBuffer.writeln('');
+
+    _codeBuffer.writeln('///');
+    _codeBuffer.writeln('///自定义桥接库');
+    _codeBuffer.writeln('///');
+    _codeBuffer.writeln('class $outputClass {');
+
+    for (var item in targetClassList) {
+      _generateInstance(reflect(item.value).type, _generateClass(reflectClass(item.key)));
+    }
+
+    for (var value in targetProxyList) {
+      _libraryProxyMap[value] = value;
+    }
+
+    //all
+    _generateLibraryList();
+
+    _codeBuffer.writeln('}');
+
+    //写入到文件
+    File(outputFile)
+      ..createSync(recursive: true)
+      ..writeAsStringSync(_codeBuffer.toString());
+  }
+
+  String _generateClass(ClassMirror target, {String? hardName, bool noBody = false}) {
+    final className = hardName ?? _geSymbolName(target.simpleName);
+    final fieldName = 'class${className[0].toUpperCase()}${className.substring(1)}';
+    if (_libraryClassMap.isNotEmpty) _codeBuffer.writeln('');
+    _libraryClassMap[fieldName] = fieldName;
+    if (hardName == null) {
+      _codeBuffer.writeln('  ///类型[$className]');
+    } else {
+      _codeBuffer.writeln('  ///类型$className');
+    }
+    _codeBuffer.writeln('  static final $fieldName = VmClass<$className>(');
+    _codeBuffer.writeln('    identifier: \'$className\',');
+    if (noBody) {
+      _codeBuffer.writeln('    externalProxyMap: {},');
+    } else {
+      _codeBuffer.writeln('    externalProxyMap: {');
+      _generateClassConstructors(target, className);
+      _generateClassProperties(target, className);
+    }
+    return className;
+  }
+
+  void _generateInstance(ClassMirror target, String className, {bool noBody = false}) {
+    if (noBody) {
+    } else {
+      _generateInstanceProperties(target, className);
+      _codeBuffer.writeln('    },');
+    }
+    _codeBuffer.writeln('  );');
+  }
+
+  void _generateLibraryList() {
+    _codeBuffer.writeln('');
+    _codeBuffer.writeln('  ///包装类型列表');
+    _codeBuffer.writeln('  static final libraryClassList = <VmClass>[');
+    _libraryClassMap.forEach((key, value) {
+      _codeBuffer.writeln('    $value,');
+    });
+    _codeBuffer.writeln('  ];');
+
+    _codeBuffer.writeln('');
+    _codeBuffer.writeln('  ///代理函数列表');
+    _codeBuffer.writeln('  static final libraryProxyList = <VmProxy<void>>[');
+    _libraryProxyMap.forEach((key, value) {
+      _codeBuffer.writeln('    VmProxy(identifier: \'$key\', externalStaticPropertyReader: () => $value),');
+    });
+    _codeBuffer.writeln('  ];');
+  }
+
+  void _generateClassConstructors(ClassMirror target, String className) {
+    final members = target.declarations;
+    final membersKeys = members.keys.toList();
+    membersKeys.sort((a, b) => a.toString().compareTo(b.toString()));
+    // _codeBuffer.writeln('      ///构造函数');
+    for (var key in membersKeys) {
+      final value = members[key];
+      if (value is MethodMirror && !value.isPrivate && value.isConstructor) {
+        final conName = _geSymbolName(value.constructorName);
+        if (conName.isNotEmpty || !ignoreNews.contains(className)) {
+          final keyName = conName.isEmpty ? className : conName;
+          final funcName = conName.isEmpty ? 'new' : conName;
+          final caller = _callerAnalyzer(className, conName, value, instance: false);
+          final wrapper = caller == null ? '' : ', $caller';
+          _codeBuffer.writeln('      \'$keyName\': VmProxy(identifier: \'$keyName\', externalStaticPropertyReader: () => $className.$funcName$wrapper),');
+          if (conName.isEmpty) {
+            _codeBuffer.writeln('      \'new\': VmProxy(identifier: \'new\', externalStaticPropertyReader: () => $className.$funcName$wrapper),');
+          }
+        }
+      }
+    }
+  }
+
+  void _generateClassProperties(ClassMirror target, String className) {
+    final members = target.staticMembers;
+    final membersKeys = members.keys.toList();
+    membersKeys.sort((a, b) => a.toString().compareTo(b.toString()));
+    final memberResults = <String, String>{};
+    for (var key in membersKeys) {
+      final value = members[key]!;
+      if (!value.isPrivate && !value.isSetter && !value.isOperator) {
+        final keyName = _geSymbolName(key);
+        final caller = _callerAnalyzer(className, keyName, value, instance: false);
+        final wrapper = caller == null ? '' : ', $caller';
+        if (memberResults.containsKey(keyName)) {
+          memberResults[keyName] = '${memberResults[keyName]}, externalStaticPropertyReader: () => $className.$keyName$wrapper';
+        } else {
+          memberResults[keyName] = 'externalStaticPropertyReader: () => $className.$keyName$wrapper';
+        }
+      }
+    }
+    for (var key in membersKeys) {
+      final value = members[key]!;
+      if (!value.isPrivate && !value.isGetter && !value.isOperator && !value.isRegularMethod) {
+        final keyName = _geSymbolName(key);
+        if (memberResults.containsKey(keyName)) {
+          memberResults[keyName] = '${memberResults[keyName]}, externalStaticPropertyWriter: (value) => $className.$keyName = value';
+        } else {
+          memberResults[keyName] = 'externalStaticPropertyWriter: (value) => $className.$keyName = value';
+        }
+      }
+    }
+    final memberResultsKeys = memberResults.keys.toList();
+    memberResultsKeys.sort((a, b) => a.toString().compareTo(b.toString()));
+    // _codeBuffer.writeln('      ///静态字段');
+    for (var key in memberResultsKeys) {
+      final value = memberResults[key]!;
+      if (ignoreFuncs.contains(key)) continue;
+      _codeBuffer.writeln('      \'$key\': VmProxy(identifier: \'$key\', $value),');
+    }
+  }
+
+  void _generateInstanceProperties(ClassMirror target, String className) {
+    final members = target.instanceMembers;
+    final membersKeys = members.keys.toList();
+    membersKeys.sort((a, b) => a.toString().compareTo(b.toString()));
+    final memberResults = <String, String>{};
+    for (var key in membersKeys) {
+      final value = members[key]!;
+      if (!value.isPrivate && !value.isSetter && !value.isOperator) {
+        final keyName = _geSymbolName(key);
+        final caller = _callerAnalyzer(className, keyName, value, instance: true);
+        final wrapper = caller == null ? '' : ', $caller';
+        if (memberResults.containsKey(keyName)) {
+          memberResults[keyName] = '${memberResults[keyName]}, externalInstancePropertyReader: (instance) => instance.$keyName$wrapper';
+        } else {
+          memberResults[keyName] = 'externalInstancePropertyReader: (instance) => instance.$keyName$wrapper';
+        }
+      }
+    }
+    for (var key in membersKeys) {
+      final value = members[key]!;
+      if (!value.isPrivate && !value.isGetter && !value.isOperator && !value.isRegularMethod) {
+        final keyName = _geSymbolName(key);
+        if (memberResults.containsKey(keyName)) {
+          memberResults[keyName] = '${memberResults[keyName]}, externalInstancePropertyWriter: (instance, value) => instance.$keyName = value';
+        } else {
+          memberResults[keyName] = 'externalInstancePropertyWriter: (instance, value) => instance.$keyName = value';
+        }
+      }
+    }
+    final memberResultsKeys = memberResults.keys.toList();
+    memberResultsKeys.sort((a, b) => a.toString().compareTo(b.toString()));
+    // _codeBuffer.writeln('      ///实例字段');
+    for (var key in memberResultsKeys) {
+      final value = memberResults[key]!;
+      if (ignoreFuncs.contains(key)) continue;
+      _codeBuffer.writeln('      \'$key\': VmProxy(identifier: \'$key\', $value),');
+    }
+  }
+
+  String? _callerAnalyzer(String className, String funcName, MethodMirror value, {required bool instance}) {
+    if (ignoreCaller.contains('$className.$funcName')) return null;
+    final parameters = value.parameters;
+    final needWrapArgs = <String>[];
+    //拥有函数作为参数，且这个函数参数的返回值带有模版
+    for (var item in parameters) {
+      final type = item.type;
+      if (type is FunctionTypeMirror && type.returnType.typeArguments.isNotEmpty) {
+        needWrapArgs.add(_geSymbolName(item.simpleName));
+      }
+    }
+    if (needWrapArgs.isNotEmpty) {
+      final listArgs = <String>[];
+      final listArgsWrap = <String, String>{};
+      final nameArgs = <String>{};
+      final nameArgsWrap = <String, String>{};
+      final parameters = value.parameters;
+      for (var item in parameters) {
+        final itemName = _geSymbolName(item.simpleName);
+        if (item.isNamed) {
+          final outName = itemName;
+          nameArgs.add(outName);
+          if (needWrapArgs.contains(itemName)) {
+            final itemFunc = item.type as FunctionTypeMirror;
+            int i = 0;
+            final inNames = itemFunc.parameters.map((e) => 'b${i++}').toList();
+            nameArgsWrap[outName] = '(${inNames.join(', ')}) => $outName == null ? null : $outName(${inNames.join(', ')})';
+          }
+        } else {
+          final outName = 'a${listArgs.length}';
+          listArgs.add(outName);
+          if (needWrapArgs.contains(itemName)) {
+            final itemFunc = item.type as FunctionTypeMirror;
+            int i = 0;
+            final inNames = itemFunc.parameters.map((e) => 'b${i++}').toList();
+            listArgsWrap[outName] = '(${inNames.join(', ')}) => $outName == null ? null : $outName(${inNames.join(', ')})';
+          }
+        }
+      }
+      final headStr = '${listArgs.join(', ')}${listArgs.isNotEmpty && nameArgs.isNotEmpty ? ',' : ''}${nameArgs.isNotEmpty ? '{' : ''}${nameArgs.join(', ')}${nameArgs.isNotEmpty ? '}' : ''}';
+      final bodystr = '$funcName(${listArgs.map((e) => listArgsWrap.containsKey(e) ? listArgsWrap[e] : e).join(', ')}${listArgs.isNotEmpty && nameArgs.isNotEmpty ? ',' : ''}${nameArgs.map((e) => '$e:${nameArgsWrap.containsKey(e) ? nameArgsWrap[e] : e}').join(', ')})';
+      if (instance) {
+        final wrapper = 'externalInstanceFunctionCaller: ($className instance, $headStr) => instance.$bodystr';
+        return wrapper;
+      } else {
+        final wrapper = 'externalStaticFunctionCaller: ($headStr) => $className${funcName.isEmpty ? '' : '.'}$bodystr';
+        return wrapper;
+      }
+    }
+    return null;
+  }
+
+  String _geSymbolName(Symbol val) {
+    final str = val.toString();
+    return str.substring(8, str.length - 2).replaceAll('=', '');
+  }
+
+  void _emptyFunction() {}
 }

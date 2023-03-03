@@ -4,7 +4,7 @@ import 'vm_object.dart';
 ///Dart基本库
 ///
 class VmLibrary {
-  ///标准类型[int]
+  ///类型[int]
   static final classInt = VmClass<int>(
     identifier: 'int',
     externalProxyMap: {
@@ -49,7 +49,7 @@ class VmLibrary {
     },
   );
 
-  ///标准类型[double]
+  ///类型[double]
   static final classDouble = VmClass<double>(
     identifier: 'double',
     externalProxyMap: {
@@ -89,7 +89,7 @@ class VmLibrary {
     },
   );
 
-  ///标准类型[num]
+  ///类型[num]
   static final classNum = VmClass<num>(
     identifier: 'num',
     externalProxyMap: {
@@ -124,7 +124,7 @@ class VmLibrary {
     },
   );
 
-  ///标准类型[bool]
+  ///类型[bool]
   static final classBool = VmClass<bool>(
     identifier: 'bool',
     externalProxyMap: {
@@ -137,7 +137,7 @@ class VmLibrary {
     },
   );
 
-  ///标准类型[String]
+  ///类型[String]
   static final classString = VmClass<String>(
     identifier: 'String',
     externalProxyMap: {
@@ -180,7 +180,7 @@ class VmLibrary {
     },
   );
 
-  ///标准类型[List]
+  ///类型[List]
   static final classList = VmClass<List>(
     identifier: 'List',
     externalProxyMap: {
@@ -255,7 +255,7 @@ class VmLibrary {
     },
   );
 
-  ///标准类型[Set]
+  ///类型[Set]
   static final classSet = VmClass<Set>(
     identifier: 'Set',
     externalProxyMap: {
@@ -316,7 +316,7 @@ class VmLibrary {
     },
   );
 
-  ///标准类型[Map]
+  ///类型[Map]
   static final classMap = VmClass<Map>(
     identifier: 'Map',
     externalProxyMap: {
@@ -356,7 +356,7 @@ class VmLibrary {
     },
   );
 
-  ///标准类型[Runes]
+  ///类型[Runes]
   static final classRunes = VmClass<Runes>(
     identifier: 'Runes',
     externalProxyMap: {
@@ -400,7 +400,7 @@ class VmLibrary {
     },
   );
 
-  ///标准类型[Symbol]
+  ///类型[Symbol]
   static final classSymbol = VmClass<Symbol>(
     identifier: 'Symbol',
     externalProxyMap: {
@@ -415,7 +415,7 @@ class VmLibrary {
     },
   );
 
-  ///标准类型[MapEntry]
+  ///类型[MapEntry]
   static final classMapEntry = VmClass<MapEntry>(
     identifier: 'MapEntry',
     externalProxyMap: {
@@ -430,7 +430,7 @@ class VmLibrary {
     },
   );
 
-  ///标准类型[Iterable]
+  ///类型[Iterable]
   static final classIterable = VmClass<Iterable>(
     identifier: 'Iterable',
     externalProxyMap: {
@@ -474,7 +474,7 @@ class VmLibrary {
     },
   );
 
-  ///标准类型[Function]
+  ///类型[Function]
   static final classFunction = VmClass<Function>(
     identifier: 'Function',
     externalProxyMap: {
@@ -487,7 +487,7 @@ class VmLibrary {
     },
   );
 
-  ///标准类型[Duration]
+  ///类型[Duration]
   static final classDuration = VmClass<Duration>(
     identifier: 'Duration',
     externalProxyMap: {
@@ -525,7 +525,7 @@ class VmLibrary {
     },
   );
 
-  ///标准类型[DateTime]
+  ///类型[DateTime]
   static final classDateTime = VmClass<DateTime>(
     identifier: 'DateTime',
     externalProxyMap: {
@@ -589,7 +589,7 @@ class VmLibrary {
     },
   );
 
-  ///标准类型[Future]
+  ///类型[Future]
   static final classFuture = VmClass<Future>(
     identifier: 'Future',
     externalProxyMap: {
@@ -616,7 +616,7 @@ class VmLibrary {
     },
   );
 
-  ///标准类型[Type]
+  ///类型[Type]
   static final classType = VmClass<Type>(
     identifier: 'Type',
     externalProxyMap: {
@@ -627,7 +627,7 @@ class VmLibrary {
     },
   );
 
-  ///标准类型[Object]
+  ///类型[Object]
   static final classObject = VmClass<Object>(
     identifier: 'Object',
     externalProxyMap: {
@@ -660,7 +660,7 @@ class VmLibrary {
     externalProxyMap: {},
   );
 
-  ///全部类型列表
+  ///包装类型列表
   static final libraryClassList = <VmClass>[
     classInt,
     classDouble,
@@ -686,6 +686,6 @@ class VmLibrary {
 
   ///代理函数列表
   static final libraryProxyList = <VmProxy<void>>[
-    VmProxy(identifier: 'print', externalStaticPropertyReader: () => print)..bindVmClass(classVoid),
+    VmProxy(identifier: 'print', externalStaticPropertyReader: () => print),
   ];
 }

@@ -197,7 +197,7 @@ class Complex extends DbBaseModel {
   ///Field mapMapListListMapListObjectId
   Map<String, Map<String, List<List<Map<String, List<ObjectId>>>>>> mapMapListListMapListObjectId;
 
-  ///
+  ///Field _id
   ObjectId get id => _id;
 
   Complex({
@@ -689,391 +689,391 @@ class Complex extends DbBaseModel {
 class ComplexDirty {
   final Map<String, dynamic> data = {};
 
-  ///
+  ///Field _id
   set id(ObjectId value) => data['_id'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field baseInt
   set baseInt(int value) => data['baseInt'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field baseDouble
   set baseDouble(double value) => data['baseDouble'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field baseNum
   set baseNum(num value) => data['baseNum'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field baseBool
   set baseBool(bool value) => data['baseBool'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field baseString
   set baseString(String value) => data['baseString'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field baseAddress
   set baseAddress(Address value) => data['baseAddress'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field baseObjectId
   set baseObjectId(ObjectId value) => data['baseObjectId'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field baseJsonWraper
   set baseJsonWraper(DbJsonWraper value) => data['baseJsonWraper'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field listInt
   set listInt(List<int> value) => data['listInt'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field listDouble
   set listDouble(List<double> value) => data['listDouble'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field listNum
   set listNum(List<num> value) => data['listNum'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field listBool
   set listBool(List<bool> value) => data['listBool'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field listString
   set listString(List<String> value) => data['listString'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field listAddress
   set listAddress(List<Address> value) => data['listAddress'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field listObjectId
   set listObjectId(List<ObjectId> value) => data['listObjectId'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field mapInt
   set mapInt(Map<String, int> value) => data['mapInt'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field mapDouble
   set mapDouble(Map<String, double> value) => data['mapDouble'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field mapNum
   set mapNum(Map<String, num> value) => data['mapNum'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field mapBool
   set mapBool(Map<String, bool> value) => data['mapBool'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field mapString
   set mapString(Map<String, String> value) => data['mapString'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field mapAddress
   set mapAddress(Map<String, Address> value) => data['mapAddress'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field mapObjectId
   set mapObjectId(Map<String, ObjectId> value) => data['mapObjectId'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map2Int
   set map2Int(Map<int, int> value) => data['map2Int'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map2Double
   set map2Double(Map<int, double> value) => data['map2Double'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map2Num
   set map2Num(Map<int, num> value) => data['map2Num'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map2Bool
   set map2Bool(Map<int, bool> value) => data['map2Bool'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map2String
   set map2String(Map<int, String> value) => data['map2String'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map2Address
   set map2Address(Map<int, Address> value) => data['map2Address'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map2ObjectId
   set map2ObjectId(Map<int, ObjectId> value) => data['map2ObjectId'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map3Int
   set map3Int(Map<double, int> value) => data['map3Int'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map3Double
   set map3Double(Map<double, double> value) => data['map3Double'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map3Num
   set map3Num(Map<double, num> value) => data['map3Num'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map3Bool
   set map3Bool(Map<double, bool> value) => data['map3Bool'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map3String
   set map3String(Map<double, String> value) => data['map3String'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map3Address
   set map3Address(Map<double, Address> value) => data['map3Address'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map3ObjectId
   set map3ObjectId(Map<double, ObjectId> value) => data['map3ObjectId'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map4Int
   set map4Int(Map<bool, int> value) => data['map4Int'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map4Double
   set map4Double(Map<bool, double> value) => data['map4Double'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map4Num
   set map4Num(Map<bool, num> value) => data['map4Num'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map4Bool
   set map4Bool(Map<bool, bool> value) => data['map4Bool'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map4String
   set map4String(Map<bool, String> value) => data['map4String'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map4Address
   set map4Address(Map<bool, Address> value) => data['map4Address'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map4ObjectId
   set map4ObjectId(Map<bool, ObjectId> value) => data['map4ObjectId'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map5Int
   set map5Int(Map<ObjectId, int> value) => data['map5Int'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map5Double
   set map5Double(Map<ObjectId, double> value) => data['map5Double'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map5Num
   set map5Num(Map<ObjectId, num> value) => data['map5Num'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map5Bool
   set map5Bool(Map<ObjectId, bool> value) => data['map5Bool'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map5String
   set map5String(Map<ObjectId, String> value) => data['map5String'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map5Address
   set map5Address(Map<ObjectId, Address> value) => data['map5Address'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map5ObjectId
   set map5ObjectId(Map<ObjectId, ObjectId> value) => data['map5ObjectId'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map6Int
   set map6Int(Map<Address, int> value) => data['map6Int'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map6Double
   set map6Double(Map<Address, double> value) => data['map6Double'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map6Num
   set map6Num(Map<Address, num> value) => data['map6Num'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map6Bool
   set map6Bool(Map<Address, bool> value) => data['map6Bool'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map6String
   set map6String(Map<Address, String> value) => data['map6String'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map6Address
   set map6Address(Map<Address, Address> value) => data['map6Address'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field map6ObjectId
   set map6ObjectId(Map<Address, ObjectId> value) => data['map6ObjectId'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field listListMapMapListMapDouble
   set listListMapMapListMapDouble(List<List<Map<String, Map<String, List<Map<String, double>>>>>> value) => data['listListMapMapListMapDouble'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field listListMapMapListMapAddress
   set listListMapMapListMapAddress(List<List<Map<String, Map<String, List<Map<String, Address>>>>>> value) => data['listListMapMapListMapAddress'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field listListMapMapListMapObjectId
   set listListMapMapListMapObjectId(List<List<Map<String, Map<String, List<Map<String, ObjectId>>>>>> value) => data['listListMapMapListMapObjectId'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field mapMapListListMapListDouble
   set mapMapListListMapListDouble(Map<String, Map<String, List<List<Map<String, List<double>>>>>> value) => data['mapMapListListMapListDouble'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field mapMapListListMapListAddress
   set mapMapListListMapListAddress(Map<String, Map<String, List<List<Map<String, List<Address>>>>>> value) => data['mapMapListListMapListAddress'] = DbQueryField.toBaseType(value);
 
-  ///
+  ///Field mapMapListListMapListObjectId
   set mapMapListListMapListObjectId(Map<String, Map<String, List<List<Map<String, List<ObjectId>>>>>> value) => data['mapMapListListMapListObjectId'] = DbQueryField.toBaseType(value);
 }
 
 class ComplexQuery {
   static const $tableName = 'complex';
 
-  ///
+  ///Field _id
   static DbQueryField<ObjectId, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get id => DbQueryField('_id');
 
-  ///
+  ///Field baseInt
   static DbQueryField<int, int, DBUnsupportArrayOperate> get baseInt => DbQueryField('baseInt');
 
-  ///
+  ///Field baseDouble
   static DbQueryField<double, double, DBUnsupportArrayOperate> get baseDouble => DbQueryField('baseDouble');
 
-  ///
+  ///Field baseNum
   static DbQueryField<num, num, DBUnsupportArrayOperate> get baseNum => DbQueryField('baseNum');
 
-  ///
+  ///Field baseBool
   static DbQueryField<bool, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get baseBool => DbQueryField('baseBool');
 
-  ///
+  ///Field baseString
   static DbQueryField<String, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get baseString => DbQueryField('baseString');
 
-  ///
+  ///Field baseAddress
   static DbQueryField<Address, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get baseAddress => DbQueryField('baseAddress');
 
-  ///
+  ///Field baseObjectId
   static DbQueryField<ObjectId, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get baseObjectId => DbQueryField('baseObjectId');
 
-  ///
+  ///Field baseJsonWraper
   static DbQueryField<DbJsonWraper, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get baseJsonWraper => DbQueryField('baseJsonWraper');
 
-  ///
+  ///Field listInt
   static DbQueryField<List<int>, DBUnsupportNumberOperate, int> get listInt => DbQueryField('listInt');
 
-  ///
+  ///Field listDouble
   static DbQueryField<List<double>, DBUnsupportNumberOperate, double> get listDouble => DbQueryField('listDouble');
 
-  ///
+  ///Field listNum
   static DbQueryField<List<num>, DBUnsupportNumberOperate, num> get listNum => DbQueryField('listNum');
 
-  ///
+  ///Field listBool
   static DbQueryField<List<bool>, DBUnsupportNumberOperate, bool> get listBool => DbQueryField('listBool');
 
-  ///
+  ///Field listString
   static DbQueryField<List<String>, DBUnsupportNumberOperate, String> get listString => DbQueryField('listString');
 
-  ///
+  ///Field listAddress
   static DbQueryField<List<Address>, DBUnsupportNumberOperate, Address> get listAddress => DbQueryField('listAddress');
 
-  ///
+  ///Field listObjectId
   static DbQueryField<List<ObjectId>, DBUnsupportNumberOperate, ObjectId> get listObjectId => DbQueryField('listObjectId');
 
-  ///
+  ///Field mapInt
   static DbQueryField<Map<String, int>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get mapInt => DbQueryField('mapInt');
 
-  ///
+  ///Field mapDouble
   static DbQueryField<Map<String, double>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get mapDouble => DbQueryField('mapDouble');
 
-  ///
+  ///Field mapNum
   static DbQueryField<Map<String, num>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get mapNum => DbQueryField('mapNum');
 
-  ///
+  ///Field mapBool
   static DbQueryField<Map<String, bool>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get mapBool => DbQueryField('mapBool');
 
-  ///
+  ///Field mapString
   static DbQueryField<Map<String, String>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get mapString => DbQueryField('mapString');
 
-  ///
+  ///Field mapAddress
   static DbQueryField<Map<String, Address>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get mapAddress => DbQueryField('mapAddress');
 
-  ///
+  ///Field mapObjectId
   static DbQueryField<Map<String, ObjectId>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get mapObjectId => DbQueryField('mapObjectId');
 
-  ///
+  ///Field map2Int
   static DbQueryField<Map<int, int>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map2Int => DbQueryField('map2Int');
 
-  ///
+  ///Field map2Double
   static DbQueryField<Map<int, double>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map2Double => DbQueryField('map2Double');
 
-  ///
+  ///Field map2Num
   static DbQueryField<Map<int, num>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map2Num => DbQueryField('map2Num');
 
-  ///
+  ///Field map2Bool
   static DbQueryField<Map<int, bool>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map2Bool => DbQueryField('map2Bool');
 
-  ///
+  ///Field map2String
   static DbQueryField<Map<int, String>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map2String => DbQueryField('map2String');
 
-  ///
+  ///Field map2Address
   static DbQueryField<Map<int, Address>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map2Address => DbQueryField('map2Address');
 
-  ///
+  ///Field map2ObjectId
   static DbQueryField<Map<int, ObjectId>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map2ObjectId => DbQueryField('map2ObjectId');
 
-  ///
+  ///Field map3Int
   static DbQueryField<Map<double, int>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map3Int => DbQueryField('map3Int');
 
-  ///
+  ///Field map3Double
   static DbQueryField<Map<double, double>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map3Double => DbQueryField('map3Double');
 
-  ///
+  ///Field map3Num
   static DbQueryField<Map<double, num>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map3Num => DbQueryField('map3Num');
 
-  ///
+  ///Field map3Bool
   static DbQueryField<Map<double, bool>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map3Bool => DbQueryField('map3Bool');
 
-  ///
+  ///Field map3String
   static DbQueryField<Map<double, String>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map3String => DbQueryField('map3String');
 
-  ///
+  ///Field map3Address
   static DbQueryField<Map<double, Address>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map3Address => DbQueryField('map3Address');
 
-  ///
+  ///Field map3ObjectId
   static DbQueryField<Map<double, ObjectId>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map3ObjectId => DbQueryField('map3ObjectId');
 
-  ///
+  ///Field map4Int
   static DbQueryField<Map<bool, int>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map4Int => DbQueryField('map4Int');
 
-  ///
+  ///Field map4Double
   static DbQueryField<Map<bool, double>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map4Double => DbQueryField('map4Double');
 
-  ///
+  ///Field map4Num
   static DbQueryField<Map<bool, num>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map4Num => DbQueryField('map4Num');
 
-  ///
+  ///Field map4Bool
   static DbQueryField<Map<bool, bool>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map4Bool => DbQueryField('map4Bool');
 
-  ///
+  ///Field map4String
   static DbQueryField<Map<bool, String>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map4String => DbQueryField('map4String');
 
-  ///
+  ///Field map4Address
   static DbQueryField<Map<bool, Address>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map4Address => DbQueryField('map4Address');
 
-  ///
+  ///Field map4ObjectId
   static DbQueryField<Map<bool, ObjectId>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map4ObjectId => DbQueryField('map4ObjectId');
 
-  ///
+  ///Field map5Int
   static DbQueryField<Map<ObjectId, int>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map5Int => DbQueryField('map5Int');
 
-  ///
+  ///Field map5Double
   static DbQueryField<Map<ObjectId, double>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map5Double => DbQueryField('map5Double');
 
-  ///
+  ///Field map5Num
   static DbQueryField<Map<ObjectId, num>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map5Num => DbQueryField('map5Num');
 
-  ///
+  ///Field map5Bool
   static DbQueryField<Map<ObjectId, bool>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map5Bool => DbQueryField('map5Bool');
 
-  ///
+  ///Field map5String
   static DbQueryField<Map<ObjectId, String>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map5String => DbQueryField('map5String');
 
-  ///
+  ///Field map5Address
   static DbQueryField<Map<ObjectId, Address>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map5Address => DbQueryField('map5Address');
 
-  ///
+  ///Field map5ObjectId
   static DbQueryField<Map<ObjectId, ObjectId>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map5ObjectId => DbQueryField('map5ObjectId');
 
-  ///
+  ///Field map6Int
   static DbQueryField<Map<Address, int>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map6Int => DbQueryField('map6Int');
 
-  ///
+  ///Field map6Double
   static DbQueryField<Map<Address, double>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map6Double => DbQueryField('map6Double');
 
-  ///
+  ///Field map6Num
   static DbQueryField<Map<Address, num>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map6Num => DbQueryField('map6Num');
 
-  ///
+  ///Field map6Bool
   static DbQueryField<Map<Address, bool>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map6Bool => DbQueryField('map6Bool');
 
-  ///
+  ///Field map6String
   static DbQueryField<Map<Address, String>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map6String => DbQueryField('map6String');
 
-  ///
+  ///Field map6Address
   static DbQueryField<Map<Address, Address>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map6Address => DbQueryField('map6Address');
 
-  ///
+  ///Field map6ObjectId
   static DbQueryField<Map<Address, ObjectId>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get map6ObjectId => DbQueryField('map6ObjectId');
 
-  ///
+  ///Field listListMapMapListMapDouble
   static DbQueryField<List<List<Map<String, Map<String, List<Map<String, double>>>>>>, DBUnsupportNumberOperate, List<Map<String, Map<String, List<Map<String, double>>>>>> get listListMapMapListMapDouble => DbQueryField('listListMapMapListMapDouble');
 
-  ///
+  ///Field listListMapMapListMapAddress
   static DbQueryField<List<List<Map<String, Map<String, List<Map<String, Address>>>>>>, DBUnsupportNumberOperate, List<Map<String, Map<String, List<Map<String, Address>>>>>> get listListMapMapListMapAddress => DbQueryField('listListMapMapListMapAddress');
 
-  ///
+  ///Field listListMapMapListMapObjectId
   static DbQueryField<List<List<Map<String, Map<String, List<Map<String, ObjectId>>>>>>, DBUnsupportNumberOperate, List<Map<String, Map<String, List<Map<String, ObjectId>>>>>> get listListMapMapListMapObjectId => DbQueryField('listListMapMapListMapObjectId');
 
-  ///
+  ///Field mapMapListListMapListDouble
   static DbQueryField<Map<String, Map<String, List<List<Map<String, List<double>>>>>>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get mapMapListListMapListDouble => DbQueryField('mapMapListListMapListDouble');
 
-  ///
+  ///Field mapMapListListMapListAddress
   static DbQueryField<Map<String, Map<String, List<List<Map<String, List<Address>>>>>>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get mapMapListListMapListAddress => DbQueryField('mapMapListListMapListAddress');
 
-  ///
+  ///Field mapMapListListMapListObjectId
   static DbQueryField<Map<String, Map<String, List<List<Map<String, List<ObjectId>>>>>>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get mapMapListListMapListObjectId => DbQueryField('mapMapListListMapListObjectId');
 }
