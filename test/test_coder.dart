@@ -4,8 +4,8 @@ import 'package:shelf_easy/shelf_easy.dart';
 import 'package:shelf_easy/shelf_gens.dart';
 
 void main() {
-  testEasyCoder();
-  // testEasyVmGen();
+  // testEasyCoder();
+  testEasyVmGen();
 }
 
 void testEasyCoder() {

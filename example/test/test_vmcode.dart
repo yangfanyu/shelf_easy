@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_if_null_operators, unnecessary_type_check, unnecessary_cast, prefer_typing_uninitialized_variables, unnecessary_null_in_if_null_operators, avoid_init_to_null, unnecessary_null_comparison, prefer_collection_literals
 
+import 'dart:math';
+
 ///
 /// 变量定义测试区
 ///
@@ -170,6 +172,9 @@ final methodInvocationResD = Set; //Set
 final methodInvocationResE = methodInvocationResC.toString();
 final methodInvocationResF = methodInvocationResD.runtimeType; //VmType
 final methodInvocationResG = methodInvocationMap1.remove(1); //a
+final methodInvocationResH = max(100, 99); //100
+final methodInvocationResI = Random().nextDouble();
+final methodInvocationResJ = pi; //3.141592653589793
 
 ///
 /// 函数定义与语句测试区

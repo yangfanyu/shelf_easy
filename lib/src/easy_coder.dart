@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'dart:mirrors';
 
 import 'easy_class.dart';
@@ -603,7 +604,7 @@ class EasyVmGen {
   EasyVmGen({
     this.targetClassList = const [],
     this.targetProxyList = const [],
-    this.ignoreNews = const ['double', 'num', 'List', 'Function', 'Iterable', 'Type'],
+    this.ignoreNews = const ['double', 'num', 'List', 'Enum', 'Function', 'Iterable', 'Iterator', 'Type', 'RegExpMatch'],
     this.ignoreFuncs = const ['>>>'],
     this.ignoreCaller = const ['Set.castFrom'],
   })  : _libraryClassMap = {},
@@ -612,84 +613,78 @@ class EasyVmGen {
 
   ///生成dart基本库包装类型与函数
   void generateBaseLibrary({required String outputFile, required String outputClass}) {
+    _codeBuffer.writeln('import \'dart:math\';\n');
     _codeBuffer.writeln('import \'vm_object.dart\';\n');
     _codeBuffer.writeln('///');
     _codeBuffer.writeln('///Dart基本库');
     _codeBuffer.writeln('///');
     _codeBuffer.writeln('class $outputClass {');
+    /** 基本类型 **/
+    _generateInstance(reflect(int.parse('1')).type, _generateClass(reflectClass(int)));
+    _generateInstance(reflect(double.parse('1.0')).type, _generateClass(reflectClass(double)));
+    _generateInstance(reflect(num.parse('1.0')).type, _generateClass(reflectClass(num)));
+    _generateInstance(reflect(false).type, _generateClass(reflectClass(bool)));
+    _generateInstance(reflect('hello').type, _generateClass(reflectClass(String)));
+    _generateInstance(reflect(List.from([])).type, _generateClass(reflectClass(List)));
+    _generateInstance(reflect(Set.from({})).type, _generateClass(reflectClass(Set)));
+    _generateInstance(reflect(Map.from({})).type, _generateClass(reflectClass(Map)));
+    /** 对象类型 **/
+    _generateInstance(reflect(Runes('a')).type, _generateClass(reflectClass(Runes)));
+    _generateInstance(reflect(Symbol('a')).type, _generateClass(reflectClass(Symbol)));
+    _generateInstance(reflect(MapEntry('a', 'b')).type, _generateClass(reflectClass(MapEntry)));
+    _generateInstance(reflect(Duration()).type, _generateClass(reflectClass(Duration)));
+    _generateInstance(reflect(DateTime.now()).type, _generateClass(reflectClass(DateTime)));
+    _generateInstance(reflect(StringBuffer()).type, _generateClass(reflectClass(StringBuffer)));
+    _generateInstance(reflect(RegExp('a')).type, _generateClass(reflectClass(RegExp)));
+    _generateInstance(reflect(Uri()).type, _generateClass(reflectClass(Uri)));
+    _generateInstance(reflect(UriData.fromString('a')).type, _generateClass(reflectClass(UriData)));
+    _generateInstance(reflect(BigInt.from(1)).type, _generateClass(reflectClass(BigInt)));
+    _generateInstance(reflect(Stopwatch()).type, _generateClass(reflectClass(Stopwatch)));
+    _generateInstance(reflect(Future(_emptyFunction)).type, _generateClass(reflectClass(Future)));
+    _generateInstance(reflect(_emptyFunction).type, _generateClass(reflectClass(Function)));
+    /** dart:math里面的对象类型 **/
+    _generateInstance(reflect(Random()).type, _generateClass(reflectClass(Random)));
+    _generateInstance(reflect(Point(1, 1)).type, _generateClass(reflectClass(Point)));
+    _generateInstance(reflect(Rectangle(1, 1, 2, 2)).type, _generateClass(reflectClass(Rectangle)));
+    /** 抽象类型 **/
+    _generateInstance(reflect(Map.from({}).keys).type, _generateClass(reflectClass(Iterable)));
+    _generateInstance(reflect(Map.from({}).keys.iterator).type, _generateClass(reflectClass(Iterator)));
+    _generateInstance(reflect(Runes('a').iterator).type, _generateClass(reflectClass(RuneIterator)));
+    _generateInstance(reflect(RegExp('1').firstMatch('1')).type, _generateClass(reflectClass(RegExpMatch)));
+    /** 底层类型 **/
+    _generateInstance(reflect(EasyLogLevel.debug).type, _generateClass(reflectClass(Enum)));
+    _generateInstance(reflect(int).type, _generateClass(reflectClass(Type)));
+    _generateInstance(reflect(Object()).type, _generateClass(reflectClass(Object))); //上面的类型全部非null值都是Object的子类，所以放在他们后面
+    // _generateInstance(reflect(null).type, _generateClass(reflectClass(Null), hardTemplateName: 'dynamic')); // Null a=null; print(a is Object); => false。直接用dynamic替代，无需生成
+    _generateInstance(reflect(null).type, _generateClass(reflectClass(Null), hardClassName: 'dynamic')); //全部的类型（包括Null类型）都可用dynamic表示，所以放在他们后面
+    _generateInstance(reflect(null).type, _generateClass(reflectClass(Null), hardClassName: 'void', noBody: true), noBody: true); //无类型，用于void关键字
 
-    //int
-    final int intVar = 1;
-    _generateInstance(reflect(intVar).type, _generateClass(reflectClass(int)));
-    //double
-    final double doubleVar = 1.0;
-    _generateInstance(reflect(doubleVar).type, _generateClass(reflectClass(double)));
-    //num
-    final num numVar = 1.0;
-    _generateInstance(reflect(numVar).type, _generateClass(reflectClass(num)));
-    //bool
-    final bool boolVar = false;
-    _generateInstance(reflect(boolVar).type, _generateClass(reflectClass(bool)));
-    //String
-    final String strVar = 'hello';
-    _generateInstance(reflect(strVar).type, _generateClass(reflectClass(String)));
-    //List
-    final List listVar = [1, 2, 3];
-    _generateInstance(reflect(listVar).type, _generateClass(reflectClass(List)));
-    //Set
-    final Set setVar = <dynamic>{};
-    _generateInstance(reflect(setVar).type, _generateClass(reflectClass(Set)));
-    //Map
-    final Map mapVar = <dynamic, dynamic>{};
-    _generateInstance(reflect(mapVar).type, _generateClass(reflectClass(Map)));
-    //Runes
-    final Runes runesVar = Runes('aaa');
-    _generateInstance(reflect(runesVar).type, _generateClass(reflectClass(Runes)));
-    //Symbol
-    final Symbol symbolVar = Symbol('aaa');
-    _generateInstance(reflect(symbolVar).type, _generateClass(reflectClass(Symbol)));
-    //MapEntry
-    final MapEntry mapEntryVar = MapEntry('a', 'b');
-    _generateInstance(reflect(mapEntryVar).type, _generateClass(reflectClass(MapEntry)));
-    //Iterable
-    final Iterable iterableVar = mapVar.keys;
-    _generateInstance(reflect(iterableVar).type, _generateClass(reflectClass(Iterable)));
-    //Function
-    final Function functionVar = _emptyFunction;
-    _generateInstance(reflect(functionVar).type, _generateClass(reflectClass(Function)));
-    //Duration
-    final Duration durationVar = Duration();
-    _generateInstance(reflect(durationVar).type, _generateClass(reflectClass(Duration)));
-    //DateTime
-    final DateTime dateTimeVar = DateTime.now();
-    _generateInstance(reflect(dateTimeVar).type, _generateClass(reflectClass(DateTime)));
-    //Future
-    final Future futureVar = Future.delayed(Duration.zero);
-    _generateInstance(reflect(futureVar).type, _generateClass(reflectClass(Future)));
-    //Type
-    final Type typeVar = int;
-    _generateInstance(reflect(typeVar).type, _generateClass(reflectClass(Type)));
-    // //Null
-    // final nullVal = null;
-    // _generateInstance(reflect(nullVal).type, _generateClass(reflectClass(Null)));
-    //Object
-    final Object objectVar = Object();
-    _generateInstance(reflect(objectVar).type, _generateClass(reflectClass(Object)));
-    //dynamic
-    final dynamicVal = null;
-    _generateInstance(reflect(dynamicVal).type, _generateClass(reflectClass(Null), hardName: 'dynamic'));
-    //void
-    final voidVal = null;
-    _generateInstance(reflect(voidVal).type, _generateClass(reflectClass(Null), hardName: 'void', noBody: true), noBody: true);
-
-    //print
+    //proxy
     _libraryProxyMap['print'] = 'print';
-
+    _libraryProxyMap['e'] = 'e';
+    _libraryProxyMap['ln10'] = 'ln10';
+    _libraryProxyMap['ln2'] = 'ln2';
+    _libraryProxyMap['log2e'] = 'log2e';
+    _libraryProxyMap['log10e'] = 'log10e';
+    _libraryProxyMap['pi'] = 'pi';
+    _libraryProxyMap['sqrt1_2'] = 'sqrt1_2';
+    _libraryProxyMap['sqrt2'] = 'sqrt2';
+    _libraryProxyMap['min'] = 'min';
+    _libraryProxyMap['max'] = 'max';
+    _libraryProxyMap['atan2'] = 'atan2';
+    _libraryProxyMap['pow'] = 'pow';
+    _libraryProxyMap['sin'] = 'sin';
+    _libraryProxyMap['cos'] = 'cos';
+    _libraryProxyMap['tan'] = 'tan';
+    _libraryProxyMap['acos'] = 'acos';
+    _libraryProxyMap['asin'] = 'asin';
+    _libraryProxyMap['atan'] = 'atan';
+    _libraryProxyMap['sqrt'] = 'sqrt';
+    _libraryProxyMap['exp'] = 'exp';
+    _libraryProxyMap['log'] = 'log';
     //all
     _generateLibraryList();
-
     _codeBuffer.writeln('}');
-
     //写入到文件
     File(outputFile)
       ..createSync(recursive: true)
@@ -697,7 +692,7 @@ class EasyVmGen {
   }
 
   ///生成target目标包装类型与函数
-  void generateTargetLibrary({required String outputFile, required String outputClass, List<String> importList = const []}) {
+  void generateTargetLibrary({required String outputFile, required String outputClass, List<String> importList = const [], String desc = 'Custom'}) {
     _codeBuffer.writeln('import \'package:shelf_easy/shelf_easy.dart\';');
 
     for (var element in importList) {
@@ -706,7 +701,7 @@ class EasyVmGen {
     if (importList.isNotEmpty) _codeBuffer.writeln('');
 
     _codeBuffer.writeln('///');
-    _codeBuffer.writeln('///自定义桥接库');
+    _codeBuffer.writeln('///$desc桥接库');
     _codeBuffer.writeln('///');
     _codeBuffer.writeln('class $outputClass {');
 
@@ -729,17 +724,18 @@ class EasyVmGen {
       ..writeAsStringSync(_codeBuffer.toString());
   }
 
-  String _generateClass(ClassMirror target, {String? hardName, bool noBody = false}) {
-    final className = hardName ?? _geSymbolName(target.simpleName);
+  String _generateClass(ClassMirror target, {String? hardClassName, String? hardTemplateName, bool noBody = false}) {
+    final className = hardClassName ?? _geSymbolName(target.simpleName);
     final fieldName = 'class${className[0].toUpperCase()}${className.substring(1)}';
+    final templateName = hardTemplateName ?? className;
     if (_libraryClassMap.isNotEmpty) _codeBuffer.writeln('');
     _libraryClassMap[fieldName] = fieldName;
-    if (hardName == null) {
+    if (hardClassName == null) {
       _codeBuffer.writeln('  ///类型[$className]');
     } else {
       _codeBuffer.writeln('  ///类型$className');
     }
-    _codeBuffer.writeln('  static final $fieldName = VmClass<$className>(');
+    _codeBuffer.writeln('  static final $fieldName = VmClass<$templateName>(');
     _codeBuffer.writeln('    identifier: \'$className\',');
     if (noBody) {
       _codeBuffer.writeln('    externalProxyMap: {},');
@@ -763,19 +759,27 @@ class EasyVmGen {
   void _generateLibraryList() {
     _codeBuffer.writeln('');
     _codeBuffer.writeln('  ///包装类型列表');
-    _codeBuffer.writeln('  static final libraryClassList = <VmClass>[');
-    _libraryClassMap.forEach((key, value) {
-      _codeBuffer.writeln('    $value,');
-    });
-    _codeBuffer.writeln('  ];');
+    if (_libraryClassMap.isEmpty) {
+      _codeBuffer.writeln('  static final libraryClassList = <VmClass>[];');
+    } else {
+      _codeBuffer.writeln('  static final libraryClassList = <VmClass>[');
+      _libraryClassMap.forEach((key, value) {
+        _codeBuffer.writeln('    $value,');
+      });
+      _codeBuffer.writeln('  ];');
+    }
 
     _codeBuffer.writeln('');
     _codeBuffer.writeln('  ///代理函数列表');
-    _codeBuffer.writeln('  static final libraryProxyList = <VmProxy<void>>[');
-    _libraryProxyMap.forEach((key, value) {
-      _codeBuffer.writeln('    VmProxy(identifier: \'$key\', externalStaticPropertyReader: () => $value),');
-    });
-    _codeBuffer.writeln('  ];');
+    if (_libraryProxyMap.isEmpty) {
+      _codeBuffer.writeln('  static final libraryProxyList = <VmProxy<void>>[];');
+    } else {
+      _codeBuffer.writeln('  static final libraryProxyList = <VmProxy<void>>[');
+      _libraryProxyMap.forEach((key, value) {
+        _codeBuffer.writeln('    VmProxy(identifier: \'$key\', externalStaticPropertyReader: () => $value),');
+      });
+      _codeBuffer.writeln('  ];');
+    }
   }
 
   void _generateClassConstructors(ClassMirror target, String className) {

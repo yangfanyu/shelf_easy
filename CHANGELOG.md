@@ -1,3 +1,7 @@
+## 1.1.6
+
+- Bridge dart:math and some dart:core class to dart-lang runtime virtual machine.
+  
 ## 1.1.5
 
 - Optimize parts related to EasyClient and upgrade mongo_dart.

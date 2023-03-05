@@ -2,7 +2,7 @@ import 'package:shelf_easy/shelf_easy.dart';
 import '../model/all.dart';
 
 ///
-///自定义桥接库
+///Custom桥接库
 ///
 class ModelLibrary {
   ///类型[Constant]
