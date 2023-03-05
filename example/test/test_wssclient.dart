@@ -8,7 +8,8 @@ void main() async {
   final client = EasyClient(
     config: EasyClientConfig(
       logLevel: EasyLogLevel.debug,
-      url: 'ws://localhost:8080',
+      host: 'localhost',
+      port: 8080,
       pwd: '12345678', //AES加密密码
       binary: true, //使用二进制发送AES数据包
     ),

@@ -36,7 +36,7 @@ class Easy {
   /// * [logFileMaxBytes] 日志文件每份大小（字节）
   /// * [pwd] 外部服务器数据加密密码
   /// * [secret] 内部服务器集群之间数据通讯签名密钥
-  /// * [binary] websocket服务器是否使用二进制传输数据
+  /// * [binary] 服务器是否使用二进制格式传输数据
   /// * [sslKeyFile] privateKey文件路径
   /// * [sslCerFile] certificate文件路径
   ///

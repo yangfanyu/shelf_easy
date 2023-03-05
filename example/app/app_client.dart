@@ -7,13 +7,13 @@ void main(List<String> args) async {
   final port = args.first;
   switch (port) {
     case '8001':
-      await userClient800X(port: port, uid: 'aaa', cid: 'cat'); //启动后加入到分组cat
+      await userClient800X(port: 8001, uid: 'aaa', cid: 'cat'); //启动后加入到分组cat
       break;
     case '8002':
-      await userClient800X(port: port, uid: 'bbb', cid: 'cat'); //启动后加入到分组cat
+      await userClient800X(port: 8002, uid: 'bbb', cid: 'cat'); //启动后加入到分组cat
       break;
     case '8003':
-      await userClient800X(port: port, uid: 'ccc', cid: 'dog'); //启动后加入到分组dog
+      await userClient800X(port: 8003, uid: 'ccc', cid: 'dog'); //启动后加入到分组dog
       break;
     case '8080':
       await pushClient8080();
@@ -22,12 +22,13 @@ void main(List<String> args) async {
 }
 
 ///启动为长连接客户端
-Future<void> userClient800X({required String port, required String uid, required String cid}) async {
+Future<void> userClient800X({required int port, required String uid, required String cid}) async {
   final client = EasyClient(
     config: EasyClientConfig(
       logTag: uid,
       logLevel: EasyLogLevel.debug,
-      url: 'ws://localhost:$port',
+      host: 'localhost',
+      port: port,
       pwd: '12345678', //AES加密密码
       binary: true, //使用二进制发送AES数据包
     ),
@@ -58,7 +59,8 @@ Future<void> pushClient8080() async {
   final client = EasyClient(
     config: EasyClientConfig(
       logLevel: EasyLogLevel.debug,
-      url: 'http://localhost:8080',
+      host: 'localhost',
+      port: 8080,
       pwd: '12345678', //AES加密密码
       binary: true, //使用二进制发送AES数据包
     ),

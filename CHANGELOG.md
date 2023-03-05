@@ -1,3 +1,7 @@
+## 1.1.5
+
+- Optimize parts related to EasyClient and upgrade mongo_dart.
+  
 ## 1.1.2 
 
 - Implemented a dart-lang runtime virtual machine and improve documents.

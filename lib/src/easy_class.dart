@@ -584,8 +584,11 @@ class EasySecurity {
 ///客户端配置
 ///
 class EasyClientConfig extends EasyConfig {
-  ///服务器地址
-  final String url;
+  ///服务器域名
+  final String host;
+
+  ///服务器端口号
+  final int port;
 
   ///数据加解密密码
   final String? pwd;
@@ -602,6 +605,15 @@ class EasyClientConfig extends EasyConfig {
   ///断线重连的间隔（秒）
   final int conntick;
 
+  ///是否启用ssl证书模式
+  final bool sslEnable;
+
+  ///http请求地址
+  String get httpUrl => sslEnable ? 'https://$host:$port' : 'http://$host:$port';
+
+  ///websocket连接地址
+  String get websocketUrl => sslEnable ? 'wss://$host:$port' : 'ws://$host:$port';
+
   EasyClientConfig({
     super.logger,
     super.logLevel,
@@ -609,12 +621,14 @@ class EasyClientConfig extends EasyConfig {
     super.logFilePath,
     super.logFileBackup,
     super.logFileMaxBytes,
-    required this.url,
+    required this.host,
+    required this.port,
     this.pwd,
     this.binary = false,
     this.timeout = 10 * 1000,
     this.heartick = 60,
     this.conntick = 6,
+    this.sslEnable = false,
   });
 }
 
@@ -666,7 +680,7 @@ class EasyServerConfig extends EasyConfig {
   ///内部通讯数据包签名验签密钥
   final String secret;
 
-  ///true使用二进制收发数据，false使用字符串收发数据
+  ///为true时使用二进制收发数据，为false时使用字符串收发数据
   final bool binary;
 
   ///心跳检测周期（毫秒）
@@ -699,14 +713,14 @@ class EasyServerConfig extends EasyConfig {
   ///数据库配置信息
   final EasyUniDbConfig? uniDbConfig;
 
-  ///是否启用ssl模式
-  bool get sslsEnable => sslKeyFile != null && sslCerFile != null;
+  ///为true时启用ssl证书模式
+  bool get sslEnable => sslKeyFile != null && sslCerFile != null;
 
   ///http请求地址
-  String get httpUrl => sslsEnable ? 'https://$host:$port' : 'http://$host:$port';
+  String get httpUrl => sslEnable ? 'https://$host:$port' : 'http://$host:$port';
 
   ///websocket连接地址
-  String get websocketUrl => sslsEnable ? 'wss://$host:$port' : 'ws://$host:$port';
+  String get websocketUrl => sslEnable ? 'wss://$host:$port' : 'ws://$host:$port';
 
   EasyServerConfig({
     super.logger,

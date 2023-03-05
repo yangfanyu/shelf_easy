@@ -84,7 +84,7 @@ class EasyClient extends EasyLogger {
         super(
           logger: config.logger,
           logLevel: config.logLevel,
-          logTag: config.logTag ?? config.url,
+          logTag: config.logTag ?? '${config.sslEnable ? 'ssl-client://' : 'client://'}${config.host}:${config.port}',
           logFilePath: config.logFilePath,
           logFileBackup: config.logFileBackup,
           logFileMaxBytes: config.logFileMaxBytes,
@@ -165,7 +165,7 @@ class EasyClient extends EasyLogger {
     logTrace(['httpRequest =>', requestData]);
     try {
       int fieldId = 0;
-      final url = Uri.parse('${_config.url}$route');
+      final url = Uri.parse('${_config.httpUrl}$route');
       final response = fileBytes == null || mediaType == null
           ? await http.post(url, body: requestData, headers: {'content-type': _config.binary ? 'application/octet-stream' : 'text/plain', 'easy-security-identity': _uid ?? ''}..addAll(headers ?? {}))
           : await http.Response.fromStream(await (http.MultipartRequest('POST', url)
@@ -315,8 +315,11 @@ class EasyClient extends EasyLogger {
     logDebug(['unbindUser =>', _uid, _token]);
   }
 
-  ///读取websocket连接url
-  String get url => _config.url;
+  ///读取http请求的url
+  String get httpUrl => _config.httpUrl;
+
+  ///读取websocket连接的url
+  String get websocketUrl => _config.websocketUrl;
 
   ///是否已经建立网络连接
   bool get isConnected => _socket != null && _socketInited;
@@ -328,7 +331,7 @@ class EasyClient extends EasyLogger {
     if (_expired) return;
     _safeClose(EasyConstant.clientCloseByRetry.code, EasyConstant.clientCloseByRetry.desc); //关闭旧连接
     logTrace(['_safeOpen']);
-    _socket = WebSocketChannel.connect(Uri.parse(_config.url));
+    _socket = WebSocketChannel.connect(Uri.parse(_config.websocketUrl));
     _socketInited = false;
     _socket?.stream.listen((data) => _onWebSocketData(data), onError: _onWebSocketError, onDone: _onWebSocketDone, cancelOnError: false);
   }

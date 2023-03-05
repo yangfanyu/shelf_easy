@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bson/bson.dart';
+import 'package:fixnum/fixnum.dart';
 
 export 'dart:convert' show jsonDecode, jsonEncode, JsonEncoder;
 
@@ -766,6 +767,8 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
       return v.name;
     } else if (v is DbBaseModel) {
       return v.toJson();
+    } else if (v is IntX) {
+      return v.toInt();
     } else if (v is ObjectId) {
       return v;
     } else {
@@ -793,7 +796,9 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
 
   ///解析int，失败返回null
   static int? tryParseInt(dynamic v) {
-    if (v is int) {
+    if (v is IntX) {
+      return v.toInt();
+    } else if (v is int) {
       return v;
     } else if (v is double) {
       return v.toInt();
@@ -807,7 +812,9 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
 
   ///解析double，失败返回null
   static double? tryParseDouble(dynamic v) {
-    if (v is int) {
+    if (v is IntX) {
+      return v.toDouble();
+    } else if (v is int) {
       return v.toDouble();
     } else if (v is double) {
       return v;
@@ -821,7 +828,9 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
 
   ///解析num，失败返回null
   static num? tryParseNum(dynamic v) {
-    if (v is int) {
+    if (v is IntX) {
+      return v.toInt();
+    } else if (v is int) {
       return v;
     } else if (v is double) {
       return v;

@@ -94,7 +94,7 @@ class EasyServer extends EasyLogger {
         super(
           logger: config.logger,
           logLevel: config.logLevel,
-          logTag: config.logTag ?? '${config.host}:${config.port}',
+          logTag: config.logTag ?? '${config.sslEnable ? 'ssl-server://' : 'server://'}${config.host}:${config.port}',
           logFilePath: config.logFilePath,
           logFileBackup: config.logFileBackup,
           logFileMaxBytes: config.logFileMaxBytes,
@@ -357,11 +357,11 @@ class EasyServer extends EasyLogger {
     final packet = EasyPacket.pushsign(_config.secret, route: route, data: data, ucid: ucid);
     if (dispatcher != null) {
       final client = clientList[dispatcher(cluster, ucid, data)];
-      logDebug(['pushClusterSession >>>>>>', cluster, client.url, packet]);
+      logDebug(['pushClusterSession >>>>>>', cluster, client.websocketUrl, packet]);
       client.websocketRequest(EasyConstant.routeInnerP2P, data: packet.toJson(), waitCompleter: false);
     } else {
       for (var client in clientList) {
-        logDebug(['pushClusterSession >>>>>>', cluster, client.url, packet]);
+        logDebug(['pushClusterSession >>>>>>', cluster, client.websocketUrl, packet]);
         client.websocketRequest(EasyConstant.routeInnerP2P, data: packet.toJson(), waitCompleter: false);
       }
     }
@@ -374,11 +374,11 @@ class EasyServer extends EasyLogger {
     final packet = EasyPacket.pushsign(_config.secret, route: route, data: data, ucid: ucid);
     if (dispatcher != null) {
       final client = clientList[dispatcher(cluster, ucid, data)];
-      logDebug(['pushClusterChannel >>>>>>', cluster, client.url, packet]);
+      logDebug(['pushClusterChannel >>>>>>', cluster, client.websocketUrl, packet]);
       client.websocketRequest(EasyConstant.routeInnerGRP, data: packet.toJson(), waitCompleter: false);
     } else {
       for (var client in clientList) {
-        logDebug(['pushClusterChannel >>>>>>', cluster, client.url, packet]);
+        logDebug(['pushClusterChannel >>>>>>', cluster, client.websocketUrl, packet]);
         client.websocketRequest(EasyConstant.routeInnerGRP, data: packet.toJson(), waitCompleter: false);
       }
     }
@@ -390,7 +390,7 @@ class EasyServer extends EasyLogger {
     if (clientList == null) return;
     final packet = EasyPacket.pushsign(_config.secret, route: route, data: data, ucid: binded.toString());
     for (var client in clientList) {
-      logDebug(['clusterBroadcast >>>>>>', cluster, client.url, packet]);
+      logDebug(['clusterBroadcast >>>>>>', cluster, client.websocketUrl, packet]);
       client.websocketRequest(EasyConstant.routeInnerALL, data: packet.toJson(), waitCompleter: false);
     }
   }
@@ -401,7 +401,7 @@ class EasyServer extends EasyLogger {
     if (clientList == null) return;
     final packet = EasyPacket.pushsign(_config.secret, route: route, data: data, ucid: ucid);
     final client = clientList[dispatcher == null ? Random().nextInt(clientList.length) : dispatcher(cluster, ucid, data)];
-    logDebug(['callRemote >>>>>>', cluster, client.url, packet]);
+    logDebug(['callRemote >>>>>>', cluster, client.websocketUrl, packet]);
     client.websocketRequest(EasyConstant.routeInnerRMC, data: packet.toJson(), waitCompleter: false);
   }
 
@@ -411,7 +411,7 @@ class EasyServer extends EasyLogger {
     if (clientList == null) return Future.value(EasyConstant.serverCloseBySocketError);
     final packet = EasyPacket.pushsign(_config.secret, route: route, data: data, ucid: ucid);
     final client = clientList[dispatcher == null ? Random().nextInt(clientList.length) : dispatcher(cluster, ucid, data)];
-    logDebug(['callRemoteForResult >>>>>>', cluster, client.url, packet]);
+    logDebug(['callRemoteForResult >>>>>>', cluster, client.websocketUrl, packet]);
     return client.websocketRequest(EasyConstant.routeInnerRMC, data: packet.toJson(), waitCompleter: true);
   }
 
@@ -430,11 +430,13 @@ class EasyServer extends EasyLogger {
             logFilePath: _config.logFilePath,
             logFileBackup: _config.logFileBackup,
             logFileMaxBytes: _config.logFileMaxBytes,
-            url: server.websocketUrl,
+            host: server.host,
+            port: server.port,
             pwd: server.pwd,
             binary: server.binary,
             heartick: (server.heart / 1000).floor(),
             conntick: 3,
+            sslEnable: server.sslEnable,
           ),
         ));
       }
@@ -450,7 +452,7 @@ class EasyServer extends EasyLogger {
         return webSocketHandler((WebSocketChannel websocket) => _onWebSocketConnect(websocket, request))(request);
       }
     });
-    final securityContext = _config.sslsEnable
+    final securityContext = _config.sslEnable
         ? (SecurityContext()
           ..usePrivateKey(_config.sslKeyFile!)
           ..useCertificateChain(_config.sslCerFile!))
