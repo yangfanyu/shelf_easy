@@ -66,7 +66,7 @@ class VmRunner {
   dynamic _staticListener(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmClass staticScope, List<Map<VmKeys, dynamic>>? instanceFields, VmValue method) {
     if (instanceFields != null) {
       //原始构造函数
-      final instanceScope = VmValue.forVariable(identifier: VmRunnerCore._classConstructorSelf_, initType: staticScope.identifier, initValue: <String, VmValue>{}); //创建新实例
+      final instanceScope = VmValue.forVariable(identifier: VmRunnerCore._classConstructorSelf_, initType: staticScope.identifier, initValue: VmInstance()); //创建新实例
       _objectStack.add(staticScope.internalStaticPropertyMap!); //添加类静态作用域
       _objectStack.add(instanceScope.internalInstancePropertyMap); //添加实例作用域
       addVmObject(instanceScope); //添加被构造的关键变量

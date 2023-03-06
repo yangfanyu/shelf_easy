@@ -24,6 +24,26 @@ class VmType extends Type {
 }
 
 ///
+///内部类的超类
+///
+mixin VmSuper {
+  ///子类型的字段集合
+  final _subclassFields = <String, VmValue>{};
+
+  ///转换为易读的字符串描述
+  @override
+  String toString() => '$runtimeType($_subclassFields)';
+
+  ///转换为易读的JSON对象
+  Map<String, dynamic> toJson() => _subclassFields;
+}
+
+///
+///内部类的实例
+///
+class VmInstance with VmSuper {}
+
+///
 ///数据值的元类型
 ///
 enum VmMetaType {
@@ -651,7 +671,7 @@ class VmValue extends VmObject {
     if (target is VmValue) {
       return target.internalInstancePropertyMap;
     } else {
-      return target;
+      return (target as VmSuper)._subclassFields;
     }
   }
 
@@ -685,7 +705,7 @@ class VmValue extends VmObject {
     if (target is VmValue) {
       return target.getProperty(propertyName);
     } else {
-      return target[propertyName];
+      return internalInstancePropertyMap[propertyName]!;
     }
   }
 
@@ -782,7 +802,7 @@ class VmValue extends VmObject {
         if (metaData.isGetter) return VmObject.readValue(runFunction(null, null));
         return target; //函数模板值
       } else if (metaType == VmMetaType.internalObject) {
-        return target; //字段Map值
+        return target; //VmSuper值
       } else {
         return target; //数据原生值
       }
@@ -834,7 +854,7 @@ class VmValue extends VmObject {
         final nameArgs = '{${metaData.nameArguments.map((e) => '${e.isClassField ? 'this.' : ''}${e.fieldName}${e.fieldValue == null ? '' : ' = ${e.getValue()}'}').toList().join(', ')}}';
         return 'VmValue<internalMethod> ===> ${_valueType.identifier} $identifier --> $typeArg1 $typeArg2 $listArgs $nameArgs';
       case VmMetaType.internalObject:
-        return 'VmValue<internalObject> ===> ${_valueType.identifier} $identifier --> (${internalInstancePropertyMap.keys.map((e) => e.toString()).toList().join(', ')})';
+        return 'VmValue<internalObject> ===> ${_valueType.identifier} $identifier --> ${_valueData.runtimeType}(${internalInstancePropertyMap.keys.map((e) => e.toString()).toList().join(', ')})';
       case VmMetaType.internalByname:
         return 'VmValue<internalByname> ===> ${_valueType.identifier} $identifier ###{ $_valueData }###';
     }
