@@ -361,22 +361,28 @@ enum VmKeys {
   ///对应[SuperFormalParameter]
   $SuperFormalParameter,
 
+  ///对应[SuperFormalParameter.type]
+  $SuperFormalParameterType,
+
   ///对应[SuperFormalParameter.name]
   $SuperFormalParameterName,
 
-  ///对应[SuperFormalParameter.type]
-  $SuperFormalParameterType,
+  ///对应[SuperFormalParameter.isNamed]
+  $SuperFormalParameterIsNamed,
 
   /** ******** FieldFormalParameter ******** **/
 
   ///对应[FieldFormalParameter]
   $FieldFormalParameter,
 
+  ///对应[FieldFormalParameter.type]
+  $FieldFormalParameterType,
+
   ///对应[FieldFormalParameter.name]
   $FieldFormalParameterName,
 
-  ///对应[FieldFormalParameter.type]
-  $FieldFormalParameterType,
+  ///对应[FieldFormalParameter.isNamed]
+  $FieldFormalParameterIsNamed,
 
   /** ******** SimpleFormalParameter ******** **/
 
@@ -389,6 +395,20 @@ enum VmKeys {
   ///对应[SimpleFormalParameter.name]
   $SimpleFormalParameterName,
 
+  ///对应[SimpleFormalParameter.isNamed]
+  $SimpleFormalParameterIsNamed,
+
+  /** ******** FunctionTypedFormalParameter ******** **/
+
+  ///对应[FunctionTypedFormalParameter]
+  $FunctionTypedFormalParameter,
+
+  ///对应[FunctionTypedFormalParameter.name]
+  $FunctionTypedFormalParameterName,
+
+  ///对应[FunctionTypedFormalParameter.isNamed]
+  $FunctionTypedFormalParameterIsNamed,
+
   /** ******** DefaultFormalParameter ******** **/
 
   ///对应[DefaultFormalParameter]
@@ -396,6 +416,9 @@ enum VmKeys {
 
   ///对应[DefaultFormalParameter.name]
   $DefaultFormalParameterName,
+
+  ///对应[DefaultFormalParameter.isNamed]
+  $DefaultFormalParameterIsNamed,
 
   ///对应[DefaultFormalParameter.parameter]
   $DefaultFormalParameterParameter,
@@ -594,6 +617,11 @@ enum VmKeys {
   ///对应[BreakStatement]
   $BreakStatement,
 
+  /** ******** ContinueStatement ******** **/
+
+  ///对应[ContinueStatement]
+  $ContinueStatement,
+
   /** ******** ReturnStatement ******** **/
 
   ///对应[ReturnStatement]
@@ -634,6 +662,9 @@ enum VmKeys {
 
   ///对应[ConstructorDeclaration.name]
   $ConstructorDeclarationName,
+
+  ///对应[ConstructorDeclaration.factoryKeyword]
+  $ConstructorDeclarationFactoryKeyword,
 
   ///对应[ConstructorDeclaration.parameters]
   $ConstructorDeclarationParameters,

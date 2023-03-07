@@ -1,11 +1,10 @@
 import 'dart:io';
-import 'dart:math';
-import 'dart:mirrors';
 
 import 'easy_class.dart';
+import 'vm/vm_parser.dart';
 
 ///
-///序列化数据模型生成器
+///Json序列化的数据模型的生成器、虚拟机桥接类型的生成器
 ///
 class EasyCoder extends EasyLogger {
   ///配置信息
@@ -115,7 +114,13 @@ class EasyCoder extends EasyLogger {
   }
 
   ///生成包装模型构建器类
-  void generateWrapBuilder({String outputFile = 'wrapper_builder', List<String> importList = const [], String className = 'WrapBuilder', String? wrapBaseClass, bool exportFile = true}) {
+  void generateWrapBuilder({
+    String outputFile = 'wrapper_builder',
+    List<String> importList = const [],
+    String className = 'WrapperBuilder',
+    String? wrapBaseClass,
+    bool exportFile = true,
+  }) {
     final indent = _config.indent;
     final outputPath = '${_config.absFolder}/$outputFile.dart'; //输入文件路径
     final buffer = StringBuffer();
@@ -160,6 +165,197 @@ class EasyCoder extends EasyLogger {
     buffer.write('$indent};\n\n');
     buffer.write('$indent///Parsing method\n');
     buffer.write('${indent}static ${_config.baseClass} buildRecord(Map<String, dynamic> map) => _recordBuilder[map[\'type\']]!(map);\n');
+    buffer.write('}\n'); //类结束
+    //写入到文件
+    try {
+      File(outputPath)
+        ..createSync(recursive: true)
+        ..writeAsStringSync(buffer.toString());
+      logInfo(['write to file', outputPath, 'success.\n']);
+    } catch (error, stack) {
+      logError(['write to file', outputPath, 'error:', error, '\n', stack]);
+    }
+  }
+
+  ///生成文件夹下的桥接类
+  void generateVmLibraries({
+    String outputFile = 'bridges_library',
+    List<String> importList = const [],
+    String className = 'BridgesLibrary',
+    String classDesc = 'BridgesLibrary',
+    required List<String> libraryPaths,
+    List<String> privatePaths = const [],
+    List<String> ignoreIssueFiles = const [
+      '/dart-sdk/lib/core/null.dart',
+      '/dart-sdk/lib/core/record.dart',
+      '/flutter/lib/src/services/dom.dart',
+      '/flutter/lib/src/widgets/constants.dart',
+      '/flutter/lib/src/painting/_network_image_web.dart',
+    ],
+    List<String> ignoreClassProxy = const [
+      'IOOverrides.runZoned', //dart-lang
+      'PlatformSelectableRegionContextMenu.child', //flutter
+    ],
+    Map<String, List<String>> onlyNeedFileClass = const {},
+    bool genByExternal = true,
+  }) {
+    final indent = _config.indent;
+    final outputPath = '${_config.absFolder}/$outputFile.dart'; //输入文件路径
+    final buffer = StringBuffer();
+    //删除旧文件
+    try {
+      final oldFile = File(outputPath); //旧文件
+      if (oldFile.existsSync()) {
+        oldFile.deleteSync();
+        logDebug(['delete file', outputPath, 'success.']);
+      }
+    } catch (error, stack) {
+      logError(['delete file', outputPath, 'error:', error, '\n', stack]);
+    }
+    //拼接类内容
+    buffer.write('// ignore_for_file: unnecessary_constructor_name, deprecated_member_use, invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member\n');
+    buffer.write('\n');
+    if (genByExternal) buffer.write('import \'package:shelf_easy/shelf_easy.dart\';\n');
+    for (var element in importList) {
+      buffer.write('import \'$element\';\n');
+    }
+    if (!genByExternal) buffer.write('import \'vm_object.dart\';\n');
+    buffer.write('\n');
+    buffer.write('///\n');
+    buffer.write('///$classDesc\n');
+    buffer.write('///\n');
+    buffer.write('class $className {\n'); //类开始
+
+    //start
+    final privateDatas = <String, VmParserBirdgeItemData>{}; //私有类数据
+    //扫描私有目录，提取全部类作为私有类
+    final privateFiles = <File>[];
+    for (var element in privatePaths) {
+      if (element.endsWith('.dart')) {
+        privateFiles.add(File(element));
+      } else {
+        privateFiles.addAll(Directory(element).listSync(recursive: true).where((e) => e is File && e.path.endsWith('.dart')).map((e) => e as File));
+      }
+    }
+    for (var fileItem in privateFiles) {
+      final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync());
+      for (var result in bridgeResults) {
+        if (result != null && result.type == VmParserBirdgeItemType.classDeclaration) {
+          result.absoluteFilePath = fileItem.path; //复制文件路径
+          if (privateDatas.containsKey(result.name)) {
+            privateDatas[result.name]!.combineClass(result); //合并同名属性
+            logWarn(['merge repeat private class:', result.name, '=>', result.absoluteFilePath]);
+          } else {
+            privateDatas[result.name] = result;
+          }
+        }
+      }
+    }
+    //扫描资源目录，提取私有类作为私有类
+    final libraryFiles = <File>[];
+    for (var element in libraryPaths) {
+      if (element.endsWith('.dart')) {
+        libraryFiles.add(File(element));
+      } else {
+        libraryFiles.addAll(Directory(element).listSync(recursive: true).where((e) => e is File && e.path.endsWith('.dart')).map((e) => e as File));
+      }
+    }
+    for (var fileItem in libraryFiles) {
+      final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync());
+      for (var result in bridgeResults) {
+        if (result != null && result.type == VmParserBirdgeItemType.classDeclaration && result.isPrivate) {
+          result.absoluteFilePath = fileItem.path; //复制文件路径
+          if (privateDatas.containsKey(result.name)) {
+            privateDatas[result.name]!.combineClass(result); //合并同名属性
+            logWarn(['merge repeat private class:', result.name, '=>', result.absoluteFilePath]);
+          } else {
+            privateDatas[result.name] = result;
+          }
+        }
+      }
+    }
+    //扫描资源目录，得到公开class与proxy列表
+    final classLibraries = <VmParserBirdgeItemData>[];
+    final proxyLibraries = <VmParserBirdgeItemData>[];
+    for (var fileItem in libraryFiles) {
+      if (ignoreIssueFiles.any((element) => fileItem.path.endsWith(element))) {
+        logWarn(['ignore explicit library file =>', fileItem.path]);
+      } else {
+        final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync());
+        for (var result in bridgeResults) {
+          if (result != null && !result.isAtJS && !result.isPrivate) {
+            if (onlyNeedFileClass.containsKey(fileItem.path) && !onlyNeedFileClass[fileItem.path]!.contains(result.name)) {
+              continue; //跳过这个类
+            }
+            result.absoluteFilePath = fileItem.path; //复制文件路径
+            result.type == VmParserBirdgeItemType.classDeclaration ? classLibraries.add(result) : proxyLibraries.add(result);
+          }
+        }
+      }
+    }
+    classLibraries.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    proxyLibraries.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    //合并同名的class
+    final classUnionDatasMap = <String, VmParserBirdgeItemData>{};
+    for (var item in classLibraries) {
+      if (classUnionDatasMap.containsKey(item.name)) {
+        classUnionDatasMap[item.name]!.combineClass(item); //合并同名属性
+        logWarn(['merge repeat library class:', item.name, '=>', item.absoluteFilePath]);
+      } else {
+        classUnionDatasMap[item.name] = item;
+      }
+    }
+    //生成单个的class代码
+    classUnionDatasMap.forEach((key, value) {
+      //处理继承
+      value.extendsSuper(currentClass: value, publicMap: classUnionDatasMap, pirvateMap: privateDatas, onNoSuper: _onVmNotFoundSuperClass);
+      //生成代码
+      final fieldName = 'class${firstUpperCaseName(key)}';
+      buffer.write('$indent///class $key\n');
+      buffer.write('${indent}static final $fieldName = ${value.toClassCode(indent: indent, ignoreProxy: ignoreClassProxy, onIgnore: _onVmIgnoreProxyOfClass)}\n');
+      buffer.write('\n');
+    });
+    //生成class列表的代码
+    buffer.write('$indent///all class list\n');
+    if (classUnionDatasMap.isEmpty) {
+      buffer.write('${indent}static final libraryClassList = <VmClass>[];\n');
+    } else {
+      buffer.write('${indent}static final libraryClassList = <VmClass>[\n');
+      classUnionDatasMap.forEach((key, value) {
+        final fieldName = 'class${firstUpperCaseName(key)}';
+        buffer.write('$indent$indent$fieldName,\n');
+      });
+      buffer.write('$indent];\n');
+    }
+    buffer.write('\n');
+    //合并同名的proxy
+    final proxyUnionPartsMap = <String, Set<String>>{};
+    for (var item in proxyLibraries) {
+      if (proxyUnionPartsMap.containsKey(item.name)) {
+        final unionParts = proxyUnionPartsMap[item.name]!;
+        item.toProxyCode(unionParts: unionParts); //合并同名属性
+        logWarn(['merge repeat library proxy:', item.name, '=>', item.absoluteFilePath]);
+      } else {
+        final unionParts = proxyUnionPartsMap[item.name] = {};
+        item.toProxyCode(unionParts: unionParts);
+      }
+    }
+    //生成proxy列表的代码
+    buffer.write('$indent///all proxy list\n');
+    if (proxyUnionPartsMap.isEmpty) {
+      buffer.write('${indent}static final libraryProxyList = <VmProxy<void>>[];\n');
+    } else {
+      buffer.write('${indent}static final libraryProxyList = <VmProxy<void>>[\n');
+      proxyUnionPartsMap.forEach((key, value) {
+        if (value.isNotEmpty) {
+          final identifier = VmParserBirdgeItemData.getIdentifier(key);
+          buffer.write('$indent${indent}VmProxy(identifier: \'$identifier\', ${value.join(', ')}),\n');
+        }
+      });
+      buffer.write('$indent];\n');
+    }
+    //end
+
     buffer.write('}\n'); //类结束
     //写入到文件
     try {
@@ -571,374 +767,18 @@ class EasyCoder extends EasyLogger {
     if (currType.startsWith('Map')) return '{}';
     return '$type()';
   }
-}
 
-///
-///虚拟机桥接类型生成器
-///
-class EasyVmGen {
-  ///要生成的桥接类型列表
-  final List<MapEntry<Type, dynamic>> targetClassList;
-
-  ///要生成的桥接函数列表
-  final List<String> targetProxyList;
-
-  ///要忽略生成new函数的类列表
-  final List<String> ignoreNews;
-
-  ///要忽略生成的函数列表
-  final List<String> ignoreFuncs;
-
-  ///要忽略生成caller的函数列表
-  final List<String> ignoreCaller;
-
-  ///全部的生成桥接类型集合
-  final Map<String, String> _libraryClassMap;
-
-  ///全部的生成桥接函数集合
-  final Map<String, String> _libraryProxyMap;
-
-  ///全部的生成代码的字符串缓冲区
-  final StringBuffer _codeBuffer;
-
-  EasyVmGen({
-    this.targetClassList = const [],
-    this.targetProxyList = const [],
-    this.ignoreNews = const ['double', 'num', 'List', 'Enum', 'Function', 'Iterable', 'Iterator', 'Type', 'RegExpMatch'],
-    this.ignoreFuncs = const ['>>>'],
-    this.ignoreCaller = const ['Set.castFrom'],
-  })  : _libraryClassMap = {},
-        _libraryProxyMap = {},
-        _codeBuffer = StringBuffer();
-
-  ///生成dart基本库包装类型与函数
-  void generateBaseLibrary({required String outputFile, required String outputClass}) {
-    _codeBuffer.writeln('import \'dart:math\';\n');
-    _codeBuffer.writeln('import \'vm_object.dart\';\n');
-    _codeBuffer.writeln('///');
-    _codeBuffer.writeln('///Dart基本库');
-    _codeBuffer.writeln('///');
-    _codeBuffer.writeln('class $outputClass {');
-    /** 基本类型 **/
-    _generateInstance(reflect(int.parse('1')).type, _generateClass(reflectClass(int)));
-    _generateInstance(reflect(double.parse('1.0')).type, _generateClass(reflectClass(double)));
-    _generateInstance(reflect(num.parse('1.0')).type, _generateClass(reflectClass(num)));
-    _generateInstance(reflect(false).type, _generateClass(reflectClass(bool)));
-    _generateInstance(reflect('hello').type, _generateClass(reflectClass(String)));
-    _generateInstance(reflect(List.from([])).type, _generateClass(reflectClass(List)));
-    _generateInstance(reflect(Set.from({})).type, _generateClass(reflectClass(Set)));
-    _generateInstance(reflect(Map.from({})).type, _generateClass(reflectClass(Map)));
-    /** 对象类型 **/
-    _generateInstance(reflect(Runes('a')).type, _generateClass(reflectClass(Runes)));
-    _generateInstance(reflect(Symbol('a')).type, _generateClass(reflectClass(Symbol)));
-    _generateInstance(reflect(MapEntry('a', 'b')).type, _generateClass(reflectClass(MapEntry)));
-    _generateInstance(reflect(Duration()).type, _generateClass(reflectClass(Duration)));
-    _generateInstance(reflect(DateTime.now()).type, _generateClass(reflectClass(DateTime)));
-    _generateInstance(reflect(StringBuffer()).type, _generateClass(reflectClass(StringBuffer)));
-    _generateInstance(reflect(RegExp('a')).type, _generateClass(reflectClass(RegExp)));
-    _generateInstance(reflect(Uri()).type, _generateClass(reflectClass(Uri)));
-    _generateInstance(reflect(UriData.fromString('a')).type, _generateClass(reflectClass(UriData)));
-    _generateInstance(reflect(BigInt.from(1)).type, _generateClass(reflectClass(BigInt)));
-    _generateInstance(reflect(Stopwatch()).type, _generateClass(reflectClass(Stopwatch)));
-    _generateInstance(reflect(Future(_emptyFunction)).type, _generateClass(reflectClass(Future)));
-    _generateInstance(reflect(_emptyFunction).type, _generateClass(reflectClass(Function)));
-    /** dart:math里面的对象类型 **/
-    _generateInstance(reflect(Random()).type, _generateClass(reflectClass(Random)));
-    _generateInstance(reflect(Point(1, 1)).type, _generateClass(reflectClass(Point)));
-    _generateInstance(reflect(Rectangle(1, 1, 2, 2)).type, _generateClass(reflectClass(Rectangle)));
-    /** 抽象类型 **/
-    _generateInstance(reflect(Map.from({}).keys).type, _generateClass(reflectClass(Iterable)));
-    _generateInstance(reflect(Map.from({}).keys.iterator).type, _generateClass(reflectClass(Iterator)));
-    _generateInstance(reflect(Runes('a').iterator).type, _generateClass(reflectClass(RuneIterator)));
-    _generateInstance(reflect(RegExp('1').firstMatch('1')).type, _generateClass(reflectClass(RegExpMatch)));
-    /** 底层类型 **/
-    _generateInstance(reflect(EasyLogLevel.debug).type, _generateClass(reflectClass(Enum)));
-    _generateInstance(reflect(int).type, _generateClass(reflectClass(Type)));
-    _generateInstance(reflect(Object()).type, _generateClass(reflectClass(Object))); //上面的类型全部非null值都是Object的子类，所以放在他们后面
-    // _generateInstance(reflect(null).type, _generateClass(reflectClass(Null), hardTemplateName: 'dynamic')); // Null a=null; print(a is Object); => false。final b=null; => b type is dynamic 直接用dynamic替代，无需生成
-    _generateInstance(reflect(null).type, _generateClass(reflectClass(Null), hardClassName: 'dynamic')); //全部的类型（包括Null类型）都可用dynamic表示，所以放在他们后面
-    _generateInstance(reflect(null).type, _generateClass(reflectClass(Null), hardClassName: 'void', noBody: true), noBody: true); //无类型，用于void关键字
-
-    //proxy
-    _libraryProxyMap['print'] = 'print';
-    _libraryProxyMap['e'] = 'e';
-    _libraryProxyMap['ln10'] = 'ln10';
-    _libraryProxyMap['ln2'] = 'ln2';
-    _libraryProxyMap['log2e'] = 'log2e';
-    _libraryProxyMap['log10e'] = 'log10e';
-    _libraryProxyMap['pi'] = 'pi';
-    _libraryProxyMap['sqrt1_2'] = 'sqrt1_2';
-    _libraryProxyMap['sqrt2'] = 'sqrt2';
-    _libraryProxyMap['min'] = 'min';
-    _libraryProxyMap['max'] = 'max';
-    _libraryProxyMap['atan2'] = 'atan2';
-    _libraryProxyMap['pow'] = 'pow';
-    _libraryProxyMap['sin'] = 'sin';
-    _libraryProxyMap['cos'] = 'cos';
-    _libraryProxyMap['tan'] = 'tan';
-    _libraryProxyMap['acos'] = 'acos';
-    _libraryProxyMap['asin'] = 'asin';
-    _libraryProxyMap['atan'] = 'atan';
-    _libraryProxyMap['sqrt'] = 'sqrt';
-    _libraryProxyMap['exp'] = 'exp';
-    _libraryProxyMap['log'] = 'log';
-    //all
-    _generateLibraryList();
-    _codeBuffer.writeln('}');
-    //写入到文件
-    File(outputFile)
-      ..createSync(recursive: true)
-      ..writeAsStringSync(_codeBuffer.toString());
+  void _onVmNotFoundSuperClass(String className, String superName, String classPath) {
+    logError(['cannot found super class:', '$className inherit $superName', '=>', classPath]);
   }
 
-  ///生成target目标包装类型与函数
-  void generateTargetLibrary({required String outputFile, required String outputClass, List<String> importList = const [], String desc = 'Custom'}) {
-    _codeBuffer.writeln('import \'package:shelf_easy/shelf_easy.dart\';');
-
-    for (var element in importList) {
-      _codeBuffer.writeln('import \'$element\';');
-    }
-    if (importList.isNotEmpty) _codeBuffer.writeln('');
-
-    _codeBuffer.writeln('///');
-    _codeBuffer.writeln('///$desc桥接库');
-    _codeBuffer.writeln('///');
-    _codeBuffer.writeln('class $outputClass {');
-
-    for (var item in targetClassList) {
-      _generateInstance(reflect(item.value).type, _generateClass(reflectClass(item.key)));
-    }
-
-    for (var value in targetProxyList) {
-      _libraryProxyMap[value] = value;
-    }
-
-    //all
-    _generateLibraryList();
-
-    _codeBuffer.writeln('}');
-
-    //写入到文件
-    File(outputFile)
-      ..createSync(recursive: true)
-      ..writeAsStringSync(_codeBuffer.toString());
+  void _onVmIgnoreProxyOfClass(String className, String proxyName, String classPath) {
+    logWarn(['ignore explicit class.proxy:', '$className.$proxyName', '=>', classPath]);
   }
 
-  String _generateClass(ClassMirror target, {String? hardClassName, String? hardTemplateName, bool noBody = false}) {
-    final className = hardClassName ?? _geSymbolName(target.simpleName);
-    final fieldName = 'class${className[0].toUpperCase()}${className.substring(1)}';
-    final templateName = hardTemplateName ?? className;
-    if (_libraryClassMap.isNotEmpty) _codeBuffer.writeln('');
-    _libraryClassMap[fieldName] = fieldName;
-    if (hardClassName == null) {
-      _codeBuffer.writeln('  ///类型[$className]');
-    } else {
-      _codeBuffer.writeln('  ///类型$className');
-    }
-    _codeBuffer.writeln('  static final $fieldName = VmClass<$templateName>(');
-    _codeBuffer.writeln('    identifier: \'$className\',');
-    if (noBody) {
-      _codeBuffer.writeln('    externalProxyMap: {},');
-    } else {
-      _codeBuffer.writeln('    externalProxyMap: {');
-      _generateClassConstructors(target, className);
-      _generateClassProperties(target, className);
-    }
-    return className;
+  ///将[name]的第一个字母改为大写
+  static String firstUpperCaseName(String name) {
+    if (name.length <= 1) return name.toUpperCase();
+    return '${name[0].toUpperCase()}${name.substring(1)}';
   }
-
-  void _generateInstance(ClassMirror target, String className, {bool noBody = false}) {
-    if (noBody) {
-    } else {
-      _generateInstanceProperties(target, className);
-      _codeBuffer.writeln('    },');
-    }
-    _codeBuffer.writeln('  );');
-  }
-
-  void _generateLibraryList() {
-    _codeBuffer.writeln('');
-    _codeBuffer.writeln('  ///包装类型列表');
-    if (_libraryClassMap.isEmpty) {
-      _codeBuffer.writeln('  static final libraryClassList = <VmClass>[];');
-    } else {
-      _codeBuffer.writeln('  static final libraryClassList = <VmClass>[');
-      _libraryClassMap.forEach((key, value) {
-        _codeBuffer.writeln('    $value,');
-      });
-      _codeBuffer.writeln('  ];');
-    }
-
-    _codeBuffer.writeln('');
-    _codeBuffer.writeln('  ///代理函数列表');
-    if (_libraryProxyMap.isEmpty) {
-      _codeBuffer.writeln('  static final libraryProxyList = <VmProxy<void>>[];');
-    } else {
-      _codeBuffer.writeln('  static final libraryProxyList = <VmProxy<void>>[');
-      _libraryProxyMap.forEach((key, value) {
-        _codeBuffer.writeln('    VmProxy(identifier: \'$key\', externalStaticPropertyReader: () => $value),');
-      });
-      _codeBuffer.writeln('  ];');
-    }
-  }
-
-  void _generateClassConstructors(ClassMirror target, String className) {
-    final members = target.declarations;
-    final membersKeys = members.keys.toList();
-    membersKeys.sort((a, b) => a.toString().compareTo(b.toString()));
-    // _codeBuffer.writeln('      ///构造函数');
-    for (var key in membersKeys) {
-      final value = members[key];
-      if (value is MethodMirror && !value.isPrivate && value.isConstructor) {
-        final conName = _geSymbolName(value.constructorName);
-        if (conName.isNotEmpty || !ignoreNews.contains(className)) {
-          final keyName = conName.isEmpty ? className : conName;
-          final funcName = conName.isEmpty ? 'new' : conName;
-          final caller = _callerAnalyzer(className, conName, value, instance: false);
-          final wrapper = caller == null ? '' : ', $caller';
-          _codeBuffer.writeln('      \'$keyName\': VmProxy(identifier: \'$keyName\', externalStaticPropertyReader: () => $className.$funcName$wrapper),');
-          if (conName.isEmpty) {
-            _codeBuffer.writeln('      \'new\': VmProxy(identifier: \'new\', externalStaticPropertyReader: () => $className.$funcName$wrapper),');
-          }
-        }
-      }
-    }
-  }
-
-  void _generateClassProperties(ClassMirror target, String className) {
-    final members = target.staticMembers;
-    final membersKeys = members.keys.toList();
-    membersKeys.sort((a, b) => a.toString().compareTo(b.toString()));
-    final memberResults = <String, String>{};
-    for (var key in membersKeys) {
-      final value = members[key]!;
-      if (!value.isPrivate && !value.isSetter && !value.isOperator) {
-        final keyName = _geSymbolName(key);
-        final caller = _callerAnalyzer(className, keyName, value, instance: false);
-        final wrapper = caller == null ? '' : ', $caller';
-        if (memberResults.containsKey(keyName)) {
-          memberResults[keyName] = '${memberResults[keyName]}, externalStaticPropertyReader: () => $className.$keyName$wrapper';
-        } else {
-          memberResults[keyName] = 'externalStaticPropertyReader: () => $className.$keyName$wrapper';
-        }
-      }
-    }
-    for (var key in membersKeys) {
-      final value = members[key]!;
-      if (!value.isPrivate && !value.isGetter && !value.isOperator && !value.isRegularMethod) {
-        final keyName = _geSymbolName(key);
-        if (memberResults.containsKey(keyName)) {
-          memberResults[keyName] = '${memberResults[keyName]}, externalStaticPropertyWriter: (value) => $className.$keyName = value';
-        } else {
-          memberResults[keyName] = 'externalStaticPropertyWriter: (value) => $className.$keyName = value';
-        }
-      }
-    }
-    final memberResultsKeys = memberResults.keys.toList();
-    memberResultsKeys.sort((a, b) => a.toString().compareTo(b.toString()));
-    // _codeBuffer.writeln('      ///静态字段');
-    for (var key in memberResultsKeys) {
-      final value = memberResults[key]!;
-      if (ignoreFuncs.contains(key)) continue;
-      _codeBuffer.writeln('      \'$key\': VmProxy(identifier: \'$key\', $value),');
-    }
-  }
-
-  void _generateInstanceProperties(ClassMirror target, String className) {
-    final members = target.instanceMembers;
-    final membersKeys = members.keys.toList();
-    membersKeys.sort((a, b) => a.toString().compareTo(b.toString()));
-    final memberResults = <String, String>{};
-    for (var key in membersKeys) {
-      final value = members[key]!;
-      if (!value.isPrivate && !value.isSetter && !value.isOperator) {
-        final keyName = _geSymbolName(key);
-        final caller = _callerAnalyzer(className, keyName, value, instance: true);
-        final wrapper = caller == null ? '' : ', $caller';
-        if (memberResults.containsKey(keyName)) {
-          memberResults[keyName] = '${memberResults[keyName]}, externalInstancePropertyReader: (instance) => instance.$keyName$wrapper';
-        } else {
-          memberResults[keyName] = 'externalInstancePropertyReader: (instance) => instance.$keyName$wrapper';
-        }
-      }
-    }
-    for (var key in membersKeys) {
-      final value = members[key]!;
-      if (!value.isPrivate && !value.isGetter && !value.isOperator && !value.isRegularMethod) {
-        final keyName = _geSymbolName(key);
-        if (memberResults.containsKey(keyName)) {
-          memberResults[keyName] = '${memberResults[keyName]}, externalInstancePropertyWriter: (instance, value) => instance.$keyName = value';
-        } else {
-          memberResults[keyName] = 'externalInstancePropertyWriter: (instance, value) => instance.$keyName = value';
-        }
-      }
-    }
-    final memberResultsKeys = memberResults.keys.toList();
-    memberResultsKeys.sort((a, b) => a.toString().compareTo(b.toString()));
-    // _codeBuffer.writeln('      ///实例字段');
-    for (var key in memberResultsKeys) {
-      final value = memberResults[key]!;
-      if (ignoreFuncs.contains(key)) continue;
-      _codeBuffer.writeln('      \'$key\': VmProxy(identifier: \'$key\', $value),');
-    }
-  }
-
-  String? _callerAnalyzer(String className, String funcName, MethodMirror value, {required bool instance}) {
-    if (ignoreCaller.contains('$className.$funcName')) return null;
-    final parameters = value.parameters;
-    final needWrapArgs = <String>[];
-    //拥有函数作为参数，且这个函数参数的返回值带有模版
-    for (var item in parameters) {
-      final type = item.type;
-      if (type is FunctionTypeMirror && type.returnType.typeArguments.isNotEmpty) {
-        needWrapArgs.add(_geSymbolName(item.simpleName));
-      }
-    }
-    if (needWrapArgs.isNotEmpty) {
-      final listArgs = <String>[];
-      final listArgsWrap = <String, String>{};
-      final nameArgs = <String>{};
-      final nameArgsWrap = <String, String>{};
-      final parameters = value.parameters;
-      for (var item in parameters) {
-        final itemName = _geSymbolName(item.simpleName);
-        if (item.isNamed) {
-          final outName = itemName;
-          nameArgs.add(outName);
-          if (needWrapArgs.contains(itemName)) {
-            final itemFunc = item.type as FunctionTypeMirror;
-            int i = 0;
-            final inNames = itemFunc.parameters.map((e) => 'b${i++}').toList();
-            nameArgsWrap[outName] = '(${inNames.join(', ')}) => $outName == null ? null : $outName(${inNames.join(', ')})';
-          }
-        } else {
-          final outName = 'a${listArgs.length}';
-          listArgs.add(outName);
-          if (needWrapArgs.contains(itemName)) {
-            final itemFunc = item.type as FunctionTypeMirror;
-            int i = 0;
-            final inNames = itemFunc.parameters.map((e) => 'b${i++}').toList();
-            listArgsWrap[outName] = '(${inNames.join(', ')}) => $outName == null ? null : $outName(${inNames.join(', ')})';
-          }
-        }
-      }
-      final headStr = '${listArgs.join(', ')}${listArgs.isNotEmpty && nameArgs.isNotEmpty ? ',' : ''}${nameArgs.isNotEmpty ? '{' : ''}${nameArgs.join(', ')}${nameArgs.isNotEmpty ? '}' : ''}';
-      final bodystr = '$funcName(${listArgs.map((e) => listArgsWrap.containsKey(e) ? listArgsWrap[e] : e).join(', ')}${listArgs.isNotEmpty && nameArgs.isNotEmpty ? ',' : ''}${nameArgs.map((e) => '$e:${nameArgsWrap.containsKey(e) ? nameArgsWrap[e] : e}').join(', ')})';
-      if (instance) {
-        final wrapper = 'externalInstanceFunctionCaller: ($className instance, $headStr) => instance.$bodystr';
-        return wrapper;
-      } else {
-        final wrapper = 'externalStaticFunctionCaller: ($headStr) => $className${funcName.isEmpty ? '' : '.'}$bodystr';
-        return wrapper;
-      }
-    }
-    return null;
-  }
-
-  String _geSymbolName(Symbol val) {
-    final str = val.toString();
-    return str.substring(8, str.length - 2).replaceAll('=', '');
-  }
-
-  void _emptyFunction() {}
 }

@@ -1,13 +1,11 @@
-// import 'dart:io';
+import 'dart:io';
 
 import 'package:shelf_easy/shelf_easy.dart';
 
 import '../bridge/model_library.dart';
 import '../model/all.dart';
 
-///
-///要在虚拟机中继承外部类的话，需要添加[VmSuper]扩展，并且这个类不能为abstract，不能为内部定义的类
-///
+///定义能在虚拟机中被继承的类，需要添加[VmSuper]扩展，
 class OuterClass with VmSuper {
   final String key1;
   final String key2;
@@ -20,29 +18,38 @@ class OuterClass with VmSuper {
   });
 
   int sayHello(String name, {required String sex}) {
-    print('OuterClass.sayHello: hello world => $key1 $key2 $inc1 $inc2 $name $sex');
+    print('OuterClass.sayHello: hello world => $key1 $key2 $inc1 $inc2 $name $sex $hashCode');
     return 111111;
   }
 }
 
+///桥接OuterClass，使得在可以在虚拟机里面继承它，一般来讲桥接库可以通过EasyCoder来生成
+final bridgeOuterClass = VmClass<OuterClass>(
+  identifier: 'OuterClass',
+  superclassNames: ['Object', 'VmSuper'],
+  externalProxyMap: {
+    'OuterClass': VmProxy(identifier: 'OuterClass', externalStaticPropertyReader: () => OuterClass.new),
+    'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => OuterClass.new),
+    'getProperty': VmProxy(identifier: 'getProperty', externalInstancePropertyReader: (OuterClass instance) => instance.getProperty),
+    'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (OuterClass instance) => instance.hashCode),
+    'inc1': VmProxy(identifier: 'inc1', externalInstancePropertyReader: (OuterClass instance) => instance.inc1, externalInstancePropertyWriter: (OuterClass instance, value) => instance.inc1 = value),
+    'inc2': VmProxy(identifier: 'inc2', externalInstancePropertyReader: (OuterClass instance) => instance.inc2, externalInstancePropertyWriter: (OuterClass instance, value) => instance.inc2 = value),
+    'key1': VmProxy(identifier: 'key1', externalInstancePropertyReader: (OuterClass instance) => instance.key1),
+    'key2': VmProxy(identifier: 'key2', externalInstancePropertyReader: (OuterClass instance) => instance.key2),
+    'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (OuterClass instance) => instance.noSuchMethod),
+    'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (OuterClass instance) => instance.runtimeType),
+    'sayHello': VmProxy(identifier: 'sayHello', externalInstancePropertyReader: (OuterClass instance) => instance.sayHello),
+    'toJson': VmProxy(identifier: 'toJson', externalInstancePropertyReader: (OuterClass instance) => instance.toJson),
+    'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (OuterClass instance) => instance.toString),
+  },
+);
+
 void main() {
-  ///必须先导入核心类库，全局只需要调用一次
+  ///必须先导入核心类库，全局只需要调用一次。在这里我们将之前生成的数据模型桥接库导入，就可以在虚拟机中愉快的使用数据模型了
   EasyVmWare.loadGlobalLibrary(
     customClassList: [
-      //在这里我们将之前生成的数据模型桥接库导入，就可以在虚拟机中愉快的使用数据模型了
       ...ModelLibrary.libraryClassList,
-      //桥接OuterClass，使得在可以在虚拟机里面继承它，一般来讲桥接库可以通过EasyVmGen来生成
-      VmClass<OuterClass>(
-        identifier: 'OuterClass',
-        externalProxyMap: {
-          'OuterClass': VmProxy(identifier: 'OuterClass', externalStaticPropertyReader: () => OuterClass.new),
-          'key1': VmProxy(identifier: 'key1', externalInstancePropertyReader: (instance) => instance.key1),
-          'key2': VmProxy(identifier: 'key2', externalInstancePropertyReader: (instance) => instance.key2),
-          'inc1': VmProxy(identifier: 'inc1', externalInstancePropertyReader: (instance) => instance.inc1, externalInstancePropertyWriter: (instance, value) => instance.inc1 = value),
-          'inc2': VmProxy(identifier: 'inc2', externalInstancePropertyReader: (instance) => instance.inc2, externalInstancePropertyWriter: (instance, value) => instance.inc2 = value),
-          'sayHello': VmProxy(identifier: 'sayHello', externalInstancePropertyReader: (instance) => instance.sayHello),
-        },
-      ),
+      bridgeOuterClass,
     ],
     customProxyList: [
       ...ModelLibrary.libraryProxyList,
@@ -66,14 +73,15 @@ void main() {
   final vmwareApp = EasyVmWare(
     config: EasyVmWareConfig(
       allModules: {
-        //main module
+        ///main module
         'main': '''
           int main(){
-            print('hello world!');
+            print('hello world, user tableName is => \${UserQuery.\$tableName}');
             return 1;
           }
           ''',
-        //test module
+
+        ///test module
         'test': '''
           DateTime current(){
             return DateTime.now();
@@ -83,7 +91,8 @@ void main() {
             return User();
           }
           ''',
-        //home module
+
+        ///home module
         'home': '''          
           class InnerClass extends OuterClass {
             final String value;
@@ -94,7 +103,7 @@ void main() {
             });
             @override
             int sayHello(String name, {required String sex}) {
-              print('InnerClass.sayHello: hello world => \$key1 \$key2 \$inc1 \$inc2 \$name \$sex \$value');
+              print('InnerClass.sayHello: hello world => \$key1 \$key2 \$inc1 \$inc2 \$name \$sex \$value \$hashCode');
               return 222222;
             }
           } 
@@ -123,13 +132,14 @@ void main() {
             return empty.sayHello('333', sex: 'unknow');
           }
           ''',
-        //支持的全部语法都在这个文件中，可取消下面这行代码的注释，然后运行查看控制台的输出
-        // 'code': File('${Directory.current.path}/test/test_vmcode.dart').readAsStringSync(),
+
+        ///支持的全部语法都在这个文件中，可取消下面这行代码的注释，然后运行查看控制台的输出
+        'code': File('${Directory.current.path}/test/test_vmcode.dart').readAsStringSync(),
       },
     ),
   );
 
-  final result2 = vmwareApp.main<int>(); //print: hello world!
+  final result2 = vmwareApp.main<int>(); //print: hello world, user tableName is => user
   vmwareApp.logWarn(['result2 =>', result2]); //print: result2 => 1
 
   final result3 = vmwareApp.call<DateTime>(moduleName: 'test', methodName: 'current');
@@ -138,18 +148,18 @@ void main() {
   final result4 = vmwareApp.call<User>(moduleName: 'test', methodName: 'createUser'); //print: Location(xxxxxx)
   vmwareApp.logWarn(['result4 =>', result4]); //print: result4 => User(xxxxxx)
 
-  final result5 = vmwareApp.call<int>(moduleName: 'home', methodName: 'start1'); //print: OuterClass.sayHello: hello world => aa1 bb1 100 200 111 male
+  final result5 = vmwareApp.call<int>(moduleName: 'home', methodName: 'start1'); //print: OuterClass.sayHello: hello world => aa1 bb1 100 200 111 male xxxxxx
   vmwareApp.logWarn(['result5 =>', result5]); //print: result5 => 111111
 
-  final result6 = vmwareApp.call<int>(moduleName: 'home', methodName: 'start2'); //print: InnerClass.sayHello: hello world => aa2 bb2 101 201 222 female cc2
+  final result6 = vmwareApp.call<int>(moduleName: 'home', methodName: 'start2'); //print: InnerClass.sayHello: hello world => aa2 bb2 101 201 222 female cc2 xxxxxx
   vmwareApp.logWarn(['result6 =>', result6]); //print: result6 => 222222
 
-  final result7 = vmwareApp.call<int>(moduleName: 'home', methodName: 'start3'); //print: OuterClass.sayHello: hello world => aa3 bb3 110 210 333 unknow
+  final result7 = vmwareApp.call<int>(moduleName: 'home', methodName: 'start3'); //print: OuterClass.sayHello: hello world => aa3 bb3 110 210 333 unknow xxxxxx
   vmwareApp.logWarn(['result7 =>', result7]); //print: result7 => 111111
 
-  vmwareApp.debugObjectStack(moduleName: 'home'); //打印虚拟机中的home模块作用域堆栈信息
+  // vmwareApp.debugObjectStack(moduleName: 'home'); //打印虚拟机中的home模块作用域堆栈信息
 
-  // vmwareApp.debugObjectStack(moduleName: 'code'); //打印虚拟机中的home模块作用域堆栈信息
+  vmwareApp.debugObjectStack(moduleName: 'code'); //打印虚拟机中的code模块作用域堆栈信息
 
-  // vmwareApp.debugVmWareInfo(moduleName: 'home'); //打印虚拟机中的home模块作用域堆栈信息
+  // vmwareApp.debugVmWareInfo(moduleName: 'code'); //打印虚拟机中的code模块作用域堆栈信息
 }

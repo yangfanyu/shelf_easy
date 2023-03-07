@@ -1,21 +1,26 @@
-// ignore_for_file: unnecessary_type_check
+// ignore_for_file: unnecessary_type_check, prefer_typing_uninitialized_variables
+
+import 'dart:async';
 
 void main() {
   final value = D();
 
-  print(value is A);
-  print(value is B);
-  print(value is C);
-  print(value is D);
-  print(value.runtimeType);
+  print(value is A); //true
+  print(value is B); //true
+  print(value is C); //true
+  print(value is D); //true
+  print(value.runtimeType); //D
 
   final value1 = D()..fields['name'] = 'Tom';
   final value2 = D()..fields['name'] = 'Jack';
 
-  print(value1.name);
-  print(value2.name);
-  print(value1.buildB());
-  print(value2.buildC());
+  print(value1.name); //Tom
+  print(value2.name); //Jack
+  print(value1.buildB()); //I am buildB [Tom]
+  print(value2.buildC()); //I am buildC [Jack]
+
+  var a;
+  print('========> ${a is FutureOr}'); //true
 }
 
 mixin A {

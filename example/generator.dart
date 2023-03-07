@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:shelf_easy/shelf_easy.dart';
-import 'package:shelf_easy/shelf_gens.dart';
 
 void main() {
   final coder = EasyCoder(

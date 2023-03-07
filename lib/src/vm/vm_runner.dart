@@ -14,7 +14,7 @@ class VmRunner {
 
   VmRunner({required Map<VmKeys, dynamic> moduleTree})
       : _moduleTree = moduleTree,
-        _objectStack = [_globalScope, {}] {
+        _objectStack = [..._globalScopeList, {}] {
     VmRunnerCore._scanMap(this, _moduleTree);
   }
 
@@ -124,33 +124,42 @@ class VmRunner {
   ///将作用域堆栈转换为易读的JSON对象
   Map<String, dynamic> toObjectJson() => {'_objectStack': _objectStack.map((e) => e.map((key, value) => MapEntry(key, value.toString()))).toList()};
 
-  ///全局作用域
-  static final Map<String, VmObject> _globalScope = {};
+  ///全局作用域列表
+  static final List<Map<String, VmObject>> _globalScopeList = [{}, {}, {}];
 
-  ///加载全局类库
+  ///加载全局类库与自定义类库
   static void loadGlobalLibrary({List<VmClass> customClassList = const [], List<VmProxy> customProxyList = const []}) {
-    //内置核心库
+    //基本库
+    final baseScope = _globalScopeList.first;
+    for (var vmclass in VmClass.allBaseLibrary) {
+      VmClass.addClass(vmclass); //添加到底层的全局类库中
+      if (baseScope.containsKey(vmclass.identifier)) throw ('Already exists VmClass in global base scope, identifier is: ${vmclass.identifier}');
+      baseScope[vmclass.identifier] = vmclass;
+    }
+    //核心库
+    final coreScope = _globalScopeList[1];
     for (var vmclass in VmLibrary.libraryClassList) {
-      VmClass.addClass(vmclass); //添加到底层的类型库中
-      if (_globalScope.containsKey(vmclass.identifier)) throw ('Already exists VmClass in global scope, identifier is: ${vmclass.identifier}');
-      _globalScope[vmclass.identifier] = vmclass; //添加到全局作用域中
+      VmClass.addClass(vmclass); //添加到底层的全局类库中
+      if (coreScope.containsKey(vmclass.identifier)) throw ('Already exists VmClass in global core scope, identifier is: ${vmclass.identifier}');
+      coreScope[vmclass.identifier] = vmclass;
     }
     for (var vmproxy in VmLibrary.libraryProxyList) {
-      vmproxy.bindVmClass(VmLibrary.classVoid); //在此处绑定为void类型
-      if (_globalScope.containsKey(vmproxy.identifier)) throw ('Already exists VmProxy in global scope, identifier is: ${vmproxy.identifier}');
-      _globalScope[vmproxy.identifier] = vmproxy; //添加到全局作用域中
+      if (coreScope.containsKey(vmproxy.identifier)) throw ('Already exists VmProxy in global core scope, identifier is: ${vmproxy.identifier}');
+      coreScope[vmproxy.identifier] = vmproxy;
     }
-    //自定义库
+    //用户库
+    final userScope = _globalScopeList.last;
     for (var vmclass in customClassList) {
-      VmClass.addClass(vmclass); //添加到底层的类型库中
-      if (_globalScope.containsKey(vmclass.identifier)) throw ('Already exists VmClass in global scope, identifier is: ${vmclass.identifier}');
-      _globalScope[vmclass.identifier] = vmclass; //添加到全局作用域中
+      VmClass.addClass(vmclass); //添加到底层的全局类库中
+      if (userScope.containsKey(vmclass.identifier)) throw ('Already exists VmClass in global user scope, identifier is: ${vmclass.identifier}');
+      userScope[vmclass.identifier] = vmclass;
     }
     for (var vmproxy in customProxyList) {
-      vmproxy.bindVmClass(VmLibrary.classVoid); //在此处绑定为void类型
-      if (_globalScope.containsKey(vmproxy.identifier)) throw ('Already exists VmProxy in global scope, identifier is: ${vmproxy.identifier}');
-      _globalScope[vmproxy.identifier] = vmproxy; //添加到全局作用域中
+      if (userScope.containsKey(vmproxy.identifier)) throw ('Already exists VmProxy in global user scope, identifier is: ${vmproxy.identifier}');
+      userScope[vmproxy.identifier] = vmproxy;
     }
+    //逆序排列底层全局类库
+    VmClass.sortClassDesc();
   }
 }
 
@@ -212,6 +221,7 @@ class VmRunnerCore {
     VmKeys.$SuperFormalParameter: _scanSuperFormalParameter,
     VmKeys.$FieldFormalParameter: _scanFieldFormalParameter,
     VmKeys.$SimpleFormalParameter: _scanSimpleFormalParameter,
+    VmKeys.$FunctionTypedFormalParameter: _scanFunctionTypedFormalParameter,
     VmKeys.$DefaultFormalParameter: _scanDefaultFormalParameter,
     VmKeys.$ExpressionFunctionBody: _scanExpressionFunctionBody,
     VmKeys.$BlockFunctionBody: _scanBlockFunctionBody,
@@ -233,6 +243,7 @@ class VmRunnerCore {
     VmKeys.$DoStatement: _scanDoStatement,
     VmKeys.$BreakStatement: _scanBreakStatement,
     VmKeys.$ReturnStatement: _scanReturnStatement,
+    VmKeys.$ContinueStatement: _scanContinueStatement,
     VmKeys.$ClassDeclaration: _scanClassDeclaration,
     VmKeys.$FieldDeclaration: _scanFieldDeclaration,
     VmKeys.$ConstructorDeclaration: _scanConstructorDeclaration,
@@ -652,10 +663,12 @@ class VmRunnerCore {
   static VmHelper _scanSuperFormalParameter(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
     final type = node[VmKeys.$SuperFormalParameterType] as Map<VmKeys, dynamic>?;
     final name = node[VmKeys.$SuperFormalParameterName] as String;
+    final isNamed = node[VmKeys.$SuperFormalParameterIsNamed] as bool?;
     final typeResult = _scanMap(runner, type) as VmHelper?; // => _scanNamedType or _scanGenericFunctionType or null
     return VmHelper(
       fieldType: typeResult?.fieldType,
       fieldName: name,
+      isNamedField: isNamed ?? false,
       isSuperField: true,
     );
   }
@@ -663,10 +676,12 @@ class VmRunnerCore {
   static VmHelper _scanFieldFormalParameter(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
     final type = node[VmKeys.$FieldFormalParameterType] as Map<VmKeys, dynamic>?;
     final name = node[VmKeys.$FieldFormalParameterName] as String;
+    final isNamed = node[VmKeys.$FieldFormalParameterIsNamed] as bool?;
     final typeResult = _scanMap(runner, type) as VmHelper?; // => _scanNamedType or _scanGenericFunctionType or null
     return VmHelper(
       fieldType: typeResult?.fieldType,
       fieldName: name,
+      isNamedField: isNamed ?? false,
       isClassField: true,
     );
   }
@@ -674,15 +689,28 @@ class VmRunnerCore {
   static VmHelper _scanSimpleFormalParameter(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
     final type = node[VmKeys.$SimpleFormalParameterType] as Map<VmKeys, dynamic>?;
     final name = node[VmKeys.$SimpleFormalParameterName] as String?;
+    final isNamed = node[VmKeys.$SimpleFormalParameterIsNamed] as bool?;
     final typeResult = _scanMap(runner, type) as VmHelper?; // => _scanNamedType or _scanGenericFunctionType or null
     return VmHelper(
       fieldType: typeResult?.fieldType,
       fieldName: name,
+      isNamedField: isNamed ?? false,
+    );
+  }
+
+  static VmHelper _scanFunctionTypedFormalParameter(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
+    final name = node[VmKeys.$FunctionTypedFormalParameterName] as String?;
+    final isNamed = node[VmKeys.$FunctionTypedFormalParameterIsNamed] as bool?;
+    return VmHelper(
+      fieldType: VmClass.functionTypeName,
+      fieldName: name,
+      isNamedField: isNamed ?? false,
     );
   }
 
   static VmHelper _scanDefaultFormalParameter(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
     final name = node[VmKeys.$DefaultFormalParameterName] as String?;
+    final isNamed = node[VmKeys.$DefaultFormalParameterIsNamed] as bool?;
     final parameter = node[VmKeys.$DefaultFormalParameterParameter] as Map<VmKeys, dynamic>?;
     final defaultValue = node[VmKeys.$DefaultFormalParameterDefaultValue] as Map<VmKeys, dynamic>?;
     final parameterResult = _scanMap(runner, parameter) as VmHelper?; // => _scanFieldFormalParameter or _scanSimpleFormalParameter or null
@@ -691,7 +719,7 @@ class VmRunnerCore {
       fieldType: parameterResult?.fieldType,
       fieldName: name ?? parameterResult?.fieldName,
       fieldValue: defaultValueResult,
-      isNamedField: true,
+      isNamedField: isNamed ?? parameterResult?.isNamedField ?? false,
       isClassField: parameterResult?.isClassField ?? false,
       isSuperField: parameterResult?.isSuperField ?? false,
     );
@@ -745,6 +773,10 @@ class VmRunnerCore {
         runner._delScope();
         return itemResult;
       }
+      if (itemResult is VmSignal && itemResult.isContinue) {
+        runner._delScope();
+        return itemResult; //continue应跳过剩下的语句
+      }
     }
     runner._delScope();
     return null;
@@ -777,6 +809,10 @@ class VmRunnerCore {
         runner._delScope();
         return itemResult.isBreak ? itemResult.signalValue : itemResult; //break只跳出本switch范围
       }
+      if (itemResult is VmSignal && itemResult.isContinue) {
+        runner._delScope();
+        return itemResult; //continue应跳过剩下的语句
+      }
     }
     runner._delScope();
     return null;
@@ -795,6 +831,9 @@ class VmRunnerCore {
       if (itemResult is VmSignal && itemResult.isInterrupt) {
         return itemResult;
       }
+      if (itemResult is VmSignal && itemResult.isContinue) {
+        return itemResult; //continue应跳过剩下的语句
+      }
     }
     return null;
   }
@@ -806,6 +845,9 @@ class VmRunnerCore {
       final itemResult = _scanMap(runner, item);
       if (itemResult is VmSignal && itemResult.isInterrupt) {
         return itemResult;
+      }
+      if (itemResult is VmSignal && itemResult.isContinue) {
+        return itemResult; //continue应跳过剩下的语句
       }
     }
     return null;
@@ -821,6 +863,9 @@ class VmRunnerCore {
       if (bodyResult is VmSignal && bodyResult.isInterrupt) {
         runner._delScope();
         return bodyResult.isBreak ? bodyResult.signalValue : bodyResult; //break只跳出本for范围
+      }
+      if (bodyResult is VmSignal && bodyResult.isContinue) {
+        //继续循环无需任何处理
       }
       forLoopPartsResult = _scanMap(runner, forLoopParts); // => _scanForPartsWithDeclarations 或 _scanForEachPartsWithDeclaration 必定为bool
     }
@@ -872,6 +917,9 @@ class VmRunnerCore {
       if (bodyResult is VmSignal && bodyResult.isInterrupt) {
         return bodyResult.isBreak ? bodyResult.signalValue : bodyResult; //break只跳出本while范围
       }
+      if (bodyResult is VmSignal && bodyResult.isContinue) {
+        //继续循环无需任何处理
+      }
       conditionResult = _scanMap(runner, condition);
       conditionValue = VmObject.readValue(conditionResult);
     }
@@ -888,6 +936,9 @@ class VmRunnerCore {
       if (bodyResult is VmSignal && bodyResult.isInterrupt) {
         return bodyResult.isBreak ? bodyResult.signalValue : bodyResult; //break只跳出本while范围
       }
+      if (bodyResult is VmSignal && bodyResult.isContinue) {
+        //继续循环无需任何处理
+      }
       conditionResult = _scanMap(runner, condition);
       conditionValue = VmObject.readValue(conditionResult);
     } while (conditionValue);
@@ -901,6 +952,8 @@ class VmRunnerCore {
     final expressionResult = _scanMap(runner, expression);
     return VmSignal(isReturn: true, signalValue: expressionResult);
   }
+
+  static VmSignal _scanContinueStatement(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) => VmSignal(isContinue: true);
 
   ///
   ///类相关
@@ -918,28 +971,35 @@ class VmRunnerCore {
     final fieldTree = <Map<VmKeys, dynamic>>[]; //实例字段初始化语法树列表
     final membersResult = _scanList(runner, members) as List; //放在staticScope添加后执行，可自动填入静态成员
     final extendsClauseResult = _scanMap(runner, extendsClause) as VmHelper?; // => _scanNamedType or null
-    final extendsClauseSuperclass = (extendsClauseResult == null ? null : runner.getVmObject(extendsClauseResult.fieldType!)) as VmClass?;
+    final superclass = (extendsClauseResult == null ? runner.getVmObject(VmClass.objectTypeName) : runner.getVmObject(extendsClauseResult.fieldType!)) as VmClass;
+    if (!superclass.isExternal) {
+      throw ('ClassDeclaration unsupport internal superclass: ${superclass.identifier}'); //内部定义的类型 仅支持继承 添加了VmSuper扩展的外部类
+    }
     for (var item in membersResult) {
       if (item is List<VmValue>) {
         // => _scanFieldDeclaration 静态变量
         for (var vmvalue in item) {
+          if (proxyMap.containsKey(vmvalue.identifier)) throw ('ClassDeclaration already exists proxy: $name.${vmvalue.identifier}');
           proxyMap[vmvalue.identifier] = VmProxy(identifier: vmvalue.identifier, isExternal: false, internalStaticPropertyOperator: vmvalue);
         }
       } else if (item is List<VmHelper>) {
         // => _scanFieldDeclaration 实例变量
         for (var vmhelper in item) {
+          if (proxyMap.containsKey(vmhelper.fieldName)) throw ('ClassDeclaration already exists proxy: $name.${vmhelper.fieldName}');
           proxyMap[vmhelper.fieldName] = VmProxy(identifier: vmhelper.fieldName, isExternal: false);
           fieldTree.add(vmhelper.fieldValue); //添加到初始化语法树列表
         }
       } else if (item is VmValue) {
         // => _scanConstructorDeclaration or _scanMethodDeclaration 构造函数、静态函数
+        if (proxyMap.containsKey(item.identifier)) throw ('ClassDeclaration already exists proxy: $name.${item.identifier}');
         proxyMap[item.identifier] = VmProxy(identifier: item.identifier, isExternal: false, internalStaticPropertyOperator: item);
       } else if (item is VmHelper) {
         // => _scanMethodDeclaration 实例函数
+        if (proxyMap.containsKey(item.fieldName)) throw ('ClassDeclaration already exists proxy: $name.${item.fieldName}');
         proxyMap[item.fieldName] = VmProxy(identifier: item.fieldName, isExternal: false);
         fieldTree.add(item.fieldValue); //添加到初始化语法树列表
       } else {
-        throw ('ClassDeclaration unsupport member: ${item.runtimeType}');
+        throw ('ClassDeclaration unsupport member result: ${item.runtimeType}');
       }
     }
     runner.delVmObject(_classDeclarationName_); //移除关键变量
@@ -948,12 +1008,13 @@ class VmRunnerCore {
     final vmclassResult = VmClass<VmValue>(
       identifier: name,
       isExternal: false,
+      superclassNames: [...superclass.superclassNames, superclass.identifier],
       internalProxyMap: proxyMap,
       internalStaticPropertyMap: staticScope.map((key, value) => MapEntry(key, value as VmValue)),
       internalInstanceFieldTree: fieldTree,
-      internalExtendsSuperclass: extendsClauseSuperclass,
+      internalExtendsSuperclass: superclass,
     );
-    VmClass.addClass(vmclassResult); //添加到底层库
+    VmClass.addClass(vmclassResult, isExternal: false); //添加到底层库
     runner.addVmObject(vmclassResult); //添加到运行库
     return vmclassResult;
   }
@@ -975,6 +1036,7 @@ class VmRunnerCore {
   static VmValue _scanConstructorDeclaration(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
     //属性读取
     final name = node[VmKeys.$ConstructorDeclarationName] as String?;
+    final factoryKeyword = node[VmKeys.$ConstructorDeclarationFactoryKeyword] as String?;
     final parameters = node[VmKeys.$ConstructorDeclarationParameters] as Map<VmKeys, dynamic>?;
     final initializers = node[VmKeys.$ConstructorDeclarationInitializers] as List<Map<VmKeys, dynamic>?>?;
     final body = node[VmKeys.$ConstructorDeclarationBody] as Map<VmKeys, dynamic>?;
@@ -985,7 +1047,7 @@ class VmRunnerCore {
     VmObject.groupDeclarationParameters(parametersResult, listArguments, nameArguments);
     final vmfunctionResult = VmValue.forFunction(
       identifier: name ?? VmObject.readValue(runner.getVmObject(_classDeclarationName_)),
-      isIniter: name == null || name == '_', //原始构造函数，factory方法也会进入到这个分支，所以用name来判断保证只有一个原始构造函数
+      isIniter: factoryKeyword == null, //原始构造函数，factory方法也会进入到这个分支
       isStatic: true,
       listArguments: listArguments,
       nameArguments: nameArguments,

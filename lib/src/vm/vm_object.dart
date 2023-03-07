@@ -30,7 +30,7 @@ mixin VmSuper {
   ///实例的字段作用域列表
   final _propertyMapList = [<String, VmValue>{}, <String, VmValue>{}];
 
-  ///实例的父类字段作用域
+  ///实例的超类字段作用域
   Map<String, VmValue> get _superPropertyMap => _propertyMapList.first;
 
   ///实例的子类字段作用域
@@ -39,19 +39,19 @@ mixin VmSuper {
   ///读取实例的某个字段
   VmValue getProperty(String propertyName) => _childPropertyMap[propertyName] ?? _superPropertyMap[propertyName]!; //先尝试从child读取
 
-  ///绑定实例的父类字段
-  void bindSuperProperties(VmClass superclass) {
+  ///绑定实例的超类字段
+  void _copyProperties(VmClass superclass) {
     final propertyMap = _superPropertyMap;
     superclass.externalProxyMap?.forEach((key, value) {
       if (value.isExternalInstanceProxy) {
-        propertyMap[key] = VmValue.forSubproxy(identifier: key, initValue: () => VmLazyer(instance: this, property: key));
+        propertyMap[key] = VmValue.forSubproxy(identifier: key, initValue: () => VmLazyer(instance: this, property: key)); //覆盖保存
       }
     });
   }
 
   ///转换为易读的字符串描述
   @override
-  String toString() => '$runtimeType(${_propertyMapList.map((e) => '{${e.keys.join(', ')}}').join(', ')})';
+  String toString() => '_${runtimeType.toString().toLowerCase()}(${_propertyMapList.map((e) => '{${e.keys.join(', ')}}').join(', ')})_';
 
   ///转换为易读的JSON对象
   Map<String, dynamic> toJson() => {'_superPropertyMap': _superPropertyMap, '_childPropertyMap': _childPropertyMap};
@@ -92,7 +92,7 @@ class VmMetaData {
   ///作为内部定义方法时声明为: constructor，排除 factory 方法
   final bool isIniter;
 
-  ///作为内部定义方法时声明为: static，包括 factory 方法
+  ///作为内部定义方法时声明为: static，包括 constructor、factory 方法
   final bool isStatic;
 
   ///作为内部定义方法时声明为: get
@@ -250,7 +250,7 @@ abstract class VmObject {
   static void groupInvocationParameters(List<dynamic>? fromParameters, List<dynamic> toListArguments, Map<Symbol, dynamic> toNameArguments) {
     if (fromParameters != null) {
       for (var item in fromParameters) {
-        if (item is VmHelper) {
+        if (item is VmHelper && item.isNamedField) {
           toNameArguments[Symbol(item.fieldName)] = item;
         } else {
           toListArguments.add(item);
@@ -270,6 +270,9 @@ class VmClass<T> extends VmObject {
   ///该包装类的类型实例
   final VmType vmwareType;
 
+  ///该包装类的深度递归的超类名
+  final List<String> superclassNames;
+
   ///外部导入类型的字段代理集合
   final Map<String, VmProxy<T>>? externalProxyMap;
 
@@ -288,21 +291,16 @@ class VmClass<T> extends VmObject {
   VmClass({
     required super.identifier,
     this.isExternal = true,
+    this.superclassNames = const [],
     this.externalProxyMap,
     this.internalProxyMap,
     this.internalStaticPropertyMap,
     this.internalInstanceFieldTree,
     this.internalExtendsSuperclass,
   }) : vmwareType = VmType(name: identifier) {
-    //给代理集合绑定包装类型
-    externalProxyMap?.forEach((key, value) => value.bindVmClass(this));
-    internalProxyMap?.forEach((key, value) => value.bindVmClass(this));
-    //给类静态成员绑定作用域
-    internalStaticPropertyMap?.forEach((key, value) => value.bindStaticScope(this));
-    //判断继承类型
-    if (internalExtendsSuperclass != null && !internalExtendsSuperclass!.isExternal) {
-      throw ('Unsupport extends on internal super class: $identifier extends ${internalExtendsSuperclass!.identifier}');
-    }
+    externalProxyMap?.forEach((key, value) => value.bindVmClass(this)); //给代理集合绑定包装类型
+    internalProxyMap?.forEach((key, value) => value.bindVmClass(this)); //给代理集合绑定包装类型
+    internalStaticPropertyMap?.forEach((key, value) => value.bindStaticScope(this)); //给类静态成员绑定作用域
   }
 
   ///判断实例是否为该包装类型的实例
@@ -354,7 +352,7 @@ class VmClass<T> extends VmObject {
   dynamic setValue(value) => throw UnimplementedError();
 
   @override
-  String toString() => 'VmClass<${isExternal ? T : identifier}> ===> $identifier';
+  String toString() => 'VmClass<${isExternal ? T : identifier}> ===> $identifier ---> super_${superclassNames}_${superclassNames.length}';
 
   @override
   Map<String, dynamic> toJson() {
@@ -363,6 +361,7 @@ class VmClass<T> extends VmObject {
       'identifier': identifier,
       'isExternal': isExternal,
       'vmwareType': vmwareType.toString(),
+      'superclassNames': superclassNames,
     };
     if (externalProxyMap != null) map['externalProxyMap'] = externalProxyMap?.length;
     if (internalProxyMap != null) map['internalProxyMap'] = internalProxyMap;
@@ -375,8 +374,43 @@ class VmClass<T> extends VmObject {
   ///函数的类型名称
   static const functionTypeName = 'Function';
 
+  ///函数的类型名称
+  static const objectTypeName = 'Object';
+
   ///动态的类型名称
-  static const dynamicTypeNames = ['Object', 'dynamic'];
+  static const smartTypeNames = ['FutureOr', 'Object', 'Null', 'dynamic', 'void'];
+
+  ///非Object子类型Null
+  // ignore: prefer_void_to_null
+  static final baseClassNull = VmClass<Null>(
+    identifier: 'Null',
+    externalProxyMap: {
+      'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
+      'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
+      'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
+      'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
+    },
+  );
+
+  ///非Object子类型dynamic
+  static final baseClassDynamic = VmClass<dynamic>(
+    identifier: 'dynamic',
+    externalProxyMap: {
+      'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (instance) => instance.hashCode),
+      'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (instance) => instance.noSuchMethod),
+      'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (instance) => instance.runtimeType),
+      'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (instance) => instance.toString),
+    },
+  );
+
+  ///非Object子类型void
+  static final baseClassVoid = VmClass<void>(
+    identifier: 'void',
+    externalProxyMap: {},
+  );
+
+  ///非Object子类型列表
+  static final allBaseLibrary = <VmClass>[baseClassNull, baseClassDynamic, baseClassVoid];
 
   ///包装类型集合
   static final _libraryMap = <String, VmClass>{};
@@ -385,10 +419,31 @@ class VmClass<T> extends VmObject {
   static final _libraryList = <VmClass>[];
 
   ///添加包装类型[vmclass]
-  static void addClass(VmClass vmclass) {
+  static void addClass(VmClass vmclass, {bool isExternal = true}) {
     if (_libraryMap.containsKey(vmclass.identifier)) throw ('Already exists VmClass: ${vmclass.identifier}');
     _libraryMap[vmclass.identifier] = vmclass;
-    _libraryList.add(vmclass);
+    if (isExternal) {
+      _libraryList.add(vmclass);
+    } else {
+      _libraryList.insert(0, vmclass); //放在最前面可以保证内部类型的优先级
+      // for (var e in _libraryList) print(e);
+    }
+  }
+
+  ///按照继承数量逆序排列包装类型列表，这样才能保证[getClassByInstance]的正确性
+  static void sortClassDesc() {
+    _libraryList.sort((a, b) {
+      final ai = allBaseLibrary.indexOf(a);
+      final bi = allBaseLibrary.indexOf(b);
+      if (ai >= 0 && bi >= 0) return ai < bi ? -1 : 1;
+      if (ai < 0 && bi >= 0) return -1;
+      if (ai >= 0 && bi < 0) return 1;
+      if (a.superclassNames.length != b.superclassNames.length) {
+        return a.superclassNames.length > b.superclassNames.length ? -1 : 1;
+      }
+      return a.externalProxyMap!.length > b.externalProxyMap!.length ? -1 : 1;
+    });
+    // for (var e in _libraryList) print(e);
   }
 
   ///获取指定名称[typeName]对应的包装类型
@@ -404,14 +459,17 @@ class VmClass<T> extends VmObject {
     final logic = VmObject.readLogic(instance);
     if (logic is VmValue) return logic._valueType;
     //再使用类型名进行查找
-    final typeName = logic.runtimeType.toString();
+    final fuckName = logic.runtimeType.toString();
+    final typeName = fuckName.split('<').first.replaceAll('_', '');
     final vmclass = _libraryMap[typeName];
+    // if (fuckName.contains('<') || fuckName.contains('_')) print('---------------> $fuckName -----------> $typeName');
     if (vmclass != null) return vmclass;
     //最后使用实例进行匹配
+    // print('-------------------------------------------------------------------> $fuckName -----------> $typeName');
     for (var item in _libraryList) {
       if (item.isThisType(logic)) return item;
     }
-    throw ('Not found VmClass: $typeName');
+    throw ('Not found VmClass: $fuckName -> $typeName');
   }
 }
 
@@ -444,7 +502,7 @@ class VmProxy<T> extends VmObject {
   final VmValue? internalStaticPropertyOperator;
 
   ///被代理的类型
-  late final VmClass _vmclass;
+  VmClass _vmclass;
 
   VmProxy({
     required super.identifier,
@@ -456,7 +514,7 @@ class VmProxy<T> extends VmObject {
     this.externalInstancePropertyWriter,
     this.externalInstanceFunctionCaller,
     this.internalStaticPropertyOperator,
-  });
+  }) : _vmclass = VmClass.baseClassVoid;
 
   ///绑定类型
   dynamic bindVmClass(VmClass vmclass) => _vmclass = vmclass;
@@ -590,7 +648,7 @@ class VmValue extends VmObject {
   ///类静态作用域
   VmClass? _staticScope;
 
-  ///父实例作用域
+  ///超实例作用域
   VmValue? _instanceScope;
 
   VmValue._({
@@ -649,7 +707,7 @@ class VmValue extends VmObject {
     if (realLogic is VmValue) {
       return VmValue._(
         identifier: identifier,
-        metaType: VmClass.dynamicTypeNames.contains(initType) ? VmMetaType.externalSmart : VmMetaType.internalAlias,
+        metaType: VmClass.smartTypeNames.contains(initType) ? VmMetaType.externalSmart : VmMetaType.internalAlias,
         metaData: const VmMetaData(),
         valueType: realLogic._valueType,
         valueData: realLogic,
@@ -659,7 +717,7 @@ class VmValue extends VmObject {
       final realValue = VmObject.readValue(initValue, type: initType);
       return VmValue._(
         identifier: identifier,
-        metaType: VmClass.dynamicTypeNames.contains(realClass.identifier) ? VmMetaType.externalSmart : (realClass.isExternal ? VmMetaType.externalValue : VmMetaType.internalValue),
+        metaType: VmClass.smartTypeNames.contains(realClass.identifier) ? VmMetaType.externalSmart : (realClass.isExternal ? VmMetaType.externalValue : VmMetaType.internalValue),
         metaData: const VmMetaData(),
         valueType: realClass,
         valueData: realValue,
@@ -715,7 +773,7 @@ class VmValue extends VmObject {
     );
   }
 
-  ///作为内部定义类型的实例的字段集合列表，包括父类与子类定义的全部字段
+  ///作为内部定义类型的实例的字段集合列表，包括超类与子类定义的全部字段
   List<Map<String, VmValue>> get internalInstancePropertyMapList {
     final target = _valueData;
     if (target is VmValue) {
@@ -773,7 +831,7 @@ class VmValue extends VmObject {
         return Function.apply(targeLayzer.getValue(), listArgumentsNative, nameArgumentsNative);
       } else if (metaType == VmMetaType.internalApply) {
         if (metaData.isIniter) {
-          return metaData.staticListener!(positionalArguments, namedArguments, _staticScope!, _staticScope!.internalInstanceFieldTree, this); //原始构造函数
+          return metaData.staticListener!(positionalArguments, namedArguments, _staticScope!, _staticScope!.internalInstanceFieldTree, this); //非factory构造函数
         } else if (metaData.isStatic) {
           return metaData.staticListener!(positionalArguments, namedArguments, _staticScope!, null, this); //普通静态函数
         } else {
@@ -787,15 +845,16 @@ class VmValue extends VmObject {
     }
   }
 
-  ///构建内部定义类型的实例的初始化值
+  ///构建内部定义类型[vmclass]的实例的初始化值
   VmSuper prepareForConstructor(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmClass vmclass) {
     final target = _valueData;
     if (target is VmValue) {
       return target.prepareForConstructor(positionalArguments, namedArguments, vmclass);
     } else {
-      final superclass = vmclass.internalExtendsSuperclass;
-      if (superclass == null) {
-        return VmInstance(); //非继承类型
+      final superclass = vmclass.internalExtendsSuperclass!; //必然存在，无需判断
+      if (superclass.identifier == VmClass.objectTypeName) {
+        final instance = VmInstance(); //默认继承Object类型的使用VmInstance创建实例
+        return instance.._copyProperties(superclass); //创建超类的字段代理
       } else {
         final listResult = <dynamic>[];
         final nameResult = <Symbol, dynamic>{};
@@ -818,8 +877,8 @@ class VmValue extends VmObject {
             nameResult[fieldKey] = value;
           }
         }
-        final instance = superclass.getProxy(superclass.identifier, setter: false).runFunction(superclass, listResult, nameResult) as VmSuper; //创建对应的父类的实例
-        return instance..bindSuperProperties(superclass); //绑定父类的字段并返回
+        final instance = superclass.getProxy(superclass.identifier, setter: false).runFunction(superclass, listResult, nameResult) as VmSuper; //创建对应的超类的实例
+        return instance.._copyProperties(superclass); //创建超类的字段代理
       }
     }
   }
@@ -838,7 +897,7 @@ class VmValue extends VmObject {
         final field = metaData.listArguments[i];
         final value = i < positionalArguments.length ? positionalArguments[i] : field.fieldValue; //列表参数按照索引一一对应即可
         if (field.isSuperField) {
-          //已在父类作用域中添加，直接忽略
+          //已在超类作用域中添加，直接忽略
         } else if (field.isClassField) {
           buildTarget!.getProperty(field.fieldName).setValue(value);
         } else {
@@ -851,7 +910,7 @@ class VmValue extends VmObject {
         final fieldKey = Symbol(field.fieldName);
         final value = namedArguments.containsKey(fieldKey) ? namedArguments[fieldKey] : field.fieldValue; //命名参数按照字段名称进行匹配
         if (field.isSuperField) {
-          //已在父类作用域中添加，直接忽略
+          //已在超类作用域中添加，直接忽略
         } else if (field.isClassField) {
           buildTarget!.getProperty(field.fieldName).setValue(value);
         } else {
@@ -905,7 +964,7 @@ class VmValue extends VmObject {
     } else {
       if (metaType == VmMetaType.externalSuper) {
         final targeLayzer = target() as VmLazyer;
-        return targeLayzer.getValue(); //读取父类值
+        return targeLayzer.getValue(); //读取超类值
       } else if (metaType == VmMetaType.internalValue) {
         return target; //VmSuper值
       } else if (metaType == VmMetaType.internalApply) {
@@ -936,7 +995,7 @@ class VmValue extends VmObject {
         }
       case VmMetaType.externalSuper:
         final targeLayzer = _valueData() as VmLazyer;
-        return targeLayzer.setValue(VmObject.readValue(value)); //保存父类值
+        return targeLayzer.setValue(VmObject.readValue(value)); //保存超类值
       case VmMetaType.internalValue:
         throw ('Unsuppport setValue operator for internalValue: $identifier');
       case VmMetaType.internalApply:
@@ -963,7 +1022,7 @@ class VmValue extends VmObject {
       case VmMetaType.internalApply:
         final typeArg1 = metaData.isIniter ? 'initer' : (metaData.isStatic ? 'static' : 'normal');
         final typeArg2 = metaData.isGetter ? 'getter' : (metaData.isSetter ? 'setter' : 'normal');
-        final listArgs = '[${metaData.listArguments.map((e) => '${e.isClassField ? 'this.' : (e.isSuperField ? 'super.' : '')}${e.fieldName}').join(', ')}]';
+        final listArgs = '[${metaData.listArguments.map((e) => '${e.isClassField ? 'this.' : (e.isSuperField ? 'super.' : '')}${e.fieldName}${e.fieldValue == null ? '' : ' = ${e.getValue()}'}').join(', ')}]';
         final nameArgs = '{${metaData.nameArguments.map((e) => '${e.isClassField ? 'this.' : (e.isSuperField ? 'super.' : '')}${e.fieldName}${e.fieldValue == null ? '' : ' = ${e.getValue()}'}').join(', ')}}';
         return 'VmValue<internalApply> ===> ${_valueType.identifier} $identifier --> $typeArg1 $typeArg2 $listArgs $nameArgs';
       case VmMetaType.internalValue:
@@ -985,7 +1044,7 @@ class VmValue extends VmObject {
               'isStatic': metaData.isStatic,
               'isGetter': metaData.isGetter,
               'isSetter': metaData.isSetter,
-              'listArguments': '[${metaData.listArguments.map((e) => '${e.isClassField ? 'this.' : (e.isSuperField ? 'super.' : '')}${e.fieldName}').join(', ')}]',
+              'listArguments': '[${metaData.listArguments.map((e) => '${e.isClassField ? 'this.' : (e.isSuperField ? 'super.' : '')}${e.fieldName}${e.fieldValue == null ? '' : ' = ${e.getValue()}'}').join(', ')}]',
               'nameArguments': '{${metaData.nameArguments.map((e) => '${e.isClassField ? 'this.' : (e.isSuperField ? 'super.' : '')}${e.fieldName}${e.fieldValue == null ? '' : ' = ${e.getValue()}'}').join(', ')}}',
               'initTree': metaData.initTree.map((e) => e?.keys.map((e) => e.toString()).toList()).toList(),
               'bodyTree': metaData.bodyTree.keys.map((e) => e.toString()).toList(),
@@ -1132,7 +1191,7 @@ class VmHelper extends VmObject {
   ///声明的字段是否为类字段参数
   final bool isClassField;
 
-  ///声明的字段是否为父类的字段
+  ///声明的字段是否为超类的字段
   final bool isSuperField;
 
   VmHelper({
@@ -1184,6 +1243,9 @@ class VmSignal extends VmObject {
   ///是否为return信号
   final bool isReturn;
 
+  ///是否为continue信号
+  final bool isContinue;
+
   ///附带值如：函数返回值等
   final dynamic signalValue;
 
@@ -1193,6 +1255,7 @@ class VmSignal extends VmObject {
   VmSignal({
     this.isBreak = false,
     this.isReturn = false,
+    this.isContinue = false,
     dynamic signalValue,
   })  : signalValue = VmObject.readLogic(signalValue),
         super(identifier: '___anonymousVmSignal___');
@@ -1216,6 +1279,7 @@ class VmSignal extends VmObject {
       'identifier': identifier,
       'isBreak': isBreak,
       'isReturn': isReturn,
+      'isContinue': isContinue,
       'signalValue': signalValue?.toString(),
     };
     return map;

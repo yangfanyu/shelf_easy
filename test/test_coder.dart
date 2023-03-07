@@ -1,17 +1,17 @@
 import 'dart:io';
 
 import 'package:shelf_easy/shelf_easy.dart';
-import 'package:shelf_easy/shelf_gens.dart';
 
 void main() {
-  // testEasyCoder();
-  testEasyVmGen();
+  testEasyCoderModel();
+  testEasyCoderVmLib();
 }
 
-void testEasyCoder() {
+void testEasyCoderModel() {
   final coder = EasyCoder(
     config: EasyCoderConfig(
       absFolder: '${Directory.current.path}/test/model',
+      logLevel: EasyLogLevel.debug,
     ),
   );
   coder.generateModel(EasyCoderModelInfo(
@@ -207,10 +207,42 @@ void testEasyCoder() {
   coder.generateWrapBuilder();
 }
 
-void testEasyVmGen() {
-  final vmgen = EasyVmGen();
-  vmgen.generateBaseLibrary(
-    outputFile: '${Directory.current.path}/lib/src/vm/vm_library.dart',
-    outputClass: 'VmLibrary',
+void testEasyCoderVmLib() {
+  final coder = EasyCoder(
+    config: EasyCoderConfig(
+      absFolder: '${Directory.current.path}/lib/src/vm',
+    ),
+  );
+  coder.generateVmLibraries(
+    outputFile: 'vm_library',
+    importList: [
+      'dart:async',
+      'dart:collection',
+      'dart:convert',
+      'dart:core',
+      // 'dart:developer', //与math库冲突
+      'dart:math',
+      'dart:typed_data',
+      'dart:io',
+      'dart:isolate',
+    ],
+    className: 'VmLibrary',
+    classDesc: 'Dart核心库桥接类',
+    libraryPaths: [
+      '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/async',
+      '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/collection',
+      '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/convert',
+      '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/core',
+      // '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/developer'), //与math库冲突
+      '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/math',
+      '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/typed_data',
+      '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/io',
+      '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/isolate',
+    ],
+    privatePaths: [
+      '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/_http',
+      '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/internal',
+    ],
+    genByExternal: false,
   );
 }

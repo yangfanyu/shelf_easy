@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_if_null_operators, unnecessary_type_check, unnecessary_cast, prefer_typing_uninitialized_variables, unnecessary_null_in_if_null_operators, avoid_init_to_null, unnecessary_null_comparison, prefer_collection_literals
+// ignore_for_file: prefer_if_null_operators, unnecessary_type_check, unnecessary_cast, prefer_typing_uninitialized_variables, unnecessary_null_in_if_null_operators, avoid_init_to_null, unnecessary_null_comparison, prefer_collection_literals, use_function_type_syntax_for_parameters
 
 import 'dart:math';
 
@@ -130,6 +130,8 @@ final assignA = assignZ &= 32; //32
 final assignB = assignZ |= 3; //35
 final assignC = assignZ ^= 7; //36
 final assignD = assignZ >>>= 1; //18
+Object assignE = 1;
+Object assignF = assignE = 'Hello world';
 
 final conditionalN = null; //null
 const conditionalY = 2; //2
@@ -260,7 +262,7 @@ dynamic funcA2(int a, int b, {required int c, int d = 0, int? e}) {
 
     for (int zzz1 = 0; zzz1 < 6; zzz1++) {
       print('zzz1 $zzz1');
-      if (zzz1 >= 1) break;
+      if (zzz1 >= 1) continue;
       for (int zzz2 = 0; zzz2 < 6; zzz2++) {
         print('zzz1 $zzz1 zzz2 $zzz2');
         if (zzz2 >= 2) break;
@@ -277,7 +279,7 @@ dynamic funcA2(int a, int b, {required int c, int d = 0, int? e}) {
 
 int funcA3(int a, {required int b}) => a * b;
 
-void funcA4(int Function(int a, {required int b}) cb, void Function(String val) pipline) {
+void funcA4(int Function(int a, {required int b}) cb, void pipline(String val)) {
   pipline('funcA4: ${cb(3, b: 7)}');
 }
 
@@ -344,6 +346,23 @@ int funcA5() {
   return 1;
 }
 
+Set funcA6(Duration a, {void b(String c)?}) {
+  if (b != null) b('funcA6 ------------> Set.castFrom outer');
+  final res = Set.castFrom({a.inHours, a.inMinutes, a.inSeconds}, newSet: <int>() {
+    if (b != null) b('funcA6 >>>>>>>>>>>>> Set.castFrom inter');
+    return {};
+  });
+  if (b != null) b('funcA6 ------------> Set.castFrom $res');
+  return res;
+}
+
+List funcA7(Duration a, [void b(String d)?, int c = 2]) {
+  final res = [a.inHours, a.inMinutes, a.inSeconds];
+  res.add(c);
+  if (b != null) b('funcA7 ------------> $res');
+  return res;
+}
+
 final funcResA1_1 = funcA1(1, c: 3); //6
 final funcResA2_0 = funcA2(0, 100, c: 200); //hello world a=0, b=100, c=200, d=0, e=null, aaa=888
 final funcResA2_1 = funcA2(1, 100, c: 200); //1
@@ -355,6 +374,9 @@ final funcResA2_6 = funcA2(6, 100, c: 200); //hello world a=6, b=100, c=200, d=0
 final funcResA2_7 = funcA2(7, 100, c: 200); //hello world a=7, b=100, c=200, d=0, e=null, aaa=888
 final funcResA2_8 = funcA2(8, 100, c: 200); //hello world a=8, b=100, c=200, d=0, e=null, aaa=888
 final funcResA5_0 = funcA5(); //1
+final funcResA6_0 = funcA6(Duration(hours: 1, minutes: 1, seconds: 1), b: print); //{1, 61, 3661}
+final funcResA7_0 = funcA7(Duration(hours: 1, minutes: 1, seconds: 1), print); //[1, 61, 3661, 2]
+final funcResA7_1 = funcA7(Duration(hours: 1, minutes: 1, seconds: 1), print, 999); //[1, 61, 3661, 999]
 
 ///
 /// 类定义与实例测试区
@@ -422,11 +444,11 @@ final userInstance6 = TestUser(50, 60, name: 'Cascade', sex: 3, age: 80)
   ..desc = 'Hello world!'
   .._info = 'I am Dart'
   ..printInfo();
-dynamic userInstance7;
-var userInstance8 = userInstance7 ??= userInstance0;
-dynamic userInstance9 = userInstance8;
-final userInstance10 = (userInstance9 as TestUser).printInfo(); // String id=1, name=Jack, sex=3, age=4, desc=2 desc, info=2 info, _haha=[20, 10000, -198, 999]
-final userInstance11 = [userInstance0, userInstance1];
-final userInstance12 = {userInstance0, userInstance1};
-final userInstance13 = {0: userInstance0, 1: userInstance1};
-final userInstance14 = userInstance11.map((e) => e.printInfo()).toList();
+// dynamic userInstance7;
+// var userInstance8 = userInstance7 ??= userInstance0;
+// dynamic userInstance9 = userInstance8;
+// final userInstance10 = (userInstance9 as TestUser).printInfo(); // String id=1, name=Jack, sex=3, age=4, desc=2 desc, info=2 info, _haha=[20, 10000, -198, 999]
+// final userInstance11 = [userInstance0, userInstance1];
+// final userInstance12 = {userInstance0, userInstance1};
+// final userInstance13 = {0: userInstance0, 1: userInstance1};
+// final userInstance14 = userInstance11.map((e) => e.printInfo()).toList();

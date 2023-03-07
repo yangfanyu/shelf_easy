@@ -9,7 +9,7 @@ export 'wrapper_empty.dart';
 ///
 ///Parsing class
 ///
-class WrapBuilder {
+class WrapperBuilder {
   ///Parsing fields
   static final _recordBuilder = <String, DbBaseModel Function(Map<String, dynamic> map)>{
     'WrapperLocation': (Map<String, dynamic> map) => WrapperLocation.fromJson(map),
