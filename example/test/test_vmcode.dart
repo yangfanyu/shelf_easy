@@ -169,12 +169,13 @@ final methodInvocationResA = print;
 final methodInvocationResB = print.runtimeType; // (Object?) => void
 final methodInvocationResC = Set.new.toString().length; //56
 final methodInvocationResD = Set; //Set
-final methodInvocationResE = methodInvocationResC.toString();
+final methodInvocationResE = methodInvocationResC.toString(); //56
 final methodInvocationResF = methodInvocationResD.runtimeType; //VmType
 final methodInvocationResG = methodInvocationMap1.remove(1); //a
 final methodInvocationResH = max(100, 99); //100
 final methodInvocationResI = Random().nextDouble();
 final methodInvocationResJ = pi; //3.141592653589793
+final methodInvocationResK = methodInvocationResA('0000000000000000');
 
 ///
 /// 函数定义与语句测试区
@@ -384,7 +385,7 @@ class TestUser {
         _haha = [0, 1, 2, 3];
 
   factory TestUser.fromTest() {
-    return TestUser(11111, 22222, name: 'Test', sex: sexMale, age: 10);
+    return TestUser(11111, 22222, name: 'Test', sex: sexFemale, age: 10);
   }
 
   void readSex() => sex;
@@ -414,9 +415,9 @@ class TestUser {
 final userInstance0 = TestUser(1, 2, name: 'Jack', sex: 3, age: 4);
 final userInstance1 = TestUser(10, 20, name: 'Tom', sex: TestUser.getFemaleSexValue);
 final userInstance2 = userInstance0;
-final userInstance3 = userInstance2.printInfo();
-final userInstance4 = TestUser(30, 40, name: 'Rose').printInfo();
-final userInstance5 = TestUser.fromTest().printInfo();
+final userInstance3 = userInstance2.printInfo(); //id=1, name=Jack, sex=3, age=4, desc=2 desc, info=2 info, _haha=[10, 100, -98, 999]
+final userInstance4 = TestUser(30, 40, name: 'Rose').printInfo(); //id=30, name=Rose, sex=1, age=18, desc=40 desc, info=40 info, _haha=[10, 100, -98, 999]
+final userInstance5 = TestUser.fromTest().printInfo(); //id=11111, name=Test, sex=2, age=10, desc=22222 desc, info=22222 info, _haha=[10, 100, -98, 999]
 final userInstance6 = TestUser(50, 60, name: 'Cascade', sex: 3, age: 80)
   ..desc = 'Hello world!'
   .._info = 'I am Dart'
@@ -424,7 +425,7 @@ final userInstance6 = TestUser(50, 60, name: 'Cascade', sex: 3, age: 80)
 dynamic userInstance7;
 var userInstance8 = userInstance7 ??= userInstance0;
 dynamic userInstance9 = userInstance8;
-final userInstance10 = (userInstance9 as TestUser).printInfo();
+final userInstance10 = (userInstance9 as TestUser).printInfo(); // String id=1, name=Jack, sex=3, age=4, desc=2 desc, info=2 info, _haha=[20, 10000, -198, 999]
 final userInstance11 = [userInstance0, userInstance1];
 final userInstance12 = {userInstance0, userInstance1};
 final userInstance13 = {0: userInstance0, 1: userInstance1};

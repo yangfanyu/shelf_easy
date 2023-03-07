@@ -27,15 +27,34 @@ class VmType extends Type {
 ///内部类的超类
 ///
 mixin VmSuper {
-  ///子类型的字段集合
-  final _subclassFields = <String, VmValue>{};
+  ///实例的字段作用域列表
+  final _propertyMapList = [<String, VmValue>{}, <String, VmValue>{}];
+
+  ///实例的父类字段作用域
+  Map<String, VmValue> get _superPropertyMap => _propertyMapList.first;
+
+  ///实例的子类字段作用域
+  Map<String, VmValue> get _childPropertyMap => _propertyMapList.last;
+
+  ///读取实例的某个字段
+  VmValue getProperty(String propertyName) => _childPropertyMap[propertyName] ?? _superPropertyMap[propertyName]!; //先尝试从child读取
+
+  ///绑定实例的父类字段
+  void bindSuperProperties(VmClass superclass) {
+    final propertyMap = _superPropertyMap;
+    superclass.externalProxyMap?.forEach((key, value) {
+      if (value.isExternalInstanceProxy) {
+        propertyMap[key] = VmValue.forSubproxy(identifier: key, initValue: () => VmLazyer(instance: this, property: key));
+      }
+    });
+  }
 
   ///转换为易读的字符串描述
   @override
-  String toString() => '$runtimeType($_subclassFields)';
+  String toString() => '$runtimeType(${_propertyMapList.map((e) => '{${e.keys.join(', ')}}').join(', ')})';
 
   ///转换为易读的JSON对象
-  Map<String, dynamic> toJson() => _subclassFields;
+  Map<String, dynamic> toJson() => {'_superPropertyMap': _superPropertyMap, '_childPropertyMap': _childPropertyMap};
 }
 
 ///
@@ -47,20 +66,23 @@ class VmInstance with VmSuper {}
 ///数据值的元类型
 ///
 enum VmMetaType {
-  ///外部普通类型的对象
-  externalObject,
+  ///外部类型的普通类型数据
+  externalValue,
 
-  ///外部动态类型的对象
-  externalSmarts,
+  ///外部类型的万能类型数据
+  externalSmart,
 
-  ///内部定义方法的对象
-  internalMethod,
+  ///外部类型的继承字段代理
+  externalSuper,
 
-  ///内部定义类型的对象
-  internalObject,
+  ///内部类型的普通类型数据
+  internalValue,
 
-  ///内部定义对象的别名，即[internalMethod]与[internalObject]元类型的数据值的别名
-  internalByname,
+  ///内部定义的方法类型数据
+  internalApply,
+
+  ///内部类型的数据实例别名，即[internalValue]与[internalApply]元类型的别名
+  internalAlias,
 }
 
 ///
@@ -260,6 +282,9 @@ class VmClass<T> extends VmObject {
   ///内部定义类型的实例字段的初始化树列表，初始化树采用列表可保证初始化顺序不变
   final List<Map<VmKeys, dynamic>>? internalInstanceFieldTree;
 
+  ///内部定义类型继承的父包装类型，当前仅支持继承：添加了VmSuper扩展的外部类型
+  final VmClass? internalExtendsSuperclass;
+
   VmClass({
     required super.identifier,
     this.isExternal = true,
@@ -267,12 +292,17 @@ class VmClass<T> extends VmObject {
     this.internalProxyMap,
     this.internalStaticPropertyMap,
     this.internalInstanceFieldTree,
+    this.internalExtendsSuperclass,
   }) : vmwareType = VmType(name: identifier) {
     //给代理集合绑定包装类型
     externalProxyMap?.forEach((key, value) => value.bindVmClass(this));
     internalProxyMap?.forEach((key, value) => value.bindVmClass(this));
     //给类静态成员绑定作用域
     internalStaticPropertyMap?.forEach((key, value) => value.bindStaticScope(this));
+    //判断继承类型
+    if (internalExtendsSuperclass != null && !internalExtendsSuperclass!.isExternal) {
+      throw ('Unsupport extends on internal super class: $identifier extends ${internalExtendsSuperclass!.identifier}');
+    }
   }
 
   ///判断实例是否为该包装类型的实例
@@ -296,16 +326,18 @@ class VmClass<T> extends VmObject {
   }
 
   ///获取指定字段的代理，[setter]为true表示这是为设置属性而获取的代理，由于set函数在字段的末尾添加了等于符号，所以将优先查找'propertyName='这样的函数
-  VmProxy<T> getProxy(String propertyName, {required bool setter}) {
+  VmProxy getProxy(String propertyName, {required bool setter}) {
     if (setter) {
       final setterPropName = '$propertyName=';
       final proxy = isExternal ? (externalProxyMap?[setterPropName] ?? externalProxyMap?[propertyName]) : (internalProxyMap?[setterPropName] ?? internalProxyMap?[propertyName]);
-      if (proxy == null) throw ('Not found proxy: $identifier.$propertyName');
-      return proxy;
+      if (proxy != null) return proxy;
+      if (internalExtendsSuperclass != null) return internalExtendsSuperclass!.getProxy(propertyName, setter: setter);
+      throw ('Not found proxy: $identifier.$propertyName');
     } else {
       final proxy = isExternal ? (externalProxyMap?[propertyName]) : (internalProxyMap?[propertyName]);
-      if (proxy == null) throw ('Not found proxy: $identifier.$propertyName');
-      return proxy;
+      if (proxy != null) return proxy;
+      if (internalExtendsSuperclass != null) return internalExtendsSuperclass!.getProxy(propertyName, setter: setter);
+      throw ('Not found proxy: $identifier.$propertyName');
     }
   }
 
@@ -336,6 +368,7 @@ class VmClass<T> extends VmObject {
     if (internalProxyMap != null) map['internalProxyMap'] = internalProxyMap;
     if (internalStaticPropertyMap != null) map['internalStaticPropertyMap'] = internalStaticPropertyMap;
     if (internalInstanceFieldTree != null) map['internalInstanceFieldTree'] = internalInstanceFieldTree?.map((e) => e.keys.map((e) => e.toString()).toList()).toList();
+    if (internalExtendsSuperclass != null) map['internalExtendsSuperclass'] = internalExtendsSuperclass?.toString();
     return map;
   }
 
@@ -502,6 +535,9 @@ class VmProxy<T> extends VmObject {
     }
   }
 
+  ///是否为外部导入类型的实例代理
+  bool get isExternalInstanceProxy => externalInstancePropertyReader != null || externalInstancePropertyWriter != null || externalInstanceFunctionCaller != null;
+
   @override
   VmClass getClass() => VmObject.readClass(getProperty(this));
 
@@ -565,7 +601,7 @@ class VmValue extends VmObject {
     required dynamic valueData,
   })  : _valueType = valueType,
         _valueData = valueData {
-    if (metaType == VmMetaType.internalMethod) {
+    if (metaType == VmMetaType.internalApply) {
       switch (metaData.listArguments.length) {
         case 0:
           _valueData = () => runFunction([], null);
@@ -613,7 +649,7 @@ class VmValue extends VmObject {
     if (realLogic is VmValue) {
       return VmValue._(
         identifier: identifier,
-        metaType: VmClass.dynamicTypeNames.contains(initType) ? VmMetaType.externalSmarts : VmMetaType.internalByname,
+        metaType: VmClass.dynamicTypeNames.contains(initType) ? VmMetaType.externalSmart : VmMetaType.internalAlias,
         metaData: const VmMetaData(),
         valueType: realLogic._valueType,
         valueData: realLogic,
@@ -623,7 +659,7 @@ class VmValue extends VmObject {
       final realValue = VmObject.readValue(initValue, type: initType);
       return VmValue._(
         identifier: identifier,
-        metaType: VmClass.dynamicTypeNames.contains(realClass.identifier) ? VmMetaType.externalSmarts : (realClass.isExternal ? VmMetaType.externalObject : VmMetaType.internalObject),
+        metaType: VmClass.dynamicTypeNames.contains(realClass.identifier) ? VmMetaType.externalSmart : (realClass.isExternal ? VmMetaType.externalValue : VmMetaType.internalValue),
         metaData: const VmMetaData(),
         valueType: realClass,
         valueData: realValue,
@@ -647,7 +683,7 @@ class VmValue extends VmObject {
   }) {
     return VmValue._(
       identifier: identifier,
-      metaType: VmMetaType.internalMethod,
+      metaType: VmMetaType.internalApply,
       metaData: VmMetaData(
         isIniter: isIniter ?? false,
         isStatic: isStatic ?? false,
@@ -665,13 +701,27 @@ class VmValue extends VmObject {
     );
   }
 
-  ///作为内部定义类型的实例的字段集合
-  Map<String, VmValue> get internalInstancePropertyMap {
+  ///创建子代理
+  factory VmValue.forSubproxy({
+    String identifier = '___anonymousVmSubproxy___',
+    required VmLazyer Function() initValue,
+  }) {
+    return VmValue._(
+      identifier: identifier,
+      metaType: VmMetaType.externalSuper,
+      metaData: const VmMetaData(),
+      valueType: VmClass.getClassByTypeName(VmClass.functionTypeName),
+      valueData: initValue,
+    );
+  }
+
+  ///作为内部定义类型的实例的字段集合列表，包括父类与子类定义的全部字段
+  List<Map<String, VmValue>> get internalInstancePropertyMapList {
     final target = _valueData;
     if (target is VmValue) {
-      return target.internalInstancePropertyMap;
+      return target.internalInstancePropertyMapList;
     } else {
-      return (target as VmSuper)._subclassFields;
+      return (target as VmSuper)._propertyMapList;
     }
   }
 
@@ -691,8 +741,9 @@ class VmValue extends VmObject {
     if (target is VmValue) {
       target.bindMemberScope();
     } else {
-      if (_staticScope == null) throw ('Please call bindStaticScope before calling bindMemberScope');
-      internalInstancePropertyMap.forEach((key, value) {
+      if (_staticScope == null) throw ('Please call bindStaticScope before calling bindMemberScope: $identifier');
+      //遍历子类字段来绑定作用域
+      (target as VmSuper)._childPropertyMap.forEach((key, value) {
         value._staticScope ??= _staticScope;
         value._instanceScope ??= this;
       });
@@ -705,7 +756,7 @@ class VmValue extends VmObject {
     if (target is VmValue) {
       return target.getProperty(propertyName);
     } else {
-      return internalInstancePropertyMap[propertyName]!;
+      return (target as VmSuper).getProperty(propertyName);
     }
   }
 
@@ -715,7 +766,12 @@ class VmValue extends VmObject {
     if (target is VmValue) {
       return target.runFunction(positionalArguments, namedArguments);
     } else {
-      if (metaType == VmMetaType.internalMethod) {
+      if (metaType == VmMetaType.externalSuper) {
+        final listArgumentsNative = positionalArguments?.map((e) => VmObject.readValue(e)).toList();
+        final nameArgumentsNative = namedArguments?.map((key, value) => MapEntry(key, VmObject.readValue(value)));
+        final targeLayzer = target() as VmLazyer;
+        return Function.apply(targeLayzer.getValue(), listArgumentsNative, nameArgumentsNative);
+      } else if (metaType == VmMetaType.internalApply) {
         if (metaData.isIniter) {
           return metaData.staticListener!(positionalArguments, namedArguments, _staticScope!, _staticScope!.internalInstanceFieldTree, this); //原始构造函数
         } else if (metaData.isStatic) {
@@ -731,11 +787,48 @@ class VmValue extends VmObject {
     }
   }
 
-  ///准备调用该函数所需的参数列表。为构造函数做准备时[buildTarget]为要被构建的目标实例
-  List<VmObject> prepareInvocation(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmValue? buildTarget) {
+  ///构建内部定义类型的实例的初始化值
+  VmSuper prepareForConstructor(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmClass vmclass) {
     final target = _valueData;
     if (target is VmValue) {
-      return target.prepareInvocation(positionalArguments, namedArguments, buildTarget);
+      return target.prepareForConstructor(positionalArguments, namedArguments, vmclass);
+    } else {
+      final superclass = vmclass.internalExtendsSuperclass;
+      if (superclass == null) {
+        return VmInstance(); //非继承类型
+      } else {
+        final listResult = <dynamic>[];
+        final nameResult = <Symbol, dynamic>{};
+        positionalArguments ??= const [];
+        namedArguments ??= const {};
+        //匹配列表参数
+        for (var i = 0; i < metaData.listArguments.length; i++) {
+          final field = metaData.listArguments[i];
+          final value = i < positionalArguments.length ? positionalArguments[i] : field.fieldValue; //列表参数按照索引一一对应即可
+          if (field.isSuperField) {
+            listResult.add(value);
+          }
+        }
+        //匹配命名参数
+        for (var i = 0; i < metaData.nameArguments.length; i++) {
+          final field = metaData.nameArguments[i];
+          final fieldKey = Symbol(field.fieldName);
+          final value = namedArguments.containsKey(fieldKey) ? namedArguments[fieldKey] : field.fieldValue; //命名参数按照字段名称进行匹配
+          if (field.isSuperField) {
+            nameResult[fieldKey] = value;
+          }
+        }
+        final instance = superclass.getProxy(superclass.identifier, setter: false).runFunction(superclass, listResult, nameResult) as VmSuper; //创建对应的父类的实例
+        return instance..bindSuperProperties(superclass); //绑定父类的字段并返回
+      }
+    }
+  }
+
+  ///准备执行该函数所需的参数列表，[buildTarget]是被该函数初始化的构建目标实例
+  List<VmObject> prepareForInvocation(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmValue? buildTarget) {
+    final target = _valueData;
+    if (target is VmValue) {
+      return target.prepareForInvocation(positionalArguments, namedArguments, buildTarget);
     } else {
       final result = <VmObject>[];
       positionalArguments ??= const [];
@@ -744,7 +837,9 @@ class VmValue extends VmObject {
       for (var i = 0; i < metaData.listArguments.length; i++) {
         final field = metaData.listArguments[i];
         final value = i < positionalArguments.length ? positionalArguments[i] : field.fieldValue; //列表参数按照索引一一对应即可
-        if (field.isClassField) {
+        if (field.isSuperField) {
+          //已在父类作用域中添加，直接忽略
+        } else if (field.isClassField) {
           buildTarget!.getProperty(field.fieldName).setValue(value);
         } else {
           result.add(VmValue.forVariable(identifier: field.fieldName, initType: field.fieldType, initValue: value));
@@ -755,7 +850,9 @@ class VmValue extends VmObject {
         final field = metaData.nameArguments[i];
         final fieldKey = Symbol(field.fieldName);
         final value = namedArguments.containsKey(fieldKey) ? namedArguments[fieldKey] : field.fieldValue; //命名参数按照字段名称进行匹配
-        if (field.isClassField) {
+        if (field.isSuperField) {
+          //已在父类作用域中添加，直接忽略
+        } else if (field.isClassField) {
           buildTarget!.getProperty(field.fieldName).setValue(value);
         } else {
           result.add(VmValue.forVariable(identifier: field.fieldName, initType: field.fieldType, initValue: value));
@@ -771,7 +868,12 @@ class VmValue extends VmObject {
     if (target is VmValue) {
       return target.getClass();
     } else {
-      return _valueType;
+      if (metaType == VmMetaType.externalSuper) {
+        final targeLayzer = target() as VmLazyer;
+        return targeLayzer.getClass();
+      } else {
+        return _valueType;
+      }
     }
   }
 
@@ -781,10 +883,13 @@ class VmValue extends VmObject {
     if (target is VmValue) {
       return target.getLogic();
     } else {
-      if (metaType == VmMetaType.internalMethod) {
-        if (metaData.isGetter) return VmObject.readLogic(runFunction(null, null));
+      if (metaType == VmMetaType.externalSuper) {
+        final targeLayzer = target() as VmLazyer;
+        return targeLayzer.getLogic();
+      } else if (metaType == VmMetaType.internalValue) {
         return this; //注意：此处返回自身，用于逻辑调用
-      } else if (metaType == VmMetaType.internalObject) {
+      } else if (metaType == VmMetaType.internalApply) {
+        if (metaData.isGetter) return VmObject.readLogic(runFunction(null, null));
         return this; //注意：此处返回自身，用于逻辑调用
       } else {
         return target; //数据原生值
@@ -798,11 +903,14 @@ class VmValue extends VmObject {
     if (target is VmValue) {
       return target.getValue();
     } else {
-      if (metaType == VmMetaType.internalMethod) {
+      if (metaType == VmMetaType.externalSuper) {
+        final targeLayzer = target() as VmLazyer;
+        return targeLayzer.getValue(); //读取父类值
+      } else if (metaType == VmMetaType.internalValue) {
+        return target; //VmSuper值
+      } else if (metaType == VmMetaType.internalApply) {
         if (metaData.isGetter) return VmObject.readValue(runFunction(null, null));
         return target; //函数模板值
-      } else if (metaType == VmMetaType.internalObject) {
-        return target; //VmSuper值
       } else {
         return target; //数据原生值
       }
@@ -812,9 +920,9 @@ class VmValue extends VmObject {
   @override
   dynamic setValue(value) {
     switch (metaType) {
-      case VmMetaType.externalObject:
+      case VmMetaType.externalValue:
         return _valueData = VmObject.readValue(value, type: _valueType.identifier); //保存原生值
-      case VmMetaType.externalSmarts:
+      case VmMetaType.externalSmart:
         //与VmValue.forVariable的处理流程是一致的
         final realLogic = VmObject.readLogic(value);
         if (realLogic is VmValue) {
@@ -826,12 +934,15 @@ class VmValue extends VmObject {
           _valueType = realClass;
           return _valueData = realValue;
         }
-      case VmMetaType.internalMethod:
+      case VmMetaType.externalSuper:
+        final targeLayzer = _valueData() as VmLazyer;
+        return targeLayzer.setValue(VmObject.readValue(value)); //保存父类值
+      case VmMetaType.internalValue:
+        throw ('Unsuppport setValue operator for internalValue: $identifier');
+      case VmMetaType.internalApply:
         if (metaData.isSetter) return runFunction([value], null);
-        throw ('Unsuppport setValue operator for internalMethod: $identifier');
-      case VmMetaType.internalObject:
-        throw ('Unsuppport setValue operator for internalObject: $identifier');
-      case VmMetaType.internalByname:
+        throw ('Unsuppport setValue operator for internalApply: $identifier');
+      case VmMetaType.internalAlias:
         return _valueData = VmObject.readLogic(value, type: _valueType.identifier); //保存逻辑值
     }
   }
@@ -839,24 +950,26 @@ class VmValue extends VmObject {
   @override
   String toString() {
     switch (metaType) {
-      case VmMetaType.externalObject:
-        return 'VmValue<externalObject> ===> ${_valueType.identifier} $identifier --> ${_valueData.runtimeType} $_valueData';
-      case VmMetaType.externalSmarts:
+      case VmMetaType.externalValue:
+        return 'VmValue<externalValue> ===> ${_valueType.identifier} $identifier --> ${_valueData.runtimeType} $_valueData';
+      case VmMetaType.externalSmart:
         if (_valueData is VmValue) {
-          return 'VmValue<externalSmarts> ===> ${_valueType.identifier} $identifier @@@{ $_valueData }@@@';
+          return 'VmValue<externalSmart> ===> ${_valueType.identifier} $identifier #smart{ $_valueData }';
         } else {
-          return 'VmValue<externalObject> ===> ${_valueType.identifier} $identifier --> ${_valueData.runtimeType} $_valueData';
+          return 'VmValue<externalSmart> ===> ${_valueType.identifier} $identifier --> ${_valueData.runtimeType} $_valueData';
         }
-      case VmMetaType.internalMethod:
+      case VmMetaType.externalSuper:
+        return 'VmValue<externalSuper> ===> ${_valueType.identifier} $identifier #super{ $_valueData }';
+      case VmMetaType.internalApply:
         final typeArg1 = metaData.isIniter ? 'initer' : (metaData.isStatic ? 'static' : 'normal');
         final typeArg2 = metaData.isGetter ? 'getter' : (metaData.isSetter ? 'setter' : 'normal');
-        final listArgs = '[${metaData.listArguments.map((e) => '${e.isClassField ? 'this.' : ''}${e.fieldName}').toList().join(', ')}]';
-        final nameArgs = '{${metaData.nameArguments.map((e) => '${e.isClassField ? 'this.' : ''}${e.fieldName}${e.fieldValue == null ? '' : ' = ${e.getValue()}'}').toList().join(', ')}}';
-        return 'VmValue<internalMethod> ===> ${_valueType.identifier} $identifier --> $typeArg1 $typeArg2 $listArgs $nameArgs';
-      case VmMetaType.internalObject:
-        return 'VmValue<internalObject> ===> ${_valueType.identifier} $identifier --> ${_valueData.runtimeType}(${internalInstancePropertyMap.keys.map((e) => e.toString()).toList().join(', ')})';
-      case VmMetaType.internalByname:
-        return 'VmValue<internalByname> ===> ${_valueType.identifier} $identifier ###{ $_valueData }###';
+        final listArgs = '[${metaData.listArguments.map((e) => '${e.isClassField ? 'this.' : (e.isSuperField ? 'super.' : '')}${e.fieldName}').join(', ')}]';
+        final nameArgs = '{${metaData.nameArguments.map((e) => '${e.isClassField ? 'this.' : (e.isSuperField ? 'super.' : '')}${e.fieldName}${e.fieldValue == null ? '' : ' = ${e.getValue()}'}').join(', ')}}';
+        return 'VmValue<internalApply> ===> ${_valueType.identifier} $identifier --> $typeArg1 $typeArg2 $listArgs $nameArgs';
+      case VmMetaType.internalValue:
+        return 'VmValue<internalValue> ===> ${_valueType.identifier} $identifier --> ${_valueData.runtimeType} $_valueData';
+      case VmMetaType.internalAlias:
+        return 'VmValue<internalAlias> ===> ${_valueType.identifier} $identifier #alias{ $_valueData }';
     }
   }
 
@@ -866,48 +979,25 @@ class VmValue extends VmObject {
       'toString': toString(),
       'identifier': identifier,
       'metaType': metaType.toString(),
-      'metaData': metaData.toString(),
+      'metaData': metaType == VmMetaType.internalApply
+          ? {
+              'isIniter': metaData.isIniter,
+              'isStatic': metaData.isStatic,
+              'isGetter': metaData.isGetter,
+              'isSetter': metaData.isSetter,
+              'listArguments': '[${metaData.listArguments.map((e) => '${e.isClassField ? 'this.' : (e.isSuperField ? 'super.' : '')}${e.fieldName}').join(', ')}]',
+              'nameArguments': '{${metaData.nameArguments.map((e) => '${e.isClassField ? 'this.' : (e.isSuperField ? 'super.' : '')}${e.fieldName}${e.fieldValue == null ? '' : ' = ${e.getValue()}'}').join(', ')}}',
+              'initTree': metaData.initTree.map((e) => e?.keys.map((e) => e.toString()).toList()).toList(),
+              'bodyTree': metaData.bodyTree.keys.map((e) => e.toString()).toList(),
+              'staticListener': metaData.staticListener != null,
+              'instanceListener': metaData.instanceListener != null,
+            }
+          : metaData.toString(),
     };
-    switch (metaType) {
-      case VmMetaType.externalObject:
-        map['_valueType'] = _valueType.toString();
-        map['_valueData'] = _valueData?.toString();
-        break;
-      case VmMetaType.externalSmarts:
-        map['_valueType'] = _valueType.toString();
-        if (_valueData is VmValue) {
-          map['_valueData'] = _valueData;
-        } else {
-          map['_valueData'] = _valueData?.toString();
-        }
-        break;
-      case VmMetaType.internalMethod:
-        map['metaData'] = {
-          'isIniter': metaData.isIniter,
-          'isStatic': metaData.isStatic,
-          'isGetter': metaData.isGetter,
-          'isSetter': metaData.isSetter,
-          'listArguments': '[${metaData.listArguments.map((e) => '${e.isClassField ? 'this.' : ''}${e.fieldName}').toList().join(', ')}]',
-          'nameArguments': '{${metaData.nameArguments.map((e) => '${e.isClassField ? 'this.' : ''}${e.fieldName}${e.fieldValue == null ? '' : ' = ${e.getValue()}'}').toList().join(', ')}}',
-          'initTree': metaData.initTree.map((e) => e?.keys.map((e) => e.toString()).toList()).toList(),
-          'bodyTree': metaData.bodyTree.keys.map((e) => e.toString()).toList(),
-          'staticListener': metaData.staticListener != null,
-          'instanceListener': metaData.instanceListener != null,
-        };
-        map['_valueType'] = _valueType.toString();
-        map['_valueData'] = _valueData?.toString();
-        break;
-      case VmMetaType.internalObject:
-        map['_valueType'] = _valueType.toString();
-        map['_valueData'] = _valueData;
-        break;
-      case VmMetaType.internalByname:
-        map['_valueType'] = _valueType.toString();
-        map['_valueData'] = _valueData;
-        break;
-    }
-    map['_staticScope'] = _staticScope?.toString();
-    map['_instanceScope'] = _instanceScope?.toString();
+    map['_valueType'] = _valueType.toString();
+    map['_valueData'] = _valueData is VmValue ? _valueData : _valueData?.toString();
+    if (_staticScope != null) map['_staticScope'] = _staticScope?.toString();
+    if (_staticScope != null) map['_instanceScope'] = _instanceScope?.toString();
     return map;
   }
 }
@@ -970,6 +1060,10 @@ class VmLazyer extends VmObject {
         _result = target.runFunction(target, listArguments, nameArguments); //执行顶级函数
       } else if (target is VmValue && instanceByProperty) {
         _result = target.runFunction(listArguments, nameArguments); //执行内部函数
+      } else if (target is Function && instanceByProperty) {
+        final listArgumentsNative = listArguments?.map((e) => VmObject.readValue(e)).toList();
+        final nameArgumentsNative = nameArguments?.map((key, value) => MapEntry(key, VmObject.readValue(value)));
+        return Function.apply(target, listArgumentsNative, nameArgumentsNative); //执行外部函数
       } else {
         _result = VmObject.readClass(target).getProxy(property, setter: false).runFunction(target, listArguments, nameArguments); //执行实例方法
       }
@@ -1009,6 +1103,7 @@ class VmLazyer extends VmObject {
       'isMethod': isMethod,
       'instance': instance?.toString(),
       'property': property,
+      'instanceByProperty': instanceByProperty,
       'listArguments': listArguments?.length,
       'nameArguments': nameArguments?.length,
       '_completed': _completed,
@@ -1037,12 +1132,16 @@ class VmHelper extends VmObject {
   ///声明的字段是否为类字段参数
   final bool isClassField;
 
+  ///声明的字段是否为父类的字段
+  final bool isSuperField;
+
   VmHelper({
     this.fieldType,
     String? fieldName,
     dynamic fieldValue,
     this.isNamedField = false,
     this.isClassField = false,
+    this.isSuperField = false,
   })  : fieldName = fieldName ?? '___anonymousVmField___',
         fieldValue = VmObject.readLogic(fieldValue),
         super(identifier: '___anonymousVmHelper___');
@@ -1069,6 +1168,7 @@ class VmHelper extends VmObject {
       'fieldValue': fieldValue?.toString(),
       'isNamedField': isNamedField,
       'isClassField': isClassField,
+      'isSuperField': isSuperField,
     };
     return map;
   }

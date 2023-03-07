@@ -66,9 +66,13 @@ class VmRunner {
   dynamic _staticListener(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmClass staticScope, List<Map<VmKeys, dynamic>>? instanceFields, VmValue method) {
     if (instanceFields != null) {
       //原始构造函数
-      final instanceScope = VmValue.forVariable(identifier: VmRunnerCore._classConstructorSelf_, initType: staticScope.identifier, initValue: VmInstance()); //创建新实例
+      final initValue = method.prepareForConstructor(positionalArguments, namedArguments, staticScope); //创建初始值
+      final instanceScope = VmValue.forVariable(identifier: VmRunnerCore._classConstructorSelf_, initType: staticScope.identifier, initValue: initValue); //创建新实例
+      final instanceScopeList = instanceScope.internalInstancePropertyMapList; //读取实例作用域列表
       _objectStack.add(staticScope.internalStaticPropertyMap!); //添加类静态作用域
-      _objectStack.add(instanceScope.internalInstancePropertyMap); //添加实例作用域
+      for (var element in instanceScopeList) {
+        _objectStack.add(element); //添加实例作用域
+      }
       addVmObject(instanceScope); //添加被构造的关键变量
 
       VmRunnerCore._scanList(this, instanceFields); // => _scanFieldDeclaration or _scanMethodDeclaration 构建实例成员字段
@@ -77,7 +81,9 @@ class VmRunner {
       VmRunnerCore._scanVmFunction(this, positionalArguments, namedArguments, method, instanceScope); //构建实例成员字段完成后，再运行函数的内容
 
       delVmObject(VmRunnerCore._classConstructorSelf_); //删除被构造的关键变量
-      _objectStack.removeLast(); //移除实例作用域
+      for (var i = 0; i < instanceScopeList.length; i++) {
+        _objectStack.removeLast(); //移除实例作用域
+      }
       _objectStack.removeLast(); //移除类静态作用域
       return instanceScope;
     } else {
@@ -92,9 +98,19 @@ class VmRunner {
   ///内部定义类的实例方法的回调监听
   dynamic _instanceListener(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmClass? staticScope, VmValue? instanceScope, VmValue method) {
     if (staticScope != null) _objectStack.add(staticScope.internalStaticPropertyMap!); //添加类静态作用域
-    if (instanceScope != null) _objectStack.add(instanceScope.internalInstancePropertyMap); //添加实例作用域
+    if (instanceScope != null) {
+      final instanceScopeList = instanceScope.internalInstancePropertyMapList; //读取实例作用域列表
+      for (var element in instanceScopeList) {
+        _objectStack.add(element); //添加实例作用域
+      }
+    }
     final result = VmRunnerCore._scanVmFunction(this, positionalArguments, namedArguments, method, null);
-    if (instanceScope != null) _objectStack.removeLast(); //移除实例作用域
+    if (instanceScope != null) {
+      final instanceScopeList = instanceScope.internalInstancePropertyMapList; //读取实例作用域列表
+      for (var i = 0; i < instanceScopeList.length; i++) {
+        _objectStack.removeLast(); //移除实例作用域
+      }
+    }
     if (staticScope != null) _objectStack.removeLast(); //移除类静态作用域
     return result;
   }
@@ -193,6 +209,7 @@ class VmRunnerCore {
     VmKeys.$FunctionExpression: _scanFunctionExpression,
     VmKeys.$NamedExpression: _scanNamedExpression,
     VmKeys.$FormalParameterList: _scanFormalParameterList,
+    VmKeys.$SuperFormalParameter: _scanSuperFormalParameter,
     VmKeys.$FieldFormalParameter: _scanFieldFormalParameter,
     VmKeys.$SimpleFormalParameter: _scanSimpleFormalParameter,
     VmKeys.$DefaultFormalParameter: _scanDefaultFormalParameter,
@@ -237,7 +254,7 @@ class VmRunnerCore {
   static List<dynamic>? _scanList(VmRunner runner, List<Map<VmKeys, dynamic>?>? nodeList) => nodeList?.map((e) => _scanMap(runner, e)).toList();
 
   static dynamic _scanVmFunction(VmRunner runner, List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmValue method, VmValue? buildTarget) {
-    final parameters = method.prepareInvocation(positionalArguments, namedArguments, buildTarget); //准备函数参数
+    final parameters = method.prepareForInvocation(positionalArguments, namedArguments, buildTarget); //准备函数参数
     runner._newScope(); //创建函数作用域
     for (var element in parameters) {
       runner.addVmObject(element);
@@ -632,6 +649,17 @@ class VmRunnerCore {
 
   static List<dynamic>? _scanFormalParameterList(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) => _scanList(runner, node[VmKeys.$FormalParameterListParameters]);
 
+  static VmHelper _scanSuperFormalParameter(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
+    final type = node[VmKeys.$SuperFormalParameterType] as Map<VmKeys, dynamic>?;
+    final name = node[VmKeys.$SuperFormalParameterName] as String;
+    final typeResult = _scanMap(runner, type) as VmHelper?; // => _scanNamedType or _scanGenericFunctionType or null
+    return VmHelper(
+      fieldType: typeResult?.fieldType,
+      fieldName: name,
+      isSuperField: true,
+    );
+  }
+
   static VmHelper _scanFieldFormalParameter(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
     final type = node[VmKeys.$FieldFormalParameterType] as Map<VmKeys, dynamic>?;
     final name = node[VmKeys.$FieldFormalParameterName] as String;
@@ -665,6 +693,7 @@ class VmRunnerCore {
       fieldValue: defaultValueResult,
       isNamedField: true,
       isClassField: parameterResult?.isClassField ?? false,
+      isSuperField: parameterResult?.isSuperField ?? false,
     );
   }
 
@@ -881,12 +910,15 @@ class VmRunnerCore {
     //属性读取
     final name = node[VmKeys.$ClassDeclarationName] as String;
     final members = node[VmKeys.$ClassDeclarationMembers] as List<Map<VmKeys, dynamic>?>?;
+    final extendsClause = node[VmKeys.$ClassDeclarationExtendsClause] as Map<VmKeys, dynamic>?;
     //逻辑处理
     final staticScope = runner._newScope(); //创建类静态作用域
     runner.addVmObject(VmValue.forVariable(identifier: _classDeclarationName_, initValue: name)); //添加关键变量
     final proxyMap = <String, VmProxy<VmValue>>{}; //字段操作代理集合
     final fieldTree = <Map<VmKeys, dynamic>>[]; //实例字段初始化语法树列表
     final membersResult = _scanList(runner, members) as List; //放在staticScope添加后执行，可自动填入静态成员
+    final extendsClauseResult = _scanMap(runner, extendsClause) as VmHelper?; // => _scanNamedType or null
+    final extendsClauseSuperclass = (extendsClauseResult == null ? null : runner.getVmObject(extendsClauseResult.fieldType!)) as VmClass?;
     for (var item in membersResult) {
       if (item is List<VmValue>) {
         // => _scanFieldDeclaration 静态变量
@@ -919,6 +951,7 @@ class VmRunnerCore {
       internalProxyMap: proxyMap,
       internalStaticPropertyMap: staticScope.map((key, value) => MapEntry(key, value as VmValue)),
       internalInstanceFieldTree: fieldTree,
+      internalExtendsSuperclass: extendsClauseSuperclass,
     );
     VmClass.addClass(vmclassResult); //添加到底层库
     runner.addVmObject(vmclassResult); //添加到运行库

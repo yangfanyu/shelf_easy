@@ -655,7 +655,7 @@ class EasyVmGen {
     _generateInstance(reflect(EasyLogLevel.debug).type, _generateClass(reflectClass(Enum)));
     _generateInstance(reflect(int).type, _generateClass(reflectClass(Type)));
     _generateInstance(reflect(Object()).type, _generateClass(reflectClass(Object))); //上面的类型全部非null值都是Object的子类，所以放在他们后面
-    // _generateInstance(reflect(null).type, _generateClass(reflectClass(Null), hardTemplateName: 'dynamic')); // Null a=null; print(a is Object); => false。直接用dynamic替代，无需生成
+    // _generateInstance(reflect(null).type, _generateClass(reflectClass(Null), hardTemplateName: 'dynamic')); // Null a=null; print(a is Object); => false。final b=null; => b type is dynamic 直接用dynamic替代，无需生成
     _generateInstance(reflect(null).type, _generateClass(reflectClass(Null), hardClassName: 'dynamic')); //全部的类型（包括Null类型）都可用dynamic表示，所以放在他们后面
     _generateInstance(reflect(null).type, _generateClass(reflectClass(Null), hardClassName: 'void', noBody: true), noBody: true); //无类型，用于void关键字
 

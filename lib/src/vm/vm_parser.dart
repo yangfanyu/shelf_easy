@@ -322,6 +322,14 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
       };
 
   @override
+  Map<VmKeys, Map<VmKeys, dynamic>> visitSuperFormalParameter(SuperFormalParameter node) => {
+        VmKeys.$SuperFormalParameter: {
+          VmKeys.$SuperFormalParameterType: node.type?.accept(this),
+          VmKeys.$SuperFormalParameterName: node.name.toString(),
+        },
+      };
+
+  @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitFieldFormalParameter(FieldFormalParameter node) => {
         VmKeys.$FieldFormalParameter: {
           VmKeys.$FieldFormalParameterType: node.type?.accept(this),
@@ -506,6 +514,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
         VmKeys.$ClassDeclaration: {
           VmKeys.$ClassDeclarationName: node.name.toString(),
           VmKeys.$ClassDeclarationMembers: node.members.map((e) => e.accept(this)).toList(),
+          VmKeys.$ClassDeclarationExtendsClause: node.extendsClause?.superclass.accept(this),
         },
       };
 

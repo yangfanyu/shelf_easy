@@ -356,6 +356,17 @@ enum VmKeys {
   ///对应[FormalParameterList.parameters]
   $FormalParameterListParameters,
 
+  /** ******** SuperFormalParameter ******** **/
+
+  ///对应[SuperFormalParameter]
+  $SuperFormalParameter,
+
+  ///对应[SuperFormalParameter.name]
+  $SuperFormalParameterName,
+
+  ///对应[SuperFormalParameter.type]
+  $SuperFormalParameterType,
+
   /** ******** FieldFormalParameter ******** **/
 
   ///对应[FieldFormalParameter]
@@ -601,6 +612,9 @@ enum VmKeys {
 
   ///对应[ClassDeclaration.members]
   $ClassDeclarationMembers,
+
+  ///对应[ClassDeclaration.extendsClause]
+  $ClassDeclarationExtendsClause,
 
   /** ******** FieldDeclaration ******** **/
 
