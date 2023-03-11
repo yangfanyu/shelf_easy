@@ -257,7 +257,7 @@ dynamic funcA2(int a, int b, {required int c, int d = 0, int? e}) {
     funcA4(funcA3, (str) {
       final nnn = [1, 2, 3, 4];
       final ppp = nnn.reduce((value, element) => value + element);
-      print('$str --- $ppp ${print.toString()}');
+      print('$str --- $ppp ${print.toString()}'); //funcA4: 21 --- 10 Closure: (Object?) => void from Function 'print': static.
     });
 
     for (int zzz1 = 0; zzz1 < 6; zzz1++) {
@@ -444,11 +444,11 @@ final userInstance6 = TestUser(50, 60, name: 'Cascade', sex: 3, age: 80)
   ..desc = 'Hello world!'
   .._info = 'I am Dart'
   ..printInfo();
-// dynamic userInstance7;
-// var userInstance8 = userInstance7 ??= userInstance0;
-// dynamic userInstance9 = userInstance8;
-// final userInstance10 = (userInstance9 as TestUser).printInfo(); // String id=1, name=Jack, sex=3, age=4, desc=2 desc, info=2 info, _haha=[20, 10000, -198, 999]
-// final userInstance11 = [userInstance0, userInstance1];
-// final userInstance12 = {userInstance0, userInstance1};
-// final userInstance13 = {0: userInstance0, 1: userInstance1};
-// final userInstance14 = userInstance11.map((e) => e.printInfo()).toList();
+dynamic userInstance7;
+var userInstance8 = userInstance7 ??= userInstance0;
+dynamic userInstance9 = userInstance8;
+final userInstance10 = (userInstance9 as TestUser).printInfo(); // String id=1, name=Jack, sex=3, age=4, desc=2 desc, info=2 info, _haha=[20, 10000, -198, 999]
+final userInstance11 = [userInstance0, userInstance1];
+final userInstance12 = {userInstance0, userInstance1};
+final userInstance13 = {0: userInstance0, 1: userInstance1};
+final userInstance14 = userInstance11.map((e) => e.printInfo()).toList();

@@ -208,6 +208,7 @@ void testEasyCoderModel() {
 }
 
 void testEasyCoderVmLib() {
+  final flutterHome = Platform.environment['FLUTTER_HOME']; //读取环境变量
   final coder = EasyCoder(
     config: EasyCoderConfig(
       absFolder: '${Directory.current.path}/lib/src/vm',
@@ -220,7 +221,7 @@ void testEasyCoderVmLib() {
       'dart:collection',
       'dart:convert',
       'dart:core',
-      // 'dart:developer', //与math库冲突
+      // 'dart:developer', //与math库的log冲突，生产环境也不需要
       'dart:math',
       'dart:typed_data',
       'dart:io',
@@ -229,20 +230,21 @@ void testEasyCoderVmLib() {
     className: 'VmLibrary',
     classDesc: 'Dart核心库桥接类',
     libraryPaths: [
-      '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/async',
-      '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/collection',
-      '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/convert',
-      '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/core',
-      // '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/developer'), //与math库冲突
-      '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/math',
-      '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/typed_data',
-      '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/io',
-      '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/isolate',
+      '$flutterHome/bin/cache/dart-sdk/lib/async',
+      '$flutterHome/bin/cache/dart-sdk/lib/collection',
+      '$flutterHome/bin/cache/dart-sdk/lib/convert',
+      '$flutterHome/bin/cache/dart-sdk/lib/core',
+      // '$flutterHome/bin/cache/dart-sdk/lib/developer',//与math库的log冲突，生产环境也不需要
+      '$flutterHome/bin/cache/dart-sdk/lib/math',
+      '$flutterHome/bin/cache/dart-sdk/lib/typed_data',
+      '$flutterHome/bin/cache/dart-sdk/lib/io',
+      '$flutterHome/bin/cache/dart-sdk/lib/isolate',
     ],
     privatePaths: [
-      '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/_http',
-      '/Users/yangfanyu/Library/flutter/bin/cache/dart-sdk/lib/internal',
+      '$flutterHome/bin/cache/dart-sdk/lib/_http',
+      '$flutterHome/bin/cache/dart-sdk/lib/internal',
     ],
     genByExternal: false,
   );
+  coder.logVmLibrarydErrors();
 }

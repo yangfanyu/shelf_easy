@@ -16,10 +16,14 @@ class EasyCoder extends EasyLogger {
   ///包装模型列表
   final List<EasyCoderModelInfo> _wrapList;
 
+  ///桥接模型错误
+  final List<List<dynamic>> _vmerrList;
+
   EasyCoder({required EasyCoderConfig config})
       : _config = config,
         _baseList = [],
         _wrapList = [],
+        _vmerrList = [],
         super(
           logger: config.logger,
           logLevel: config.logLevel,
@@ -186,15 +190,14 @@ class EasyCoder extends EasyLogger {
     required List<String> libraryPaths,
     List<String> privatePaths = const [],
     List<String> ignoreIssueFiles = const [
-      '/dart-sdk/lib/core/null.dart',
-      '/dart-sdk/lib/core/record.dart',
-      '/flutter/lib/src/services/dom.dart',
-      '/flutter/lib/src/widgets/constants.dart',
-      '/flutter/lib/src/painting/_network_image_web.dart',
+      '/dart-sdk/lib/core/null.dart', //非Object子类无需生成，在vmobject.dart中文件已内置
+      '/dart-sdk/lib/core/record.dart', //生成的代码在开发工具里面报错，这个类貌似也没什么卵用
+      '/flutter/lib/src/services/dom.dart', //生成的代码在开发工具里面报错，原生flutter环境也不需要
+      '/flutter/lib/src/painting/_network_image_web.dart', //生成的代码在开发工具里面报错，原生flutter环境也不需要
     ],
     List<String> ignoreClassProxy = const [
-      'IOOverrides.runZoned', //dart-lang
-      'PlatformSelectableRegionContextMenu.child', //flutter
+      'IOOverrides.runZoned', //属于dart-sdk库，生成出来的该属性在开发工具里面报错
+      'PlatformSelectableRegionContextMenu.child', //属于flutter库，生成出来的该属性在开发工具里面报错
     ],
     Map<String, List<String>> onlyNeedFileClass = const {},
     bool genByExternal = true,
@@ -365,6 +368,18 @@ class EasyCoder extends EasyLogger {
       logInfo(['write to file', outputPath, 'success.\n']);
     } catch (error, stack) {
       logError(['write to file', outputPath, 'error:', error, '\n', stack]);
+    }
+  }
+
+  ///统一打印桥接库生成时的错误
+  void logVmLibrarydErrors() {
+    if (_vmerrList.isEmpty) {
+      logInfo(['No error found.']);
+    } else {
+      logError(['Total ${_vmerrList.length} error found:']);
+      for (var element in _vmerrList) {
+        logError(element);
+      }
     }
   }
 
@@ -769,7 +784,8 @@ class EasyCoder extends EasyLogger {
   }
 
   void _onVmNotFoundSuperClass(String className, String superName, String classPath) {
-    logError(['cannot found super class:', '$className inherit $superName', '=>', classPath]);
+    // logError(['cannot found super class:', '$className inherit $superName', '=>', classPath]);
+    _vmerrList.add(['cannot found super class:', '$className inherit $superName', '=>', classPath]); //添加到错误列表，便于统一打印
   }
 
   void _onVmIgnoreProxyOfClass(String className, String proxyName, String classPath) {

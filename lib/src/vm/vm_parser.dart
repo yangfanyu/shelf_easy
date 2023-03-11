@@ -656,7 +656,6 @@ class VmParserBirdger extends SimpleAstVisitor {
 
   @override
   VmParserBirdgeItemData? visitClassTypeAlias(ClassTypeAlias node) {
-    // print('visitClassTypeAlias ===> ${node.toSource()} ---> ${node.superclass.toSource()}');
     final superclassNames = <String>[];
     superclassNames.add(node.superclass.name.name); //extends最多只有一个
     if (node.implementsClause != null) superclassNames.addAll(node.implementsClause!.interfaces.map((e) => e.name.name).toList()); //implements可以很多个
@@ -674,7 +673,6 @@ class VmParserBirdger extends SimpleAstVisitor {
 
   @override
   VmParserBirdgeItemData? visitMixinDeclaration(MixinDeclaration node) {
-    // print('visitMixinDeclaration ===> ${node.toSource()} ---> ${node.implementsClause?.toSource()}');
     final resultList = node.members.map((e) => e.accept(this)).toList();
     final members = <VmParserBirdgeItemData?>[];
     for (var e in resultList) {
@@ -788,7 +786,6 @@ class VmParserBirdger extends SimpleAstVisitor {
   VmParserBirdgeItemData? visitFunctionTypedFormalParameter(FunctionTypedFormalParameter node) {
     final returnTypeResult = node.returnType?.accept(this); // => visitNamedType, visitGenericFunctionType
     final isWrapParameter = (returnTypeResult is List<String> && returnTypeResult.isNotEmpty) || node.typeParameters != null; //返回值带泛型或者函数本身带泛型
-    // if (isWrapParameter) print('visitFunctionTypedFormalParameter ===> ${node.toSource()} ---> ${node.typeParameters?.toSource()}');
     return VmParserBirdgeItemData(
       type: VmParserBirdgeItemType.functionParameter,
       name: node.name.toString(),
@@ -813,7 +810,6 @@ class VmParserBirdger extends SimpleAstVisitor {
   VmParserBirdgeItemData? visitGenericFunctionType(GenericFunctionType node) {
     final returnTypeResult = node.returnType?.accept(this); // => visitNamedType, visitGenericFunctionType
     final isWrapParameter = (returnTypeResult is List<String> && returnTypeResult.isNotEmpty) || node.typeParameters != null; //返回值带泛型或者函数本身带泛型
-    // if (isWrapParameter) print('visitGenericFunctionType ===> ${node.toSource()} ---> ${node.typeParameters?.toSource()}');
     return VmParserBirdgeItemData(
       name: node.functionKeyword.toString(), //必然为 'Function'
       parameters: node.parameters.accept(this),
@@ -941,8 +937,20 @@ class VmParserBirdgeItemData {
     this.superclassNames = const [],
     this.absoluteFilePath = '',
   }) : _historyclassNames = {} {
-    if (type == VmParserBirdgeItemType.classDeclaration && name == 'Object') {
-      superclassNames = const [];
+    if (type == VmParserBirdgeItemType.classDeclaration) {
+      //Object类无超类
+      if (name == 'Object') {
+        superclassNames = const [];
+      }
+      //去掉超类名称中的命名空间
+      for (var i = 0; i < superclassNames.length; i++) {
+        final superNameList = superclassNames[i].split('.');
+        superclassNames[i] = superNameList.last;
+      }
+      //移除与自己类名相同的的超类名，一般出现在：类似于xxx_io.dart、xxx_web.dart使用命名空间来继承同名接口类的情况
+      if (superclassNames.isNotEmpty) {
+        superclassNames.removeWhere((element) => element == name);
+      }
     }
   }
 

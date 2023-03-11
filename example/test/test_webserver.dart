@@ -58,7 +58,7 @@ void main() {
     );
   }, destinationFolder: () => '$rootPath/upload');
 
-  ///挂载根目录，并设置listDirectories启用文件夹浏览功能
+  ///挂载根目录，并设置listDirectories启用文件夹浏览功能，生产环境建议关闭这个选项
   server.mount('/', rootPath, listDirectories: true);
 
   server.start();

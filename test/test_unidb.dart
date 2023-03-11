@@ -6,10 +6,10 @@ import 'model/address.dart';
 import 'model/user.dart';
 
 void main() {
-  // testJsonTool();
-  // testHelpClass();
+  testJsonTool();
+  testHelpClass();
   testDataBase();
-  // testAggregate();
+  testAggregate();
 }
 
 void testJsonTool() {

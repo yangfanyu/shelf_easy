@@ -1,4 +1,4 @@
-import 'dart:io';
+// import 'dart:io';
 
 import 'package:shelf_easy/shelf_easy.dart';
 
@@ -23,7 +23,7 @@ class OuterClass with VmSuper {
   }
 }
 
-///桥接OuterClass，使得在可以在虚拟机里面继承它，一般来讲桥接库可以通过EasyCoder来生成
+///定义OuterClass桥接类，使得在可以在虚拟机里面继承它，一般来讲桥接库可以通过EasyCoder来生成
 final bridgeOuterClass = VmClass<OuterClass>(
   identifier: 'OuterClass',
   superclassNames: ['Object', 'VmSuper'],
@@ -45,7 +45,7 @@ final bridgeOuterClass = VmClass<OuterClass>(
 );
 
 void main() {
-  ///必须先导入核心类库，全局只需要调用一次。在这里我们将之前生成的数据模型桥接库导入，就可以在虚拟机中愉快的使用数据模型了
+  ///必须先导入桥接类库，全局只需要调用一次。在这里我们将之前生成的数据模型桥接库导入，就可以在虚拟机中愉快的使用他们了
   EasyVmWare.loadGlobalLibrary(
     customClassList: [
       ...ModelLibrary.libraryClassList,
@@ -133,8 +133,8 @@ void main() {
           }
           ''',
 
-        ///支持的全部语法都在这个文件中，可取消下面这行代码的注释，然后运行查看控制台的输出
-        'code': File('${Directory.current.path}/test/test_vmcode.dart').readAsStringSync(),
+        ///支持的其他语法在这个文件中，可取消下面这行代码的注释，然后运行查看控制台的输出
+        // 'code': File('${Directory.current.path}/test/test_vmcode.dart').readAsStringSync(),
       },
     ),
   );
@@ -157,9 +157,7 @@ void main() {
   final result7 = vmwareApp.call<int>(moduleName: 'home', methodName: 'start3'); //print: OuterClass.sayHello: hello world => aa3 bb3 110 210 333 unknow xxxxxx
   vmwareApp.logWarn(['result7 =>', result7]); //print: result7 => 111111
 
-  // vmwareApp.debugObjectStack(moduleName: 'home'); //打印虚拟机中的home模块作用域堆栈信息
+  vmwareApp.debugObjectStack(moduleName: 'home'); //打印虚拟机中的home模块作用域堆栈信息
 
-  vmwareApp.debugObjectStack(moduleName: 'code'); //打印虚拟机中的code模块作用域堆栈信息
-
-  // vmwareApp.debugVmWareInfo(moduleName: 'code'); //打印虚拟机中的code模块作用域堆栈信息
+  // vmwareApp.debugObjectStack(moduleName: 'code'); //打印虚拟机中的code模块作用域堆栈信息
 }
