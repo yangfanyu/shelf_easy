@@ -8,7 +8,7 @@ void main() {
 
   ///为flutter生成桥接库
   ///这里全生成了，实际情况可以自己去掉不需要的库，只需确保：生成后调用EasyCode.logVmLibrarydErrors无错误打印，且在开发工具里面打开库文件不报错即可。
-  generatorLibraryForFlutter();
+  // generatorLibraryForFlutter();
 }
 
 void generatorLibraryForModel() {
@@ -32,7 +32,7 @@ void generatorLibraryForModel() {
 
     ///私有路径不生成桥接类，只是用来查找与复制超类的属性
     privatePaths: [
-      '$flutterHome/bin/cache/dart-sdk/lib',
+      '$flutterHome/bin/cache/dart-sdk/lib/core',
     ],
 
     ///这个用来告诉生成器对应文件下面只需要生成某些类的桥接类
@@ -54,18 +54,18 @@ void generatorLibraryForFlutter() {
   coder.generateVmLibraries(
     outputFile: 'flutter_library',
     importList: [
-      'package:flutter/animation.dart',
+      // 'package:flutter/animation.dart',
       'package:flutter/cupertino.dart',
       'package:flutter/foundation.dart',
       'package:flutter/gestures.dart',
       'package:flutter/material.dart',
-      'package:flutter/painting.dart',
+      // 'package:flutter/painting.dart',
       'package:flutter/physics.dart',
       'package:flutter/rendering.dart',
       'package:flutter/scheduler.dart',
-      'package:flutter/semantics.dart',
+      // 'package:flutter/semantics.dart',
       'package:flutter/services.dart',
-      'package:flutter/widgets.dart',
+      // 'package:flutter/widgets.dart',
     ],
     className: 'FlutterLibrary',
     classDesc: 'Flutter library',

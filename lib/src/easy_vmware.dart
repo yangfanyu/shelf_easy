@@ -77,9 +77,16 @@ class EasyVmWare extends EasyLogger {
     }
   }
 
-  ///加载全局作用域，[customClassList]为自定义导入的类型，[customProxyList]为自定义导入的全局方法或实例
-  static void loadGlobalLibrary({List<VmClass> customClassList = const [], List<VmProxy> customProxyList = const []}) {
+  ///提示某类型推测慢的日志器
+  static final _slowTypeSpeculationLogger = EasyLogger(logTag: 'EasyVmWare');
+
+  ///加载全局作用域，[customClassList]为自定义导入的类型，[customProxyList]为自定义导入的全局方法或实例，[quickTypeSpeculationMethod]为加速类型推测的函数
+  static void loadGlobalLibrary({List<VmClass> customClassList = const [], List<VmProxy> customProxyList = const [], String? Function(dynamic instance)? quickTypeSpeculationMethod}) {
     VmRunner.loadGlobalLibrary(customClassList: customClassList, customProxyList: customProxyList);
+    VmClass.quickTypeSpeculationMethod = quickTypeSpeculationMethod;
+    VmClass.slowTypeSpeculationReport = (instance, vmclass, cycles, total) {
+      _slowTypeSpeculationLogger.logFatal(['slowTypeSpeculationReport ======>', instance.runtimeType, '------>', vmclass.identifier, '------>', 'cycles:', cycles, '/', total]);
+    };
   }
 
   ///简洁的执行[moduleCode]源代码中的[methodName]函数

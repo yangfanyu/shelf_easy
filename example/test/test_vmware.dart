@@ -5,7 +5,7 @@ import 'package:shelf_easy/shelf_easy.dart';
 import '../bridge/model_library.dart';
 import '../model/all.dart';
 
-///定义能在虚拟机中被继承的类，需要添加[VmSuper]扩展，
+///定义能在虚拟机中被继承的类，需要添加[VmSuper]扩展，并且具有公开的构造函数
 class OuterClass with VmSuper {
   final String key1;
   final String key2;
@@ -18,7 +18,7 @@ class OuterClass with VmSuper {
   });
 
   int sayHello(String name, {required String sex}) {
-    print('OuterClass.sayHello: hello world => $key1 $key2 $inc1 $inc2 $name $sex $hashCode');
+    print('OuterClass.sayHello: hello world => $key1 $key2 $inc1 $inc2 $name $sex $hashCode $isInitedByVmware');
     return 111111;
   }
 }
@@ -31,9 +31,12 @@ final bridgeOuterClass = VmClass<OuterClass>(
     'OuterClass': VmProxy(identifier: 'OuterClass', externalStaticPropertyReader: () => OuterClass.new),
     'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => OuterClass.new),
     'getProperty': VmProxy(identifier: 'getProperty', externalInstancePropertyReader: (OuterClass instance) => instance.getProperty),
+    'hasChildProperty': VmProxy(identifier: 'hasChildProperty', externalInstancePropertyReader: (OuterClass instance) => instance.hasChildProperty),
     'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (OuterClass instance) => instance.hashCode),
+    'hasSuperProperty': VmProxy(identifier: 'hasSuperProperty', externalInstancePropertyReader: (OuterClass instance) => instance.hasSuperProperty),
     'inc1': VmProxy(identifier: 'inc1', externalInstancePropertyReader: (OuterClass instance) => instance.inc1, externalInstancePropertyWriter: (OuterClass instance, value) => instance.inc1 = value),
     'inc2': VmProxy(identifier: 'inc2', externalInstancePropertyReader: (OuterClass instance) => instance.inc2, externalInstancePropertyWriter: (OuterClass instance, value) => instance.inc2 = value),
+    'isInitedByVmware': VmProxy(identifier: 'isInitedByVmware', externalInstancePropertyReader: (OuterClass instance) => instance.isInitedByVmware),
     'key1': VmProxy(identifier: 'key1', externalInstancePropertyReader: (OuterClass instance) => instance.key1),
     'key2': VmProxy(identifier: 'key2', externalInstancePropertyReader: (OuterClass instance) => instance.key2),
     'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (OuterClass instance) => instance.noSuchMethod),
@@ -45,7 +48,22 @@ final bridgeOuterClass = VmClass<OuterClass>(
 );
 
 void main() {
-  ///必须先导入桥接类库，全局只需要调用一次。在这里我们将之前生成的数据模型桥接库导入，就可以在虚拟机中愉快的使用他们了
+  ///必须先调用loadGlobalLibrary导入桥接类库，全局只能调用一次
+  ///
+  ///当前已经内置的库:
+  ///  dart:async
+  ///  dart:collection
+  ///  dart:convert
+  ///  dart:core
+  ///  dart:math
+  ///  dart:typed_data
+  ///  dart:io
+  ///  dart:isolate
+  ///
+  /// 在这里我们将之前生成的数据模型桥接库导入，就可以在虚拟机中愉快的使用他们了
+  ///
+  /// 注意：需要保证桥接类型[VmClass]与桥接代理[VmProxy]的标识符[identifier]全局唯一
+  ///
   EasyVmWare.loadGlobalLibrary(
     customClassList: [
       ...ModelLibrary.libraryClassList,
@@ -103,7 +121,7 @@ void main() {
             });
             @override
             int sayHello(String name, {required String sex}) {
-              print('InnerClass.sayHello: hello world => \$key1 \$key2 \$inc1 \$inc2 \$name \$sex \$value \$hashCode');
+              print('InnerClass.sayHello: hello world => \$key1 \$key2 \$inc1 \$inc2 \$name \$sex \$value \$hashCode --- \$isInitedByVmware');
               return 222222;
             }
           } 

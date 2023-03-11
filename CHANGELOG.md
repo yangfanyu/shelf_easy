@@ -1,6 +1,9 @@
-## 1.1.6
+## 1.1.9
 
-- Bridge dart:math and some dart:core class to dart-lang runtime virtual machine.
+- Refactor documentation
+- Optimize type speculation speed for virtual machines.
+- Modify the VmSuper class so that it can be used by Flutter widgets.
+- The built-in dart bridge library in the virtual machine is adapted to dart-sdk-2.19.4
   
 ## 1.1.5
 

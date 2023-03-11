@@ -36,12 +36,25 @@ mixin VmSuper {
   ///实例的子类字段作用域
   Map<String, VmValue> get _childPropertyMap => _propertyMapList.last;
 
-  ///读取实例的某个字段
-  VmValue getProperty(String propertyName) => _childPropertyMap[propertyName] ?? _superPropertyMap[propertyName]!; //先尝试从child读取
+  ///强制读取实例的某字段
+  VmValue getProperty(String propertyName) => _childPropertyMap[propertyName] ?? _superPropertyMap[propertyName]!; //必须先尝试从child中读取
 
-  ///绑定实例的超类字段
-  void _copyProperties(VmClass superclass) {
+  ///实例的超类字段作用域中存在某字段
+  bool hasSuperProperty(String propertyName) => _superPropertyMap.containsKey(propertyName);
+
+  ///实例的子类字段作用域中存在某字段
+  bool hasChildProperty(String propertyName) => _childPropertyMap.containsKey(propertyName);
+
+  ///是被虚拟机初始化过的标记key
+  static const _initedByVmwareKey = '___initedByVmwareKey___';
+
+  ///超类实例是否被虚拟机初始化过
+  bool get isInitedByVmware => _superPropertyMap.containsKey(_initedByVmwareKey);
+
+  ///复制超类的全部实例字段，并在子作用域中添加[isInitedByVmware]标记
+  void _initProperties(VmClass superclass) {
     final propertyMap = _superPropertyMap;
+    propertyMap[_initedByVmwareKey] = propertyMap[_initedByVmwareKey] ?? VmValue.forVariable(identifier: _initedByVmwareKey, initValue: true); //添加标记
     superclass.externalProxyMap?.forEach((key, value) {
       if (value.isExternalInstanceProxy) {
         propertyMap[key] = VmValue.forSubproxy(identifier: key, initValue: () => VmLazyer(instance: this, property: key)); //覆盖保存
@@ -49,16 +62,27 @@ mixin VmSuper {
     });
   }
 
-  ///转换为易读的字符串描述
+  ///转换为易读的字符串描述，添加了[minLevel]参数使得可以给flutter小部件使用
   @override
-  String toString() => '_${runtimeType.toString().toLowerCase()}(${_propertyMapList.map((e) => '{${e.keys.join(', ')}}').join(', ')})_';
+  String toString({minLevel}) {
+    if (isInitedByVmware) {
+      return '_${runtimeType.toString().toLowerCase()}(${_propertyMapList.map((e) => '{${e.keys.join(', ')}}').join(', ')})_';
+    } else {
+      return '_${runtimeType.toString().toLowerCase()}(___)_';
+    }
+  }
 
   ///转换为易读的JSON对象
-  Map<String, dynamic> toJson() => {'_superPropertyMap': _superPropertyMap, '_childPropertyMap': _childPropertyMap};
+  Map<String, dynamic> toJson() {
+    return {
+      '_superPropertyMap': _superPropertyMap,
+      '_childPropertyMap': _childPropertyMap,
+    };
+  }
 }
 
 ///
-///内部类的实例
+///默认内部类实例
 ///
 class VmInstance with VmSuper {}
 
@@ -164,9 +188,9 @@ abstract class VmObject {
   ///读取[target]的对应包装类
   static VmClass readClass(dynamic target, {String? type}) {
     if (type == null) {
-      return target is VmObject ? target.getClass() : VmClass.getClassByInstance(target);
+      return target is VmObject ? target.getClass() : VmClass._getClassByInstance(target);
     } else {
-      return VmClass.getClassByTypeName(type);
+      return VmClass._getClassByTypeName(type);
     }
   }
 
@@ -317,7 +341,7 @@ class VmClass<T> extends VmObject {
     }
   }
 
-  ///将实例转换为该包装类型的实例，实质上是做类型检查
+  ///将实例转换为该包装类型的实例，实质上是做类型判断
   T asThisType(dynamic instance) {
     if (isThisType(instance)) return instance;
     throw ('Instance type: ${instance.runtimeType} => Not matched class type: $identifier');
@@ -426,11 +450,10 @@ class VmClass<T> extends VmObject {
       _libraryList.add(vmclass);
     } else {
       _libraryList.insert(0, vmclass); //放在最前面可以保证内部类型的优先级
-      // for (var e in _libraryList) print(e);
     }
   }
 
-  ///按照继承数量逆序排列包装类型列表，这样才能保证[getClassByInstance]的正确性
+  ///按照继承数量逆序排列包装类型列表，这样能最大程度保证自动类型推测函数能返回继承链最长的包装类型
   static void sortClassDesc() {
     _libraryList.sort((a, b) {
       final ai = allBaseLibrary.indexOf(a);
@@ -443,33 +466,62 @@ class VmClass<T> extends VmObject {
       }
       return a.externalProxyMap!.length > b.externalProxyMap!.length ? -1 : 1;
     });
-    // for (var e in _libraryList) print(e);
   }
 
+  ///加速类型推测的函数
+  static String? Function(dynamic instance)? quickTypeSpeculationMethod;
+
+  ///很慢的类型推测报告
+  static void Function(dynamic instance, VmClass vmclass, int cycles, int total)? slowTypeSpeculationReport;
+
   ///获取指定名称[typeName]对应的包装类型
-  static VmClass getClassByTypeName(String typeName) {
+  static VmClass _getClassByTypeName(String typeName) {
     final vmclass = _libraryMap[typeName];
     if (vmclass != null) return vmclass;
     throw ('Not found VmClass: $typeName');
   }
 
-  ///获取任意实例[instance]对应的[VmClass]包装类型
-  static VmClass getClassByInstance(dynamic instance) {
-    //先读取逻辑值进行判断
-    final logic = VmObject.readLogic(instance);
-    if (logic is VmValue) return logic._valueType;
-    //再使用类型名进行查找
-    final fuckName = logic.runtimeType.toString();
-    final typeName = fuckName.split('<').first.replaceAll('_', '');
-    final vmclass = _libraryMap[typeName];
-    // if (fuckName.contains('<') || fuckName.contains('_')) print('---------------> $fuckName -----------> $typeName');
+  ///获取任意实例[instance]对应的包装类型，分析本文件可知[instance]必然不是[VmObject]的子类
+  static VmClass _getClassByInstance(dynamic instance) {
+    //先使用运行时类型名进行查找
+    String? typeName = instance.runtimeType.toString().split('<').first.replaceAll('_', ''); //去掉模板参数，去掉私有符号
+    VmClass? vmclass = _libraryMap[typeName];
     if (vmclass != null) return vmclass;
-    //最后使用实例进行匹配
-    // print('-------------------------------------------------------------------> $fuckName -----------> $typeName');
-    for (var item in _libraryList) {
-      if (item.isThisType(logic)) return item;
+    //再使用加速推测方案进行匹配
+    if (instance is List) {
+      typeName = 'List';
+    } else if (instance is Set) {
+      typeName = 'Set';
+    } else if (instance is Map) {
+      typeName = 'Map';
+    } else if (instance is Iterable) {
+      typeName = 'Iterable';
+    } else if (instance is Iterator) {
+      typeName = 'Iterator';
+    } else if (instance is Function) {
+      typeName = 'Function';
+    } else if (instance is Type) {
+      typeName = 'Type';
+    } else if (quickTypeSpeculationMethod != null) {
+      typeName = quickTypeSpeculationMethod!(instance);
+    } else {
+      typeName = null;
     }
-    throw ('Not found VmClass: $fuckName -> $typeName');
+    if (typeName != null) {
+      vmclass = _libraryMap[typeName];
+      if (vmclass != null) return vmclass;
+    }
+    //最后使用实例进行遍历匹配，这个可能会慢的一批
+    for (var i = 0; i < _libraryList.length; i++) {
+      vmclass = _libraryList[i];
+      if (vmclass.isThisType(instance)) {
+        if (i > 10 && slowTypeSpeculationReport != null) {
+          slowTypeSpeculationReport!(instance, vmclass, i + 1, _libraryList.length); //超过10次循环则认为这个instance的类型推断很慢
+        }
+        return vmclass;
+      }
+    }
+    throw ('Not found VmClass: ${instance.runtimeType}');
   }
 }
 
@@ -754,7 +806,7 @@ class VmValue extends VmObject {
         staticListener: staticListener,
         instanceListener: instanceListener,
       ),
-      valueType: VmClass.getClassByTypeName(VmClass.functionTypeName),
+      valueType: VmClass._getClassByTypeName(VmClass.functionTypeName),
       valueData: null,
     );
   }
@@ -768,7 +820,7 @@ class VmValue extends VmObject {
       identifier: identifier,
       metaType: VmMetaType.externalSuper,
       metaData: const VmMetaData(),
-      valueType: VmClass.getClassByTypeName(VmClass.functionTypeName),
+      valueType: VmClass._getClassByTypeName(VmClass.functionTypeName),
       valueData: initValue,
     );
   }
@@ -854,7 +906,7 @@ class VmValue extends VmObject {
       final superclass = vmclass.internalExtendsSuperclass!; //必然存在，无需判断
       if (superclass.identifier == VmClass.objectTypeName) {
         final instance = VmInstance(); //默认继承Object类型的使用VmInstance创建实例
-        return instance.._copyProperties(superclass); //创建超类的字段代理
+        return instance.._initProperties(superclass); //创建超类的字段代理
       } else {
         final listResult = <dynamic>[];
         final nameResult = <Symbol, dynamic>{};
@@ -878,7 +930,7 @@ class VmValue extends VmObject {
           }
         }
         final instance = superclass.getProxy(superclass.identifier, setter: false).runFunction(superclass, listResult, nameResult) as VmSuper; //创建对应的超类的实例
-        return instance.._copyProperties(superclass); //创建超类的字段代理
+        return instance.._initProperties(superclass); //创建超类的字段代理
       }
     }
   }
