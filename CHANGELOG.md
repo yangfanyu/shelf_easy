@@ -1,7 +1,8 @@
-## 1.1.10
+## 1.1.11
 
 - Implemented InstanceCreationExpression related functions for virtual machines.
 - Add the reassembly function of internally defined classes to the virtual machine.
+- Add a conversion interface for reading native values to virtual machines.
 
 ## 1.1.9
 

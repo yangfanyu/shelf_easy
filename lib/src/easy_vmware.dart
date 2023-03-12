@@ -73,13 +73,25 @@ class EasyVmWare extends EasyLogger {
   ///提示某类型推测慢的日志器
   static final _slowTypeSpeculationLogger = EasyLogger(logTag: 'EasyVmWare');
 
-  ///加载全局作用域，[customClassList]为自定义导入的类型，[customProxyList]为自定义导入的全局方法或实例，[quickTypeSpeculationMethod]为加速类型推测的函数
-  static void loadGlobalLibrary({List<VmClass> customClassList = const [], List<VmProxy> customProxyList = const [], String? Function(dynamic instance)? quickTypeSpeculationMethod}) {
-    VmRunner.loadGlobalLibrary(customClassList: customClassList, customProxyList: customProxyList);
+  ///加载全局作用域
+  ///
+  /// * [customClassList] 自定义导入的类型
+  /// * [customProxyList] 自定义导入的全局方法或实例
+  /// * [nativeValueConverter] 读取原生数据值转换器，如：在flutter中经常需要<Widget>[]类型的参数，但虚拟机中实际上是个<dynamic>[]类型
+  /// * [quickTypeSpeculationMethod] 加速类型推测的函数
+  ///
+  static void loadGlobalLibrary({
+    List<VmClass> customClassList = const [],
+    List<VmProxy> customProxyList = const [],
+    dynamic Function(dynamic value)? nativeValueConverter,
+    String? Function(dynamic instance)? quickTypeSpeculationMethod,
+  }) {
+    VmObject.nativeValueConverter = nativeValueConverter;
     VmClass.quickTypeSpeculationMethod = quickTypeSpeculationMethod;
     VmClass.slowTypeSpeculationReport = (instance, vmclass, cycles, total) {
       _slowTypeSpeculationLogger.logFatal(['slowTypeSpeculationReport ======>', instance.runtimeType, '------>', vmclass.identifier, '------>', 'cycles:', cycles, '/', total]);
     };
+    VmRunner.loadGlobalLibrary(customClassList: customClassList, customProxyList: customProxyList);
   }
 
   ///简洁的执行[sourceCode]源代码中的[methodName]函数

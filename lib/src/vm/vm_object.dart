@@ -185,6 +185,9 @@ abstract class VmObject {
   ///转换为易读的JSON对象
   Map<String, dynamic> toJson();
 
+  ///读取原生数据值转换器，如：在flutter中经常需要<Widget>[]类型的参数，但虚拟机中实际上是个<dynamic>[]类型
+  static dynamic Function(dynamic value)? nativeValueConverter;
+
   ///读取[target]的对应包装类
   static VmClass readClass(dynamic target, {String? type}) {
     if (type == null) {
@@ -216,7 +219,7 @@ abstract class VmObject {
       case 'Set':
         return value is Map ? value.values.toSet() : value as Set?; //扫描器获取初始值时，无法识别无类型声明的空'{}'类型，这时默认为Map类型，需要再次进行类型转换
       default:
-        return value;
+        return nativeValueConverter == null ? value : nativeValueConverter!(value);
     }
   }
 
