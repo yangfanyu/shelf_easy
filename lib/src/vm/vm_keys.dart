@@ -348,6 +348,20 @@ enum VmKeys {
   ///对应[NamedExpression.expression]
   $NamedExpressionExpression,
 
+  /** ******** InstanceCreationExpression ******** **/
+
+  ///对应[InstanceCreationExpression]
+  $InstanceCreationExpression,
+
+  ///对应[InstanceCreationExpression.constructorName].type
+  $InstanceCreationExpressionConstructorType,
+
+  ///对应[InstanceCreationExpression.constructorName].name
+  $InstanceCreationExpressionConstructorName,
+
+  ///对应[InstanceCreationExpression.argumentList]
+  $InstanceCreationExpressionArgumentList,
+
   /** ******** FormalParameterList ******** **/
 
   ///对应[FormalParameterList]

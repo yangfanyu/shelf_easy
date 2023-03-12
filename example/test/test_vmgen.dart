@@ -48,7 +48,7 @@ void generatorLibraryForFlutter() {
   final flutterHome = Platform.environment['FLUTTER_HOME']; //读取环境变量
   final coder = EasyCoder(
     config: EasyCoderConfig(
-      absFolder: '${Directory.current.path}/../../zycloud_widget/lib/src/bridge/',
+      absFolder: '${Directory.current.path}/../../zycloud_widget/lib/src/bridge',
     ),
   );
   coder.generateVmLibraries(
@@ -85,7 +85,7 @@ void generatorLibraryForFlutter() {
     ],
     privatePaths: [
       '$flutterHome/bin/cache/dart-sdk/lib',
-      '$flutterHome/bin/cache/pkg/sky_engine/lib/',
+      '$flutterHome/bin/cache/pkg/sky_engine/lib',
       '$flutterHome/packages/flutter/lib',
     ],
   );

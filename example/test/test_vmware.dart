@@ -84,13 +84,13 @@ void main() {
             return count;
           }
           ''';
-  final result1 = EasyVmWare.eval<int>(moduleCode: source, methodName: 'main');
+  final result1 = EasyVmWare.eval<int>(sourceCode: source, methodName: 'main');
   print('result1 ===========> $result1'); //print: result1 ===========> 49995000
 
   ///以应用程序的形式执行动态代码
   final vmwareApp = EasyVmWare(
     config: EasyVmWareConfig(
-      allModules: {
+      sourceCodes: {
         ///main module
         'main': '''
           int main(){
@@ -130,6 +130,9 @@ void main() {
               super.key1, {
               required super.key2,
             });
+            static void sayGoodBye(int a, {required String b}){
+              print('EmptyClass.sayGoodBye => \$a \$b');
+            }
           }
           
           final outer = OuterClass('aa1', key2: 'bb1');
@@ -160,22 +163,30 @@ void main() {
   final result2 = vmwareApp.main<int>(); //print: hello world, user tableName is => user
   vmwareApp.logWarn(['result2 =>', result2]); //print: result2 => 1
 
-  final result3 = vmwareApp.call<DateTime>(moduleName: 'test', methodName: 'current');
+  final result3 = vmwareApp.call<DateTime>(methodName: 'current');
   vmwareApp.logWarn(['result3 =>', result3]); //print: result3 => xxxx-xx-xx xx:xx:xx.xxxxxx
 
-  final result4 = vmwareApp.call<User>(moduleName: 'test', methodName: 'createUser'); //print: Location(xxxxxx)
+  final result4 = vmwareApp.call<User>(methodName: 'createUser'); //print: Location(xxxxxx)
   vmwareApp.logWarn(['result4 =>', result4]); //print: result4 => User(xxxxxx)
 
-  final result5 = vmwareApp.call<int>(moduleName: 'home', methodName: 'start1'); //print: OuterClass.sayHello: hello world => aa1 bb1 100 200 111 male xxxxxx
+  final result5 = vmwareApp.call<int>(methodName: 'start1'); //print: OuterClass.sayHello: hello world => aa1 bb1 100 200 111 male xxxxxx
   vmwareApp.logWarn(['result5 =>', result5]); //print: result5 => 111111
 
-  final result6 = vmwareApp.call<int>(moduleName: 'home', methodName: 'start2'); //print: InnerClass.sayHello: hello world => aa2 bb2 101 201 222 female cc2 xxxxxx
+  final result6 = vmwareApp.call<int>(methodName: 'start2'); //print: InnerClass.sayHello: hello world => aa2 bb2 101 201 222 female cc2 xxxxxx
   vmwareApp.logWarn(['result6 =>', result6]); //print: result6 => 222222
 
-  final result7 = vmwareApp.call<int>(moduleName: 'home', methodName: 'start3'); //print: OuterClass.sayHello: hello world => aa3 bb3 110 210 333 unknow xxxxxx
+  final result7 = vmwareApp.call<int>(methodName: 'start3'); //print: OuterClass.sayHello: hello world => aa3 bb3 110 210 333 unknow xxxxxx
   vmwareApp.logWarn(['result7 =>', result7]); //print: result7 => 111111
 
-  vmwareApp.debugObjectStack(moduleName: 'home'); //打印虚拟机中的home模块作用域堆栈信息
+  final result8 = vmwareApp.call<int>(methodName: 'inner.sayHello', positionalArguments: ['666'], namedArguments: {#sex: 'shemale'}); //print: InnerClass.sayHello: hello world => aa2 bb2 101 201 666 shemale cc2 xxxxxx
+  vmwareApp.logWarn(['result8 =>', result8]); //print: result8 => 222222
 
-  // vmwareApp.debugObjectStack(moduleName: 'code'); //打印虚拟机中的code模块作用域堆栈信息
+  final result9 = vmwareApp.call<double>(methodName: 'inner.inc1.toDouble');
+  vmwareApp.logWarn(['result9 =>', result9]); //print: result9 => 101.0
+
+  vmwareApp.call<void>(methodName: 'EmptyClass.sayGoodBye', positionalArguments: [10], namedArguments: {#b: '999'}); //print: EmptyClass.sayGoodBye => 10 999
+
+  // vmwareApp.debugObjectStack(); //打印虚拟机中的作用域堆栈信息
+  // vmwareApp.debugObjectStack(index: 3, simple: false); //打印虚拟机中的作用域堆栈信息
+  // vmwareApp.debugSourceTrees(key: 'main'); //打印虚拟机中的main模块的语法树信息
 }

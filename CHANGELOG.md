@@ -1,3 +1,8 @@
+## 1.1.10
+
+- Implemented InstanceCreationExpression related functions for virtual machines.
+- Add the reassembly function of internally defined classes to the virtual machine.
+
 ## 1.1.9
 
 - Refactor documentation

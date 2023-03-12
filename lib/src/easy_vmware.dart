@@ -1,4 +1,5 @@
 import 'easy_class.dart';
+import 'vm/vm_keys.dart';
 import 'vm/vm_parser.dart';
 import 'vm/vm_runner.dart';
 
@@ -9,16 +10,20 @@ class EasyVmWare extends EasyLogger {
   ///配置信息
   final EasyVmWareConfig _config;
 
-  ///模块运行器集合
-  final Map<String, VmRunner> _runners;
+  ///运行器实例
+  final VmRunner _runner;
 
-  ///JSON调试编码器
+  ///调试JSON编码器
   final JsonEncoder _encoder;
+
+  ///程序应用库代码集合
+  final Map<String, String> _sourceCodes;
 
   EasyVmWare({required EasyVmWareConfig config})
       : _config = config,
-        _runners = {},
+        _runner = VmRunner(),
         _encoder = JsonEncoder.withIndent('  '),
+        _sourceCodes = {},
         super(
           logger: config.logger,
           logLevel: config.logLevel,
@@ -27,54 +32,42 @@ class EasyVmWare extends EasyLogger {
           logFileBackup: config.logFileBackup,
           logFileMaxBytes: config.logFileMaxBytes,
         ) {
-    _config.allModules.forEach((key, value) {
-      if (_config.debugRoute) {
-        final routeList = <String>[];
-        final moduleTree = VmParser.parseSource(value, routeList: routeList, routeLogger: (route) => logDebug([key, '=>', route]));
-        logDebug([key, '=>', _encoder.convert(routeList)]);
-        _runners[key] = VmRunner(moduleTree: moduleTree);
-      } else {
-        final moduleTree = VmParser.parseSource(value);
-        _runners[key] = VmRunner(moduleTree: moduleTree);
-      }
+    reassemble(sourceCodes: config.sourceCodes);
+  }
+
+  ///重新装载
+  void reassemble({required Map<String, String> sourceCodes}) {
+    logDebug(['reassemble => ', sourceCodes.keys]);
+    _sourceCodes.clear();
+    _sourceCodes.addAll(sourceCodes);
+    final sourceTrees = <String, Map<VmKeys, dynamic>>{};
+    _sourceCodes.forEach((key, value) {
+      final routeList = <String>[];
+      final valueTree = VmParser.parseSource(value, routeList: routeList, routeLogger: _config.debugRoute ? (route) => logDebug([key, '=>', route]) : null);
+      if (_config.debugRoute) logDebug([key, '=>', _encoder.convert(routeList), '\n']);
+      sourceTrees[key] = valueTree;
     });
+    _runner.reassemble(sourceTrees: sourceTrees);
   }
 
-  ///调用主模块的主函数
+  ///调用主函数
   T main<T>({List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments}) {
-    return _runners[_config.mainModule]?.callFunction(_config.mainMethod, positionalArguments: positionalArguments, namedArguments: namedArguments) as T;
+    return _runner.callFunction(_config.mainMethod, positionalArguments: positionalArguments, namedArguments: namedArguments);
   }
 
-  ///调用任意模块的任意函数
-  T call<T>({required String moduleName, required String methodName, List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments}) {
-    return _runners[moduleName]?.callFunction(methodName, positionalArguments: positionalArguments, namedArguments: namedArguments) as T;
+  ///调用任意任意函数
+  T call<T>({required String methodName, List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments}) {
+    return _runner.callFunction(methodName, positionalArguments: positionalArguments, namedArguments: namedArguments);
   }
 
-  ///打印虚拟机信息，[moduleName]不为null时打印指定模块的信息
-  void debugVmWareInfo({String? moduleName}) {
-    if (moduleName == null) {
-      logDebug([_encoder.convert(_runners)]);
-    } else {
-      logDebug([_encoder.convert(_runners[moduleName])]);
-    }
+  ///打印应用库语法树集合
+  void debugSourceTrees({String? key}) {
+    logDebug([_encoder.convert(_runner.toJsonSourceTrees(key: key))]);
   }
 
-  ///打印模块语法树，[moduleName]不为null时打印指定模块的信息
-  void debugModuleTree({String? moduleName}) {
-    if (moduleName == null) {
-      logDebug([_encoder.convert(_runners.map((key, value) => MapEntry(key, value.toModuleJson())))]);
-    } else {
-      logDebug([_encoder.convert(_runners[moduleName]?.toModuleJson())]);
-    }
-  }
-
-  ///打印作用域堆栈，[moduleName]不为null时打印指定模块的信息
-  void debugObjectStack({String? moduleName}) {
-    if (moduleName == null) {
-      logDebug([_encoder.convert(_runners.map((key, value) => MapEntry(key, value.toObjectJson())))]);
-    } else {
-      logDebug([_encoder.convert(_runners[moduleName]?.toObjectJson())]);
-    }
+  ///打印运行时作用域堆栈
+  void debugObjectStack({int? index, bool simple = true}) {
+    logDebug([_encoder.convert(_runner.toJsonObjectStack(index: index, simple: simple))]);
   }
 
   ///提示某类型推测慢的日志器
@@ -89,8 +82,8 @@ class EasyVmWare extends EasyLogger {
     };
   }
 
-  ///简洁的执行[moduleCode]源代码中的[methodName]函数
-  static T eval<T>({required String moduleCode, required String methodName}) {
-    return VmRunner(moduleTree: VmParser.parseSource(moduleCode)).callFunction(methodName);
+  ///简洁的执行[sourceCode]源代码中的[methodName]函数
+  static T eval<T>({required String sourceCode, required String methodName}) {
+    return VmRunner(sourceTrees: {'default': VmParser.parseSource(sourceCode)}).callFunction(methodName);
   }
 }

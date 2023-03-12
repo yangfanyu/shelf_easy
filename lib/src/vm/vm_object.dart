@@ -229,21 +229,6 @@ abstract class VmObject {
     }
   }
 
-  ///读取[target]的原生数据值，使用递归深度转换。
-  static dynamic deepValue(dynamic target) {
-    if (target is List) {
-      return target.map((e) => deepValue(e)).toList();
-    } else if (target is Set) {
-      return target.map((e) => deepValue(e)).toSet();
-    } else if (target is Map) {
-      return target.map((key, value) => MapEntry(deepValue(key), deepValue(value)));
-    } else if (target is VmObject) {
-      return target.getValue();
-    } else {
-      return target;
-    }
-  }
-
   ///转换[target]语法树为可jsonEncode的数据值
   static dynamic treeValue(dynamic target) {
     if (target is Map) {
@@ -310,7 +295,7 @@ class VmClass<T> extends VmObject {
   final List<Map<VmKeys, dynamic>>? internalInstanceFieldTree;
 
   ///内部定义类型继承的父包装类型，当前仅支持继承：添加了VmSuper扩展的外部类型
-  final VmClass? internalExtendsSuperclass;
+  VmClass? _internalSuperclass;
 
   VmClass({
     required super.identifier,
@@ -320,9 +305,32 @@ class VmClass<T> extends VmObject {
     this.internalProxyMap,
     this.internalStaticPropertyMap,
     this.internalInstanceFieldTree,
-    this.internalExtendsSuperclass,
-  }) : vmwareType = VmType(name: identifier) {
+    VmClass? internalSuperclass,
+  })  : vmwareType = VmType(name: identifier),
+        _internalSuperclass = isExternal ? null : internalSuperclass {
     externalProxyMap?.forEach((key, value) => value.bindVmClass(this)); //给代理集合绑定包装类型
+    internalProxyMap?.forEach((key, value) => value.bindVmClass(this)); //给代理集合绑定包装类型
+    internalStaticPropertyMap?.forEach((key, value) => value.bindStaticScope(this)); //给类静态成员绑定作用域
+  }
+
+  ///重新装载该包装类型的属性
+  void reassemble(VmClass vmclass) {
+    if (identifier != vmclass.identifier || isExternal || vmclass.isExternal) {
+      throw ('Unsupport reassemble operator: $identifier<isExternal $isExternal> => ${vmclass.identifier}<isExternal ${vmclass.isExternal}>');
+    }
+    //重置
+    superclassNames.clear();
+    internalProxyMap?.clear();
+    internalStaticPropertyMap?.clear();
+    internalInstanceFieldTree?.clear();
+    _internalSuperclass = null;
+    //复制
+    superclassNames.addAll(vmclass.superclassNames);
+    internalProxyMap?.addAll(vmclass.internalProxyMap as Map<String, VmProxy<T>>? ?? const {});
+    internalStaticPropertyMap?.addAll(vmclass.internalStaticPropertyMap ?? const {});
+    internalInstanceFieldTree?.addAll(vmclass.internalInstanceFieldTree ?? const []);
+    _internalSuperclass = vmclass._internalSuperclass;
+    //绑定
     internalProxyMap?.forEach((key, value) => value.bindVmClass(this)); //给代理集合绑定包装类型
     internalStaticPropertyMap?.forEach((key, value) => value.bindStaticScope(this)); //给类静态成员绑定作用域
   }
@@ -353,12 +361,12 @@ class VmClass<T> extends VmObject {
       final setterPropName = '$propertyName=';
       final proxy = isExternal ? (externalProxyMap?[setterPropName] ?? externalProxyMap?[propertyName]) : (internalProxyMap?[setterPropName] ?? internalProxyMap?[propertyName]);
       if (proxy != null) return proxy;
-      if (internalExtendsSuperclass != null) return internalExtendsSuperclass!.getProxy(propertyName, setter: setter);
+      if (_internalSuperclass != null) return _internalSuperclass!.getProxy(propertyName, setter: setter);
       throw ('Not found proxy: $identifier.$propertyName');
     } else {
       final proxy = isExternal ? (externalProxyMap?[propertyName]) : (internalProxyMap?[propertyName]);
       if (proxy != null) return proxy;
-      if (internalExtendsSuperclass != null) return internalExtendsSuperclass!.getProxy(propertyName, setter: setter);
+      if (_internalSuperclass != null) return _internalSuperclass!.getProxy(propertyName, setter: setter);
       throw ('Not found proxy: $identifier.$propertyName');
     }
   }
@@ -391,7 +399,7 @@ class VmClass<T> extends VmObject {
     if (internalProxyMap != null) map['internalProxyMap'] = internalProxyMap;
     if (internalStaticPropertyMap != null) map['internalStaticPropertyMap'] = internalStaticPropertyMap;
     if (internalInstanceFieldTree != null) map['internalInstanceFieldTree'] = internalInstanceFieldTree?.map((e) => e.keys.map((e) => e.toString()).toList()).toList();
-    if (internalExtendsSuperclass != null) map['internalExtendsSuperclass'] = internalExtendsSuperclass?.toString();
+    if (_internalSuperclass != null) map['internalExtendsSuperclass'] = _internalSuperclass?.toString();
     return map;
   }
 
@@ -442,14 +450,15 @@ class VmClass<T> extends VmObject {
   ///包装类型列表
   static final _libraryList = <VmClass>[];
 
-  ///添加包装类型[vmclass]
-  static void addClass(VmClass vmclass, {bool isExternal = true}) {
-    if (_libraryMap.containsKey(vmclass.identifier)) throw ('Already exists VmClass: ${vmclass.identifier}');
-    _libraryMap[vmclass.identifier] = vmclass;
-    if (isExternal) {
-      _libraryList.add(vmclass);
+  ///添加包装类型[vmclass]，如果已存在则重新装载，不存在则添加带全局库中
+  static VmClass addClass(VmClass vmclass) {
+    final oldclass = _libraryMap[vmclass.identifier];
+    if (oldclass == null) {
+      _libraryList.add(_libraryMap[vmclass.identifier] = vmclass); //直接添加新的
+      return vmclass;
     } else {
-      _libraryList.insert(0, vmclass); //放在最前面可以保证内部类型的优先级
+      oldclass.reassemble(vmclass); //重新装载旧的
+      return oldclass;
     }
   }
 
@@ -903,7 +912,7 @@ class VmValue extends VmObject {
     if (target is VmValue) {
       return target.prepareForConstructor(positionalArguments, namedArguments, vmclass);
     } else {
-      final superclass = vmclass.internalExtendsSuperclass!; //必然存在，无需判断
+      final superclass = vmclass._internalSuperclass!; //必然存在，无需判断
       if (superclass.identifier == VmClass.objectTypeName) {
         final instance = VmInstance(); //默认继承Object类型的使用VmInstance创建实例
         return instance.._initProperties(superclass); //创建超类的字段代理

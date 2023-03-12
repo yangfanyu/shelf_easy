@@ -6,16 +6,27 @@ import 'vm_library.dart';
 ///Dart语言子集的运行器
 ///
 class VmRunner {
-  ///当前[VmRunner]实例的模块语法树
-  final Map<VmKeys, dynamic> _moduleTree;
+  ///应用库语法树集合，一般来讲一个文件对应一个Map<VmKeys, dynamic>子项
+  final Map<String, Map<VmKeys, dynamic>> _sourceTrees;
 
-  ///当前[VmRunner]实例的作用域堆栈
+  ///运行时作用域堆栈：[ 基本库，核心库，用户库，应用库，......函数调用作用域...... ]
   final List<Map<String, VmObject>> _objectStack;
 
-  VmRunner({required Map<VmKeys, dynamic> moduleTree})
-      : _moduleTree = moduleTree,
+  VmRunner({Map<String, Map<VmKeys, dynamic>> sourceTrees = const {}})
+      : _sourceTrees = {},
         _objectStack = [..._globalScopeList, {}] {
-    VmRunnerCore._scanMap(this, _moduleTree);
+    reassemble(sourceTrees: sourceTrees);
+  }
+
+  ///重新装载应用库语法树集合，扫描过程中预定义的内容会放入[应用库]作用域中
+  void reassemble({required Map<String, Map<VmKeys, dynamic>> sourceTrees}) {
+    if (_objectStack.length != 4) throw ('ObjectStack length is not 4: ${_objectStack.length}');
+    _sourceTrees.clear();
+    _sourceTrees.addAll(sourceTrees);
+    _objectStack.last.clear(); //清空应用库
+    _sourceTrees.forEach((key, value) {
+      VmRunnerCore._scanMap(this, value);
+    });
   }
 
   ///获取标识符[identifier]对应的虚拟对象
@@ -46,10 +57,23 @@ class VmRunner {
   ///当前作用域是否已经存在标识符[identifier]指向的对象
   bool inCurrentScope(String identifier) => _objectStack.last.containsKey(identifier);
 
-  ///执行虚拟机中的[methodName]指定的函数
-  T callFunction<T>(String methodName, {List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments}) {
-    final result = VmRunnerCore._scanVmFunction(this, positionalArguments, namedArguments, VmObject.readLogic(getVmObject(methodName)), null);
-    return VmObject.deepValue(result); //返回深度递归转换后的值
+  ///在虚拟机中的[methodName]指定的任意类型函数
+  dynamic callFunction(String methodName, {List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments}) {
+    final nameList = methodName.split('.');
+    var instance = getVmObject(nameList.first);
+    //先尝试属性链的解析与调用
+    for (var i = 1; i < nameList.length; i++) {
+      final property = nameList[i];
+      if (i == nameList.length - 1) {
+        instance = VmLazyer(isMethod: true, instance: instance, property: property, listArguments: positionalArguments, nameArguments: namedArguments);
+        return instance.getValue();
+      } else {
+        instance = VmLazyer(instance: instance, property: property); //继续属性链的解析
+      }
+    }
+    //这里必然是只有一项的情况
+    instance = VmLazyer(isMethod: true, instance: instance, property: instance.identifier, instanceByProperty: true, listArguments: positionalArguments, nameArguments: namedArguments);
+    return instance.getValue();
   }
 
   ///创建作用域
@@ -115,50 +139,56 @@ class VmRunner {
     return result;
   }
 
-  ///将全部数据转换为详细的JSON对象
-  Map<String, dynamic> toJson() => {'_moduleTree': VmObject.treeValue(_moduleTree), '_objectStack': _objectStack};
+  ///将应用库语法树集合转换为易读的JSON对象
+  Map<String, dynamic> toJsonSourceTrees({String? key}) {
+    if (key == null) {
+      return {'_sourceTrees': VmObject.treeValue(_sourceTrees)};
+    } else {
+      return {'_sourceTrees[$key]': VmObject.treeValue(_sourceTrees[key])};
+    }
+  }
 
-  ///将模块语法树转换为易读的JSON对象
-  Map<String, dynamic> toModuleJson() => {'_moduleTree': VmObject.treeValue(_moduleTree)};
+  ///将运行时作用域堆栈转换为易读的JSON对象
+  Map<String, dynamic> toJsonObjectStack({int? index, bool simple = true}) {
+    if (index == null) {
+      return {'_objectStack': simple ? _objectStack.map((e) => e.map((key, value) => MapEntry(key, value.toString()))).toList() : _objectStack};
+    } else {
+      return {'_objectStack[$index]': simple ? _objectStack[index].map((key, value) => MapEntry(key, value.toString())) : _objectStack[index]};
+    }
+  }
 
-  ///将作用域堆栈转换为易读的JSON对象
-  Map<String, dynamic> toObjectJson() => {'_objectStack': _objectStack.map((e) => e.map((key, value) => MapEntry(key, value.toString()))).toList()};
-
-  ///全局作用域列表
+  ///全局作用域列表：[ 基本库，核心库，用户库 ]
   static final List<Map<String, VmObject>> _globalScopeList = [{}, {}, {}];
 
   ///加载全局类库与自定义类库
   static void loadGlobalLibrary({List<VmClass> customClassList = const [], List<VmProxy> customProxyList = const []}) {
     //基本库
-    final baseScope = _globalScopeList.first;
+    final baseScope = _globalScopeList[0];
     for (var vmclass in VmClass.allBaseLibrary) {
-      VmClass.addClass(vmclass); //添加到底层的全局类库中
       if (baseScope.containsKey(vmclass.identifier)) throw ('Already exists VmClass in global base scope, identifier is: ${vmclass.identifier}');
-      baseScope[vmclass.identifier] = vmclass;
+      baseScope[vmclass.identifier] = VmClass.addClass(vmclass); //同时添加到底层的全局类库中
     }
     //核心库
     final coreScope = _globalScopeList[1];
     for (var vmclass in VmLibrary.libraryClassList) {
-      VmClass.addClass(vmclass); //添加到底层的全局类库中
       if (coreScope.containsKey(vmclass.identifier)) throw ('Already exists VmClass in global core scope, identifier is: ${vmclass.identifier}');
-      coreScope[vmclass.identifier] = vmclass;
+      coreScope[vmclass.identifier] = VmClass.addClass(vmclass); //同时添加到底层的全局类库中
     }
     for (var vmproxy in VmLibrary.libraryProxyList) {
       if (coreScope.containsKey(vmproxy.identifier)) throw ('Already exists VmProxy in global core scope, identifier is: ${vmproxy.identifier}');
       coreScope[vmproxy.identifier] = vmproxy;
     }
     //用户库
-    final userScope = _globalScopeList.last;
+    final userScope = _globalScopeList[2];
     for (var vmclass in customClassList) {
-      VmClass.addClass(vmclass); //添加到底层的全局类库中
       if (userScope.containsKey(vmclass.identifier)) throw ('Already exists VmClass in global user scope, identifier is: ${vmclass.identifier}');
-      userScope[vmclass.identifier] = vmclass;
+      userScope[vmclass.identifier] = VmClass.addClass(vmclass); //同时添加到底层的全局类库中
     }
     for (var vmproxy in customProxyList) {
       if (userScope.containsKey(vmproxy.identifier)) throw ('Already exists VmProxy in global user scope, identifier is: ${vmproxy.identifier}');
       userScope[vmproxy.identifier] = vmproxy;
     }
-    //逆序排列底层全局类库
+    //底层全局类库排序
     VmClass.sortClassDesc();
   }
 }
@@ -217,6 +247,7 @@ class VmRunnerCore {
     VmKeys.$ThrowExpression: _scanThrowExpression,
     VmKeys.$FunctionExpression: _scanFunctionExpression,
     VmKeys.$NamedExpression: _scanNamedExpression,
+    VmKeys.$InstanceCreationExpression: _scanInstanceCreationExpression,
     VmKeys.$FormalParameterList: _scanFormalParameterList,
     VmKeys.$SuperFormalParameter: _scanSuperFormalParameter,
     VmKeys.$FieldFormalParameter: _scanFieldFormalParameter,
@@ -658,6 +689,28 @@ class VmRunnerCore {
     );
   }
 
+  static dynamic _scanInstanceCreationExpression(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
+    //属性读取
+    final constructorType = node[VmKeys.$InstanceCreationExpressionConstructorType] as Map<VmKeys, dynamic>?;
+    final constructorName = node[VmKeys.$InstanceCreationExpressionConstructorName] as String?;
+    final argumentList = node[VmKeys.$InstanceCreationExpressionArgumentList] as Map<VmKeys, dynamic>?;
+    //逻辑处理
+    final constructorTypeResult = _scanMap(runner, constructorType) as VmHelper; // => _scanNamedType
+    final constructorNameResult = constructorName ?? constructorTypeResult.fieldType!;
+    final argumentsResult = _scanMap(runner, argumentList) as List?; // => _scanArgumentList or null
+    final listArguments = <dynamic>[];
+    final nameArguments = <Symbol, dynamic>{};
+    VmObject.groupInvocationParameters(argumentsResult, listArguments, nameArguments);
+    return VmLazyer(
+      isMethod: true,
+      instance: runner.getVmObject(constructorTypeResult.fieldType!),
+      property: constructorNameResult,
+      instanceByProperty: constructorName == null,
+      listArguments: listArguments,
+      nameArguments: nameArguments,
+    ).getLogic(); //注意：为了保证能够逻辑处理，此处使用的是逻辑值
+  }
+
   static List<dynamic>? _scanFormalParameterList(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) => _scanList(runner, node[VmKeys.$FormalParameterListParameters]);
 
   static VmHelper _scanSuperFormalParameter(VmRunner runner, VmKeys key, Map<VmKeys, dynamic> node) {
@@ -1012,10 +1065,9 @@ class VmRunnerCore {
       internalProxyMap: proxyMap,
       internalStaticPropertyMap: staticScope.map((key, value) => MapEntry(key, value as VmValue)),
       internalInstanceFieldTree: fieldTree,
-      internalExtendsSuperclass: superclass,
+      internalSuperclass: superclass,
     );
-    VmClass.addClass(vmclassResult, isExternal: false); //添加到底层库
-    runner.addVmObject(vmclassResult); //添加到运行库
+    runner.addVmObject(VmClass.addClass(vmclassResult)); //同时添加到底层的全局类库中
     return vmclassResult;
   }
 

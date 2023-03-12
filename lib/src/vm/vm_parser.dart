@@ -319,6 +319,15 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
       };
 
   @override
+  Map<VmKeys, Map<VmKeys, dynamic>>? visitInstanceCreationExpression(InstanceCreationExpression node) => {
+        VmKeys.$InstanceCreationExpression: {
+          VmKeys.$InstanceCreationExpressionConstructorType: node.constructorName.type.accept(this),
+          VmKeys.$InstanceCreationExpressionConstructorName: node.constructorName.name?.name,
+          VmKeys.$InstanceCreationExpressionArgumentList: node.argumentList.accept(this),
+        }
+      };
+
+  @override
   Map<VmKeys, Map<VmKeys, List>> visitFormalParameterList(FormalParameterList node) => {
         VmKeys.$FormalParameterList: {
           VmKeys.$FormalParameterListParameters: node.parameters.map((e) => e.accept(this)).toList(),

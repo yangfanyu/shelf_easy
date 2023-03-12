@@ -1144,17 +1144,14 @@ class EasyCoderFieldInfo {
 ///Dart子集虚拟程序配置
 ///
 class EasyVmWareConfig extends EasyConfig {
-  ///打印模块的解析路由
+  ///打印代码解析的路由
   final bool debugRoute;
-
-  ///程序源代码模块集合
-  final Map<String, String> allModules;
-
-  ///程序入口模块的名称
-  final String mainModule;
 
   ///程序入口函数的名称
   final String mainMethod;
+
+  ///程序应用库代码集合
+  final Map<String, String> sourceCodes;
 
   EasyVmWareConfig({
     super.logger,
@@ -1164,8 +1161,7 @@ class EasyVmWareConfig extends EasyConfig {
     super.logFileBackup,
     super.logFileMaxBytes,
     this.debugRoute = false,
-    required this.allModules,
-    this.mainModule = 'main',
     this.mainMethod = 'main',
+    this.sourceCodes = const {},
   });
 }
