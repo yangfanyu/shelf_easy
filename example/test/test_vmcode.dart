@@ -265,7 +265,7 @@ dynamic funcA2(int a, int b, {required int c, int d = 0, int? e}) {
       if (zzz1 >= 1) continue;
       for (int zzz2 = 0; zzz2 < 6; zzz2++) {
         print('zzz1 $zzz1 zzz2 $zzz2');
-        if (zzz2 >= 2) break;
+        if (zzz2 >= 2) continue;
         for (int zzz3 = 0; zzz3 < 6; zzz3++) {
           print('zzz1 $zzz1 zzz2 $zzz2 zzz3 $zzz3');
           if (zzz3 >= 3) break;

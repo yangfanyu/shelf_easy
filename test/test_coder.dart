@@ -211,6 +211,7 @@ void testEasyCoderVmLib() {
   final flutterHome = Platform.environment['FLUTTER_HOME']; //读取环境变量
   final coder = EasyCoder(
     config: EasyCoderConfig(
+      logLevel: EasyLogLevel.debug,
       absFolder: '${Directory.current.path}/lib/src/vm',
     ),
   );

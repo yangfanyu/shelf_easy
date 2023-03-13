@@ -190,20 +190,40 @@ class EasyCoder extends EasyLogger {
     required List<String> libraryPaths,
     List<String> privatePaths = const [],
     List<String> ignoreIssueFiles = const [
-      '/dart-sdk/lib/core/null.dart', //非Object子类无需生成，在vmobject.dart中文件已内置
-      '/dart-sdk/lib/core/record.dart', //生成的代码在开发工具里面报错，这个类貌似也没什么卵用
-      '/flutter/lib/src/services/dom.dart', //生成的代码在开发工具里面报错，原生flutter环境也不需要
-      '/flutter/lib/src/painting/_network_image_web.dart', //生成的代码在开发工具里面报错，原生flutter环境也不需要
+      '/dart-sdk/lib/core/null.dart', //非Object子类无需生成，在vmobject.dart中文件已内置。输出结果：不会生成该文件的任何内容，下同
+      '/dart-sdk/lib/core/record.dart', //生成的代码在开发工具里面报错，这个类貌似也没什么卵用。
+      '/flutter/lib/src/services/dom.dart', //生成的代码在开发工具里面报错，原生flutter环境也不需要。
+      '/flutter/lib/src/painting/_network_image_web.dart', //生成的代码在开发工具里面报错，原生flutter环境也不需要。
     ],
-    List<String> ignoreClassProxy = const [
-      'IOOverrides.runZoned', //属于dart-sdk库，生成出来的该属性在开发工具里面报错
-      'PlatformSelectableRegionContextMenu.child', //属于flutter库，生成出来的该属性在开发工具里面报错
-      'PlatformSelectableRegionContextMenu.registerViewFactory', //属于flutter库，生成出来的该属性在开发工具里面报错
+    List<String> ignoreProxyObject = const [
+      //下面的属于flutter库，生成出来的该属性在开发工具里面报错。
+      'PlatformSelectableRegionContextMenu.child', //输出结果：PlatformSelectableRegionContextMenu与子类都不会生成标识符为child的VmProxy项，下同
+      'PlatformSelectableRegionContextMenu.registerViewFactory',
+      //忽略顶级VmProxy的写法
+      // 'jsonDecode',
     ],
-    List<String> ignoreExtensions = const [
+    List<String> ignoreProxyCaller = const [
+      //下面的属于dart-sdk库，生成出来的该属性在开发工具里面报错。
+      'Iterable.forEach', //Iterable.forEach 应该使用for循环代替。输出结果：Iterable与子类都不会生成forEach对应的Vmproxy的caller属性，下同
+      'Map.fromIterable', //Map.fromIterable 应该使用for循环代替。
+      'IOOverrides.runZoned',
+      //下面的属于flutter库，生成出来的该属性在开发工具里面报错。
+      'TextFormField.new',
+      'ImageProvider.load',
+      'ImageProvider.loadBuffer',
+      'CupertinoScrollbar.new',
+      'SharedAppData.getValue',
+      'SliverHitTestResult.addWithAxisOffset',
+      'WidgetInspectorService.initServiceExtensions',
+      //忽略顶级caller的写法
+      // 'jsonDecode',
+    ],
+    List<String> ignoreExtensionOn = const [
+      'Object', //属于dart-sdk库，但是flutter库添加了toJs等不要的扩展
       'Iterable', //属于dart-sdk库，添加出来的扩展属性在开发工具里面报错
     ],
-    Map<String, List<String>> onlyNeedFileClass = const {},
+    Map<String, List<String>> includeFileClass = const {}, //某文件只需要指定的类 或 顶级属性
+    Map<String, List<String>> excludeFileClass = const {}, //某文件排除掉指定的类 或 顶级属性
     bool genByExternal = true,
   }) {
     final indent = _config.indent;
@@ -234,7 +254,8 @@ class EasyCoder extends EasyLogger {
     buffer.write('class $className {\n'); //类开始
 
     //start
-    final privateDatas = <String, VmParserBirdgeItemData>{}; //私有类数据
+    final privateDatas = <String, VmParserBirdgeItemData>{}; //私有类数据，用于超类属性的继承
+    final functionRefs = <String, VmParserBirdgeItemData>{}; //函数的别名，用于函数参数的替换
     //扫描私有目录，提取全部类作为私有类
     final privateFiles = <File>[];
     for (var element in privatePaths) {
@@ -245,15 +266,22 @@ class EasyCoder extends EasyLogger {
       }
     }
     for (var fileItem in privateFiles) {
-      final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensions: ignoreExtensions);
+      final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensionOn: ignoreExtensionOn);
       for (var result in bridgeResults) {
         if (result != null && result.type == VmParserBirdgeItemType.classDeclaration) {
           result.absoluteFilePath = fileItem.path; //复制文件路径
           if (privateDatas.containsKey(result.name)) {
-            privateDatas[result.name]!.combineClass(result, ignoreExtension: true); //合并同名属性
-            logDebug(['merge repeat private class:', result.name, '=>', result.absoluteFilePath]);
+            privateDatas[result.name]!.combineClass(result); //合并同名属性
+            logTrace(['merge repeat private class:', result.name, '=>', result.absoluteFilePath]);
           } else {
             privateDatas[result.name] = result;
+          }
+        } else if (result != null && result.type == VmParserBirdgeItemType.functionTypeAlias) {
+          result.absoluteFilePath = fileItem.path; //复制文件路径
+          if (functionRefs.containsKey(result.name)) {
+            logWarn(['ignore repeat function alias:', result.name, '=>', result.absoluteFilePath]);
+          } else {
+            functionRefs[result.name] = result;
           }
         }
       }
@@ -268,32 +296,47 @@ class EasyCoder extends EasyLogger {
       }
     }
     for (var fileItem in libraryFiles) {
-      final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensions: ignoreExtensions);
+      final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensionOn: ignoreExtensionOn);
       for (var result in bridgeResults) {
         if (result != null && result.type == VmParserBirdgeItemType.classDeclaration && result.isPrivate) {
           result.absoluteFilePath = fileItem.path; //复制文件路径
           if (privateDatas.containsKey(result.name)) {
-            privateDatas[result.name]!.combineClass(result, ignoreExtension: true); //合并同名属性
-            logDebug(['merge repeat private class:', result.name, '=>', result.absoluteFilePath]);
+            privateDatas[result.name]!.combineClass(result); //合并同名属性
+            logTrace(['merge repeat private class:', result.name, '=>', result.absoluteFilePath]);
           } else {
             privateDatas[result.name] = result;
+          }
+        } else if (result != null && result.type == VmParserBirdgeItemType.functionTypeAlias) {
+          result.absoluteFilePath = fileItem.path; //复制文件路径
+          if (functionRefs.containsKey(result.name)) {
+            logWarn(['ignore repeat function alias:', result.name, '=>', result.absoluteFilePath]);
+          } else {
+            functionRefs[result.name] = result;
           }
         }
       }
     }
+    //为私有类添加扩展，这样就子类就能复制扩展属性
+    privateDatas.forEach((key, item) {
+      //合并extension属性
+      final extensionItem = privateDatas[VmParserBirdgeItemData.extensionName(item.name)];
+      if (extensionItem != null && extensionItem.isExtension) {
+        logTrace(['merge extension on ${item.name}:', extensionItem.name, '=>', extensionItem.absoluteFilePath]);
+        item.combineClass(extensionItem);
+      }
+    });
     //扫描资源目录，得到公开class与proxy列表
     final classLibraries = <VmParserBirdgeItemData>[];
     final proxyLibraries = <VmParserBirdgeItemData>[];
     for (var fileItem in libraryFiles) {
       if (ignoreIssueFiles.any((element) => fileItem.path.endsWith(element))) {
-        logWarn(['ignore explicit library file =>', fileItem.path]);
+        logDebug(['ignore explicit library file =>', fileItem.path]);
       } else {
-        final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensions: ignoreExtensions);
+        final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensionOn: ignoreExtensionOn);
         for (var result in bridgeResults) {
-          if (result != null && !result.isAtJS && !result.isPrivate) {
-            if (onlyNeedFileClass.containsKey(fileItem.path) && !onlyNeedFileClass[fileItem.path]!.contains(result.name)) {
-              continue; //跳过这个类
-            }
+          if (result != null && !result.isAtJS && !result.isPrivate && result.type != VmParserBirdgeItemType.functionTypeAlias) {
+            if (includeFileClass.containsKey(fileItem.path) && !includeFileClass[fileItem.path]!.contains(result.name)) continue; //忽略
+            if (excludeFileClass.containsKey(fileItem.path) && excludeFileClass[fileItem.path]!.contains(result.name)) continue; //忽略
             result.absoluteFilePath = fileItem.path; //复制文件路径
             result.type == VmParserBirdgeItemType.classDeclaration ? classLibraries.add(result) : proxyLibraries.add(result);
           }
@@ -306,26 +349,35 @@ class EasyCoder extends EasyLogger {
     final classUnionDatasMap = <String, VmParserBirdgeItemData>{};
     for (var item in classLibraries) {
       if (classUnionDatasMap.containsKey(item.name)) {
-        classUnionDatasMap[item.name]!.combineClass(item, ignoreExtension: true); //合并同名属性
-        logDebug(['merge repeat library class:', item.name, '=>', item.absoluteFilePath]);
+        classUnionDatasMap[item.name]!.combineClass(item); //合并同名属性
+        logTrace(['merge repeat library class:', item.name, '=>', item.absoluteFilePath]);
       } else {
         classUnionDatasMap[item.name] = item;
         //合并extension属性
-        final extensionItem = privateDatas[item.name];
+        final extensionItem = privateDatas[VmParserBirdgeItemData.extensionName(item.name)];
         if (extensionItem != null && extensionItem.isExtension) {
-          logWarn(['merge extension on ${item.name}:', extensionItem.name, '=>', extensionItem.absoluteFilePath]);
-          item.combineClass(extensionItem, ignoreExtension: false);
+          logTrace(['merge extension on ${item.name}:', extensionItem.name, '=>', extensionItem.absoluteFilePath]);
+          item.combineClass(extensionItem);
         }
       }
     }
     //生成单个的class代码
     classUnionDatasMap.forEach((key, value) {
       //处理继承
-      value.extendsSuper(currentClass: value, publicMap: classUnionDatasMap, pirvateMap: privateDatas, onNoSuper: _onVmNotFoundSuperClass);
+      value.extendsSuper(currentClass: value, publicMap: classUnionDatasMap, pirvateMap: privateDatas, onNotFoundSuperClass: _onVmNotFoundSuperClass);
+      //替换别名
+      value.replaceAlias(functionRefs: functionRefs, onReplaceProxyAlias: _onVmReplaceProxyAlias);
       //生成代码
       final fieldName = 'class${firstUpperCaseName(key)}';
+      final fieldCode = value.toClassCode(
+        indent: indent,
+        ignoreProxyObject: ignoreProxyObject,
+        ignoreProxyCaller: ignoreProxyCaller,
+        onIgnoreProxyObject: _onVmIgnoreProxyObject,
+        onIgnoreProxyCaller: _onVmIgnoreProxyCaller,
+      );
       buffer.write('$indent///class $key\n');
-      buffer.write('${indent}static final $fieldName = ${value.toClassCode(indent: indent, ignoreProxy: ignoreClassProxy, onIgnore: _onVmIgnoreProxyOfClass)}\n');
+      buffer.write('${indent}static final $fieldName = $fieldCode\n');
       buffer.write('\n');
     });
     //生成class列表的代码
@@ -344,13 +396,27 @@ class EasyCoder extends EasyLogger {
     //合并同名的proxy
     final proxyUnionPartsMap = <String, Set<String>>{};
     for (var item in proxyLibraries) {
-      if (proxyUnionPartsMap.containsKey(item.name)) {
-        final unionParts = proxyUnionPartsMap[item.name]!;
-        item.toProxyCode(unionParts: unionParts); //合并同名属性
-        logDebug(['merge repeat library proxy:', item.name, '=>', item.absoluteFilePath]);
+      if (ignoreProxyObject.contains(item.name)) {
+        _onVmIgnoreProxyObject('', item.name, item.absoluteFilePath);
       } else {
-        final unionParts = proxyUnionPartsMap[item.name] = {};
-        item.toProxyCode(unionParts: unionParts);
+        //替换别名
+        item.replaceAlias(functionRefs: functionRefs, onReplaceProxyAlias: _onVmReplaceProxyAlias);
+        if (proxyUnionPartsMap.containsKey(item.name)) {
+          final unionParts = proxyUnionPartsMap[item.name]!;
+          item.toProxyCode(
+            unionParts: unionParts,
+            ignoreProxyCaller: ignoreProxyCaller,
+            onIgnoreProxyCaller: _onVmIgnoreProxyCaller,
+          ); //合并同名属性
+          logTrace(['merge repeat library proxy:', item.name, '=>', item.absoluteFilePath]);
+        } else {
+          final unionParts = proxyUnionPartsMap[item.name] = {};
+          item.toProxyCode(
+            unionParts: unionParts,
+            ignoreProxyCaller: ignoreProxyCaller,
+            onIgnoreProxyCaller: _onVmIgnoreProxyCaller,
+          );
+        }
       }
     }
     //生成proxy列表的代码
@@ -798,8 +864,16 @@ class EasyCoder extends EasyLogger {
     _vmerrList.add(['cannot found super class:', '$className inherit $superName', '=>', classPath]); //添加到错误列表，便于统一打印
   }
 
-  void _onVmIgnoreProxyOfClass(String className, String proxyName, String classPath) {
-    logWarn(['ignore explicit class.proxy:', '$className.$proxyName', '=>', classPath]);
+  void _onVmIgnoreProxyObject(String className, String proxyName, String classPath) {
+    logDebug(['ignore explicit proxy object:', '$className.$proxyName', '=>', classPath]);
+  }
+
+  void _onVmIgnoreProxyCaller(String className, String proxyName, String classPath) {
+    logDebug(['ignore explicit proxy caller:', '$className.$proxyName', '=>', classPath]);
+  }
+
+  void _onVmReplaceProxyAlias(String className, String proxyName, String paramName, String aliasName, String classPath) {
+    logDebug(['replace proxy arg type alias:', '$className.$proxyName', paramName, '->', aliasName, '=>', classPath]);
   }
 
   ///将[name]的第一个字母改为大写

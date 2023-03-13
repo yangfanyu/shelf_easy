@@ -17,10 +17,10 @@ class VmParser {
     return result.unit.accept(VmParserVisitor()) ?? const {};
   }
 
-  ///解析源代码[source]的内容，生成桥接类型元数据的描述列表，[ignoreExtensions]为要忽略添加extension的目标类名
-  static List<VmParserBirdgeItemData?> bridgeSource(String source, {required List<String> ignoreExtensions}) {
+  ///解析源代码[source]的内容，生成桥接类型元数据的描述列表，[ignoreExtensionOn]为要忽略添加extension的目标类名
+  static List<VmParserBirdgeItemData?> bridgeSource(String source, {required List<String> ignoreExtensionOn}) {
     final result = parseString(content: source);
-    return result.unit.accept(VmParserBirdger(ignoreExtensions: ignoreExtensions));
+    return result.unit.accept(VmParserBirdger(ignoreExtensionOn: ignoreExtensionOn));
   }
 }
 
@@ -592,10 +592,10 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 ///虚拟机桥接类型的目录扫描生成器（生成字段只包含文件中的显示声明字段，flutter环境可用）
 ///
 class VmParserBirdger extends SimpleAstVisitor {
-  ///要忽略的extension类名
-  final List<String> ignoreExtensions;
+  ///要忽略的extension的类名
+  final List<String> ignoreExtensionOn;
 
-  VmParserBirdger({required this.ignoreExtensions});
+  VmParserBirdger({required this.ignoreExtensionOn});
 
   @override
   List<VmParserBirdgeItemData?> visitCompilationUnit(CompilationUnit node) {
@@ -670,6 +670,7 @@ class VmParserBirdger extends SimpleAstVisitor {
 
   @override
   VmParserBirdgeItemData? visitClassTypeAlias(ClassTypeAlias node) {
+    // print('visitClassTypeAlias ---------> ${node.toSource()}');
     final superclassNames = <String>[];
     superclassNames.add(node.superclass.name.name); //extends最多只有一个
     if (node.implementsClause != null) superclassNames.addAll(node.implementsClause!.interfaces.map((e) => e.name.name).toList()); //implements可以很多个
@@ -735,11 +736,11 @@ class VmParserBirdger extends SimpleAstVisitor {
     }
     final superclassNames = <String>[];
     if (superclassNames.isEmpty) superclassNames.add('Object');
-    final targetclassName = node.extendedType.toSource().split('<').first;
-    if (ignoreExtensions.contains(targetclassName)) return null;
+    final extendedTypeResult = node.extendedType.accept(this); // => visitNamedType
+    if (ignoreExtensionOn.contains(extendedTypeResult)) return null;
     return VmParserBirdgeItemData(
       type: VmParserBirdgeItemType.classDeclaration,
-      name: targetclassName, //使用 on 的目标作为类名s
+      name: VmParserBirdgeItemData.extensionName(extendedTypeResult), //生成扩展类名
       properties: members,
       isAtJS: node.toSource().contains('@JS'),
       isAbstract: true, //当成抽象类
@@ -802,54 +803,72 @@ class VmParserBirdger extends SimpleAstVisitor {
 
   @override
   VmParserBirdgeItemData? visitSuperFormalParameter(SuperFormalParameter node) {
-    final typeResult = node.type?.accept(this);
+    final typeResult = node.type?.accept(this); // => visitNamedType, visitGenericFunctionType
     return VmParserBirdgeItemData(
       type: VmParserBirdgeItemType.functionParameter,
       name: node.name.toString(),
       parameters: typeResult is VmParserBirdgeItemData ? typeResult.parameters : const [],
-      isNameParameter: node.isNamed,
-      isWrapParameter: typeResult is VmParserBirdgeItemData ? typeResult.isWrapParameter : false,
-      wrapTemplateStr: typeResult is VmParserBirdgeItemData ? typeResult.wrapTemplateStr : '',
+      isListReqParameter: node.isRequiredPositional,
+      isListOptParameter: node.isOptionalPositional,
+      isNameAnyParameter: node.isNamed,
+      parameterType: typeResult is VmParserBirdgeItemData ? typeResult.parameterType : typeResult as String?,
+      parameterValue: null,
+      parameterReturn: typeResult is VmParserBirdgeItemData ? typeResult.parameterReturn : false,
+      parameterCanNull: node.type?.question != null,
+      callerTemplates: typeResult is VmParserBirdgeItemData ? typeResult.callerTemplates : null,
     );
   }
 
   @override
   VmParserBirdgeItemData? visitFieldFormalParameter(FieldFormalParameter node) {
-    final typeResult = node.type?.accept(this);
+    final typeResult = node.type?.accept(this); // => visitNamedType, visitGenericFunctionType
     return VmParserBirdgeItemData(
       type: VmParserBirdgeItemType.functionParameter,
       name: node.name.toString(),
       parameters: typeResult is VmParserBirdgeItemData ? typeResult.parameters : const [],
-      isNameParameter: node.isNamed,
-      isWrapParameter: typeResult is VmParserBirdgeItemData ? typeResult.isWrapParameter : false,
-      wrapTemplateStr: typeResult is VmParserBirdgeItemData ? typeResult.wrapTemplateStr : '',
+      isListReqParameter: node.isRequiredPositional,
+      isListOptParameter: node.isOptionalPositional,
+      isNameAnyParameter: node.isNamed,
+      parameterType: typeResult is VmParserBirdgeItemData ? typeResult.parameterType : typeResult as String?,
+      parameterValue: null,
+      parameterReturn: typeResult is VmParserBirdgeItemData ? typeResult.parameterReturn : false,
+      parameterCanNull: node.type?.question != null,
+      callerTemplates: typeResult is VmParserBirdgeItemData ? typeResult.callerTemplates : null,
     );
   }
 
   @override
   VmParserBirdgeItemData? visitSimpleFormalParameter(SimpleFormalParameter node) {
-    final typeResult = node.type?.accept(this);
+    final typeResult = node.type?.accept(this); // => visitNamedType, visitGenericFunctionType
     return VmParserBirdgeItemData(
       type: VmParserBirdgeItemType.functionParameter,
       name: node.name.toString(),
       parameters: typeResult is VmParserBirdgeItemData ? typeResult.parameters : const [],
-      isNameParameter: node.isNamed,
-      isWrapParameter: typeResult is VmParserBirdgeItemData ? typeResult.isWrapParameter : false,
-      wrapTemplateStr: typeResult is VmParserBirdgeItemData ? typeResult.wrapTemplateStr : '',
+      isListReqParameter: node.isRequiredPositional,
+      isListOptParameter: node.isOptionalPositional,
+      isNameAnyParameter: node.isNamed,
+      parameterType: typeResult is VmParserBirdgeItemData ? typeResult.parameterType : typeResult as String?,
+      parameterValue: null,
+      parameterReturn: typeResult is VmParserBirdgeItemData ? typeResult.parameterReturn : false,
+      parameterCanNull: node.type?.question != null,
+      callerTemplates: typeResult is VmParserBirdgeItemData ? typeResult.callerTemplates : null,
     );
   }
 
   @override
   VmParserBirdgeItemData? visitFunctionTypedFormalParameter(FunctionTypedFormalParameter node) {
-    final returnTypeResult = node.returnType?.accept(this); // => visitNamedType, visitGenericFunctionType
-    final isWrapParameter = (returnTypeResult is List<String> && returnTypeResult.isNotEmpty) || node.typeParameters != null; //返回值带泛型或者函数本身带泛型
     return VmParserBirdgeItemData(
       type: VmParserBirdgeItemType.functionParameter,
       name: node.name.toString(),
       parameters: node.parameters.accept(this),
-      isNameParameter: node.isNamed,
-      isWrapParameter: isWrapParameter,
-      wrapTemplateStr: node.typeParameters?.toSource() ?? '', //如 Set.castFrom
+      isListReqParameter: node.isRequiredPositional,
+      isListOptParameter: node.isOptionalPositional,
+      isNameAnyParameter: node.isNamed,
+      parameterType: 'Function', //无对应字段，手动填充为'Function'
+      parameterValue: null,
+      parameterReturn: node.returnType != null && node.returnType.toString().trim() != 'void',
+      parameterCanNull: node.question != null,
+      callerTemplates: node.typeParameters?.toSource(), //如 Set.castFrom
     );
   }
 
@@ -857,27 +876,52 @@ class VmParserBirdger extends SimpleAstVisitor {
   VmParserBirdgeItemData? visitDefaultFormalParameter(DefaultFormalParameter node) {
     final result = node.parameter.accept(this) as VmParserBirdgeItemData?; // => visitSuperFormalParameter, visitFieldFormalParameter, visitSimpleFormalParameter, visitFunctionTypedFormalParameter
     if (result != null) {
+      result.type = VmParserBirdgeItemType.functionParameter;
       result.name = node.name.toString();
-      result.isNameParameter = node.isNamed;
+      result.isListReqParameter = node.isRequiredPositional;
+      result.isListOptParameter = node.isOptionalPositional;
+      result.isNameAnyParameter = node.isNamed;
+      result.parameterValue = node.defaultValue?.toSource();
     }
     return result;
   }
 
   @override
   VmParserBirdgeItemData? visitGenericFunctionType(GenericFunctionType node) {
-    final returnTypeResult = node.returnType?.accept(this); // => visitNamedType, visitGenericFunctionType
-    final isWrapParameter = (returnTypeResult is List<String> && returnTypeResult.isNotEmpty) || node.typeParameters != null; //返回值带泛型或者函数本身带泛型
     return VmParserBirdgeItemData(
-      name: node.functionKeyword.toString(), //必然为 'Function'
+      name: node.functionKeyword.toString(), //无对应字段，填充为 functionKeyword 必然为 'Function'
       parameters: node.parameters.accept(this),
-      isWrapParameter: isWrapParameter,
-      wrapTemplateStr: node.typeParameters?.toSource() ?? '', //如 Set.castFrom
+      parameterType: 'Function', // 虽然 node.functionKeyword.toString() 必然为 'Function'，但还是手动填充为'Function'
+      parameterValue: null,
+      parameterReturn: node.returnType != null && node.returnType.toString().trim() != 'void',
+      callerTemplates: node.typeParameters?.toSource(), //如 Set.castFrom
     );
   }
 
   @override
-  List<String>? visitNamedType(NamedType node) {
-    return node.typeArguments?.arguments.map((e) => e.toString()).toList();
+  String? visitNamedType(NamedType node) => node.name.name; //这里其实也可能是函数的别名，所以生成代码时需要对 alias 进行查找
+
+  @override
+  VmParserBirdgeItemData? visitGenericTypeAlias(GenericTypeAlias node) {
+    final functionTypeResult = node.functionType?.accept(this); // => visitGenericFunctionType
+    if (functionTypeResult is VmParserBirdgeItemData) {
+      functionTypeResult.type = VmParserBirdgeItemType.functionTypeAlias;
+      functionTypeResult.name = node.name.toString();
+    }
+    return functionTypeResult;
+  }
+
+  @override
+  VmParserBirdgeItemData? visitFunctionTypeAlias(FunctionTypeAlias node) {
+    return VmParserBirdgeItemData(
+      type: VmParserBirdgeItemType.functionTypeAlias,
+      name: node.name.lexeme,
+      parameters: node.parameters.accept(this),
+      parameterType: 'Function', //无对应字段，手动填充为'Function'
+      parameterValue: null,
+      parameterReturn: node.returnType != null && node.returnType.toString().trim() != 'void',
+      callerTemplates: node.typeParameters?.toSource(), //如 Set.castFrom
+    );
   }
 }
 
@@ -908,6 +952,9 @@ enum VmParserBirdgeItemType {
 
   ///类的实例函数
   classInstanceFunction,
+
+  ///函数的别名
+  functionTypeAlias,
 
   ///任意函数的参数
   functionParameter,
@@ -959,14 +1006,29 @@ class VmParserBirdgeItemData {
   ///是否为abstract
   bool isExtension;
 
-  ///是否为命名参数
-  bool isNameParameter;
+  ///是否为必填list参数 => 即扫描器中明确的属性 isRequiredPositional 为 true
+  bool isListReqParameter;
 
-  ///是否为包装参数
-  bool isWrapParameter;
+  ///是否为可选list参数 => 即扫描器中明确的属性 isOptionalPositional 为 true
+  bool isListOptParameter;
 
-  ///包装参数的泛型字符串
-  String wrapTemplateStr;
+  ///是否为任意name参数 => 即扫描器中明确的属性 isNamed 为 true
+  bool isNameAnyParameter;
+
+  ///作为参数的具体类型名称
+  String? parameterType;
+
+  ///作为参数的默认取值内容
+  String? parameterValue;
+
+  ///作为函数类型的参数是否有返回值
+  bool parameterReturn;
+
+  ///作为参数是否可以为null
+  bool parameterCanNull;
+
+  ///生成caller时添加的泛型字符串
+  String? callerTemplates;
 
   ///类型直接的extends、implements、with的超类
   List<String> superclassNames;
@@ -992,9 +1054,14 @@ class VmParserBirdgeItemData {
     this.isConstructor = false,
     this.isFactoryConstructor = false,
     this.isExtension = false,
-    this.isNameParameter = false,
-    this.isWrapParameter = false,
-    this.wrapTemplateStr = '',
+    this.isListReqParameter = false,
+    this.isListOptParameter = false,
+    this.isNameAnyParameter = false,
+    this.parameterType,
+    this.parameterValue,
+    this.parameterReturn = false,
+    this.parameterCanNull = false,
+    this.callerTemplates,
     this.superclassNames = const [],
     this.absoluteFilePath = '',
   }) : _historyclassNames = {} {
@@ -1027,6 +1094,15 @@ class VmParserBirdgeItemData {
   ///是否为类实例属性
   bool get isClassInstanceProperty => type == VmParserBirdgeItemType.classInstanceVariable || type == VmParserBirdgeItemType.classInstanceFunction;
 
+  ///是否为函数类型的参数
+  bool get isCallerFunctionType => parameterType == 'Function' && (parameters.isNotEmpty || parameterReturn) && (parameters.every((e) => e == null || !e.isPrivateDefaultValue));
+
+  ///默认值是私有的标识符
+  bool get isPrivateDefaultValue => parameterValue == null ? false : parameterValue!.startsWith('_');
+
+  ///参数默认取值内容代码
+  String get parameterValueCode => parameterValue == null ? '' : ' = $parameterValue';
+
   ///是否生成externalStaticPropertyReader
   bool get hasStaticReader {
     switch (type) {
@@ -1045,6 +1121,8 @@ class VmParserBirdgeItemData {
       case VmParserBirdgeItemType.classInstanceVariable:
         return false;
       case VmParserBirdgeItemType.classInstanceFunction:
+        return false;
+      case VmParserBirdgeItemType.functionTypeAlias:
         return false;
       case VmParserBirdgeItemType.functionParameter:
         return false;
@@ -1070,6 +1148,8 @@ class VmParserBirdgeItemData {
         return false;
       case VmParserBirdgeItemType.classInstanceFunction:
         return false;
+      case VmParserBirdgeItemType.functionTypeAlias:
+        return false;
       case VmParserBirdgeItemType.functionParameter:
         return false;
     }
@@ -1083,16 +1163,18 @@ class VmParserBirdgeItemData {
       case VmParserBirdgeItemType.topLevelVariable:
         return false;
       case VmParserBirdgeItemType.topLevelFunction:
-        return parameters.any((e) => e != null && e.isWrapParameter); //遍历判断
+        return parameters.any((e) => e != null && e.isCallerFunctionType) && parameters.every((e) => e == null || !e.isPrivateDefaultValue) && !isSetter; //综合判断
       case VmParserBirdgeItemType.classDeclaration:
         return false;
       case VmParserBirdgeItemType.classStaticVariable:
         return false;
       case VmParserBirdgeItemType.classStaticFunction:
-        return parameters.any((e) => e != null && e.isWrapParameter); //遍历判断
+        return parameters.any((e) => e != null && e.isCallerFunctionType) && parameters.every((e) => e == null || !e.isPrivateDefaultValue) && !isSetter; //综合判断
       case VmParserBirdgeItemType.classInstanceVariable:
         return false;
       case VmParserBirdgeItemType.classInstanceFunction:
+        return false;
+      case VmParserBirdgeItemType.functionTypeAlias:
         return false;
       case VmParserBirdgeItemType.functionParameter:
         return false;
@@ -1118,6 +1200,8 @@ class VmParserBirdgeItemData {
         return true; //必然可以
       case VmParserBirdgeItemType.classInstanceFunction:
         return isGetter || !isSetter; //综合判断
+      case VmParserBirdgeItemType.functionTypeAlias:
+        return false;
       case VmParserBirdgeItemType.functionParameter:
         return false;
     }
@@ -1142,6 +1226,8 @@ class VmParserBirdgeItemData {
         return !isFinal && !isConst; //综合判断
       case VmParserBirdgeItemType.classInstanceFunction:
         return isSetter; //单项判断
+      case VmParserBirdgeItemType.functionTypeAlias:
+        return false;
       case VmParserBirdgeItemType.functionParameter:
         return false;
     }
@@ -1165,16 +1251,19 @@ class VmParserBirdgeItemData {
       case VmParserBirdgeItemType.classInstanceVariable:
         return false;
       case VmParserBirdgeItemType.classInstanceFunction:
-        return parameters.any((e) => e != null && e.isWrapParameter); //遍历判断
+        return parameters.any((e) => e != null && e.isCallerFunctionType) && parameters.every((e) => e == null || !e.isPrivateDefaultValue) && !isSetter; //综合判断
+      case VmParserBirdgeItemType.functionTypeAlias:
+        return false;
       case VmParserBirdgeItemType.functionParameter:
         return false;
     }
   }
 
   ///合并同名类型的全部字段
-  void combineClass(VmParserBirdgeItemData sameclassData, {required bool ignoreExtension}) {
-    if (ignoreExtension && (isExtension || sameclassData.isExtension)) return; //指定忽略添加扩展
-    if (sameclassData.name != name) throw ('Unsupport combineClass operator: ${sameclassData.name} not $name');
+  void combineClass(VmParserBirdgeItemData sameclassData) {
+    if (sameclassData.name != name && sameclassData.name != extensionName(name)) {
+      throw ('Unsupport combineClass operator: ${sameclassData.name} not $name');
+    }
     for (var e in sameclassData.properties) {
       if (e != null && !e.isPrivate && !e.isClassStaticProperty) {
         properties.add(e); //因为toProxyCode中使用的是Set，所以无需排重
@@ -1187,7 +1276,7 @@ class VmParserBirdgeItemData {
     required VmParserBirdgeItemData currentClass,
     required Map<String, VmParserBirdgeItemData> publicMap,
     required Map<String, VmParserBirdgeItemData> pirvateMap,
-    void Function(String className, String superName, String classPath)? onNoSuper,
+    required void Function(String className, String superName, String filePath) onNotFoundSuperClass,
   }) {
     for (var superName in currentClass.superclassNames) {
       var superClass = publicMap[superName] ?? pirvateMap[superName];
@@ -1197,16 +1286,55 @@ class VmParserBirdgeItemData {
             properties.add(e); //因为toProxyCode中使用的是Set，所以无需排重
           }
         }
-        extendsSuper(currentClass: superClass, publicMap: publicMap, pirvateMap: pirvateMap); //继续向上遍历
+        extendsSuper(
+          currentClass: superClass,
+          publicMap: publicMap,
+          pirvateMap: pirvateMap,
+          onNotFoundSuperClass: onNotFoundSuperClass,
+        ); //继续向上遍历
       } else {
-        if (onNoSuper != null) onNoSuper(currentClass.name, superName, currentClass.absoluteFilePath);
+        onNotFoundSuperClass(currentClass.name, superName, currentClass.absoluteFilePath);
       }
       _historyclassNames.add(superName);
     }
   }
 
+  ///替换函数参数的别名参数
+  void replaceAlias({
+    String className = '',
+    required Map<String, VmParserBirdgeItemData> functionRefs,
+    required void Function(String className, String proxyName, String paramName, String aliasName, String filePath) onReplaceProxyAlias,
+  }) {
+    if (type == VmParserBirdgeItemType.classDeclaration) {
+      for (var e in properties) {
+        e?.replaceAlias(className: name, functionRefs: functionRefs, onReplaceProxyAlias: onReplaceProxyAlias);
+      }
+    } else {
+      for (var e in parameters) {
+        if (e != null) {
+          final refType = e.parameterType == null ? null : functionRefs[e.parameterType];
+          if (refType != null) {
+            e.parameters = refType.parameters;
+            e.parameterType = refType.parameterType; //必然为 'Function'
+            // e.parameterValue = refType.parameterValue;//这个属性不需要复制，应为refType是类型定义，与默认值没有任何关系
+            e.parameterReturn = refType.parameterReturn;
+            // e.parameterCanNull = refType.parameterCanNull;//这个属性不需要复制，应为refType是类型定义，与能否为null没有任何关系
+            e.callerTemplates = refType.callerTemplates;
+            onReplaceProxyAlias(className, name, e.name, refType.name, refType.absoluteFilePath);
+          }
+        }
+      }
+    }
+  }
+
   ///生成VmClass源代码
-  String toClassCode({String indent = '', List<String> ignoreProxy = const [], void Function(String className, String proxyName, String classPath)? onIgnore}) {
+  String toClassCode({
+    String indent = '',
+    required List<String> ignoreProxyObject,
+    required List<String> ignoreProxyCaller,
+    required void Function(String className, String proxyName, String filePath) onIgnoreProxyObject,
+    required void Function(String className, String proxyName, String filePath) onIgnoreProxyCaller,
+  }) {
     final codeParts = <String>[];
     final unionPartsMap = <String, Set<String>>{};
     //字段排序
@@ -1242,17 +1370,18 @@ class VmParserBirdgeItemData {
     codeParts.add('$indent${indent}superclassNames: [${_historyclassNames.map((e) => '\'$e\'').join(', ')}],');
     for (var e in properties) {
       if (e != null && !e.isPrivate && !e.isOperator) {
-        if (ignoreProxy.contains('$name.${e.name}')) {
-          if (onIgnore != null) onIgnore(name, e.name, absoluteFilePath);
-          continue;
-        }
-        final unionParts = unionPartsMap[e.name] = unionPartsMap[e.name] ?? {};
-        if (e.isConstructor) {
-          if (!isAbstract || e.isFactoryConstructor) {
-            e.toProxyCode(className: name, unionParts: unionParts);
+        if (!isIgnoreProxyMatched(this, e.name, ignoreProxyObject)) {
+          final unionParts = unionPartsMap[e.name] = unionPartsMap[e.name] ?? {};
+          if (!e.isConstructor || (!isAbstract || e.isFactoryConstructor)) {
+            e.toProxyCode(
+              classScope: this,
+              unionParts: unionParts,
+              ignoreProxyCaller: ignoreProxyCaller,
+              onIgnoreProxyCaller: onIgnoreProxyCaller,
+            );
           }
         } else {
-          e.toProxyCode(className: name, unionParts: unionParts);
+          onIgnoreProxyObject(name, e.name, absoluteFilePath);
         }
       }
     }
@@ -1273,48 +1402,62 @@ class VmParserBirdgeItemData {
   }
 
   ///生成VmProxy源代码，[unionParts]为[Set]便于合并重复的子项
-  String toProxyCode({String className = '', Set<String>? unionParts}) {
-    final staticDot = className.isEmpty ? '' : '.';
-    final identifier = name.isEmpty ? getIdentifier(className) : getIdentifier(name);
-    final proxyName = name.isEmpty ? 'new' : name;
+  String toProxyCode({
+    VmParserBirdgeItemData? classScope,
+    Set<String>? unionParts,
+    required List<String> ignoreProxyCaller,
+    required void Function(String className, String proxyName, String filePath) onIgnoreProxyCaller,
+  }) {
+    final className = classScope != null ? classScope.name : '';
+    final staticDot = classScope != null ? '.' : '';
+    final identifier = classScope != null && name.isEmpty ? getIdentifier(className) : getIdentifier(name);
+    final proxyName = classScope != null && name.isEmpty ? 'new' : name;
     final codeParts = unionParts ?? <String>{};
     if (hasStaticReader) codeParts.add('externalStaticPropertyReader: () => $className$staticDot$proxyName');
     if (hasStaticWriter) codeParts.add('externalStaticPropertyWriter: (value) => $className$staticDot$proxyName = value');
-    if (hasStaticCaller) {
+    if (hasStaticCaller && !isIgnoreProxyMatched(classScope, proxyName, ignoreProxyCaller)) {
       int i = 0;
-      final outerListStrs = parameters.where((e) => e != null && !e.isNameParameter).map((e) => 'a${i++}').join(', ');
-      final outerNameStrs = parameters.where((e) => e != null && e.isNameParameter).map((e) => e!.name).join(', ');
+      final outerListReqStrs = parameters.where((e) => e != null && e.isListReqParameter).map((e) => 'a${i++}${e!.parameterValueCode}').join(', ');
+      final outerListOptStrs = parameters.where((e) => e != null && e.isListOptParameter).map((e) => 'a${i++}${e!.parameterValueCode}').join(', ');
+      final outerNameAnyStrs = parameters.where((e) => e != null && e.isNameAnyParameter).map((e) => '${e!.name}${e.parameterValueCode}').join(', ');
+      final outerList = <String>[];
+      if (outerListReqStrs.isNotEmpty) outerList.add(outerListReqStrs);
+      if (outerListOptStrs.isNotEmpty) outerList.add('[$outerListOptStrs]');
+      if (outerNameAnyStrs.isNotEmpty) outerList.add('{$outerNameAnyStrs}');
       i = 0;
-      final innerListStrs = parameters.where((e) => e != null && !e.isNameParameter).map((e) => e!.isWrapParameter ? e.toCallerCode('a${i++}') : 'a${i++}').join(', ');
-      final innerNameStrs = parameters.where((e) => e != null && e.isNameParameter).map((e) => '${e!.name}: ${e.isWrapParameter ? e.toCallerCode(e.name) : e.name}').join(', ');
-      if (outerListStrs.isNotEmpty && outerNameStrs.isNotEmpty) {
-        codeParts.add('externalStaticFunctionCaller: ($outerListStrs, {$outerNameStrs}) => $className$staticDot$proxyName($innerListStrs, $innerNameStrs)');
-      } else if (outerListStrs.isNotEmpty) {
-        codeParts.add('externalStaticFunctionCaller: ($outerListStrs) => $className$staticDot$proxyName($innerListStrs)');
-      } else if (outerNameStrs.isNotEmpty) {
-        codeParts.add('externalStaticFunctionCaller: ({$outerNameStrs}) => $className$staticDot$proxyName($innerNameStrs)');
-      } else {
-        codeParts.add('externalStaticFunctionCaller: () => $className$staticDot$proxyName()');
-      }
+      final innerListReqStrs = parameters.where((e) => e != null && e.isListReqParameter).map((e) => e!.isCallerFunctionType ? e.toCallerCode('a${i++}') : 'a${i++}').join(', ');
+      final innerListOptStrs = parameters.where((e) => e != null && e.isListOptParameter).map((e) => e!.isCallerFunctionType ? e.toCallerCode('a${i++}') : 'a${i++}').join(', ');
+      final innerNameAnyStrs = parameters.where((e) => e != null && e.isNameAnyParameter).map((e) => '${e!.name}: ${e.isCallerFunctionType ? e.toCallerCode(e.name) : e.name}').join(', ');
+      final innerList = <String>[];
+      if (innerListReqStrs.isNotEmpty) innerList.add(innerListReqStrs);
+      if (innerListOptStrs.isNotEmpty) innerList.add(innerListOptStrs);
+      if (innerNameAnyStrs.isNotEmpty) innerList.add(innerNameAnyStrs);
+      codeParts.add('externalStaticFunctionCaller: (${outerList.join(', ')}) => $className$staticDot$proxyName(${innerList.join(', ')})');
+    } else if (isIgnoreProxyMatched(classScope, proxyName, ignoreProxyCaller)) {
+      onIgnoreProxyCaller(className, proxyName, classScope?.absoluteFilePath ?? absoluteFilePath);
     }
     if (hasInstanceReader) codeParts.add('externalInstancePropertyReader: ($className instance) => instance.$proxyName');
     if (hasInstanceWriter) codeParts.add('externalInstancePropertyWriter: ($className instance, value) => instance.$proxyName = value');
-    if (hasInstanceCaller) {
+    if (hasInstanceCaller && !isIgnoreProxyMatched(classScope, proxyName, ignoreProxyCaller)) {
       int i = 0;
-      final outerListStrs = parameters.where((e) => e != null && !e.isNameParameter).map((e) => 'a${i++}').join(', ');
-      final outerNameStrs = parameters.where((e) => e != null && e.isNameParameter).map((e) => e!.name).join(', ');
+      final outerListReqStrs = parameters.where((e) => e != null && e.isListReqParameter).map((e) => 'a${i++}${e!.parameterValueCode}').join(', ');
+      final outerListOptStrs = parameters.where((e) => e != null && e.isListOptParameter).map((e) => 'a${i++}${e!.parameterValueCode}').join(', ');
+      final outerNameAnyStrs = parameters.where((e) => e != null && e.isNameAnyParameter).map((e) => '${e!.name}${e.parameterValueCode}').join(', ');
+      final outerList = <String>['$className instance'];
+      if (outerListReqStrs.isNotEmpty) outerList.add(outerListReqStrs);
+      if (outerListOptStrs.isNotEmpty) outerList.add('[$outerListOptStrs]');
+      if (outerNameAnyStrs.isNotEmpty) outerList.add('{$outerNameAnyStrs}');
       i = 0;
-      final innerListStrs = parameters.where((e) => e != null && !e.isNameParameter).map((e) => e!.isWrapParameter ? e.toCallerCode('a${i++}') : 'a${i++}').join(', ');
-      final innerNameStrs = parameters.where((e) => e != null && e.isNameParameter).map((e) => '${e!.name}: ${e.isWrapParameter ? e.toCallerCode(e.name) : e.name}').join(', ');
-      if (outerListStrs.isNotEmpty && outerNameStrs.isNotEmpty) {
-        codeParts.add('externalInstanceFunctionCaller: ($className instance, $outerListStrs, {$outerNameStrs}) => instance.$proxyName($innerListStrs, $innerNameStrs)');
-      } else if (outerListStrs.isNotEmpty) {
-        codeParts.add('externalInstanceFunctionCaller: ($className instance, $outerListStrs) => instance.$proxyName($innerListStrs)');
-      } else if (outerNameStrs.isNotEmpty) {
-        codeParts.add('externalInstanceFunctionCaller: ($className instance, {$outerNameStrs}) => instance.$proxyName($innerNameStrs)');
-      } else {
-        codeParts.add('externalInstanceFunctionCaller: ($className instance) => instance.$proxyName()');
-      }
+      final innerListReqStrs = parameters.where((e) => e != null && e.isListReqParameter).map((e) => e!.isCallerFunctionType ? e.toCallerCode('a${i++}') : 'a${i++}').join(', ');
+      final innerListOptStrs = parameters.where((e) => e != null && e.isListOptParameter).map((e) => e!.isCallerFunctionType ? e.toCallerCode('a${i++}') : 'a${i++}').join(', ');
+      final innerNameAnyStrs = parameters.where((e) => e != null && e.isNameAnyParameter).map((e) => '${e!.name}: ${e.isCallerFunctionType ? e.toCallerCode(e.name) : e.name}').join(', ');
+      final innerList = <String>[];
+      if (innerListReqStrs.isNotEmpty) innerList.add(innerListReqStrs);
+      if (innerListOptStrs.isNotEmpty) innerList.add(innerListOptStrs);
+      if (innerNameAnyStrs.isNotEmpty) innerList.add(innerNameAnyStrs);
+      codeParts.add('externalInstanceFunctionCaller: (${outerList.join(', ')}) => instance.$proxyName(${innerList.join(', ')})');
+    } else if (isIgnoreProxyMatched(classScope, proxyName, ignoreProxyCaller)) {
+      onIgnoreProxyCaller(className, proxyName, classScope?.absoluteFilePath ?? absoluteFilePath);
     }
     return 'VmProxy(identifier: \'$identifier\', ${codeParts.join(', ')}),';
   }
@@ -1322,22 +1465,36 @@ class VmParserBirdgeItemData {
   ///生成caller源代码
   String toCallerCode(String fieldName) {
     int i = 0;
-    final outerListStrs = parameters.where((e) => e != null && !e.isNameParameter).map((e) => 'b${i++}').join(', ');
-    final outerNameStrs = parameters.where((e) => e != null && e.isNameParameter).map((e) => e!.name).join(', ');
+    final outerListReqStrs = parameters.where((e) => e != null && e.isListReqParameter).map((e) => 'b${i++}${e!.parameterValueCode}').join(', ');
+    final outerListOptStrs = parameters.where((e) => e != null && e.isListOptParameter).map((e) => 'b${i++}${e!.parameterValueCode}').join(', ');
+    final outerNameAnyStrs = parameters.where((e) => e != null && e.isNameAnyParameter).map((e) => '${e!.name}${e.parameterValueCode}').join(', ');
+    final outerList = <String>[];
+    if (outerListReqStrs.isNotEmpty) outerList.add(outerListReqStrs);
+    if (outerListOptStrs.isNotEmpty) outerList.add('[$outerListOptStrs]');
+    if (outerNameAnyStrs.isNotEmpty) outerList.add('{$outerNameAnyStrs}');
     i = 0;
-    final innerListStrs = parameters.where((e) => e != null && !e.isNameParameter).map((e) => 'b${i++}').join(', ');
-    final innerNameStrs = parameters.where((e) => e != null && e.isNameParameter).map((e) => '${e!.name}: ${e.name}').join(', ');
-    if (outerListStrs.isNotEmpty && outerNameStrs.isNotEmpty) {
-      return '$wrapTemplateStr($outerListStrs, {$outerNameStrs}) => $fieldName == null ? null : $fieldName($innerListStrs, $innerNameStrs)';
-    } else if (outerListStrs.isNotEmpty) {
-      return '$wrapTemplateStr($outerListStrs) => $fieldName == null ? null : $fieldName($innerListStrs)';
-    } else if (outerNameStrs.isNotEmpty) {
-      return '$wrapTemplateStr({$outerNameStrs}) => $fieldName == null ? null : $fieldName($innerNameStrs)';
+    final innerListReqStrs = parameters.where((e) => e != null && e.isListReqParameter).map((e) => 'b${i++}').join(', ');
+    final innerListOptStrs = parameters.where((e) => e != null && e.isListOptParameter).map((e) => 'b${i++}').join(', ');
+    final innerNameAnyStrs = parameters.where((e) => e != null && e.isNameAnyParameter).map((e) => '${e!.name}: ${e.name}').join(', ');
+    final innerList = <String>[];
+    if (innerListReqStrs.isNotEmpty) innerList.add(innerListReqStrs);
+    if (innerListOptStrs.isNotEmpty) innerList.add(innerListOptStrs);
+    if (innerNameAnyStrs.isNotEmpty) innerList.add(innerNameAnyStrs);
+    return '${parameterCanNull ? '$fieldName == null ? null : ' : ''}${callerTemplates ?? ''}(${outerList.join(', ')}) => $fieldName(${innerList.join(', ')})';
+  }
+
+  ///是否匹配忽略
+  static bool isIgnoreProxyMatched(VmParserBirdgeItemData? classScope, String proxyName, List<String> ignoreProxyNames) {
+    if (classScope == null) {
+      return ignoreProxyNames.contains(proxyName);
     } else {
-      return '$wrapTemplateStr() => $fieldName == null ? null : $fieldName()';
+      return ignoreProxyNames.contains('${classScope.name}.$proxyName') || classScope._historyclassNames.any((superName) => ignoreProxyNames.contains('$superName.$proxyName'));
     }
   }
 
   ///格式化标识符
   static String getIdentifier(String key) => key.replaceAll(r'$', r'\$');
+
+  ///格式化扩展名
+  static String extensionName(String name) => '\$${name}Extension\$';
 }

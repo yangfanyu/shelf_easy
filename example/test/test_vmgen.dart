@@ -4,17 +4,18 @@ import 'package:shelf_easy/shelf_easy.dart';
 
 void main() {
   //为example生成model桥接库
-  // generatorLibraryForModel();
+  generatorLibraryForModel();
 
   ///为flutter生成桥接库
   ///这里全生成了，实际情况可以自己去掉不需要的库，只需确保：生成后调用EasyCode.logVmLibrarydErrors无错误打印，且在开发工具里面打开库文件不报错即可。
-  generatorLibraryForFlutter();
+  // generatorLibraryForFlutter();
 }
 
 void generatorLibraryForModel() {
   final flutterHome = Platform.environment['FLUTTER_HOME']; //读取环境变量
   final coder = EasyCoder(
     config: EasyCoderConfig(
+      logLevel: EasyLogLevel.debug,
       absFolder: '${Directory.current.path}/bridge',
     ),
   );
@@ -28,16 +29,19 @@ void generatorLibraryForModel() {
     libraryPaths: [
       '${Directory.current.path}/model',
       '${Directory.current.path}/../lib/src/db/db_base.dart',
+      // '${Directory.current.path}/test/test_vmware.dart', //for OuterClass
     ],
 
     ///私有路径不生成桥接类，只是用来查找与复制超类的属性
     privatePaths: [
       '$flutterHome/bin/cache/dart-sdk/lib/core',
+      // '${Directory.current.path}/../lib/src/vm/vm_object.dart', //for OuterClass
     ],
 
     ///这个用来告诉生成器对应文件下面只需要生成某些类的桥接类
-    onlyNeedFileClass: {
+    includeFileClass: {
       '${Directory.current.path}/../lib/src/db/db_base.dart': ['DbBaseModel'],
+      // '${Directory.current.path}/test/test_vmware.dart': ['OuterClass'], //for OuterClass
     },
   );
   //统一打印生成过程中的错误信息
@@ -48,24 +52,25 @@ void generatorLibraryForFlutter() {
   final flutterHome = Platform.environment['FLUTTER_HOME']; //读取环境变量
   final coder = EasyCoder(
     config: EasyCoderConfig(
+      logLevel: EasyLogLevel.debug,
       absFolder: '${Directory.current.path}/../../zycloud_widget/lib/src/bridge',
     ),
   );
   coder.generateVmLibraries(
     outputFile: 'flutter_library',
     importList: [
-      // 'package:flutter/animation.dart',//重复的导入项
+      // 'package:flutter/animation.dart', //重复的导入项
       'package:flutter/cupertino.dart',
       'package:flutter/foundation.dart',
       'package:flutter/gestures.dart',
       'package:flutter/material.dart',
-      // 'package:flutter/painting.dart',//重复的导入项
+      // 'package:flutter/painting.dart', //重复的导入项
       'package:flutter/physics.dart',
       'package:flutter/rendering.dart',
       'package:flutter/scheduler.dart',
-      // 'package:flutter/semantics.dart',//重复的导入项
+      // 'package:flutter/semantics.dart', //重复的导入项
       'package:flutter/services.dart',
-      // 'package:flutter/widgets.dart',//重复的导入项
+      // 'package:flutter/widgets.dart', //重复的导入项
     ],
     className: 'FlutterLibrary',
     classDesc: 'Flutter library',

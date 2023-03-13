@@ -21,6 +21,9 @@ void main() {
 
   var a;
   print('========> ${a is FutureOr}'); //true
+
+  var b = [];
+  print('========> ${b.every((element) => element > 3)}'); //true
 }
 
 mixin A {
