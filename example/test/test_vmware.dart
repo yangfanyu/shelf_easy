@@ -5,7 +5,7 @@ import 'package:shelf_easy/shelf_easy.dart';
 import '../bridge/model_library.dart';
 import '../model/all.dart';
 
-///定义能在虚拟机中被继承的类，需要添加[VmSuper]扩展，并且具有公开的构造函数
+///定义能在虚拟机中被继承的类，需要添加[VmSuper]扩展，这个类不能是abstract，并且具有公开的构造函数
 class OuterClass with VmSuper {
   final String key1;
   final String key2;

@@ -17,10 +17,10 @@ class VmParser {
     return result.unit.accept(VmParserVisitor()) ?? const {};
   }
 
-  ///解析源代码[source]的内容，生成桥接类型元数据的描述列表
-  static List<VmParserBirdgeItemData?> bridgeSource(String source) {
+  ///解析源代码[source]的内容，生成桥接类型元数据的描述列表，[ignoreExtensions]为要忽略添加extension的目标类名
+  static List<VmParserBirdgeItemData?> bridgeSource(String source, {required List<String> ignoreExtensions}) {
     final result = parseString(content: source);
-    return result.unit.accept(VmParserBirdger());
+    return result.unit.accept(VmParserBirdger(ignoreExtensions: ignoreExtensions));
   }
 }
 
@@ -592,6 +592,11 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 ///虚拟机桥接类型的目录扫描生成器（生成字段只包含文件中的显示声明字段，flutter环境可用）
 ///
 class VmParserBirdger extends SimpleAstVisitor {
+  ///要忽略的extension类名
+  final List<String> ignoreExtensions;
+
+  VmParserBirdger({required this.ignoreExtensions});
+
   @override
   List<VmParserBirdgeItemData?> visitCompilationUnit(CompilationUnit node) {
     final resultList = node.declarations.map((e) => e.accept(this)).toList();
@@ -696,6 +701,49 @@ class VmParserBirdger extends SimpleAstVisitor {
       properties: members,
       isAtJS: node.toSource().contains('@JS'),
       isAbstract: true, //当成抽象类
+      superclassNames: superclassNames,
+    );
+  }
+
+  @override
+  VmParserBirdgeItemData? visitEnumDeclaration(EnumDeclaration node) {
+    final resultList = node.members.map((e) => e.accept(this)).toList();
+    final members = <VmParserBirdgeItemData?>[];
+    for (var e in resultList) {
+      e is List<VmParserBirdgeItemData?> ? members.addAll(e) : members.add(e);
+    }
+    final superclassNames = <String>[];
+    if (node.implementsClause != null) superclassNames.addAll(node.implementsClause!.interfaces.map((e) => e.name.name).toList()); //implements可以很多个
+    if (node.withClause != null) superclassNames.addAll(node.withClause!.mixinTypes.map((e) => e.name.name).toList()); //with可以很多个
+    if (superclassNames.isEmpty) superclassNames.add('Enum'); //必然继承自 Enum
+    return VmParserBirdgeItemData(
+      type: VmParserBirdgeItemType.classDeclaration,
+      name: node.name.toString(),
+      properties: members,
+      isAtJS: node.toSource().contains('@JS'),
+      isAbstract: true, //当成抽象类
+      superclassNames: superclassNames,
+    );
+  }
+
+  @override
+  VmParserBirdgeItemData? visitExtensionDeclaration(ExtensionDeclaration node) {
+    final resultList = node.members.map((e) => e.accept(this)).toList();
+    final members = <VmParserBirdgeItemData?>[];
+    for (var e in resultList) {
+      e is List<VmParserBirdgeItemData?> ? members.addAll(e) : members.add(e);
+    }
+    final superclassNames = <String>[];
+    if (superclassNames.isEmpty) superclassNames.add('Object');
+    final targetclassName = node.extendedType.toSource().split('<').first;
+    if (ignoreExtensions.contains(targetclassName)) return null;
+    return VmParserBirdgeItemData(
+      type: VmParserBirdgeItemType.classDeclaration,
+      name: targetclassName, //使用 on 的目标作为类名s
+      properties: members,
+      isAtJS: node.toSource().contains('@JS'),
+      isAbstract: true, //当成抽象类
+      isExtension: true, //extension是私有类
       superclassNames: superclassNames,
     );
   }
@@ -908,6 +956,9 @@ class VmParserBirdgeItemData {
   ///是否为factoryConstructor
   bool isFactoryConstructor;
 
+  ///是否为abstract
+  bool isExtension;
+
   ///是否为命名参数
   bool isNameParameter;
 
@@ -940,6 +991,7 @@ class VmParserBirdgeItemData {
     this.isAbstract = false,
     this.isConstructor = false,
     this.isFactoryConstructor = false,
+    this.isExtension = false,
     this.isNameParameter = false,
     this.isWrapParameter = false,
     this.wrapTemplateStr = '',
@@ -964,7 +1016,7 @@ class VmParserBirdgeItemData {
   }
 
   ///是否为私有属性
-  bool get isPrivate => name.startsWith('_');
+  bool get isPrivate => name.startsWith('_') || isExtension;
 
   ///是否为new函数
   bool get isNewConstructor => isConstructor && name == 'new';
@@ -1120,7 +1172,8 @@ class VmParserBirdgeItemData {
   }
 
   ///合并同名类型的全部字段
-  void combineClass(VmParserBirdgeItemData sameclassData) {
+  void combineClass(VmParserBirdgeItemData sameclassData, {required bool ignoreExtension}) {
+    if (ignoreExtension && (isExtension || sameclassData.isExtension)) return; //指定忽略添加扩展
     if (sameclassData.name != name) throw ('Unsupport combineClass operator: ${sameclassData.name} not $name');
     for (var e in sameclassData.properties) {
       if (e != null && !e.isPrivate && !e.isClassStaticProperty) {

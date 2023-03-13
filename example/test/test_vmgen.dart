@@ -4,11 +4,11 @@ import 'package:shelf_easy/shelf_easy.dart';
 
 void main() {
   //为example生成model桥接库
-  generatorLibraryForModel();
+  // generatorLibraryForModel();
 
   ///为flutter生成桥接库
   ///这里全生成了，实际情况可以自己去掉不需要的库，只需确保：生成后调用EasyCode.logVmLibrarydErrors无错误打印，且在开发工具里面打开库文件不报错即可。
-  // generatorLibraryForFlutter();
+  generatorLibraryForFlutter();
 }
 
 void generatorLibraryForModel() {
@@ -54,18 +54,18 @@ void generatorLibraryForFlutter() {
   coder.generateVmLibraries(
     outputFile: 'flutter_library',
     importList: [
-      // 'package:flutter/animation.dart',
+      // 'package:flutter/animation.dart',//重复的导入项
       'package:flutter/cupertino.dart',
       'package:flutter/foundation.dart',
       'package:flutter/gestures.dart',
       'package:flutter/material.dart',
-      // 'package:flutter/painting.dart',
+      // 'package:flutter/painting.dart',//重复的导入项
       'package:flutter/physics.dart',
       'package:flutter/rendering.dart',
       'package:flutter/scheduler.dart',
-      // 'package:flutter/semantics.dart',
+      // 'package:flutter/semantics.dart',//重复的导入项
       'package:flutter/services.dart',
-      // 'package:flutter/widgets.dart',
+      // 'package:flutter/widgets.dart',//重复的导入项
     ],
     className: 'FlutterLibrary',
     classDesc: 'Flutter library',

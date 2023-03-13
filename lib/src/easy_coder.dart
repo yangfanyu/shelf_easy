@@ -198,6 +198,10 @@ class EasyCoder extends EasyLogger {
     List<String> ignoreClassProxy = const [
       'IOOverrides.runZoned', //属于dart-sdk库，生成出来的该属性在开发工具里面报错
       'PlatformSelectableRegionContextMenu.child', //属于flutter库，生成出来的该属性在开发工具里面报错
+      'PlatformSelectableRegionContextMenu.registerViewFactory', //属于flutter库，生成出来的该属性在开发工具里面报错
+    ],
+    List<String> ignoreExtensions = const [
+      'Iterable', //属于dart-sdk库，添加出来的扩展属性在开发工具里面报错
     ],
     Map<String, List<String>> onlyNeedFileClass = const {},
     bool genByExternal = true,
@@ -241,13 +245,13 @@ class EasyCoder extends EasyLogger {
       }
     }
     for (var fileItem in privateFiles) {
-      final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync());
+      final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensions: ignoreExtensions);
       for (var result in bridgeResults) {
         if (result != null && result.type == VmParserBirdgeItemType.classDeclaration) {
           result.absoluteFilePath = fileItem.path; //复制文件路径
           if (privateDatas.containsKey(result.name)) {
-            privateDatas[result.name]!.combineClass(result); //合并同名属性
-            logWarn(['merge repeat private class:', result.name, '=>', result.absoluteFilePath]);
+            privateDatas[result.name]!.combineClass(result, ignoreExtension: true); //合并同名属性
+            logDebug(['merge repeat private class:', result.name, '=>', result.absoluteFilePath]);
           } else {
             privateDatas[result.name] = result;
           }
@@ -264,13 +268,13 @@ class EasyCoder extends EasyLogger {
       }
     }
     for (var fileItem in libraryFiles) {
-      final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync());
+      final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensions: ignoreExtensions);
       for (var result in bridgeResults) {
         if (result != null && result.type == VmParserBirdgeItemType.classDeclaration && result.isPrivate) {
           result.absoluteFilePath = fileItem.path; //复制文件路径
           if (privateDatas.containsKey(result.name)) {
-            privateDatas[result.name]!.combineClass(result); //合并同名属性
-            logWarn(['merge repeat private class:', result.name, '=>', result.absoluteFilePath]);
+            privateDatas[result.name]!.combineClass(result, ignoreExtension: true); //合并同名属性
+            logDebug(['merge repeat private class:', result.name, '=>', result.absoluteFilePath]);
           } else {
             privateDatas[result.name] = result;
           }
@@ -284,7 +288,7 @@ class EasyCoder extends EasyLogger {
       if (ignoreIssueFiles.any((element) => fileItem.path.endsWith(element))) {
         logWarn(['ignore explicit library file =>', fileItem.path]);
       } else {
-        final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync());
+        final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensions: ignoreExtensions);
         for (var result in bridgeResults) {
           if (result != null && !result.isAtJS && !result.isPrivate) {
             if (onlyNeedFileClass.containsKey(fileItem.path) && !onlyNeedFileClass[fileItem.path]!.contains(result.name)) {
@@ -302,10 +306,16 @@ class EasyCoder extends EasyLogger {
     final classUnionDatasMap = <String, VmParserBirdgeItemData>{};
     for (var item in classLibraries) {
       if (classUnionDatasMap.containsKey(item.name)) {
-        classUnionDatasMap[item.name]!.combineClass(item); //合并同名属性
-        logWarn(['merge repeat library class:', item.name, '=>', item.absoluteFilePath]);
+        classUnionDatasMap[item.name]!.combineClass(item, ignoreExtension: true); //合并同名属性
+        logDebug(['merge repeat library class:', item.name, '=>', item.absoluteFilePath]);
       } else {
         classUnionDatasMap[item.name] = item;
+        //合并extension属性
+        final extensionItem = privateDatas[item.name];
+        if (extensionItem != null && extensionItem.isExtension) {
+          logWarn(['merge extension on ${item.name}:', extensionItem.name, '=>', extensionItem.absoluteFilePath]);
+          item.combineClass(extensionItem, ignoreExtension: false);
+        }
       }
     }
     //生成单个的class代码
@@ -337,7 +347,7 @@ class EasyCoder extends EasyLogger {
       if (proxyUnionPartsMap.containsKey(item.name)) {
         final unionParts = proxyUnionPartsMap[item.name]!;
         item.toProxyCode(unionParts: unionParts); //合并同名属性
-        logWarn(['merge repeat library proxy:', item.name, '=>', item.absoluteFilePath]);
+        logDebug(['merge repeat library proxy:', item.name, '=>', item.absoluteFilePath]);
       } else {
         final unionParts = proxyUnionPartsMap[item.name] = {};
         item.toProxyCode(unionParts: unionParts);
