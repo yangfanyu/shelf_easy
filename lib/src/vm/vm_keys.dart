@@ -4,6 +4,12 @@ import 'package:analyzer/dart/ast/ast.dart';
 ///AST树生成map的键名
 ///
 enum VmKeys {
+  ///每个节点都有一个源代码字段
+  $NodeSourceKey,
+
+  ///每个节点都有一个源代码字段
+  $NodeSourceValue,
+
   /** ******** CompilationUnit ******** **/
 
   ///对应[CompilationUnit]

@@ -1,3 +1,5 @@
+import 'package:dart_style/dart_style.dart';
+
 import 'vm_keys.dart';
 
 ///
@@ -511,9 +513,11 @@ class VmClass<T> extends VmObject {
     } else if (instance is Iterator) {
       typeName = 'Iterator';
     } else if (instance is Function) {
-      typeName = 'Function';
+      typeName = 'Function'; //for any Function
+    } else if (instance is Exception) {
+      typeName = 'Exception'; //for VmException
     } else if (instance is Type) {
-      typeName = 'Type';
+      typeName = 'Type'; //for VmType
     } else if (quickTypeSpeculationMethod != null) {
       typeName = quickTypeSpeculationMethod!(instance);
     } else {
@@ -1347,5 +1351,40 @@ class VmSignal extends VmObject {
       'signalValue': signalValue?.toString(),
     };
     return map;
+  }
+}
+
+///
+///运行时异常信息类
+///
+class VmException implements Exception {
+  ///代码片段格式化器
+  static final _formatter = DartFormatter(indent: 9, lineEnding: '\n');
+
+  ///异常的初始错误对象
+  final Object originError;
+
+  ///异常的代码语法树栈
+  final List<String> sourceStack;
+
+  VmException(
+    this.originError,
+    String source,
+  ) : sourceStack = [source];
+
+  @override
+  String toString() {
+    final buffer = StringBuffer();
+    buffer.writeln(originError.toString());
+    buffer.writeln('');
+    buffer.writeln('###### Exception source code ===> ${sourceStack.first}');
+    buffer.writeln('###### Statement source code ===>');
+    try {
+      buffer.writeln(_formatter.formatStatement(sourceStack.last));
+    } catch (_) {
+      buffer.writeln(sourceStack.last);
+    }
+    buffer.writeln('');
+    return buffer.toString();
   }
 }

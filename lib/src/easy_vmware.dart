@@ -70,8 +70,8 @@ class EasyVmWare extends EasyLogger {
     logDebug([_encoder.convert(_runner.toJsonObjectStack(index: index, simple: simple))]);
   }
 
-  ///提示某类型推测慢的日志器
-  static final _slowTypeSpeculationLogger = EasyLogger(logTag: 'EasyVmWare');
+  ///虚拟机全局日志
+  static final _vmwareLogger = EasyLogger(logTag: 'EasyVmWare');
 
   ///加载全局作用域
   ///
@@ -85,12 +85,21 @@ class EasyVmWare extends EasyLogger {
     List<VmProxy> customProxyList = const [],
     dynamic Function(dynamic value)? nativeValueConverter,
     String? Function(dynamic instance)? quickTypeSpeculationMethod,
+    bool logObjectStackInAndOut = false,
+    bool logSlowTypeSpeculation = true,
   }) {
     VmObject.nativeValueConverter = nativeValueConverter;
     VmClass.quickTypeSpeculationMethod = quickTypeSpeculationMethod;
-    VmClass.slowTypeSpeculationReport = (instance, vmclass, cycles, total) {
-      _slowTypeSpeculationLogger.logFatal(['slowTypeSpeculationReport ======>', instance.runtimeType, '------>', vmclass.identifier, '------>', 'cycles:', cycles, '/', total]);
-    };
+    if (logSlowTypeSpeculation) {
+      VmClass.slowTypeSpeculationReport = (instance, vmclass, cycles, total) {
+        _vmwareLogger.logFatal(['slowTypeSpeculationReport ======>', instance.runtimeType, '------>', vmclass.identifier, '------>', 'cycles:', cycles, '/', total]);
+      };
+    }
+    if (logObjectStackInAndOut) {
+      VmRunner.objectStackInAndOutReport = (isIn, isOk, length) {
+        (isOk ? _vmwareLogger.logDebug : _vmwareLogger.logError)(['objectStackInAndOutReport ======>', isIn ? 'in' : 'out', '------>', isOk ? 'ok' : 'error', '------>', length]);
+      };
+    }
     VmRunner.loadGlobalLibrary(customClassList: customClassList, customProxyList: customProxyList);
   }
 

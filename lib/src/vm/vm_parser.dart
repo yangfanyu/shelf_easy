@@ -58,14 +58,16 @@ class VmParserRouter extends GeneralizingAstVisitor {
 ///
 class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic>>> {
   @override
-  Map<VmKeys, Map<VmKeys, List?>> visitCompilationUnit(CompilationUnit node) => {
+  Map<VmKeys, Map<VmKeys, dynamic>> visitCompilationUnit(CompilationUnit node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$CompilationUnit: {
           VmKeys.$CompilationUnitDeclarations: node.declarations.map((e) => e.accept(this)).toList(),
         },
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, Map?>> visitTopLevelVariableDeclaration(TopLevelVariableDeclaration node) => {
+  Map<VmKeys, Map<VmKeys, dynamic>> visitTopLevelVariableDeclaration(TopLevelVariableDeclaration node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$TopLevelVariableDeclaration: {
           VmKeys.$TopLevelVariableDeclarationVariables: node.variables.accept(this),
         },
@@ -73,6 +75,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitVariableDeclarationList(VariableDeclarationList node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$VariableDeclarationList: {
           VmKeys.$VariableDeclarationListType: node.type?.accept(this),
           VmKeys.$VariableDeclarationListVariables: node.variables.map((e) => e.accept(this)).toList(),
@@ -81,6 +84,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitVariableDeclaration(VariableDeclaration node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$VariableDeclaration: {
           VmKeys.$VariableDeclarationName: node.name.toString(),
           VmKeys.$VariableDeclarationInitializer: node.initializer?.accept(this),
@@ -89,6 +93,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitFunctionDeclaration(FunctionDeclaration node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$FunctionDeclaration: {
           VmKeys.$FunctionDeclarationIsGetter: node.isGetter,
           VmKeys.$FunctionDeclarationIsSetter: node.isSetter,
@@ -99,6 +104,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitNamedType(NamedType node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$NamedType: {
           VmKeys.$NamedTypeName: node.name.name,
         }
@@ -106,18 +112,21 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitGenericFunctionType(GenericFunctionType node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$GenericFunctionType: {},
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, String>> visitSimpleIdentifier(SimpleIdentifier node) => {
+  Map<VmKeys, Map<VmKeys, dynamic>> visitSimpleIdentifier(SimpleIdentifier node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$SimpleIdentifier: {
           VmKeys.$SimpleIdentifierName: node.name,
         }
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, String>> visitPrefixedIdentifier(PrefixedIdentifier node) => {
+  Map<VmKeys, Map<VmKeys, dynamic>> visitPrefixedIdentifier(PrefixedIdentifier node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$PrefixedIdentifier: {
           VmKeys.$PrefixedIdentifierPrefix: node.prefix.name,
           VmKeys.$PrefixedIdentifierIdentifier: node.identifier.name,
@@ -126,6 +135,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitDeclaredIdentifier(DeclaredIdentifier node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$DeclaredIdentifier: {
           VmKeys.$DeclaredIdentifierType: node.type?.accept(this),
           VmKeys.$DeclaredIdentifierName: node.name.toString(),
@@ -134,62 +144,71 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitNullLiteral(NullLiteral node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$NullLiteral: {
           VmKeys.$NullLiteralValue: null,
         },
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, int?>> visitIntegerLiteral(IntegerLiteral node) => {
+  Map<VmKeys, Map<VmKeys, dynamic>> visitIntegerLiteral(IntegerLiteral node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$IntegerLiteral: {
           VmKeys.$IntegerLiteralValue: node.value,
         }
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, double>> visitDoubleLiteral(DoubleLiteral node) => {
+  Map<VmKeys, Map<VmKeys, dynamic>> visitDoubleLiteral(DoubleLiteral node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$DoubleLiteral: {
           VmKeys.$DoubleLiteralValue: node.value,
         }
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, bool>> visitBooleanLiteral(BooleanLiteral node) => {
+  Map<VmKeys, Map<VmKeys, dynamic>> visitBooleanLiteral(BooleanLiteral node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$BooleanLiteral: {
           VmKeys.$BooleanLiteralValue: node.value,
         }
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, String>> visitSimpleStringLiteral(SimpleStringLiteral node) => {
+  Map<VmKeys, Map<VmKeys, dynamic>> visitSimpleStringLiteral(SimpleStringLiteral node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$SimpleStringLiteral: {
           VmKeys.$SimpleStringLiteralValue: node.value,
         }
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, String>> visitInterpolationString(InterpolationString node) => {
+  Map<VmKeys, Map<VmKeys, dynamic>> visitInterpolationString(InterpolationString node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$InterpolationString: {
           VmKeys.$InterpolationStringValue: node.value,
         }
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, List>> visitStringInterpolation(StringInterpolation node) => {
+  Map<VmKeys, Map<VmKeys, dynamic>> visitStringInterpolation(StringInterpolation node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$StringInterpolation: {
           VmKeys.$StringInterpolationElements: node.elements.map((e) => e.accept(this)).toList(),
         }
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, List>> visitListLiteral(ListLiteral node) => {
+  Map<VmKeys, Map<VmKeys, dynamic>> visitListLiteral(ListLiteral node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$ListLiteral: {
           VmKeys.$ListLiteralElements: node.elements.map((e) => e.accept(this)).toList(),
         }
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, List?>> visitSetOrMapLiteral(SetOrMapLiteral node) => {
+  Map<VmKeys, Map<VmKeys, dynamic>> visitSetOrMapLiteral(SetOrMapLiteral node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$SetOrMapLiteral: {
           VmKeys.$SetOrMapLiteralTypeArguments: node.typeArguments?.arguments.map((e) => e.toString()).toList(), //isSet与isMap永远为false，只能用这个推断类型了
           VmKeys.$SetOrMapLiteralElements: node.elements.map((e) => e.accept(this)).toList(), //jsonEncode不支持Set转换，这里统一返回List
@@ -198,6 +217,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitMapLiteralEntry(MapLiteralEntry node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$MapLiteralEntry: {
           VmKeys.$MapLiteralEntryKey: node.key.accept(this),
           VmKeys.$MapLiteralEntryValue: node.value.accept(this),
@@ -206,6 +226,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitBinaryExpression(BinaryExpression node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$BinaryExpression: {
           VmKeys.$BinaryExpressionOperator: node.operator.lexeme,
           VmKeys.$BinaryExpressionLeftOperand: node.leftOperand.accept(this),
@@ -215,6 +236,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitPrefixExpression(PrefixExpression node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$PrefixExpression: {
           VmKeys.$PrefixExpressionOperator: node.operator.lexeme,
           VmKeys.$PrefixExpressionOperand: node.operand.accept(this),
@@ -223,6 +245,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitPostfixExpression(PostfixExpression node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$PostfixExpression: {
           VmKeys.$PostfixExpressionOperator: node.operator.lexeme,
           VmKeys.$PostfixExpressionOperand: node.operand.accept(this),
@@ -231,6 +254,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitAssignmentExpression(AssignmentExpression node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$AssignmentExpression: {
           VmKeys.$AssignmentExpressionOperator: node.operator.lexeme,
           VmKeys.$AssignmentExpressionLeftHandSide: node.leftHandSide.accept(this),
@@ -240,6 +264,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitConditionalExpression(ConditionalExpression node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$ConditionalExpression: {
           VmKeys.$ConditionalExpressionCondition: node.condition.accept(this),
           VmKeys.$ConditionalExpressionThenExpression: node.thenExpression.accept(this),
@@ -249,6 +274,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitParenthesizedExpression(ParenthesizedExpression node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$ParenthesizedExpression: {
           VmKeys.$ParenthesizedExpressionExpression: node.expression.accept(this),
         }
@@ -256,6 +282,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitIndexExpression(IndexExpression node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$IndexExpression: {
           VmKeys.$IndexExpressionTarget: node.target?.accept(this),
           VmKeys.$IndexExpressionIsCascaded: node.isCascaded,
@@ -265,6 +292,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitInterpolationExpression(InterpolationExpression node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$InterpolationExpression: {
           VmKeys.$InterpolationExpressionExpression: node.expression.accept(this),
         }
@@ -272,6 +300,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitAsExpression(AsExpression node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$AsExpression: {
           VmKeys.$AsExpressionExpression: node.expression.accept(this),
           VmKeys.$AsExpressionType: node.type.accept(this),
@@ -280,6 +309,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitIsExpression(IsExpression node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$IsExpression: {
           VmKeys.$IsExpressionNotOperator: node.notOperator?.toString(),
           VmKeys.$IsExpressionExpression: node.expression.accept(this),
@@ -289,6 +319,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitCascadeExpression(CascadeExpression node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$CascadeExpression: {
           VmKeys.$CascadeExpressionTarget: node.target.accept(this),
           VmKeys.$CascadeExpressionCascadeSections: node.cascadeSections.map((e) => e.accept(this)).toList(),
@@ -297,6 +328,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitThrowExpression(ThrowExpression node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$ThrowExpression: {
           VmKeys.$ThrowExpressionExpression: node.expression.accept(this),
         }
@@ -304,6 +336,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitFunctionExpression(FunctionExpression node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$FunctionExpression: {
           VmKeys.$FunctionExpressionParameters: node.parameters?.accept(this),
           VmKeys.$FunctionExpressionBody: node.body.accept(this),
@@ -312,6 +345,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitNamedExpression(NamedExpression node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$NamedExpression: {
           VmKeys.$NamedExpressionName: node.name.label.name,
           VmKeys.$NamedExpressionExpression: node.expression.accept(this),
@@ -319,7 +353,8 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, dynamic>>? visitInstanceCreationExpression(InstanceCreationExpression node) => {
+  Map<VmKeys, Map<VmKeys, dynamic>> visitInstanceCreationExpression(InstanceCreationExpression node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$InstanceCreationExpression: {
           VmKeys.$InstanceCreationExpressionConstructorType: node.constructorName.type.accept(this),
           VmKeys.$InstanceCreationExpressionConstructorName: node.constructorName.name?.name,
@@ -328,7 +363,8 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, List>> visitFormalParameterList(FormalParameterList node) => {
+  Map<VmKeys, Map<VmKeys, dynamic>> visitFormalParameterList(FormalParameterList node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$FormalParameterList: {
           VmKeys.$FormalParameterListParameters: node.parameters.map((e) => e.accept(this)).toList(),
         }
@@ -336,6 +372,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitSuperFormalParameter(SuperFormalParameter node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$SuperFormalParameter: {
           VmKeys.$SuperFormalParameterType: node.type?.accept(this),
           VmKeys.$SuperFormalParameterName: node.name.toString(),
@@ -345,6 +382,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitFieldFormalParameter(FieldFormalParameter node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$FieldFormalParameter: {
           VmKeys.$FieldFormalParameterType: node.type?.accept(this),
           VmKeys.$FieldFormalParameterName: node.name.toString(),
@@ -354,6 +392,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitSimpleFormalParameter(SimpleFormalParameter node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$SimpleFormalParameter: {
           VmKeys.$SimpleFormalParameterType: node.type?.accept(this),
           VmKeys.$SimpleFormalParameterName: node.name?.toString(),
@@ -362,7 +401,8 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, dynamic>>? visitFunctionTypedFormalParameter(FunctionTypedFormalParameter node) => {
+  Map<VmKeys, Map<VmKeys, dynamic>> visitFunctionTypedFormalParameter(FunctionTypedFormalParameter node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$FunctionTypedFormalParameter: {
           VmKeys.$FunctionTypedFormalParameterName: node.name.toString(),
           VmKeys.$FunctionTypedFormalParameterIsNamed: node.isNamed,
@@ -371,6 +411,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitDefaultFormalParameter(DefaultFormalParameter node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$DefaultFormalParameter: {
           VmKeys.$DefaultFormalParameterName: node.name?.toString(),
           VmKeys.$DefaultFormalParameterIsNamed: node.isNamed,
@@ -381,6 +422,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitExpressionFunctionBody(ExpressionFunctionBody node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$ExpressionFunctionBody: {
           VmKeys.$ExpressionFunctionBodyExpression: node.expression.accept(this),
         }
@@ -388,6 +430,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitBlockFunctionBody(BlockFunctionBody node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$BlockFunctionBody: {
           VmKeys.$BlockFunctionBodyBlock: node.block.accept(this),
         }
@@ -395,11 +438,13 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitEmptyFunctionBody(EmptyFunctionBody node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$EmptyFunctionBody: {},
       };
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitMethodInvocation(MethodInvocation node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$MethodInvocation: {
           VmKeys.$MethodInvocationTarget: node.target?.accept(this),
           VmKeys.$MethodInvocationIsCascaded: node.isCascaded,
@@ -409,7 +454,8 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, List>> visitArgumentList(ArgumentList node) => {
+  Map<VmKeys, Map<VmKeys, dynamic>> visitArgumentList(ArgumentList node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$ArgumentList: {
           VmKeys.$ArgumentListArguments: node.arguments.map((e) => e.accept(this)).toList(),
         }
@@ -417,6 +463,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitPropertyAccess(PropertyAccess node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$PropertyAccess: {
           VmKeys.$PropertyAccessTarget: node.target?.accept(this),
           VmKeys.$PropertyAccessIsCascaded: node.isCascaded,
@@ -425,7 +472,8 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, List>> visitBlock(Block node) => {
+  Map<VmKeys, Map<VmKeys, dynamic>> visitBlock(Block node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$Block: {
           VmKeys.$BlockStatements: node.statements.map((e) => e.accept(this)).toList(),
         }
@@ -433,6 +481,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitVariableDeclarationStatement(VariableDeclarationStatement node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$VariableDeclarationStatement: {
           VmKeys.$VariableDeclarationStatementVariables: node.variables.accept(this),
         }
@@ -440,6 +489,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitExpressionStatement(ExpressionStatement node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$ExpressionStatement: {
           VmKeys.$ExpressionStatementExpression: node.expression.accept(this),
         }
@@ -447,6 +497,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitIfStatement(IfStatement node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$IfStatement: {
           VmKeys.$IfStatementCondition: node.condition.accept(this),
           VmKeys.$IfStatementThenStatement: node.thenStatement.accept(this),
@@ -456,6 +507,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitSwitchStatement(SwitchStatement node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$SwitchStatement: {
           VmKeys.$SwitchStatementExpression: node.expression.accept(this),
           VmKeys.$SwitchStatementMembers: node.members.map((e) => e.accept(this)).toList(),
@@ -464,6 +516,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitSwitchCase(SwitchCase node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$SwitchCase: {
           VmKeys.$SwitchCaseExpression: node.expression.accept(this),
           VmKeys.$SwitchCaseStatements: node.statements.map((e) => e.accept(this)).toList(),
@@ -472,6 +525,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitSwitchDefault(SwitchDefault node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$SwitchDefault: {
           VmKeys.$SwitchDefaultStatements: node.statements.map((e) => e.accept(this)).toList(),
         }
@@ -479,6 +533,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitForStatement(ForStatement node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$ForStatement: {
           VmKeys.$ForStatementForLoopParts: node.forLoopParts.accept(this),
           VmKeys.$ForStatementBody: node.body.accept(this),
@@ -487,6 +542,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitForPartsWithDeclarations(ForPartsWithDeclarations node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$ForPartsWithDeclarations: {
           VmKeys.$ForPartsWithDeclarationsVariables: node.variables.accept(this),
           VmKeys.$ForPartsWithDeclarationsCondition: node.condition?.accept(this),
@@ -496,6 +552,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitForEachPartsWithDeclaration(ForEachPartsWithDeclaration node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$ForEachPartsWithDeclaration: {
           VmKeys.$ForEachPartsWithDeclarationLoopVariable: node.loopVariable.accept(this),
           VmKeys.$ForEachPartsWithDeclarationIterable: node.iterable.accept(this),
@@ -504,6 +561,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitWhileStatement(WhileStatement node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$WhileStatement: {
           VmKeys.$WhileStatementCondition: node.condition.accept(this),
           VmKeys.$WhileStatementBody: node.body.accept(this),
@@ -512,6 +570,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitDoStatement(DoStatement node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$DoStatement: {
           VmKeys.$DoStatementBody: node.body.accept(this),
           VmKeys.$DoStatementCondition: node.condition.accept(this),
@@ -520,18 +579,21 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitBreakStatement(BreakStatement node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$BreakStatement: {},
       };
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitReturnStatement(ReturnStatement node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$ReturnStatement: {
           VmKeys.$ReturnStatementExpression: node.expression?.accept(this),
         }
       };
 
   @override
-  Map<VmKeys, Map<VmKeys, dynamic>>? visitContinueStatement(ContinueStatement node) => {
+  Map<VmKeys, Map<VmKeys, dynamic>> visitContinueStatement(ContinueStatement node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$ContinueStatement: {},
       };
 
@@ -541,6 +603,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitClassDeclaration(ClassDeclaration node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$ClassDeclaration: {
           VmKeys.$ClassDeclarationName: node.name.toString(),
           VmKeys.$ClassDeclarationMembers: node.members.map((e) => e.accept(this)).toList(),
@@ -550,6 +613,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitFieldDeclaration(FieldDeclaration node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$FieldDeclaration: {
           VmKeys.$FieldDeclarationIsStatic: node.isStatic,
           VmKeys.$FieldDeclarationFields: node.fields.accept(this),
@@ -558,6 +622,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitConstructorDeclaration(ConstructorDeclaration node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$ConstructorDeclaration: {
           VmKeys.$ConstructorDeclarationName: node.name?.toString(),
           VmKeys.$ConstructorDeclarationFactoryKeyword: node.factoryKeyword?.toString(),
@@ -569,6 +634,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitConstructorFieldInitializer(ConstructorFieldInitializer node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$ConstructorFieldInitializer: {
           VmKeys.$ConstructorFieldInitializerFieldName: node.fieldName.name,
           VmKeys.$ConstructorFieldInitializerExpression: node.expression.accept(this),
@@ -577,6 +643,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitMethodDeclaration(MethodDeclaration node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$MethodDeclaration: {
           VmKeys.$MethodDeclarationIsStatic: node.isStatic,
           VmKeys.$MethodDeclarationIsGetter: node.isGetter,
