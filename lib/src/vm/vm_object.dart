@@ -447,31 +447,27 @@ class VmClass<T> extends VmObject {
   );
 
   ///非Object子类型列表
-  static final allBaseLibrary = <VmClass>[baseClassNull, baseClassDynamic, baseClassVoid];
+  static final libraryBaseList = <VmClass>[baseClassNull, baseClassDynamic, baseClassVoid];
 
-  ///包装类型集合
-  static final _libraryMap = <String, VmClass>{};
+  ///全局包装类型集合
+  static final _globalLibraryMap = <String, VmClass>{};
 
-  ///包装类型列表
-  static final _libraryList = <VmClass>[];
+  ///全局包装类型列表
+  static final _globalLibraryList = <VmClass>[];
 
-  ///添加包装类型[vmclass]，如果已存在则重新装载，不存在则添加带全局库中
+  ///添加包装类型[vmclass]到全局缓存，如果已存在则重新装载，不存在则添加带全局库中
   static VmClass addClass(VmClass vmclass) {
-    final oldclass = _libraryMap[vmclass.identifier];
-    if (oldclass == null) {
-      _libraryList.add(_libraryMap[vmclass.identifier] = vmclass); //直接添加新的
-      return vmclass;
-    } else {
-      oldclass.reassemble(vmclass); //重新装载旧的
-      return oldclass;
-    }
+    if (_globalLibraryMap.containsKey(vmclass.identifier)) throw ('Already exists VmClass in global library, identifier is: ${vmclass.identifier}');
+    if (!vmclass.isExternal) throw ('Not an external VmClass add to global library, identifier is: ${vmclass.identifier}');
+    _globalLibraryList.add(_globalLibraryMap[vmclass.identifier] = vmclass);
+    return vmclass;
   }
 
   ///按照继承数量逆序排列包装类型列表，这样能最大程度保证自动类型推测函数能返回继承链最长的包装类型
   static void sortClassDesc() {
-    _libraryList.sort((a, b) {
-      final ai = allBaseLibrary.indexOf(a);
-      final bi = allBaseLibrary.indexOf(b);
+    _globalLibraryList.sort((a, b) {
+      final ai = libraryBaseList.indexOf(a);
+      final bi = libraryBaseList.indexOf(b);
       if (ai >= 0 && bi >= 0) return ai < bi ? -1 : 1;
       if (ai < 0 && bi >= 0) return -1;
       if (ai >= 0 && bi < 0) return 1;
@@ -488,18 +484,41 @@ class VmClass<T> extends VmObject {
   ///很慢的类型推测报告
   static void Function(dynamic instance, VmClass vmclass, int cycles, int total)? slowTypeSpeculationReport;
 
+  ///从当前的运行器中搜索内部定义类型的回调函数
+  static VmClass? Function(String typeName)? _internalClassSearchRunner;
+
+  ///注册当前运行器中搜索内部定义类型的回调函数
+  static void registerInternalClassSearchRunner(VmClass? Function(String typeName) searchRunner) {
+    if (_internalClassSearchRunner != null) throw ('There can only be one _internalClassSearchRunner at a time, please shutdown the previous VmRunner first.');
+    _internalClassSearchRunner = searchRunner;
+  }
+
+  ///释放当前运行器中搜索内部定义类型的回调函数
+  static void shutdownInternalClassSearchRunner() {
+    _internalClassSearchRunner = null;
+  }
+
   ///获取指定名称[typeName]对应的包装类型
   static VmClass _getClassByTypeName(String typeName) {
-    final vmclass = _libraryMap[typeName];
+    VmClass? vmclass;
+    //先通过类型名从运行时应用库中搜索
+    vmclass = _internalClassSearchRunner == null ? null : _internalClassSearchRunner!(typeName);
+    if (vmclass != null) return vmclass;
+    //然后通过类型名在全局缓存库中搜索
+    vmclass = _globalLibraryMap[typeName];
     if (vmclass != null) return vmclass;
     throw ('Not found VmClass: $typeName');
   }
 
   ///获取任意实例[instance]对应的包装类型，分析本文件可知[instance]必然不是[VmObject]的子类
   static VmClass _getClassByInstance(dynamic instance) {
-    //先使用运行时类型名进行查找
     String? typeName = instance.runtimeType.toString().split('<').first.replaceAll('_', ''); //去掉模板参数，去掉私有符号
-    VmClass? vmclass = _libraryMap[typeName];
+    VmClass? vmclass;
+    //先通过类型名从运行时应用库中搜索
+    vmclass = _internalClassSearchRunner == null ? null : _internalClassSearchRunner!(typeName);
+    if (vmclass != null) return vmclass;
+    //然后通过类型名在全局缓存库中搜索
+    vmclass = _globalLibraryMap[typeName];
     if (vmclass != null) return vmclass;
     //再使用加速推测方案进行匹配
     if (instance is List) {
@@ -524,15 +543,15 @@ class VmClass<T> extends VmObject {
       typeName = null;
     }
     if (typeName != null) {
-      vmclass = _libraryMap[typeName];
+      vmclass = _globalLibraryMap[typeName];
       if (vmclass != null) return vmclass;
     }
     //最后使用实例进行遍历匹配，这个可能会慢的一批
-    for (var i = 0; i < _libraryList.length; i++) {
-      vmclass = _libraryList[i];
+    for (var i = 0; i < _globalLibraryList.length; i++) {
+      vmclass = _globalLibraryList[i];
       if (vmclass.isThisType(instance)) {
         if (i > 10 && slowTypeSpeculationReport != null) {
-          slowTypeSpeculationReport!(instance, vmclass, i + 1, _libraryList.length); //超过10次循环则认为这个instance的类型推断很慢
+          slowTypeSpeculationReport!(instance, vmclass, i + 1, _globalLibraryList.length); //超过10次循环则认为这个instance的类型推断很慢
         }
         return vmclass;
       }
@@ -1359,32 +1378,40 @@ class VmSignal extends VmObject {
 ///
 class VmException implements Exception {
   ///代码片段格式化器
-  static final _formatter = DartFormatter(indent: 9, lineEnding: '\n');
+  static final _formatter = DartFormatter(indent: 8, pageWidth: 500);
 
   ///异常的初始错误对象
   final Object originError;
 
-  ///异常的代码语法树栈
+  ///异常的初始错误对象
+  final StackTrace originStack;
+
+  ///异常的全部源代码栈
   final List<String> sourceStack;
 
-  VmException(
-    this.originError,
-    String source,
-  ) : sourceStack = [source];
+  ///是否有完整的源代码
+  bool isCompilationUnit;
+
+  VmException(this.originError, this.originStack, String sourceCode, this.isCompilationUnit) : sourceStack = [sourceCode];
 
   @override
   String toString() {
     final buffer = StringBuffer();
-    buffer.writeln(originError.toString());
+    buffer.writeln(originError);
     buffer.writeln('');
-    buffer.writeln('###### Exception source code ===> ${sourceStack.first}');
-    buffer.writeln('###### Statement source code ===>');
+    buffer.writeln('####### Exception source code:');
     try {
-      buffer.writeln(_formatter.formatStatement(sourceStack.last));
+      buffer.writeln(isCompilationUnit ? _formatter.format(sourceStack.first) : _formatter.formatStatement(sourceStack.first));
+    } catch (_) {
+      buffer.writeln(sourceStack.first);
+    }
+    buffer.writeln('####### Completed source code:');
+    try {
+      buffer.writeln(isCompilationUnit ? _formatter.format(sourceStack.last) : _formatter.formatStatement(sourceStack.last));
     } catch (_) {
       buffer.writeln(sourceStack.last);
     }
-    buffer.writeln('');
+    buffer.writeln(originStack);
     return buffer.toString();
   }
 }

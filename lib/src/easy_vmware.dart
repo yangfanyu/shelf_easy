@@ -50,6 +50,12 @@ class EasyVmWare extends EasyLogger {
     _runner.reassemble(sourceTrees: sourceTrees);
   }
 
+  ///释放内存
+  void shutdown() {
+    logDebug(['reassemble => ', _sourceCodes.keys]);
+    _runner.shutdown();
+  }
+
   ///调用主函数
   T main<T>({List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments}) {
     return _runner.callFunction(_config.mainMethod, positionalArguments: positionalArguments, namedArguments: namedArguments);
@@ -79,6 +85,8 @@ class EasyVmWare extends EasyLogger {
   /// * [customProxyList] 自定义导入的全局方法或实例
   /// * [nativeValueConverter] 读取原生数据值转换器，如：在flutter中经常需要<Widget>[]类型的参数，但虚拟机中实际上是个<dynamic>[]类型
   /// * [quickTypeSpeculationMethod] 加速类型推测的函数
+  /// * [logObjectStackInAndOut] 打印对象栈的变化
+  /// * [logSlowTypeSpeculation] 打印慢的类型推断
   ///
   static void loadGlobalLibrary({
     List<VmClass> customClassList = const [],
@@ -105,6 +113,9 @@ class EasyVmWare extends EasyLogger {
 
   ///简洁的执行[sourceCode]源代码中的[methodName]函数
   static T eval<T>({required String sourceCode, required String methodName}) {
-    return VmRunner(sourceTrees: {'default': VmParser.parseSource(sourceCode)}).callFunction(methodName);
+    final runner = VmRunner(sourceTrees: {'default': VmParser.parseSource(sourceCode)});
+    final result = runner.callFunction(methodName);
+    runner.shutdown();
+    return result;
   }
 }

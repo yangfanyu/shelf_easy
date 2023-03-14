@@ -15,18 +15,46 @@ class VmRunner {
   VmRunner({Map<String, Map<VmKeys, dynamic>> sourceTrees = const {}})
       : _sourceTrees = {},
         _objectStack = [..._globalScopeList, {}] {
+    VmClass.registerInternalClassSearchRunner(searchClassInAppScope); //给底层绑定应用库类型搜索器
     reassemble(sourceTrees: sourceTrees);
   }
 
   ///重新装载应用库语法树集合，扫描过程中预定义的内容会放入[应用库]作用域中
   void reassemble({required Map<String, Map<VmKeys, dynamic>> sourceTrees}) {
     if (_objectStack.length != 4) throw ('Cannot reassemble because _objectStack.length is not 4: ${_objectStack.length}');
-    _sourceTrees.clear();
-    _sourceTrees.addAll(sourceTrees);
-    _objectStack.last.clear(); //清空应用库
-    _sourceTrees.forEach((key, value) {
-      VmRunnerCore._scanMap(this, value);
-    });
+    _sourceTrees.clear(); //清空旧语法树
+    _objectStack.last.clear(); //清空旧应用库
+    _sourceTrees.addAll(sourceTrees); //复制新语法树
+    _sourceTrees.forEach((key, value) => VmRunnerCore._scanMap(this, value)); //生成新应用库
+  }
+
+  ///释放底层的绑定与本实例的[应用库]作用域
+  void shutdown() {
+    _sourceTrees.clear(); //清空旧语法树
+    _objectStack.last.clear(); //清空旧应用库
+    VmClass.shutdownInternalClassSearchRunner(); //从底层解绑应用库类型搜索器
+  }
+
+  ///添加虚拟类型[vmclass]到[应用库]作用域
+  VmClass addClassToAppScope(VmClass vmclass) {
+    if (_objectStack.length != 4) throw ('Cannot addClassToAppScope because _objectStack.length is not 4: ${_objectStack.length}');
+    addVmObject(vmclass);
+    return vmclass;
+  }
+
+  ///从[应用库]作用域中搜索标识符[identifier]对应的虚拟类型
+  VmClass? searchClassInAppScope(String identifier) {
+    final vmobject = _objectStack[3][identifier];
+    if (vmobject is VmClass) return vmobject;
+    return null;
+  }
+
+  ///添加虚拟对象[vmobject]到当前作用域
+  VmObject addVmObject(VmObject vmobject) {
+    final scopeMap = _objectStack.last; //取栈顶作用域
+    if (scopeMap.containsKey(vmobject.identifier)) throw ('Already exists VmObject in current scope, identifier is: ${vmobject.identifier}');
+    scopeMap[vmobject.identifier] = vmobject;
+    return vmobject;
   }
 
   ///获取标识符[identifier]对应的虚拟对象
@@ -43,14 +71,6 @@ class VmRunner {
     final scopeMap = _objectStack.last; //取栈顶作用域
     final vmobject = scopeMap.remove(identifier);
     if (vmobject == null) throw ('Not found VmObject in current scope, identifier is: $identifier');
-    return vmobject;
-  }
-
-  ///插入虚拟对象[vmobject]到当前作用域
-  VmObject addVmObject(VmObject vmobject) {
-    final scopeMap = _objectStack.last; //取栈顶作用域
-    if (scopeMap.containsKey(vmobject.identifier)) throw ('Already exists VmObject in current scope, identifier is: ${vmobject.identifier}');
-    scopeMap[vmobject.identifier] = vmobject;
     return vmobject;
   }
 
@@ -156,7 +176,7 @@ class VmRunner {
   static void loadGlobalLibrary({List<VmClass> customClassList = const [], List<VmProxy> customProxyList = const []}) {
     //基本库
     final baseScope = _globalScopeList[0];
-    for (var vmclass in VmClass.allBaseLibrary) {
+    for (var vmclass in VmClass.libraryBaseList) {
       if (baseScope.containsKey(vmclass.identifier)) throw ('Already exists VmClass in global base scope, identifier is: ${vmclass.identifier}');
       baseScope[vmclass.identifier] = VmClass.addClass(vmclass); //同时添加到底层的全局类库中
     }
@@ -277,18 +297,19 @@ class VmRunnerCore {
   static dynamic _scanMap(VmRunner runner, Map<VmKeys, dynamic>? node) {
     if (node == null) return null;
     if (node.length != 2) throw ('Not two key: ${node.keys.toList()}');
+    final key = node.keys.where((e) => e != VmKeys.$NodeSourceKey).first;
     try {
-      final key = node.keys.where((e) => e != VmKeys.$NodeSourceKey).first;
       final scanner = _scanner[key];
       if (scanner == null) throw ('Not found scanner: $key');
       return scanner(runner, node, node[key]);
-    } catch (error) {
+    } catch (error, stack) {
       final source = node[VmKeys.$NodeSourceKey][VmKeys.$NodeSourceValue];
       if (error is VmException) {
         error.sourceStack.add(source);
+        error.isCompilationUnit = key == VmKeys.$CompilationUnit;
         rethrow; //继续抛出
       } else {
-        throw VmException(error, source); //抛出新的
+        throw VmException(error, stack, source, key == VmKeys.$CompilationUnit); //抛出新的
       }
     }
   }
@@ -1063,7 +1084,7 @@ class VmRunnerCore {
         internalSuperclass: superclass,
       );
     });
-    runner.addVmObject(VmClass.addClass(result)); //同时添加到底层的全局类库中
+    runner.addClassToAppScope(result); //添加到应用库中
     return result;
   }
 
