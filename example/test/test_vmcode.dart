@@ -406,6 +406,18 @@ class TestUser {
         _info = '$no info',
         _haha = [0, 1, 2, 3];
 
+  TestUser.a(
+    this.id,
+    int no, {
+    required this.name,
+    this.sex = sexMale,
+    int? age,
+    aaa,
+  })  : age = age ?? 18,
+        _desc = '$no desc',
+        _info = '$no info',
+        _haha = [0, 1, 2, 3];
+
   factory TestUser.fromTest() {
     return TestUser(11111, 22222, name: 'Test', sex: sexFemale, age: 10);
   }

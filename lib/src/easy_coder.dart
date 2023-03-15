@@ -190,33 +190,22 @@ class EasyCoder extends EasyLogger {
     required List<String> libraryPaths,
     List<String> privatePaths = const [],
     List<String> ignoreIssueFiles = const [
-      '/dart-sdk/lib/core/null.dart', //非Object子类无需生成，在vmobject.dart中文件已内置。输出结果：不会生成该文件的任何内容，下同
-      '/dart-sdk/lib/core/record.dart', //生成的代码在开发工具里面报错，这个类貌似也没什么卵用。
-      '/flutter/lib/src/services/dom.dart', //生成的代码在开发工具里面报错，原生flutter环境也不需要。
-      '/flutter/lib/src/painting/_network_image_web.dart', //生成的代码在开发工具里面报错，原生flutter环境也不需要。
+      '/dart-sdk/lib/core/null.dart', //忽略原因：非Object子类无需生成，在vmobject.dart中文件已内置。输出结果：不会生成该文件的任何内容，下同
+      '/dart-sdk/lib/core/record.dart', //忽略原因：生成的代码在开发工具里面报错，这个类貌似也没什么卵用。
+      '/flutter/lib/src/services/dom.dart', //忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。
+      '/flutter/lib/src/painting/_network_image_web.dart', //忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。
     ],
     List<String> ignoreProxyObject = const [
-      //下面的属于flutter库，生成出来的该属性在开发工具里面报错。
-      'PlatformSelectableRegionContextMenu.child', //输出结果：PlatformSelectableRegionContextMenu与子类都不会生成标识符为child的VmProxy项，下同
-      'PlatformSelectableRegionContextMenu.registerViewFactory',
-      //忽略顶级VmProxy的写法
-      // 'jsonDecode',
+      'PlatformSelectableRegionContextMenu.child', //属于dart-sdk库，忽略原因：生成出来的该属性在开发工具报错找不到值，输出结果：PlatformSelectableRegionContextMenu与子类都不会生成标识符为child的VmProxy项，下同
+      'PlatformSelectableRegionContextMenu.registerViewFactory', //属于dart-sdk库，忽略原因：生成出来的该属性在开发工具报错找不到值。
+      // 'jsonDecode',//忽略顶级VmProxy的写法
     ],
     List<String> ignoreProxyCaller = const [
-      //下面的属于dart-sdk库，生成出来的该属性在开发工具里面报错。
-      'Iterable.forEach', //Iterable.forEach 应该使用for循环代替。输出结果：Iterable与子类都不会生成forEach对应的Vmproxy的caller属性，下同
-      'Map.fromIterable', //Map.fromIterable 应该使用for循环代替。
-      'IOOverrides.runZoned',
-      //下面的属于flutter库，生成出来的该属性在开发工具里面报错。
-      'TextFormField.new',
-      'ImageProvider.load',
-      'ImageProvider.loadBuffer',
-      'CupertinoScrollbar.new',
-      'SharedAppData.getValue',
-      'SliverHitTestResult.addWithAxisOffset',
-      'WidgetInspectorService.initServiceExtensions',
-      //忽略顶级caller的写法
-      // 'jsonDecode',
+      'Iterable.forEach', //属于dart-sdk库，忽略原因：Iterable.forEach 应该使用for循环代替。输出结果：Iterable与子类都不会生成forEach对应的Vmproxy的caller属性，下同
+      'Map.fromIterable', //属于dart-sdk库，忽略原因：Map.fromIterable 应该使用for循环代替。
+      'SharedAppData.getValue', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
+      'WidgetInspectorService.initServiceExtensions', //属于flutter库，忽略原因：生成出来的该属性的某个参数是：带有一个无法生成默认值的参数[callback]的函数。
+      // 'jsonDecode',//忽略顶级VmProxy的caller的写法
     ],
     List<String> ignoreExtensionOn = const [
       'Object', //属于dart-sdk库，但是flutter库添加了toJs等不要的扩展
@@ -363,10 +352,12 @@ class EasyCoder extends EasyLogger {
     }
     //生成单个的class代码
     classUnionDatasMap.forEach((key, value) {
-      //处理继承
+      //深度继承全部超类的实例字段
       value.extendsSuper(currentClass: value, publicMap: classUnionDatasMap, pirvateMap: privateDatas, onNotFoundSuperClass: _onVmNotFoundSuperClass);
-      //替换别名
-      value.replaceAlias(functionRefs: functionRefs, onReplaceProxyAlias: _onVmReplaceProxyAlias);
+      //继承构造函数super参数默认值
+      value.extendsValue(publicMap: classUnionDatasMap, pirvateMap: privateDatas, onNotFoundSuperClass: _onVmNotFoundSuperClass);
+      //替换成员函数的参数类型的别名
+      value.replaceAlias(functionRefs: functionRefs, onReplaceProxyAlias: _onVmReplaceProxyAlias, onIgnorePrivateArgV: _onVmIgnorePrivateArgV);
       //生成代码
       final fieldName = 'class${firstUpperCaseName(key)}';
       final fieldCode = value.toClassCode(
@@ -400,7 +391,7 @@ class EasyCoder extends EasyLogger {
         _onVmIgnoreProxyObject('', item.name, item.absoluteFilePath);
       } else {
         //替换别名
-        item.replaceAlias(functionRefs: functionRefs, onReplaceProxyAlias: _onVmReplaceProxyAlias);
+        item.replaceAlias(functionRefs: functionRefs, onReplaceProxyAlias: _onVmReplaceProxyAlias, onIgnorePrivateArgV: _onVmIgnorePrivateArgV);
         if (proxyUnionPartsMap.containsKey(item.name)) {
           final unionParts = proxyUnionPartsMap[item.name]!;
           item.toProxyCode(
@@ -874,6 +865,10 @@ class EasyCoder extends EasyLogger {
 
   void _onVmReplaceProxyAlias(String className, String proxyName, String paramName, String aliasName, String classPath) {
     logDebug(['replace proxy arg type alias:', '$className.$proxyName', paramName, '->', aliasName, '=>', classPath]);
+  }
+
+  void _onVmIgnorePrivateArgV(String className, String proxyName, String paramName, String paramValue, String classPath) {
+    logWarn(['ignore proxy named parameter by private default value:', '$className.$proxyName', paramName, '->', paramValue, '=>', classPath]); //这里用warn
   }
 
   ///将[name]的第一个字母改为大写

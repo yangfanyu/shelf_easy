@@ -86,7 +86,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
   Map<VmKeys, Map<VmKeys, dynamic>> visitVariableDeclaration(VariableDeclaration node) => {
         VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$VariableDeclaration: {
-          VmKeys.$VariableDeclarationName: node.name.toString(),
+          VmKeys.$VariableDeclarationName: node.name.lexeme,
           VmKeys.$VariableDeclarationInitializer: node.initializer?.accept(this),
         }
       };
@@ -97,7 +97,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
         VmKeys.$FunctionDeclaration: {
           VmKeys.$FunctionDeclarationIsGetter: node.isGetter,
           VmKeys.$FunctionDeclarationIsSetter: node.isSetter,
-          VmKeys.$FunctionDeclarationName: node.name.toString(),
+          VmKeys.$FunctionDeclarationName: node.name.lexeme,
           VmKeys.$FunctionDeclarationFunctionExpression: node.functionExpression.accept(this),
         }
       };
@@ -138,7 +138,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
         VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$DeclaredIdentifier: {
           VmKeys.$DeclaredIdentifierType: node.type?.accept(this),
-          VmKeys.$DeclaredIdentifierName: node.name.toString(),
+          VmKeys.$DeclaredIdentifierName: node.name.lexeme,
         }
       };
 
@@ -311,7 +311,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
   Map<VmKeys, Map<VmKeys, dynamic>> visitIsExpression(IsExpression node) => {
         VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$IsExpression: {
-          VmKeys.$IsExpressionNotOperator: node.notOperator?.toString(),
+          VmKeys.$IsExpressionNotOperator: node.notOperator?.lexeme,
           VmKeys.$IsExpressionExpression: node.expression.accept(this),
           VmKeys.$IsExpressionType: node.type.accept(this),
         }
@@ -375,7 +375,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
         VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$SuperFormalParameter: {
           VmKeys.$SuperFormalParameterType: node.type?.accept(this),
-          VmKeys.$SuperFormalParameterName: node.name.toString(),
+          VmKeys.$SuperFormalParameterName: node.name.lexeme,
           VmKeys.$SuperFormalParameterIsNamed: node.isNamed,
         },
       };
@@ -385,7 +385,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
         VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$FieldFormalParameter: {
           VmKeys.$FieldFormalParameterType: node.type?.accept(this),
-          VmKeys.$FieldFormalParameterName: node.name.toString(),
+          VmKeys.$FieldFormalParameterName: node.name.lexeme,
           VmKeys.$FieldFormalParameterIsNamed: node.isNamed,
         },
       };
@@ -395,7 +395,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
         VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$SimpleFormalParameter: {
           VmKeys.$SimpleFormalParameterType: node.type?.accept(this),
-          VmKeys.$SimpleFormalParameterName: node.name?.toString(),
+          VmKeys.$SimpleFormalParameterName: node.name?.lexeme,
           VmKeys.$SimpleFormalParameterIsNamed: node.isNamed,
         }
       };
@@ -404,7 +404,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
   Map<VmKeys, Map<VmKeys, dynamic>> visitFunctionTypedFormalParameter(FunctionTypedFormalParameter node) => {
         VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$FunctionTypedFormalParameter: {
-          VmKeys.$FunctionTypedFormalParameterName: node.name.toString(),
+          VmKeys.$FunctionTypedFormalParameterName: node.name.lexeme,
           VmKeys.$FunctionTypedFormalParameterIsNamed: node.isNamed,
         }
       };
@@ -413,7 +413,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
   Map<VmKeys, Map<VmKeys, dynamic>> visitDefaultFormalParameter(DefaultFormalParameter node) => {
         VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$DefaultFormalParameter: {
-          VmKeys.$DefaultFormalParameterName: node.name?.toString(),
+          VmKeys.$DefaultFormalParameterName: node.name?.lexeme,
           VmKeys.$DefaultFormalParameterIsNamed: node.isNamed,
           VmKeys.$DefaultFormalParameterParameter: node.parameter.accept(this),
           VmKeys.$DefaultFormalParameterDefaultValue: node.defaultValue?.accept(this),
@@ -605,7 +605,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
   Map<VmKeys, Map<VmKeys, dynamic>> visitClassDeclaration(ClassDeclaration node) => {
         VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$ClassDeclaration: {
-          VmKeys.$ClassDeclarationName: node.name.toString(),
+          VmKeys.$ClassDeclarationName: node.name.lexeme,
           VmKeys.$ClassDeclarationMembers: node.members.map((e) => e.accept(this)).toList(),
           VmKeys.$ClassDeclarationExtendsClause: node.extendsClause?.superclass.accept(this),
         },
@@ -624,8 +624,8 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
   Map<VmKeys, Map<VmKeys, dynamic>> visitConstructorDeclaration(ConstructorDeclaration node) => {
         VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$ConstructorDeclaration: {
-          VmKeys.$ConstructorDeclarationName: node.name?.toString(),
-          VmKeys.$ConstructorDeclarationFactoryKeyword: node.factoryKeyword?.toString(),
+          VmKeys.$ConstructorDeclarationName: node.name?.lexeme,
+          VmKeys.$ConstructorDeclarationFactoryKeyword: node.factoryKeyword?.lexeme,
           VmKeys.$ConstructorDeclarationParameters: node.parameters.accept(this),
           VmKeys.$ConstructorDeclarationInitializers: node.initializers.map((e) => e.accept(this)).toList(),
           VmKeys.$ConstructorDeclarationBody: node.body.accept(this),
@@ -648,7 +648,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
           VmKeys.$MethodDeclarationIsStatic: node.isStatic,
           VmKeys.$MethodDeclarationIsGetter: node.isGetter,
           VmKeys.$MethodDeclarationIsSetter: node.isSetter,
-          VmKeys.$MethodDeclarationName: node.name.toString(),
+          VmKeys.$MethodDeclarationName: node.name.lexeme,
           VmKeys.$MethodDeclarationParameters: node.parameters?.accept(this),
           VmKeys.$MethodDeclarationBody: node.body.accept(this),
         },
@@ -695,7 +695,7 @@ class VmParserBirdger extends SimpleAstVisitor {
   @override
   VmParserBirdgeItemData? visitVariableDeclaration(VariableDeclaration node) {
     return VmParserBirdgeItemData(
-      name: node.name.toString(),
+      name: node.name.lexeme,
       isFinal: node.isFinal,
       isConst: node.isConst,
     );
@@ -705,7 +705,7 @@ class VmParserBirdger extends SimpleAstVisitor {
   VmParserBirdgeItemData? visitFunctionDeclaration(FunctionDeclaration node) {
     return VmParserBirdgeItemData(
       type: VmParserBirdgeItemType.topLevelFunction,
-      name: node.name.toString(),
+      name: node.name.lexeme,
       parameters: node.functionExpression.parameters == null ? const [] : node.functionExpression.parameters?.accept(this), // => visitFormalParameterList
       isAtJS: node.toSource().contains('@JS'),
       isGetter: node.isGetter,
@@ -727,11 +727,12 @@ class VmParserBirdger extends SimpleAstVisitor {
     if (superclassNames.isEmpty) superclassNames.add('Object');
     return VmParserBirdgeItemData(
       type: VmParserBirdgeItemType.classDeclaration,
-      name: node.name.toString(),
+      name: node.name.lexeme,
       properties: members,
       isAtJS: node.toSource().contains('@JS'),
       isAbstract: node.abstractKeyword != null,
       superclassNames: superclassNames,
+      extendsClassName: node.extendsClause?.superclass.name.name,
     );
   }
 
@@ -745,7 +746,7 @@ class VmParserBirdger extends SimpleAstVisitor {
     if (superclassNames.isEmpty) superclassNames.add('Object');
     return VmParserBirdgeItemData(
       type: VmParserBirdgeItemType.classDeclaration,
-      name: node.name.toString(),
+      name: node.name.lexeme,
       properties: [], //const 默认值无法更改
       isAtJS: node.toSource().contains('@JS'),
       isAbstract: node.abstractKeyword != null,
@@ -765,7 +766,7 @@ class VmParserBirdger extends SimpleAstVisitor {
     if (superclassNames.isEmpty) superclassNames.add('Object');
     return VmParserBirdgeItemData(
       type: VmParserBirdgeItemType.classDeclaration,
-      name: node.name.toString(),
+      name: node.name.lexeme,
       properties: members,
       isAtJS: node.toSource().contains('@JS'),
       isAbstract: true, //当成抽象类
@@ -775,18 +776,21 @@ class VmParserBirdger extends SimpleAstVisitor {
 
   @override
   VmParserBirdgeItemData? visitEnumDeclaration(EnumDeclaration node) {
-    final resultList = node.members.map((e) => e.accept(this)).toList();
-    final members = <VmParserBirdgeItemData?>[];
-    for (var e in resultList) {
-      e is List<VmParserBirdgeItemData?> ? members.addAll(e) : members.add(e);
-    }
+    //node.members是空的
+    final members = node.constants
+        .map((e) => VmParserBirdgeItemData(
+              type: VmParserBirdgeItemType.classStaticVariable, //作为静态值
+              name: e.name.lexeme,
+              isConst: true, //不可修改值
+            ))
+        .toList();
     final superclassNames = <String>[];
     if (node.implementsClause != null) superclassNames.addAll(node.implementsClause!.interfaces.map((e) => e.name.name).toList()); //implements可以很多个
     if (node.withClause != null) superclassNames.addAll(node.withClause!.mixinTypes.map((e) => e.name.name).toList()); //with可以很多个
     if (superclassNames.isEmpty) superclassNames.add('Enum'); //必然继承自 Enum
     return VmParserBirdgeItemData(
       type: VmParserBirdgeItemType.classDeclaration,
-      name: node.name.toString(),
+      name: node.name.lexeme,
       properties: members,
       isAtJS: node.toSource().contains('@JS'),
       isAbstract: true, //当成抽象类
@@ -829,7 +833,7 @@ class VmParserBirdger extends SimpleAstVisitor {
 
   @override
   List<VmParserBirdgeItemData?> visitConstructorDeclaration(ConstructorDeclaration node) {
-    final name = node.name?.toString() ?? '';
+    final name = node.name?.lexeme ?? '';
     return [
       VmParserBirdgeItemData(
         type: VmParserBirdgeItemType.classStaticFunction,
@@ -854,7 +858,7 @@ class VmParserBirdger extends SimpleAstVisitor {
   VmParserBirdgeItemData? visitMethodDeclaration(MethodDeclaration node) {
     return VmParserBirdgeItemData(
       type: node.isStatic ? VmParserBirdgeItemType.classStaticFunction : VmParserBirdgeItemType.classInstanceFunction,
-      name: node.name.toString(),
+      name: node.name.lexeme,
       parameters: node.parameters == null ? const [] : node.parameters?.accept(this), // => visitFormalParameterList
       isGetter: node.isGetter,
       isSetter: node.isSetter,
@@ -873,8 +877,9 @@ class VmParserBirdger extends SimpleAstVisitor {
     final typeResult = node.type?.accept(this); // => visitNamedType, visitGenericFunctionType
     return VmParserBirdgeItemData(
       type: VmParserBirdgeItemType.functionParameter,
-      name: node.name.toString(),
+      name: node.name.lexeme,
       parameters: typeResult is VmParserBirdgeItemData ? typeResult.parameters : const [],
+      isSuperParameter: true,
       isListReqParameter: node.isRequiredPositional,
       isListOptParameter: node.isOptionalPositional,
       isNameAnyParameter: node.isNamed,
@@ -891,7 +896,7 @@ class VmParserBirdger extends SimpleAstVisitor {
     final typeResult = node.type?.accept(this); // => visitNamedType, visitGenericFunctionType
     return VmParserBirdgeItemData(
       type: VmParserBirdgeItemType.functionParameter,
-      name: node.name.toString(),
+      name: node.name.lexeme,
       parameters: typeResult is VmParserBirdgeItemData ? typeResult.parameters : const [],
       isListReqParameter: node.isRequiredPositional,
       isListOptParameter: node.isOptionalPositional,
@@ -909,7 +914,7 @@ class VmParserBirdger extends SimpleAstVisitor {
     final typeResult = node.type?.accept(this); // => visitNamedType, visitGenericFunctionType
     return VmParserBirdgeItemData(
       type: VmParserBirdgeItemType.functionParameter,
-      name: node.name.toString(),
+      name: node.name?.lexeme ?? '',
       parameters: typeResult is VmParserBirdgeItemData ? typeResult.parameters : const [],
       isListReqParameter: node.isRequiredPositional,
       isListOptParameter: node.isOptionalPositional,
@@ -926,14 +931,14 @@ class VmParserBirdger extends SimpleAstVisitor {
   VmParserBirdgeItemData? visitFunctionTypedFormalParameter(FunctionTypedFormalParameter node) {
     return VmParserBirdgeItemData(
       type: VmParserBirdgeItemType.functionParameter,
-      name: node.name.toString(),
+      name: node.name.lexeme,
       parameters: node.parameters.accept(this),
       isListReqParameter: node.isRequiredPositional,
       isListOptParameter: node.isOptionalPositional,
       isNameAnyParameter: node.isNamed,
       parameterType: 'Function', //无对应字段，手动填充为'Function'
       parameterValue: null,
-      parameterReturn: node.returnType != null && node.returnType.toString().trim() != 'void',
+      parameterReturn: node.returnType != null && node.returnType?.toSource().trim() != 'void',
       parameterCanNull: node.question != null,
       callerTemplates: node.typeParameters?.toSource(), //如 Set.castFrom
     );
@@ -944,7 +949,7 @@ class VmParserBirdger extends SimpleAstVisitor {
     final result = node.parameter.accept(this) as VmParserBirdgeItemData?; // => visitSuperFormalParameter, visitFieldFormalParameter, visitSimpleFormalParameter, visitFunctionTypedFormalParameter
     if (result != null) {
       result.type = VmParserBirdgeItemType.functionParameter;
-      result.name = node.name.toString();
+      result.name = node.name?.lexeme ?? result.name;
       result.isListReqParameter = node.isRequiredPositional;
       result.isListOptParameter = node.isOptionalPositional;
       result.isNameAnyParameter = node.isNamed;
@@ -956,11 +961,10 @@ class VmParserBirdger extends SimpleAstVisitor {
   @override
   VmParserBirdgeItemData? visitGenericFunctionType(GenericFunctionType node) {
     return VmParserBirdgeItemData(
-      name: node.functionKeyword.toString(), //无对应字段，填充为 functionKeyword 必然为 'Function'
+      name: node.functionKeyword.lexeme, //无对应字段，填充为 functionKeyword 必然为 'Function'
       parameters: node.parameters.accept(this),
-      parameterType: 'Function', // 虽然 node.functionKeyword.toString() 必然为 'Function'，但还是手动填充为'Function'
-      parameterValue: null,
-      parameterReturn: node.returnType != null && node.returnType.toString().trim() != 'void',
+      parameterType: 'Function', //手动填充为 'Function' 来 保证 逻辑的正确
+      parameterReturn: node.returnType != null && node.returnType?.toSource().trim() != 'void',
       callerTemplates: node.typeParameters?.toSource(), //如 Set.castFrom
     );
   }
@@ -973,7 +977,7 @@ class VmParserBirdger extends SimpleAstVisitor {
     final functionTypeResult = node.functionType?.accept(this); // => visitGenericFunctionType
     if (functionTypeResult is VmParserBirdgeItemData) {
       functionTypeResult.type = VmParserBirdgeItemType.functionTypeAlias;
-      functionTypeResult.name = node.name.toString();
+      functionTypeResult.name = node.name.lexeme;
     }
     return functionTypeResult;
   }
@@ -985,8 +989,7 @@ class VmParserBirdger extends SimpleAstVisitor {
       name: node.name.lexeme,
       parameters: node.parameters.accept(this),
       parameterType: 'Function', //无对应字段，手动填充为'Function'
-      parameterValue: null,
-      parameterReturn: node.returnType != null && node.returnType.toString().trim() != 'void',
+      parameterReturn: node.returnType != null && node.returnType?.toSource().trim() != 'void',
       callerTemplates: node.typeParameters?.toSource(), //如 Set.castFrom
     );
   }
@@ -1070,8 +1073,11 @@ class VmParserBirdgeItemData {
   ///是否为factoryConstructor
   bool isFactoryConstructor;
 
-  ///是否为abstract
+  ///是否为extension
   bool isExtension;
+
+  ///是否为超类的参数
+  bool isSuperParameter;
 
   ///是否为必填list参数 => 即扫描器中明确的属性 isRequiredPositional 为 true
   bool isListReqParameter;
@@ -1100,6 +1106,9 @@ class VmParserBirdgeItemData {
   ///类型直接的extends、implements、with的超类
   List<String> superclassNames;
 
+  ///类型直接的extends的超类
+  String? extendsClassName;
+
   ///该数据来源的文件路径
   String absoluteFilePath;
 
@@ -1121,6 +1130,7 @@ class VmParserBirdgeItemData {
     this.isConstructor = false,
     this.isFactoryConstructor = false,
     this.isExtension = false,
+    this.isSuperParameter = false,
     this.isListReqParameter = false,
     this.isListOptParameter = false,
     this.isNameAnyParameter = false,
@@ -1130,6 +1140,7 @@ class VmParserBirdgeItemData {
     this.parameterCanNull = false,
     this.callerTemplates,
     this.superclassNames = const [],
+    this.extendsClassName,
     this.absoluteFilePath = '',
   }) : _historyclassNames = {} {
     if (type == VmParserBirdgeItemType.classDeclaration) {
@@ -1161,14 +1172,33 @@ class VmParserBirdgeItemData {
   ///是否为类实例属性
   bool get isClassInstanceProperty => type == VmParserBirdgeItemType.classInstanceVariable || type == VmParserBirdgeItemType.classInstanceFunction;
 
-  ///是否为函数类型的参数
-  bool get isCallerFunctionType => parameterType == 'Function' && (parameters.isNotEmpty || parameterReturn) && (parameters.every((e) => e == null || !e.isPrivateDefaultValue));
+  ///是否为为私有默认值
+  bool get isPrivateDefaultValue => parameterValue == null ? false : parameterValue!.startsWith('_') || parameterValue!.contains('._');
 
-  ///默认值是私有的标识符
-  bool get isPrivateDefaultValue => parameterValue == null ? false : parameterValue!.startsWith('_');
+  ///是否为要生成caller的函数类型的参数
+  bool get isCallerFunctionType => parameterType == 'Function' && (parameters.isNotEmpty || parameterReturn);
 
   ///参数默认取值内容代码
-  String get parameterValueCode => parameterValue == null ? '' : ' = $parameterValue';
+  String get parameterValueCode {
+    if (!parameterCanNull && parameterValue == null) {
+      if (isListOptParameter || isNameAnyParameter) {
+        //其实这里面只是为了生成的桥接不在编译器里面报错，正常来讲在开发时这种参数为必传项，这里生成的默认值直接被覆盖
+        switch (parameterType) {
+          case 'int':
+            return ' = 0';
+          case 'double':
+            return ' = 0.0';
+          case 'num':
+            return ' = 0';
+          case 'bool':
+            return ' = false';
+          case 'String':
+            return ' = \'\'';
+        }
+      }
+    }
+    return parameterValue == null ? '' : ' = $parameterValue';
+  }
 
   ///是否生成externalStaticPropertyReader
   bool get hasStaticReader {
@@ -1230,13 +1260,13 @@ class VmParserBirdgeItemData {
       case VmParserBirdgeItemType.topLevelVariable:
         return false;
       case VmParserBirdgeItemType.topLevelFunction:
-        return parameters.any((e) => e != null && e.isCallerFunctionType) && parameters.every((e) => e == null || !e.isPrivateDefaultValue) && !isSetter; //综合判断
+        return parameters.any((e) => e != null && e.isCallerFunctionType) && !isSetter; //综合判断
       case VmParserBirdgeItemType.classDeclaration:
         return false;
       case VmParserBirdgeItemType.classStaticVariable:
         return false;
       case VmParserBirdgeItemType.classStaticFunction:
-        return parameters.any((e) => e != null && e.isCallerFunctionType) && parameters.every((e) => e == null || !e.isPrivateDefaultValue) && !isSetter; //综合判断
+        return parameters.any((e) => e != null && e.isCallerFunctionType) && !isSetter; //综合判断
       case VmParserBirdgeItemType.classInstanceVariable:
         return false;
       case VmParserBirdgeItemType.classInstanceFunction:
@@ -1318,7 +1348,7 @@ class VmParserBirdgeItemData {
       case VmParserBirdgeItemType.classInstanceVariable:
         return false;
       case VmParserBirdgeItemType.classInstanceFunction:
-        return parameters.any((e) => e != null && e.isCallerFunctionType) && parameters.every((e) => e == null || !e.isPrivateDefaultValue) && !isSetter; //综合判断
+        return parameters.any((e) => e != null && e.isCallerFunctionType) && !isSetter; //综合判断
       case VmParserBirdgeItemType.functionTypeAlias:
         return false;
       case VmParserBirdgeItemType.functionParameter:
@@ -1326,19 +1356,19 @@ class VmParserBirdgeItemData {
     }
   }
 
-  ///合并同名类型的全部字段
+  ///合并同名类型的实例字段
   void combineClass(VmParserBirdgeItemData sameclassData) {
     if (sameclassData.name != name && sameclassData.name != extensionName(name)) {
       throw ('Unsupport combineClass operator: ${sameclassData.name} not $name');
     }
     for (var e in sameclassData.properties) {
-      if (e != null && !e.isPrivate && !e.isClassStaticProperty) {
+      if (e != null && !e.isPrivate && e.isClassInstanceProperty) {
         properties.add(e); //因为toProxyCode中使用的是Set，所以无需排重
       }
     }
   }
 
-  ///合并全部超类的实例字段
+  ///继承全部超类的实例字段
   void extendsSuper({
     required VmParserBirdgeItemData currentClass,
     required Map<String, VmParserBirdgeItemData> publicMap,
@@ -1349,7 +1379,7 @@ class VmParserBirdgeItemData {
       var superClass = publicMap[superName] ?? pirvateMap[superName];
       if (superClass != null) {
         for (var e in superClass.properties) {
-          if (e != null && !e.isPrivate && !e.isClassStaticProperty) {
+          if (e != null && !e.isPrivate && e.isClassInstanceProperty) {
             properties.add(e); //因为toProxyCode中使用的是Set，所以无需排重
           }
         }
@@ -1366,20 +1396,49 @@ class VmParserBirdgeItemData {
     }
   }
 
-  ///替换函数参数的别名参数
+  ///继承非factory构造函数的super参数默认值
+  void extendsValue({
+    required Map<String, VmParserBirdgeItemData> publicMap,
+    required Map<String, VmParserBirdgeItemData> pirvateMap,
+    required void Function(String className, String superName, String filePath) onNotFoundSuperClass, //在调用extendsSuper之后才调用extendsValue的情况下，不需要回调onNotFoundSuperClass，先放在这里不管他
+  }) {
+    ///遍历本类的字段找到非factory构造函数
+    for (var e in properties) {
+      if (e != null && e.isConstructor && !e.isFactoryConstructor) {
+        //遍历构造函数的参数找到super参数
+        for (var p in e.parameters) {
+          if (p != null && p.isSuperParameter) {
+            //复制superclass对应构造函数的参数的默认值
+            var currentValue = p.parameterValue;
+            var extendsClass = extendsClassName == null ? null : publicMap[extendsClassName] ?? pirvateMap[extendsClassName];
+            while (currentValue == null && extendsClass != null) {
+              final superConstructor = extendsClass.properties.firstWhere((element) => element != null && element.isConstructor && !element.isFactoryConstructor, orElse: () => null); //构造函数的名字暂时没办法匹配，全部取第一个
+              currentValue = superConstructor?.parameters.firstWhere((element) => element != null && element.name == p.name, orElse: () => null)?.parameterValue;
+              extendsClass = extendsClass.extendsClassName == null ? null : publicMap[extendsClass.extendsClassName] ?? pirvateMap[extendsClass.extendsClassName];
+            }
+            p.parameterValue = currentValue; //更新默认值
+          }
+        }
+      }
+    }
+  }
+
+  ///替换函数的参数的类型别名，替换函数的参数的内部静态引用默认值，移除函数的拥有私有引用默认值的named参数
   void replaceAlias({
-    String className = '',
+    VmParserBirdgeItemData? classScope,
     required Map<String, VmParserBirdgeItemData> functionRefs,
     required void Function(String className, String proxyName, String paramName, String aliasName, String filePath) onReplaceProxyAlias,
+    required void Function(String className, String proxyName, String paramName, String paramValue, String filePath) onIgnorePrivateArgV,
   }) {
     if (type == VmParserBirdgeItemType.classDeclaration) {
       for (var e in properties) {
-        e?.replaceAlias(className: name, functionRefs: functionRefs, onReplaceProxyAlias: onReplaceProxyAlias);
+        e?.replaceAlias(classScope: this, functionRefs: functionRefs, onReplaceProxyAlias: onReplaceProxyAlias, onIgnorePrivateArgV: onIgnorePrivateArgV);
       }
     } else {
+      //替换别名类型
       for (var e in parameters) {
-        if (e != null) {
-          final refType = e.parameterType == null ? null : functionRefs[e.parameterType];
+        if (e != null && e.parameterType != null) {
+          final refType = functionRefs[e.parameterType];
           if (refType != null) {
             e.parameters = refType.parameters;
             e.parameterType = refType.parameterType; //必然为 'Function'
@@ -1387,9 +1446,31 @@ class VmParserBirdgeItemData {
             e.parameterReturn = refType.parameterReturn;
             // e.parameterCanNull = refType.parameterCanNull;//这个属性不需要复制，应为refType是类型定义，与能否为null没有任何关系
             e.callerTemplates = refType.callerTemplates;
-            onReplaceProxyAlias(className, name, e.name, refType.name, refType.absoluteFilePath);
+            onReplaceProxyAlias(classScope?.name ?? '', name, e.name, refType.name, refType.absoluteFilePath);
           }
         }
+      }
+      //替换类内部静态引用值，全局引用值无需处理
+      if (classScope != null) {
+        for (var e in parameters) {
+          if (e != null && e.parameterValue != null) {
+            final isStaticReferValue = classScope.properties.firstWhere((element) => element != null && element.name == e.parameterValue && element.isClassStaticProperty, orElse: () => null) != null;
+            if (isStaticReferValue) {
+              e.parameterValue = '${classScope.name}.${e.parameterValue}';
+            }
+          }
+        }
+      }
+      //移除函数的拥有私有引用默认值的named参数（判断一下，有可能是const [])
+      if (parameters.isNotEmpty) {
+        parameters.removeWhere((e) {
+          if (e != null && e.isNameAnyParameter && e.isPrivateDefaultValue) {
+            onIgnorePrivateArgV(classScope?.name ?? '', name, e.name, e.parameterValue ?? '', classScope?.absoluteFilePath ?? absoluteFilePath);
+            return true;
+          } else {
+            return false;
+          }
+        });
       }
     }
   }
