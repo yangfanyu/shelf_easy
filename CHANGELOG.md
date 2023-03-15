@@ -1,3 +1,10 @@
+## 1.1.12
+
+- Optimize the bridge type generator of the virtual machine, so that the generated proxy function is more accurate.
+- Limit virtual machine to only one instance at a time.
+- Optimize the exception capture mechanism of the virtual machine.
+- Add Enum and extension parsing for the bridge class generator of the virtual machine.
+  
 ## 1.1.11
 
 - Implemented InstanceCreationExpression related functions for virtual machines.
