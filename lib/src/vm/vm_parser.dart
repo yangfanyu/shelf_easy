@@ -617,6 +617,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
         VmKeys.$FieldDeclaration: {
           VmKeys.$FieldDeclarationIsStatic: node.isStatic,
           VmKeys.$FieldDeclarationFields: node.fields.accept(this),
+          VmKeys.$FieldDeclarationFieldsNames: node.fields.variables.map((e) => e.name.lexeme).toList(), //生成名称列表，如 int a,b,c; ===> ['a', 'b', 'c']
         },
       };
 

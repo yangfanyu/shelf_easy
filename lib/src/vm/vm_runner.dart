@@ -1052,13 +1052,15 @@ class VmRunnerCore {
             if (proxyMap.containsKey(vmvalue.identifier)) throw ('ClassDeclaration already exists proxy: $name.${vmvalue.identifier}');
             proxyMap[vmvalue.identifier] = VmProxy(identifier: vmvalue.identifier, isExternal: false, internalStaticPropertyOperator: vmvalue);
           }
-        } else if (item is List<VmHelper>) {
+        } else if (item is List<dynamic>) {
           // => _scanFieldDeclaration 实例变量
-          for (var vmhelper in item) {
-            if (proxyMap.containsKey(vmhelper.fieldName)) throw ('ClassDeclaration already exists proxy: $name.${vmhelper.fieldName}');
-            proxyMap[vmhelper.fieldName] = VmProxy(identifier: vmhelper.fieldName, isExternal: false);
-            fieldTree.add(vmhelper.fieldValue); //添加到初始化语法树列表
+          final fieldsNames = item.first as List<String>; //第一项为字段名列表
+          final fieldsTrees = item.last as Map<VmKeys, dynamic>; ////后一项为语法树集合
+          for (var fieldName in fieldsNames) {
+            if (proxyMap.containsKey(fieldName)) throw ('ClassDeclaration already exists proxy: $name.$fieldName');
+            proxyMap[fieldName] = VmProxy(identifier: fieldName, isExternal: false);
           }
+          fieldTree.add(fieldsTrees); //添加到初始化语法树列表
         } else if (item is VmValue) {
           // => _scanConstructorDeclaration or _scanMethodDeclaration 构造函数、静态函数
           if (proxyMap.containsKey(item.identifier)) throw ('ClassDeclaration already exists proxy: $name.${item.identifier}');
@@ -1088,17 +1090,15 @@ class VmRunnerCore {
     return result;
   }
 
-  static List<VmObject> _scanFieldDeclaration(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) {
+  static List<dynamic> _scanFieldDeclaration(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) {
     final isStatic = node[VmKeys.$FieldDeclarationIsStatic] as bool;
     final fields = node[VmKeys.$FieldDeclarationFields] as Map<VmKeys, dynamic>?;
+    final fieldsNames = node[VmKeys.$FieldDeclarationFieldsNames] as List<String>;
     if (isStatic || runner.inCurrentScope(_classConstructorSelf_)) {
-      final fieldsResult = _scanMap(runner, fields) as List<VmValue>; // => _scanVariableDeclarationList 自动在当前作用域创建静态属性，无需再次创建新作用域
+      final fieldsResult = _scanMap(runner, fields) as List<VmValue>; // => _scanVariableDeclarationList 自动在当前作用域创建属性，无需手动调用 addVmObject
       return fieldsResult;
     } else {
-      return runner._runAloneScope<List<VmObject>>((scope) {
-        final fieldsResult = _scanMap(runner, fields) as List<VmValue>; // => _scanVariableDeclarationList 自动在当前作用域创建属性，所以需要创建临时作用域
-        return fieldsResult.map((e) => VmHelper(fieldName: e.identifier, fieldValue: father)).toList(); //返回上级语法树
-      });
+      return [fieldsNames, father]; //返回字段名称与上级语法树
     }
   }
 
@@ -1169,7 +1169,7 @@ class VmRunnerCore {
       runner.addVmObject(vmfunctionResult);
       return vmfunctionResult;
     } else {
-      return VmHelper(fieldName: nameResult, fieldValue: father); //返回上级语法树
+      return VmHelper(fieldName: nameResult, fieldValue: father); //返回字段名称与上级语法树
     }
   }
 }

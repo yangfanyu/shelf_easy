@@ -792,9 +792,15 @@ class VmValue extends VmObject {
   }) {
     final realLogic = VmObject.readLogic(initValue, type: initType);
     if (realLogic is VmValue) {
+      late VmMetaType metaType;
+      if (VmClass.smartTypeNames.contains(initType)) {
+        metaType = VmMetaType.externalSmart;
+      } else {
+        metaType = VmMetaType.internalAlias;
+      }
       return VmValue._(
         identifier: identifier,
-        metaType: VmClass.smartTypeNames.contains(initType) ? VmMetaType.externalSmart : VmMetaType.internalAlias,
+        metaType: metaType,
         metaData: const VmMetaData(),
         valueType: realLogic._valueType,
         valueData: realLogic,
@@ -802,9 +808,19 @@ class VmValue extends VmObject {
     } else {
       final realClass = VmObject.readClass(initValue, type: initType);
       final realValue = VmObject.readValue(initValue, type: initType);
+      late VmMetaType metaType;
+      if (VmClass.smartTypeNames.contains(realClass.identifier)) {
+        metaType = VmMetaType.externalSmart;
+      } else if (realClass.isExternal) {
+        metaType = VmMetaType.externalValue;
+      } else if (realValue == null) {
+        metaType = VmMetaType.internalAlias;
+      } else {
+        metaType = VmMetaType.internalValue;
+      }
       return VmValue._(
         identifier: identifier,
-        metaType: VmClass.smartTypeNames.contains(realClass.identifier) ? VmMetaType.externalSmart : (realClass.isExternal ? VmMetaType.externalValue : VmMetaType.internalValue),
+        metaType: metaType,
         metaData: const VmMetaData(),
         valueType: realClass,
         valueData: realValue,

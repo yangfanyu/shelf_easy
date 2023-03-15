@@ -675,6 +675,9 @@ enum VmKeys {
   ///对应[FieldDeclaration.fields]
   $FieldDeclarationFields,
 
+  ///对应[FieldDeclaration.fields].variables.names
+  $FieldDeclarationFieldsNames,
+
   /** ******** ConstructorDeclaration ******** **/
 
   ///对应[ConstructorDeclaration]

@@ -390,7 +390,7 @@ class TestUser {
   final String name;
   final int sex;
   final int age;
-  String _desc;
+  String _desc, xxx = 'xxxxxxxx';
   String _info;
   List<int> _haha;
 
@@ -433,7 +433,7 @@ class TestUser {
       ..[2] -= 100;
     _haha[3] = 999;
     final str = 'id=$id, name=$name, sex=$sex, age=$age, desc=$desc, info=$info, _haha=$_haha';
-    print('$sexMale $str');
+    print('$sexMale $str $xxx');
     return str;
   }
 
