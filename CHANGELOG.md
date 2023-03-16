@@ -1,3 +1,9 @@
+## 1.1.13
+
+- Added anonymous function scope support for virtual machines.
+- Extended the type retrieval of Super parameters and Field parameters for the bridge type generator of the virtual machine.
+- Fix some bugs of the virtual machine.
+  
 ## 1.1.12
 
 - Optimize the bridge type generator of the virtual machine, so that the generated proxy function is more accurate.

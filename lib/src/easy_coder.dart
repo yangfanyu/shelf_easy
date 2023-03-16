@@ -866,7 +866,8 @@ class EasyCoder extends EasyLogger {
   }
 
   void _onVmNotFoundClassField(String className, String fieldName, String classPath) {
-    _vmerrList.add(['cannot found class field:', '$className.$fieldName', '=>', classPath]); //添加到错误列表，便于统一打印
+    // _vmerrList.add(['cannot found class field:', '$className.$fieldName', '=>', classPath]); //添加到错误列表，便于统一打印
+    logWarn(['cannot found class field:', '$className.$fieldName', '=>', classPath]); //这里用warn
   }
 
   void _onVmIgnoreProxyObject(String className, String proxyName, String classPath) {
