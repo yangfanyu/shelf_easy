@@ -738,6 +738,9 @@ class VmValue extends VmObject {
   ///超实例作用域
   VmValue? _instanceScope;
 
+  ///匿名作用域列表
+  List<Map<String, VmObject>>? _anonymousScopeList;
+
   VmValue._({
     required super.identifier,
     required this.metaType,
@@ -876,7 +879,7 @@ class VmValue extends VmObject {
     );
   }
 
-  ///作为内部定义类型的实例的字段集合列表，包括超类与子类定义的全部字段
+  ///作为内部定义类型的实例来获取实例字段集合列表，包括超类与子类定义的全部字段
   List<Map<String, VmValue>> get internalInstancePropertyMapList {
     final target = _valueData;
     if (target is VmValue) {
@@ -886,7 +889,17 @@ class VmValue extends VmObject {
     }
   }
 
-  ///作为内部定义类型的静态成员来绑定静态作用域
+  ///作为内部定义的匿名函数来读取匿名作用域列表
+  List<Map<String, VmObject>>? get functionAnonymousScopeList {
+    final target = _valueData;
+    if (target is VmValue) {
+      return target.functionAnonymousScopeList;
+    } else {
+      return _anonymousScopeList;
+    }
+  }
+
+  ///作为内部定义类型的静态成员或实例来绑定静态作用域
   void bindStaticScope(VmClass staticScope) {
     final target = _valueData;
     if (target is VmValue) {
@@ -896,7 +909,7 @@ class VmValue extends VmObject {
     }
   }
 
-  ///作为内部定义类型的实例绑定成员的相关作用域，注意：在调用前需要先调用[bindStaticScope]绑定静态作用域
+  ///作为内部定义类型的实例来绑定实例成员的相关作用域，注意：在调用前需要先调用[bindStaticScope]绑定静态作用域
   void bindMemberScope() {
     final target = _valueData;
     if (target is VmValue) {
@@ -908,6 +921,16 @@ class VmValue extends VmObject {
         value._staticScope ??= _staticScope;
         value._instanceScope ??= this;
       });
+    }
+  }
+
+  ///作为内部定义的匿名函数来绑定匿名作用域列表，注意：匿名函数与其作用域列表一般是用于外部类库的回调
+  void bindAnonymousScopeList(List<Map<String, VmObject>>? scopeList) {
+    final target = _valueData;
+    if (target is VmValue) {
+      target.bindAnonymousScopeList(scopeList);
+    } else {
+      _anonymousScopeList ??= scopeList;
     }
   }
 
@@ -938,7 +961,7 @@ class VmValue extends VmObject {
         } else if (metaData.isStatic) {
           return metaData.staticListener!(positionalArguments, namedArguments, _staticScope!, null, this); //普通静态函数
         } else {
-          return metaData.instanceListener!(positionalArguments, namedArguments, _staticScope, _instanceScope, this); //普通定义函数、实例成员函数
+          return metaData.instanceListener!(positionalArguments, namedArguments, _staticScope, _instanceScope, this); //普通定义函数、匿名定义函数、实例成员函数
         }
       } else {
         final listArgumentsNative = positionalArguments?.map((e) => VmObject.readValue(e)).toList();

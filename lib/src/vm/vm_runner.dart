@@ -21,7 +21,7 @@ class VmRunner {
 
   ///重新装载应用库语法树集合，扫描过程中预定义的内容会放入[应用库]作用域中
   void reassemble({required Map<String, Map<VmKeys, dynamic>> sourceTrees}) {
-    if (_objectStack.length != 4) throw ('Cannot reassemble because _objectStack.length is not 4: ${_objectStack.length}');
+    if (_objectStack.length != 4) throw ('Cannot execute reassemble because _objectStack.length != 4: ${_objectStack.length}');
     _sourceTrees.clear(); //清空旧语法树
     _objectStack.last.clear(); //清空旧应用库
     _sourceTrees.addAll(sourceTrees); //复制新语法树
@@ -35,13 +35,6 @@ class VmRunner {
     VmClass.shutdownInternalClassSearchRunner(); //从底层解绑应用库类型搜索器
   }
 
-  ///添加虚拟类型[vmclass]到[应用库]作用域
-  VmClass addClassToAppScope(VmClass vmclass) {
-    if (_objectStack.length != 4) throw ('Cannot addClassToAppScope because _objectStack.length is not 4: ${_objectStack.length}');
-    addVmObject(vmclass);
-    return vmclass;
-  }
-
   ///从[应用库]作用域中搜索标识符[identifier]对应的虚拟类型
   VmClass? searchClassInAppScope(String identifier) {
     final vmobject = _objectStack[3][identifier];
@@ -51,6 +44,7 @@ class VmRunner {
 
   ///添加虚拟对象[vmobject]到当前作用域
   VmObject addVmObject(VmObject vmobject) {
+    if (_objectStack.length < 4) throw ('Cannot execute addVmObject because _objectStack.length < 4: ${_objectStack.length}');
     final scopeMap = _objectStack.last; //取栈顶作用域
     if (scopeMap.containsKey(vmobject.identifier)) throw ('Already exists VmObject in current scope, identifier is: ${vmobject.identifier}');
     scopeMap[vmobject.identifier] = vmobject;
@@ -68,6 +62,7 @@ class VmRunner {
 
   ///从到当前作用域移除标识符[identifier]对应的虚拟对象
   VmObject delVmObject(String identifier) {
+    if (_objectStack.length < 4) throw ('Cannot execute delVmObject because _objectStack.length < 4: ${_objectStack.length}');
     final scopeMap = _objectStack.last; //取栈顶作用域
     final vmobject = scopeMap.remove(identifier);
     if (vmobject == null) throw ('Not found VmObject in current scope, identifier is: $identifier');
@@ -75,7 +70,16 @@ class VmRunner {
   }
 
   ///栈顶作用域是否已经存在标识符[identifier]指向的对象
-  bool inCurrentScope(String identifier) => _objectStack.last.containsKey(identifier);
+  bool inCurrentScope(String identifier) {
+    if (_objectStack.length < 4) throw ('Cannot execute inCurrentScope because _objectStack.length < 4: ${_objectStack.length}');
+    return _objectStack.last.containsKey(identifier);
+  }
+
+  ///获取匿名函数的可保存的作用域列表
+  List<Map<String, VmObject>>? getAnonymousScopeList() {
+    if (_objectStack.length < 4) throw ('Cannot execute getAnonymousScopeList because _objectStack.length < 4: ${_objectStack.length}');
+    return _objectStack.length >= 5 ? _objectStack.sublist(5) : null;
+  }
 
   ///在虚拟机中的[methodName]指定的任意类型函数
   dynamic callFunction(String methodName, {List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments}) {
@@ -97,21 +101,21 @@ class VmRunner {
   }
 
   T _runAloneScope<T>(T Function(Map<String, VmObject> scope) callback, {List<Map<String, VmObject>> scopeList = const []}) {
-    if (objectStackInAndOutReport != null) objectStackInAndOutReport!(true, true, _objectStack.length);
+    if (objectStackInAndOutReport != null) objectStackInAndOutReport!(true, true, _objectStack.length, _objectStack.map((e) => e.length).toList());
     scopeList.isEmpty ? _objectStack.add({}) : _objectStack.addAll(scopeList); //添加作用域
     try {
       final result = callback(_objectStack.last); //回调逻辑
       scopeList.isEmpty ? _objectStack.removeLast() : _objectStack.removeRange(_objectStack.length - scopeList.length, _objectStack.length); //移除作用域
-      if (objectStackInAndOutReport != null) objectStackInAndOutReport!(false, true, _objectStack.length);
+      if (objectStackInAndOutReport != null) objectStackInAndOutReport!(false, true, _objectStack.length, _objectStack.map((e) => e.length).toList());
       return result; //返回结果
     } catch (_) {
       scopeList.isEmpty ? _objectStack.removeLast() : _objectStack.removeRange(_objectStack.length - scopeList.length, _objectStack.length); //移除作用域
-      if (objectStackInAndOutReport != null) objectStackInAndOutReport!(false, false, _objectStack.length);
+      if (objectStackInAndOutReport != null) objectStackInAndOutReport!(false, false, _objectStack.length, _objectStack.map((e) => e.length).toList());
       rethrow; //继续抛出
     }
   }
 
-  ///内部定义类的静态方法的回调监听
+  ///内部定义类的静态方法、构造方法的回调监听
   dynamic _staticListener(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmClass staticScope, List<Map<VmKeys, dynamic>>? instanceFields, VmValue method) {
     if (instanceFields != null) {
       //原始构造函数
@@ -138,11 +142,12 @@ class VmRunner {
     }
   }
 
-  ///内部定义类的实例方法的回调监听
+  ///内部定义类的实例方法、任意匿名方法、任意顶级方法的回调监听
   dynamic _instanceListener(List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments, VmClass? staticScope, VmValue? instanceScope, VmValue method) {
     final scopeList = <Map<String, VmObject>>[];
     if (staticScope != null) scopeList.add(staticScope.internalStaticPropertyMap!); //类静态作用域
     if (instanceScope != null) scopeList.addAll(instanceScope.internalInstancePropertyMapList); //实例作用域
+    if (method.functionAnonymousScopeList != null) scopeList.addAll(method.functionAnonymousScopeList!); //匿名作用域
     return _runAloneScope((scope) {
       return VmRunnerCore._scanVmFunction(this, positionalArguments, namedArguments, method, null);
     }, scopeList: scopeList);
@@ -167,7 +172,7 @@ class VmRunner {
   }
 
   ///作用域堆栈的变化通知
-  static void Function(bool isIn, bool isOk, int stackLength)? objectStackInAndOutReport;
+  static void Function(bool isIn, bool isOk, int stackLength, List<int> stackMembers)? objectStackInAndOutReport;
 
   ///全局作用域列表：[ 基本库，核心库，用户库 ]
   static final List<Map<String, VmObject>> _globalScopeList = [{}, {}, {}];
@@ -696,7 +701,7 @@ class VmRunnerCore {
       bodyTree: body,
       staticListener: runner._staticListener,
       instanceListener: runner._instanceListener,
-    );
+    )..bindAnonymousScopeList(runner.getAnonymousScopeList());
   }
 
   static VmHelper _scanNamedExpression(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) {
@@ -1086,7 +1091,7 @@ class VmRunnerCore {
         internalSuperclass: superclass,
       );
     });
-    runner.addClassToAppScope(result); //添加到应用库中
+    runner.addVmObject(result); //添加到应用库中
     return result;
   }
 

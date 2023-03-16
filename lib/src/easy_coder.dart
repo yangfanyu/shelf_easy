@@ -209,6 +209,8 @@ class EasyCoder extends EasyLogger {
       'SharedAppData.getValue', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
       'GestureRecognizerFactoryWithHandlers.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
       'PaginatedDataTable.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错默认值无法找到。
+      'Autocomplete.new', //属于flutter库，忽略原因：生成出来的该属性在加载时报错范型有问题。
+      'RawAutocomplete.new', //属于flutter库，忽略原因：生成出来的该属性在加载时报错范型有问题。
       'WidgetInspectorService.initServiceExtensions', //属于flutter库，忽略原因：生成出来的该属性的某个参数是：带有一个无法生成默认值的参数[callback]的函数。
       // 'jsonDecode',//忽略顶级VmProxy的caller的写法
     ],

@@ -104,8 +104,8 @@ class EasyVmWare extends EasyLogger {
       };
     }
     if (logObjectStackInAndOut) {
-      VmRunner.objectStackInAndOutReport = (isIn, isOk, length) {
-        (isOk ? _vmwareLogger.logDebug : _vmwareLogger.logError)(['objectStackInAndOutReport ======>', isIn ? 'in' : 'out', '------>', isOk ? 'ok' : 'error', '------>', length]);
+      VmRunner.objectStackInAndOutReport = (isIn, isOk, length, members) {
+        (isOk ? _vmwareLogger.logDebug : _vmwareLogger.logError)(['objectStackInAndOutReport ======>', isIn ? 'in' : 'out', '------>', isOk ? 'ok' : 'error', '------>', length, '--->', members]);
       };
     }
     VmRunner.loadGlobalLibrary(customClassList: customClassList, customProxyList: customProxyList);
