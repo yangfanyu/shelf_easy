@@ -823,10 +823,14 @@ class VmParserBirdger extends SimpleAstVisitor {
 
   @override
   List<VmParserBirdgeItemData?> visitFieldDeclaration(FieldDeclaration node) {
+    final typeResult = node.fields.type?.accept(this); // => visitNamedType, visitGenericFunctionType
     final result = node.fields.accept(this) as List<VmParserBirdgeItemData?>; // => visitVariableDeclarationList
     for (var e in result) {
       if (e != null) {
         e.type = node.isStatic ? VmParserBirdgeItemType.classStaticVariable : VmParserBirdgeItemType.classInstanceVariable;
+        e.propertyCanNull = node.fields.type?.question != null;
+        e.propertyTypeName = typeResult is String ? typeResult : null;
+        e.propertyTypeMeta = typeResult is VmParserBirdgeItemData ? typeResult : null;
       }
     }
     return result;
@@ -899,6 +903,7 @@ class VmParserBirdger extends SimpleAstVisitor {
       type: VmParserBirdgeItemType.functionParameter,
       name: node.name.lexeme,
       parameters: typeResult is VmParserBirdgeItemData ? typeResult.parameters : const [],
+      isFieldParameter: true,
       isListReqParameter: node.isRequiredPositional,
       isListOptParameter: node.isOptionalPositional,
       isNameAnyParameter: node.isNamed,
@@ -1077,8 +1082,11 @@ class VmParserBirdgeItemData {
   ///是否为extension
   bool isExtension;
 
-  ///是否为超类的参数
+  ///是否为超类的字段参数
   bool isSuperParameter;
+
+  ///是否为本类的字段参数
+  bool isFieldParameter;
 
   ///是否为必填list参数 => 即扫描器中明确的属性 isRequiredPositional 为 true
   bool isListReqParameter;
@@ -1095,14 +1103,23 @@ class VmParserBirdgeItemData {
   ///作为参数的默认取值内容
   String? parameterValue;
 
-  ///作为函数类型的参数是否有返回值
+  ///作为参数是函数类型时是否有返回值
   bool parameterReturn;
 
   ///作为参数是否可以为null
   bool parameterCanNull;
 
-  ///生成caller时添加的泛型字符串
+  ///作为参数是函数类型时生成caller添加的泛型字符串
   String? callerTemplates;
+
+  ///作为字段是否可以为null
+  bool propertyCanNull;
+
+  ///作为字段的具体类型名称
+  String? propertyTypeName;
+
+  ///作为字段的具体类型数据
+  VmParserBirdgeItemData? propertyTypeMeta;
 
   ///类型直接的extends、implements、with的超类
   List<String> superclassNames;
@@ -1132,6 +1149,7 @@ class VmParserBirdgeItemData {
     this.isFactoryConstructor = false,
     this.isExtension = false,
     this.isSuperParameter = false,
+    this.isFieldParameter = false,
     this.isListReqParameter = false,
     this.isListOptParameter = false,
     this.isNameAnyParameter = false,
@@ -1140,6 +1158,9 @@ class VmParserBirdgeItemData {
     this.parameterReturn = false,
     this.parameterCanNull = false,
     this.callerTemplates,
+    this.propertyCanNull = false,
+    this.propertyTypeName,
+    this.propertyTypeMeta,
     this.superclassNames = const [],
     this.extendsClassName,
     this.absoluteFilePath = '',
@@ -1173,11 +1194,15 @@ class VmParserBirdgeItemData {
   ///是否为类实例属性
   bool get isClassInstanceProperty => type == VmParserBirdgeItemType.classInstanceVariable || type == VmParserBirdgeItemType.classInstanceFunction;
 
-  ///是否为为私有默认值
-  bool get isPrivateDefaultValue => parameterValue == null ? false : parameterValue!.startsWith('_') || parameterValue!.contains('._');
-
   ///是否为要生成caller的函数类型的参数
   bool get isCallerFunctionType => parameterType == 'Function' && (parameters.isNotEmpty || parameterReturn);
+
+  ///是否为为私有默认值
+  bool get isPrivateDefaultValue {
+    if (parameterValue == null) return false;
+    final noBlankValue = parameterValue!.replaceAll(' ', '');
+    return noBlankValue.startsWith('_') || noBlankValue.contains('._') || noBlankValue.contains(':_') || noBlankValue.contains(',_') || noBlankValue.contains('(_');
+  }
 
   ///参数默认取值内容代码
   String get parameterValueCode {
@@ -1397,27 +1422,59 @@ class VmParserBirdgeItemData {
     }
   }
 
-  ///继承非factory构造函数的super参数默认值
+  ///继承非factory构造函数的super参数的类型与默认值，调用该函数前请先调用[extendsSuper]进行继承处理
   void extendsValue({
     required Map<String, VmParserBirdgeItemData> publicMap,
     required Map<String, VmParserBirdgeItemData> pirvateMap,
-    required void Function(String className, String superName, String filePath) onNotFoundSuperClass, //在调用extendsSuper之后才调用extendsValue的情况下，不需要回调onNotFoundSuperClass，先放在这里不管他
+    required void Function(String className, String fieldName, String filePath) onNotFoundClassField,
   }) {
     ///遍历本类的字段找到非factory构造函数
     for (var e in properties) {
       if (e != null && e.isConstructor && !e.isFactoryConstructor) {
-        //遍历构造函数的参数找到super参数
         for (var p in e.parameters) {
+          //复制super参数的对应超类构造函数的参数的默认值与类型
           if (p != null && p.isSuperParameter) {
-            //复制superclass对应构造函数的参数的默认值
-            var currentValue = p.parameterValue;
+            VmParserBirdgeItemData? currentParam = p;
+            var currentValue = currentParam.parameterValue;
             var extendsClass = extendsClassName == null ? null : publicMap[extendsClassName] ?? pirvateMap[extendsClassName];
-            while (currentValue == null && extendsClass != null) {
+            while (currentParam != null && currentParam.isSuperParameter && extendsClass != null) {
               final superConstructor = extendsClass.properties.firstWhere((element) => element != null && element.isConstructor && !element.isFactoryConstructor, orElse: () => null); //构造函数的名字暂时没办法匹配，全部取第一个
-              currentValue = superConstructor?.parameters.firstWhere((element) => element != null && element.name == p.name, orElse: () => null)?.parameterValue;
+              currentParam = superConstructor?.parameters.firstWhere((element) => element != null && element.name == p.name, orElse: () => null);
+              currentValue = currentValue ?? currentParam?.parameterValue; //取第一个不为null的即可
               extendsClass = extendsClass.extendsClassName == null ? null : publicMap[extendsClass.extendsClassName] ?? pirvateMap[extendsClass.extendsClassName];
             }
             p.parameterValue = currentValue; //更新默认值
+            if (currentParam != null && !currentParam.isSuperParameter && !currentParam.isFieldParameter) {
+              //修改这两个属性，使得下面不用再重复搜索
+              p.isSuperParameter = false;
+              p.isFieldParameter = false;
+              //已经是非类字段了，进行除value之外的完整复制
+              p.parameters = currentParam.parameters;
+              p.parameterType = currentParam.parameterType;
+              // p.parameterValue = currentParam.parameterValue; //这个属性不需要复制，因为默认值已经在之前设置
+              p.parameterReturn = currentParam.parameterReturn;
+              p.parameterCanNull = currentParam.parameterCanNull; //需要继承是否可以为null值
+              p.callerTemplates = currentParam.callerTemplates;
+            }
+          }
+          //复制super参数或field参数对应成员字段的类型，实例字段已继承，无需再递归super类
+          if (p != null && (p.isSuperParameter || p.isFieldParameter)) {
+            final field = properties.firstWhere((element) => element != null && element.name == p.name, orElse: () => null);
+            if (field != null) {
+              if (field.propertyTypeName != null) {
+                p.parameterType = field.propertyTypeName;
+              } else if (field.propertyTypeMeta != null) {
+                p.parameters = field.propertyTypeMeta!.parameters;
+                p.parameterType = field.propertyTypeMeta!.parameterType;
+                // p.parameterValue = field.propertyTypeMeta!.parameterValue; //这个属性不需要复制，因为与默认值没有任何关系
+                p.parameterReturn = field.propertyTypeMeta!.parameterReturn;
+                // p.parameterCanNull = field.propertyTypeMeta!.parameterCanNull; //这个属性不需要复制，因为与能否为null没有任何关系
+                p.callerTemplates = field.propertyTypeMeta!.callerTemplates;
+              }
+              p.parameterCanNull = field.propertyCanNull; //是否可以为null取决于字段的定义
+            } else {
+              onNotFoundClassField(name, p.name, absoluteFilePath);
+            }
           }
         }
       }
@@ -1436,16 +1493,16 @@ class VmParserBirdgeItemData {
         e?.replaceAlias(classScope: this, functionRefs: functionRefs, onReplaceProxyAlias: onReplaceProxyAlias, onIgnorePrivateArgV: onIgnorePrivateArgV);
       }
     } else {
-      //替换别名类型
+      //替换函数字段的参数的别名类型，因为parameters不为空的话才是函数，所以无需判断type了
       for (var e in parameters) {
         if (e != null && e.parameterType != null) {
           final refType = functionRefs[e.parameterType];
           if (refType != null) {
             e.parameters = refType.parameters;
             e.parameterType = refType.parameterType; //必然为 'Function'
-            // e.parameterValue = refType.parameterValue;//这个属性不需要复制，应为refType是类型定义，与默认值没有任何关系
+            // e.parameterValue = refType.parameterValue;//这个属性不需要复制，因为refType是类型定义，与默认值没有任何关系
             e.parameterReturn = refType.parameterReturn;
-            // e.parameterCanNull = refType.parameterCanNull;//这个属性不需要复制，应为refType是类型定义，与能否为null没有任何关系
+            // e.parameterCanNull = refType.parameterCanNull;//这个属性不需要复制，因为refType是类型定义，与能否为null没有任何关系
             e.callerTemplates = refType.callerTemplates;
             onReplaceProxyAlias(classScope?.name ?? '', name, e.name, refType.name, refType.absoluteFilePath);
           }

@@ -59,6 +59,7 @@ void generatorLibraryForFlutter() {
   coder.generateVmLibraries(
     outputFile: 'flutter_library',
     importList: [
+      'import \'dart:ui\' as ui show BoxWidthStyle, BoxHeightStyle;',
       // 'package:flutter/animation.dart', //重复的导入项
       'package:flutter/cupertino.dart',
       'package:flutter/foundation.dart',

@@ -203,7 +203,12 @@ class EasyCoder extends EasyLogger {
     List<String> ignoreProxyCaller = const [
       'Iterable.forEach', //属于dart-sdk库，忽略原因：Iterable.forEach 应该使用for循环代替。输出结果：Iterable与子类都不会生成forEach对应的Vmproxy的caller属性，下同
       'Map.fromIterable', //属于dart-sdk库，忽略原因：Map.fromIterable 应该使用for循环代替。
+      'Radio.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
+      'RadioListTile.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
+      'RadioMenuButton.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
       'SharedAppData.getValue', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
+      'GestureRecognizerFactoryWithHandlers.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
+      'PaginatedDataTable.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错默认值无法找到。
       'WidgetInspectorService.initServiceExtensions', //属于flutter库，忽略原因：生成出来的该属性的某个参数是：带有一个无法生成默认值的参数[callback]的函数。
       // 'jsonDecode',//忽略顶级VmProxy的caller的写法
     ],
@@ -233,7 +238,11 @@ class EasyCoder extends EasyLogger {
     buffer.write('\n');
     if (genByExternal) buffer.write('import \'package:shelf_easy/shelf_easy.dart\';\n');
     for (var element in importList) {
-      buffer.write('import \'$element\';\n');
+      if (element.startsWith('import')) {
+        buffer.write('$element\n');
+      } else {
+        buffer.write('import \'$element\';\n');
+      }
     }
     if (!genByExternal) buffer.write('import \'vm_object.dart\';\n');
     buffer.write('\n');
@@ -355,7 +364,7 @@ class EasyCoder extends EasyLogger {
       //深度继承全部超类的实例字段
       value.extendsSuper(currentClass: value, publicMap: classUnionDatasMap, pirvateMap: privateDatas, onNotFoundSuperClass: _onVmNotFoundSuperClass);
       //继承构造函数super参数默认值
-      value.extendsValue(publicMap: classUnionDatasMap, pirvateMap: privateDatas, onNotFoundSuperClass: _onVmNotFoundSuperClass);
+      value.extendsValue(publicMap: classUnionDatasMap, pirvateMap: privateDatas, onNotFoundClassField: _onVmNotFoundClassField);
       //替换成员函数的参数类型的别名
       value.replaceAlias(functionRefs: functionRefs, onReplaceProxyAlias: _onVmReplaceProxyAlias, onIgnorePrivateArgV: _onVmIgnorePrivateArgV);
       //生成代码
@@ -851,8 +860,11 @@ class EasyCoder extends EasyLogger {
   }
 
   void _onVmNotFoundSuperClass(String className, String superName, String classPath) {
-    // logError(['cannot found super class:', '$className inherit $superName', '=>', classPath]);
     _vmerrList.add(['cannot found super class:', '$className inherit $superName', '=>', classPath]); //添加到错误列表，便于统一打印
+  }
+
+  void _onVmNotFoundClassField(String className, String fieldName, String classPath) {
+    _vmerrList.add(['cannot found class field:', '$className.$fieldName', '=>', classPath]); //添加到错误列表，便于统一打印
   }
 
   void _onVmIgnoreProxyObject(String className, String proxyName, String classPath) {
