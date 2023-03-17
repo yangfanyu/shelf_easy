@@ -1223,6 +1223,12 @@ class VmParserBirdgeItemData {
         }
       }
     }
+    if (parameterValue != null && parameterType == 'double') {
+      final exactValue = double.tryParse(parameterValue!); //int转double
+      if (exactValue != null) {
+        return ' = $exactValue';
+      }
+    }
     return parameterValue == null ? '' : ' = $parameterValue';
   }
 
