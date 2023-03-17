@@ -106,7 +106,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
   Map<VmKeys, Map<VmKeys, dynamic>> visitNamedType(NamedType node) => {
         VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$NamedType: {
-          VmKeys.$NamedTypeName: node.name.name,
+          VmKeys.$NamedTypeName: node.name.name, //可能包含'.'的写法，由VmRunner进行处理
         }
       };
 
@@ -942,7 +942,7 @@ class VmParserBirdger extends SimpleAstVisitor {
       isListReqParameter: node.isRequiredPositional,
       isListOptParameter: node.isOptionalPositional,
       isNameAnyParameter: node.isNamed,
-      parameterType: 'Function', //无对应字段，手动填充为'Function'
+      parameterType: 'Function', //手动填充为 'Function' 来 保证 逻辑的正确
       parameterValue: null,
       parameterReturn: node.returnType != null && node.returnType?.toSource().trim() != 'void',
       parameterCanNull: node.question != null,
@@ -976,7 +976,7 @@ class VmParserBirdger extends SimpleAstVisitor {
   }
 
   @override
-  String? visitNamedType(NamedType node) => node.name.name; //这里其实也可能是函数的别名，所以生成代码时需要对 alias 进行查找
+  String? visitNamedType(NamedType node) => node.name.name; //这里其实也可能是函数的别名，所以生成代码时需要对 alias 进行查找。这里也可能包含'.'的写法，但主要判断的是Function类型所以不影响代码生成。
 
   @override
   VmParserBirdgeItemData? visitGenericTypeAlias(GenericTypeAlias node) {
@@ -994,7 +994,7 @@ class VmParserBirdger extends SimpleAstVisitor {
       type: VmParserBirdgeItemType.functionTypeAlias,
       name: node.name.lexeme,
       parameters: node.parameters.accept(this),
-      parameterType: 'Function', //无对应字段，手动填充为'Function'
+      parameterType: 'Function', //手动填充为 'Function' 来 保证 逻辑的正确
       parameterReturn: node.returnType != null && node.returnType?.toSource().trim() != 'void',
       callerTemplates: node.typeParameters?.toSource(), //如 Set.castFrom
     );
