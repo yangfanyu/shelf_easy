@@ -8,10 +8,6 @@ import 'package:encrypt/encrypt.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-export 'db/db_base.dart';
-export 'wk/wk_base.dart';
-export 'vm/vm_object.dart';
-
 ///
 ///一些常量
 ///
@@ -1094,6 +1090,10 @@ class EasyCoderModelInfo {
     this.dirty = true,
     this.query = true,
   });
+
+  bool get hasObjectIdField {
+    return constFields.any((e) => e.type.contains('ObjectId')) || classFields.any((e) => e.type.contains('ObjectId')) || extraFields.any((e) => e.type.contains('ObjectId'));
+  }
 }
 
 ///

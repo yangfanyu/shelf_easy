@@ -2,18 +2,28 @@ import 'dart:io';
 
 import 'package:shelf_easy/shelf_easy.dart';
 
-void main() {
-  ///为example生成model桥接库
-  generatorLibraryForModel();
+void main(List<String> arguments) {
+  final targetName = arguments.isEmpty ? 'testlib' : arguments.first;
+  switch (targetName) {
+    case 'testlib':
 
-  ///
-  ///为flutter生成桥接库
-  ///
-  ///这里全生成了，实际情况可以自己去掉不需要的库，只需确保：
-  /// * 生成后调用EasyCode.logVmLibrarydErrors无错误打印
-  /// * 且在开发工具里面打开库文件不报错，启动flutter应用正常
-  ///
-  // generatorLibraryForFlutter();
+      ///为example生成model桥接库
+      generatorLibraryForModel();
+      break;
+    case 'flutter':
+
+      ///
+      ///为flutter生成桥接库
+      ///
+      ///这里全生成了，实际情况可以自己去掉不需要的库，只需确保：
+      /// * 生成后调用EasyCode.logVmLibrarydErrors无错误打印
+      /// * 且在开发工具里面打开库文件不报错，启动flutter应用正常
+      ///
+      generatorLibraryForFlutter();
+      break;
+    default:
+      throw ('Unsupport targetName: $targetName');
+  }
 }
 
 void generatorLibraryForModel() {

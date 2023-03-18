@@ -1,3 +1,8 @@
+## 1.1.15
+
+- Add implicit double conversion to virtual machine's bridge type generato.
+- Fix the bug that the _scanInstanceCreationExpression function cannot recognize the prefix constructor for the virtual machine.
+  
 ## 1.1.13
 
 - Added anonymous function scope support for virtual machines.

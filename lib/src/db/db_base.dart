@@ -3,10 +3,6 @@ import 'dart:convert';
 import 'package:bson/bson.dart';
 import 'package:fixnum/fixnum.dart';
 
-export 'dart:convert' show jsonDecode, jsonEncode, JsonEncoder;
-
-export 'package:bson/bson.dart' show ObjectId;
-
 ///
 ///数据库操作接口
 ///

@@ -2,9 +2,18 @@ import 'dart:io';
 
 import 'package:shelf_easy/shelf_easy.dart';
 
-void main() {
-  testEasyCoderModel();
-  testEasyCoderVmLib();
+void main(List<String> arguments) {
+  final targetName = arguments.isEmpty ? 'testmodel' : arguments.first;
+  switch (targetName) {
+    case 'testmodel':
+      testEasyCoderModel();
+      break;
+    case 'vmlibrary':
+      testEasyCoderVmLib();
+      break;
+    default:
+      throw ('Unsupport targetName: $targetName');
+  }
 }
 
 void testEasyCoderModel() {

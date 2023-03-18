@@ -142,7 +142,11 @@ class EasyCoder extends EasyLogger {
     //拼接类内容
     buffer.write('import \'package:shelf_easy/shelf_easy.dart\';\n');
     for (var element in importList) {
-      buffer.write('import \'$element\';\n');
+      if (element.startsWith('import')) {
+        buffer.write('$element\n');
+      } else {
+        buffer.write('import \'$element\';\n');
+      }
     }
     buffer.write('\n');
     for (var element in _wrapList) {
@@ -463,10 +467,21 @@ class EasyCoder extends EasyLogger {
 
   void _generateImports(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
     //自动导入模型基类文件
+    buffer.write('import \'dart:convert\';\n\n');
     buffer.write('import \'package:shelf_easy/shelf_easy.dart\';\n');
+    if (modelInfo.hasObjectIdField) {
+      buffer.write('import \'package:shelf_easy/shelf_deps.dart\' show ObjectId;\n');
+    }
+    if (modelInfo.importList.isNotEmpty) {
+      buffer.write('\n');
+    }
     //导入自定义文件
     for (var element in modelInfo.importList) {
-      buffer.write('import \'$element\';\n');
+      if (element.startsWith('import')) {
+        buffer.write('$element\n');
+      } else {
+        buffer.write('import \'$element\';\n');
+      }
     }
     buffer.write('\n');
   }

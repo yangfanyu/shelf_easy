@@ -3,6 +3,7 @@ import 'dart:io';
 import 'easy_class.dart';
 import 'easy_server.dart';
 import 'easy_unidb.dart';
+import 'wk/wk_base.dart';
 import 'wk/wk_unsupport.dart' if (dart.library.io) 'wk/wk_native.dart' if (dart.library.html) 'wk/wk_html.dart' as worker;
 
 ///

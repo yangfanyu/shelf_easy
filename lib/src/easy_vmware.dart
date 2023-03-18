@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'easy_class.dart';
 import 'vm/vm_keys.dart';
+import 'vm/vm_object.dart';
 import 'vm/vm_parser.dart';
 import 'vm/vm_runner.dart';
 
