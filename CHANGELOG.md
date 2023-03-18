@@ -1,7 +1,8 @@
-## 1.1.15
+## 1.1.16
 
-- Add implicit double conversion to virtual machine's bridge type generato.
 - Fix the bug that the _scanInstanceCreationExpression function cannot recognize the prefix constructor for the virtual machine.
+- Add implicit double conversion to virtual machine's bridge type generato.
+- Modify the structure of the export file.
   
 ## 1.1.13
 
