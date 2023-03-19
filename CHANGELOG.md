@@ -1,3 +1,20 @@
+## 1.1.17
+
+The content of this submission modification is as follows:
+- Add support for ?. expressions to virtual machines.
+- Modify the constraints of dependent packages.
+  
+The current version of the built-in bridging library for the virtual machine is `dart-sdk-2.19.4` and fully supports the following packages:
+- `dart:async`
+- `dart:collection`
+- `dart:convert`
+- `dart:core`
+- `dart:math`
+- `dart:typed_data`
+- `dart:io`
+- `dart:isolate`
+
+  
 ## 1.1.16
 
 - Fix the bug that the _scanInstanceCreationExpression function cannot recognize the prefix constructor for the virtual machine.

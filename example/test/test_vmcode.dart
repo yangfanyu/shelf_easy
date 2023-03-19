@@ -190,8 +190,8 @@ int funcA1(int a, {int b = 2, required int c, int? d}) => d ?? (a + b + c);
 dynamic funcA2(int a, int b, {required int c, int d = 0, int? e}) {
   final aaa = 888;
   final str = 'hello world a=$a, b=$b, c=$c, d=$d, e=$e, aaa=$aaa';
-  print('e?.bitLength => ${e?.bitLength}');
   print('\n');
+  print('e?.bitLength => ${e?.bitLength} ${e?.bitLength.toString().length}');
   print(str);
 
   if (a == 0) print('if a == 0');
@@ -366,102 +366,102 @@ List funcA7(Duration a, [void b(String d)?, int c = 2]) {
 
 final funcResA1_1 = funcA1(1, c: 3); //6
 final funcResA2_0 = funcA2(0, 100, c: 200); //hello world a=0, b=100, c=200, d=0, e=null, aaa=888
-// final funcResA2_1 = funcA2(1, 100, c: 200); //1
-// final funcResA2_2 = funcA2(2, 100, c: 200); //2
-// final funcResA2_3 = funcA2(3, 100, c: 200); //3
-// final funcResA2_4 = funcA2(4, 100, c: 200); //hello world a=4, b=100, c=200, d=0, e=null, aaa=888
-// final funcResA2_5 = funcA2(5, 100, c: 200); //hello world a=5, b=100, c=200, d=0, e=null, aaa=888
-// final funcResA2_6 = funcA2(6, 100, c: 200); //hello world a=6, b=100, c=200, d=0, e=null, aaa=888
-// final funcResA2_7 = funcA2(7, 100, c: 200); //hello world a=7, b=100, c=200, d=0, e=null, aaa=888
-// final funcResA2_8 = funcA2(8, 100, c: 200); //hello world a=8, b=100, c=200, d=0, e=null, aaa=888
-// final funcResA5_0 = funcA5(); //1
-// final funcResA6_0 = funcA6(Duration(hours: 1, minutes: 1, seconds: 1), b: print); //{1, 61, 3661}
-// final funcResA7_0 = funcA7(Duration(hours: 1, minutes: 1, seconds: 1), print); //[1, 61, 3661, 2]
-// final funcResA7_1 = funcA7(Duration(hours: 1, minutes: 1, seconds: 1), print, 999); //[1, 61, 3661, 999]
+final funcResA2_1 = funcA2(1, 100, c: 200, e: 666); //1
+final funcResA2_2 = funcA2(2, 100, c: 200); //2
+final funcResA2_3 = funcA2(3, 100, c: 200); //3
+final funcResA2_4 = funcA2(4, 100, c: 200); //hello world a=4, b=100, c=200, d=0, e=null, aaa=888
+final funcResA2_5 = funcA2(5, 100, c: 200); //hello world a=5, b=100, c=200, d=0, e=null, aaa=888
+final funcResA2_6 = funcA2(6, 100, c: 200); //hello world a=6, b=100, c=200, d=0, e=null, aaa=888
+final funcResA2_7 = funcA2(7, 100, c: 200); //hello world a=7, b=100, c=200, d=0, e=null, aaa=888
+final funcResA2_8 = funcA2(8, 100, c: 200); //hello world a=8, b=100, c=200, d=0, e=null, aaa=888
+final funcResA5_0 = funcA5(); //1
+final funcResA6_0 = funcA6(Duration(hours: 1, minutes: 1, seconds: 1), b: print); //{1, 61, 3661}
+final funcResA7_0 = funcA7(Duration(hours: 1, minutes: 1, seconds: 1), print); //[1, 61, 3661, 2]
+final funcResA7_1 = funcA7(Duration(hours: 1, minutes: 1, seconds: 1), print, 999); //[1, 61, 3661, 999]
 
-// ///
-// /// 类定义与实例测试区
-// ///
+///
+/// 类定义与实例测试区
+///
 
-// class TestUser {
-//   static const sexMale = 1;
-//   static const sexFemale = 2;
+class TestUser {
+  static const sexMale = 1;
+  static const sexFemale = 2;
 
-//   final int id;
-//   final String name;
-//   final int sex;
-//   final int age;
-//   String _desc, xxx = 'xxxxxxxx';
-//   String _info;
-//   List<int> _haha;
+  final int id;
+  final String name;
+  final int sex;
+  final int age;
+  String _desc, xxx = 'xxxxxxxx';
+  String _info;
+  List<int> _haha;
 
-//   TestUser(
-//     this.id,
-//     int no, {
-//     required this.name,
-//     this.sex = sexMale,
-//     int? age,
-//     aaa,
-//   })  : age = age ?? 18,
-//         _desc = '$no desc',
-//         _info = '$no info',
-//         _haha = [0, 1, 2, 3];
+  TestUser(
+    this.id,
+    int no, {
+    required this.name,
+    this.sex = sexMale,
+    int? age,
+    aaa,
+  })  : age = age ?? 18,
+        _desc = '$no desc',
+        _info = '$no info',
+        _haha = [0, 1, 2, 3];
 
-//   TestUser.a(
-//     this.id,
-//     int no, {
-//     required this.name,
-//     this.sex = sexMale,
-//     int? age,
-//     aaa,
-//   })  : age = age ?? 18,
-//         _desc = '$no desc',
-//         _info = '$no info',
-//         _haha = [0, 1, 2, 3];
+  TestUser.a(
+    this.id,
+    int no, {
+    required this.name,
+    this.sex = sexMale,
+    int? age,
+    aaa,
+  })  : age = age ?? 18,
+        _desc = '$no desc',
+        _info = '$no info',
+        _haha = [0, 1, 2, 3];
 
-//   factory TestUser.fromTest() {
-//     return TestUser(11111, 22222, name: 'Test', sex: sexFemale, age: 10);
-//   }
+  factory TestUser.fromTest() {
+    return TestUser(11111, 22222, name: 'Test', sex: sexFemale, age: 10);
+  }
 
-//   void readSex() => sex;
+  void readSex() => sex;
 
-//   void writeDesc(String value) => _desc = '666 $value';
+  void writeDesc(String value) => _desc = '666 $value';
 
-//   String printInfo() {
-//     _haha
-//       ..[0] += 10
-//       ..[1] *= 100
-//       ..[2] -= 100;
-//     _haha[3] = 999;
-//     final str = 'id=$id, name=$name, sex=$sex, age=$age, desc=$desc, info=$info, _haha=$_haha';
-//     print('$sexMale $str $xxx');
-//     return str;
-//   }
+  String printInfo() {
+    _haha
+      ..[0] += 10
+      ..[1] *= 100
+      ..[2] -= 100;
+    _haha[3] = 999;
+    final str = 'id=$id, name=$name, sex=$sex, age=$age, desc=$desc, info=$info, _haha=$_haha';
+    print('$sexMale $str $xxx');
+    return str;
+  }
 
-//   String get desc => _desc;
+  String get desc => _desc;
 
-//   String get info => _info;
+  String get info => _info;
 
-//   set desc(String value) => writeDesc(value);
+  set desc(String value) => writeDesc(value);
 
-//   static int get getFemaleSexValue => sexFemale;
-// }
+  static int get getFemaleSexValue => sexFemale;
+}
 
-// final userInstance0 = TestUser(1, 2, name: 'Jack', sex: 3, age: 4);
-// final userInstance1 = TestUser(10, 20, name: 'Tom', sex: TestUser.getFemaleSexValue);
-// final userInstance2 = userInstance0;
-// final userInstance3 = userInstance2.printInfo(); //id=1, name=Jack, sex=3, age=4, desc=2 desc, info=2 info, _haha=[10, 100, -98, 999]
-// final userInstance4 = TestUser(30, 40, name: 'Rose').printInfo(); //id=30, name=Rose, sex=1, age=18, desc=40 desc, info=40 info, _haha=[10, 100, -98, 999]
-// final userInstance5 = TestUser.fromTest().printInfo(); //id=11111, name=Test, sex=2, age=10, desc=22222 desc, info=22222 info, _haha=[10, 100, -98, 999]
-// final userInstance6 = TestUser(50, 60, name: 'Cascade', sex: 3, age: 80)
-//   ..desc = 'Hello world!'
-//   .._info = 'I am Dart'
-//   ..printInfo();
-// dynamic userInstance7;
-// var userInstance8 = userInstance7 ??= userInstance0;
-// dynamic userInstance9 = userInstance8;
-// final userInstance10 = (userInstance9 as TestUser).printInfo(); // String id=1, name=Jack, sex=3, age=4, desc=2 desc, info=2 info, _haha=[20, 10000, -198, 999]
-// final userInstance11 = [userInstance0, userInstance1];
-// final userInstance12 = {userInstance0, userInstance1};
-// final userInstance13 = {0: userInstance0, 1: userInstance1};
-// final userInstance14 = userInstance11.map((e) => e.printInfo()).toList();
+final userInstance0 = TestUser(1, 2, name: 'Jack', sex: 3, age: 4);
+final userInstance1 = TestUser(10, 20, name: 'Tom', sex: TestUser.getFemaleSexValue);
+final userInstance2 = userInstance0;
+final userInstance3 = userInstance2.printInfo(); //id=1, name=Jack, sex=3, age=4, desc=2 desc, info=2 info, _haha=[10, 100, -98, 999]
+final userInstance4 = TestUser(30, 40, name: 'Rose').printInfo(); //id=30, name=Rose, sex=1, age=18, desc=40 desc, info=40 info, _haha=[10, 100, -98, 999]
+final userInstance5 = TestUser.fromTest().printInfo(); //id=11111, name=Test, sex=2, age=10, desc=22222 desc, info=22222 info, _haha=[10, 100, -98, 999]
+final userInstance6 = TestUser(50, 60, name: 'Cascade', sex: 3, age: 80)
+  ..desc = 'Hello world!'
+  .._info = 'I am Dart'
+  ..printInfo();
+dynamic userInstance7;
+var userInstance8 = userInstance7 ??= userInstance0;
+dynamic userInstance9 = userInstance8;
+final userInstance10 = (userInstance9 as TestUser).printInfo(); // String id=1, name=Jack, sex=3, age=4, desc=2 desc, info=2 info, _haha=[20, 10000, -198, 999]
+final userInstance11 = [userInstance0, userInstance1];
+final userInstance12 = {userInstance0, userInstance1};
+final userInstance13 = {0: userInstance0, 1: userInstance1};
+final userInstance14 = userInstance11.map((e) => e.printInfo()).toList();
