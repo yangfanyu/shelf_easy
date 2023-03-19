@@ -8,7 +8,7 @@ environment:
 
 
 dependencies: 
-  analyzer: ^5.8.0
+  analyzer: '>=5.5.0 <5.8.0'
   bson: ^4.0.0
   crypto: ^3.0.2
   dart_style: ^2.3.0
@@ -28,6 +28,8 @@ dependencies:
   shelf_web_socket: ^1.0.3
   uuid: ^3.0.7
   web_socket_channel: ^2.3.0
+  # 项目中未直接使用pointycastle库，但内部依赖库中basic_utils与他冲突，所以限制一下版本
+  pointycastle: '>=3.6.0 <3.7.0'
 
 dev_dependencies:
   lints: ^2.0.0
