@@ -376,6 +376,22 @@ class VmClass<T> extends VmObject {
     }
   }
 
+  ///检查指定字段的代理是否存在，逻辑与[getProxy]一样，只是用false代替异常的抛出，用于 xxx?.xxx 的调用
+  bool hasProxy(String propertyName, {required bool setter}) {
+    if (setter) {
+      final setterPropName = '$propertyName=';
+      final proxy = isExternal ? (externalProxyMap?[setterPropName] ?? externalProxyMap?[propertyName]) : (internalProxyMap?[setterPropName] ?? internalProxyMap?[propertyName]);
+      if (proxy != null) return true;
+      if (_internalSuperclass != null) return _internalSuperclass!.hasProxy(propertyName, setter: setter);
+      return false;
+    } else {
+      final proxy = isExternal ? (externalProxyMap?[propertyName]) : (internalProxyMap?[propertyName]);
+      if (proxy != null) return true;
+      if (_internalSuperclass != null) return _internalSuperclass!.hasProxy(propertyName, setter: setter);
+      return false;
+    }
+  }
+
   @override
   VmClass getClass() => VmObject.readClass(vmwareType);
 
@@ -1250,14 +1266,14 @@ class VmLazyer extends VmObject {
         final nameArgumentsNative = nameArguments?.map((key, value) => MapEntry(key, VmObject.readValue(value)));
         return Function.apply(target, listArgumentsNative, nameArgumentsNative); //执行外部函数
       } else {
-        _result = VmObject.readClass(target).getProxy(property, setter: false).runFunction(target, listArguments, nameArguments); //执行实例方法
+        _result = validateNull ? VmObject.readClass(target).getProxy(property, setter: false).runFunction(target, listArguments, nameArguments) : null; //执行实例方法
       }
     } else if (isIndexed) {
       _result = target[property]; //索引List取值
     } else if (target is VmClass) {
       _result = target.getProxy(property, setter: false).getProperty(target); //读取静态属性
     } else {
-      _result = VmObject.readClass(target).getProxy(property, setter: false).getProperty(target); //读取实例属性
+      _result = validateNull ? VmObject.readClass(target).getProxy(property, setter: false).getProperty(target) : null; //读取实例属性
     }
     _completed = true;
     return _result;
@@ -1276,7 +1292,7 @@ class VmLazyer extends VmObject {
     } else if (target is VmClass) {
       return target.getProxy(property, setter: true).setProperty(target, value); //写入静态属性
     } else {
-      return VmObject.readClass(target).getProxy(property, setter: true).setProperty(target, value); //写入实例属性
+      return validateNull ? VmObject.readClass(target).getProxy(property, setter: true).setProperty(target, value) : null; //写入实例属性
     }
   }
 
@@ -1296,6 +1312,9 @@ class VmLazyer extends VmObject {
     };
     return map;
   }
+
+  ///对null值进行检测，用于 xxx?.xxx 的调用
+  bool get validateNull => instance != null || VmObject.readClass(instance).hasProxy(property, setter: true); //setter的值不重要
 }
 
 ///
