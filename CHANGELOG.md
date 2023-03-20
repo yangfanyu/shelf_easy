@@ -1,6 +1,7 @@
-## 1.1.17
+## 1.1.18
 
 The content of this submission modification is as follows:
+- Added int to double implicit conversion to virtual machine's bridge type generator.
 - Add support for ?. expressions to virtual machines.
 - Modify the constraints of dependent packages.
   
