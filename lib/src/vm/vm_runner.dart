@@ -548,6 +548,9 @@ class VmRunnerCore {
     final operandValue = VmObject.readValue(operandResult);
     dynamic value;
     switch (operator) {
+      case '!':
+        value = operandValue!;
+        break;
       case '++':
         value = operandValue + 1; //num
         VmObject.saveValue(operandResult, value);
