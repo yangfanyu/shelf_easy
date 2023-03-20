@@ -1637,9 +1637,9 @@ class VmParserBirdgeItemData {
       if (outerListOptStrs.isNotEmpty) outerList.add('[$outerListOptStrs]');
       if (outerNameAnyStrs.isNotEmpty) outerList.add('{$outerNameAnyStrs}');
       i = 0;
-      final innerListReqStrs = parameters.where((e) => e != null && e.isListReqParameter).map((e) => e!.isCallerFunctionType ? e.toCallerCode('a${i++}') : 'a${i++}').join(', ');
-      final innerListOptStrs = parameters.where((e) => e != null && e.isListOptParameter).map((e) => e!.isCallerFunctionType ? e.toCallerCode('a${i++}') : 'a${i++}').join(', ');
-      final innerNameAnyStrs = parameters.where((e) => e != null && e.isNameAnyParameter).map((e) => '${e!.name}: ${e.isCallerFunctionType ? e.toCallerCode(e.name) : e.name}').join(', ');
+      final innerListReqStrs = parameters.where((e) => e != null && e.isListReqParameter).map((e) => e!.isCallerFunctionType ? e.toCallerCode('a${i++}') : e.toFilledCode('a${i++}')).join(', ');
+      final innerListOptStrs = parameters.where((e) => e != null && e.isListOptParameter).map((e) => e!.isCallerFunctionType ? e.toCallerCode('a${i++}') : e.toFilledCode('a${i++}')).join(', ');
+      final innerNameAnyStrs = parameters.where((e) => e != null && e.isNameAnyParameter).map((e) => '${e!.name}: ${e.isCallerFunctionType ? e.toCallerCode(e.name) : e.toFilledCode(e.name)}').join(', ');
       final innerList = <String>[];
       if (innerListReqStrs.isNotEmpty) innerList.add(innerListReqStrs);
       if (innerListOptStrs.isNotEmpty) innerList.add(innerListOptStrs);
@@ -1660,9 +1660,9 @@ class VmParserBirdgeItemData {
       if (outerListOptStrs.isNotEmpty) outerList.add('[$outerListOptStrs]');
       if (outerNameAnyStrs.isNotEmpty) outerList.add('{$outerNameAnyStrs}');
       i = 0;
-      final innerListReqStrs = parameters.where((e) => e != null && e.isListReqParameter).map((e) => e!.isCallerFunctionType ? e.toCallerCode('a${i++}') : 'a${i++}').join(', ');
-      final innerListOptStrs = parameters.where((e) => e != null && e.isListOptParameter).map((e) => e!.isCallerFunctionType ? e.toCallerCode('a${i++}') : 'a${i++}').join(', ');
-      final innerNameAnyStrs = parameters.where((e) => e != null && e.isNameAnyParameter).map((e) => '${e!.name}: ${e.isCallerFunctionType ? e.toCallerCode(e.name) : e.name}').join(', ');
+      final innerListReqStrs = parameters.where((e) => e != null && e.isListReqParameter).map((e) => e!.isCallerFunctionType ? e.toCallerCode('a${i++}') : e.toFilledCode('a${i++}')).join(', ');
+      final innerListOptStrs = parameters.where((e) => e != null && e.isListOptParameter).map((e) => e!.isCallerFunctionType ? e.toCallerCode('a${i++}') : e.toFilledCode('a${i++}')).join(', ');
+      final innerNameAnyStrs = parameters.where((e) => e != null && e.isNameAnyParameter).map((e) => '${e!.name}: ${e.isCallerFunctionType ? e.toCallerCode(e.name) : e.toFilledCode(e.name)}').join(', ');
       final innerList = <String>[];
       if (innerListReqStrs.isNotEmpty) innerList.add(innerListReqStrs);
       if (innerListOptStrs.isNotEmpty) innerList.add(innerListOptStrs);
@@ -1685,14 +1685,19 @@ class VmParserBirdgeItemData {
     if (outerListOptStrs.isNotEmpty) outerList.add('[$outerListOptStrs]');
     if (outerNameAnyStrs.isNotEmpty) outerList.add('{$outerNameAnyStrs}');
     i = 0;
-    final innerListReqStrs = parameters.where((e) => e != null && e.isListReqParameter).map((e) => 'b${i++}').join(', ');
-    final innerListOptStrs = parameters.where((e) => e != null && e.isListOptParameter).map((e) => 'b${i++}').join(', ');
-    final innerNameAnyStrs = parameters.where((e) => e != null && e.isNameAnyParameter).map((e) => '${e!.name}: ${e.name}').join(', ');
+    final innerListReqStrs = parameters.where((e) => e != null && e.isListReqParameter).map((e) => 'b${i++}').join(', '); //此处无需进行toFilledCode包装，因为fieldName函数必然是被外部回调到虚拟机中处理逻辑，对类型要求不严格
+    final innerListOptStrs = parameters.where((e) => e != null && e.isListOptParameter).map((e) => 'b${i++}').join(', '); //此处无需进行toFilledCode包装，因为fieldName函数必然是被外部回调到虚拟机中处理逻辑，对类型要求不严格
+    final innerNameAnyStrs = parameters.where((e) => e != null && e.isNameAnyParameter).map((e) => '${e!.name}: ${e.name}').join(', '); //此处无需进行toFilledCode包装，因为fieldName函数必然是被外部回调到虚拟机中处理逻辑，对类型要求不严格
     final innerList = <String>[];
     if (innerListReqStrs.isNotEmpty) innerList.add(innerListReqStrs);
     if (innerListOptStrs.isNotEmpty) innerList.add(innerListOptStrs);
     if (innerNameAnyStrs.isNotEmpty) innerList.add(innerNameAnyStrs);
     return '${parameterCanNull ? '$fieldName == null ? null : ' : ''}${callerTemplates ?? ''}(${outerList.join(', ')}) => $fieldName(${innerList.join(', ')})';
+  }
+
+  ///生成filled源代码
+  String toFilledCode(String fieldName) {
+    return parameterType == 'double' ? 'VmObject.toDouble($fieldName)' : fieldName;
   }
 
   ///是否匹配忽略

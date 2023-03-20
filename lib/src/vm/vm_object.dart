@@ -247,6 +247,20 @@ abstract class VmObject {
     }
   }
 
+  ///转换[target]为double值，为桥接库提供转换，返回值类型使用dynamic可兼容null值
+  static dynamic toDouble(dynamic target) {
+    if (target is int) {
+      return target.toDouble();
+    } else if (target is double) {
+      return target;
+    } else if (target is num) {
+      return target.toDouble();
+    } else if (target is String) {
+      return double.parse(target);
+    }
+    return target;
+  }
+
   ///对函数声明时的参数进行分组
   static void groupDeclarationParameters(List<dynamic>? fromParameters, List<VmHelper> toListArguments, List<VmHelper> toNameArguments) {
     if (fromParameters != null) {
