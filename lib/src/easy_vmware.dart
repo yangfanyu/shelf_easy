@@ -60,8 +60,8 @@ class EasyVmWare extends EasyLogger {
   }
 
   ///调用主函数
-  T main<T>({List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments}) {
-    return _runner.callFunction(_config.mainMethod, positionalArguments: positionalArguments, namedArguments: namedArguments);
+  T main<T>() {
+    return _runner.callFunction(_config.mainMethod, positionalArguments: _config.mainListArgs, namedArguments: _config.mainNameArgs);
   }
 
   ///调用任意任意函数

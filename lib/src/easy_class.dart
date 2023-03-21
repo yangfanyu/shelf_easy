@@ -1150,7 +1150,13 @@ class EasyVmWareConfig extends EasyConfig {
   ///程序入口函数的名称
   final String mainMethod;
 
-  ///程序应用库代码集合
+  ///程序入口函数的列表参数
+  final List<dynamic>? mainListArgs;
+
+  ///程序入口函数的命名参数
+  final Map<Symbol, dynamic>? mainNameArgs;
+
+  ///程序应用库代码内容集合
   final Map<String, String> sourceCodes;
 
   EasyVmWareConfig({
@@ -1162,6 +1168,8 @@ class EasyVmWareConfig extends EasyConfig {
     super.logFileMaxBytes,
     this.debugRoute = false,
     this.mainMethod = 'main',
+    this.mainListArgs,
+    this.mainNameArgs,
     this.sourceCodes = const {},
   });
 }
