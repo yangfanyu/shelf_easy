@@ -421,20 +421,40 @@ class VmRunnerCore {
 
   static String? _scanStringInterpolation(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) => _scanList(runner, node[VmKeys.$StringInterpolationElements])?.map((e) => VmObject.readValue(e)).join('');
 
-  static List<dynamic>? _scanListLiteral(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) => _scanList(runner, node[VmKeys.$ListLiteralElements])?.map((e) => VmObject.readLogic(e)).toList(); //虽无影响但防嵌套过深，所以取逻辑值，下同
+  static List<dynamic>? _scanListLiteral(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) {
+    //属性读取
+    final typeArguments = node[VmKeys.$ListLiteralTypeArguments] as List<Map<VmKeys, dynamic>?>?;
+    final elements = node[VmKeys.$ListLiteralElements] as List<Map<VmKeys, dynamic>?>?;
+    //逻辑处理
+    final typeArgumentsResults = _scanList(runner, typeArguments)?.map((e) => (e as VmHelper).fieldType!).toList(); // => _scanNamedType or _scanGenericFunctionType or null
+    final elementsResults = _scanList(runner, elements)?.map((e) => VmObject.readLogic(e)).toList(); //虽无影响但防嵌套过深，所以取逻辑值，下同
+    if (typeArgumentsResults != null && typeArgumentsResults.isNotEmpty) {
+      final valClass = runner.getVmObject(typeArgumentsResults.last) as VmClass;
+      return valClass.toTypeList(elementsResults);
+    } else {
+      return elementsResults;
+    }
+  }
 
   static dynamic _scanSetOrMapLiteral(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) {
     //属性读取
-    final typeArguments = node[VmKeys.$SetOrMapLiteralTypeArguments] as List?;
+    final typeArguments = node[VmKeys.$SetOrMapLiteralTypeArguments] as List<Map<VmKeys, dynamic>?>?;
     final elements = node[VmKeys.$SetOrMapLiteralElements] as List<Map<VmKeys, dynamic>?>?;
+    //逻辑处理
+    final typeArgumentsResults = _scanList(runner, typeArguments)?.map((e) => (e as VmHelper).fieldType!).toList(); // => _scanNamedType or _scanGenericFunctionType or null
     final elementsResults = _scanList(runner, elements);
     if (elementsResults == null) return null; //runtimeType => Null
     //根据<a,b,c>...推断
-    if (typeArguments != null) {
-      if (typeArguments.length == 2) {
-        return {for (MapEntry e in elementsResults) VmObject.readLogic(e.key): VmObject.readLogic(e.value)}; //runtimeType => Map
-      } else if (typeArguments.length == 1) {
-        return elementsResults.map((e) => VmObject.readLogic(e)).toSet(); //runtimeType => Set
+    if (typeArgumentsResults != null) {
+      if (typeArgumentsResults.length == 2) {
+        final keyClass = runner.getVmObject(typeArgumentsResults.first) as VmClass;
+        final valClass = runner.getVmObject(typeArgumentsResults.last) as VmClass;
+        final tmpValue = {for (MapEntry e in elementsResults) VmObject.readLogic(e.key): VmObject.readLogic(e.value)}; //runtimeType => Map
+        return keyClass.toTypeMap(tmpValue, valClass); //Map的推导现在是有点问题的
+      } else if (typeArgumentsResults.length == 1) {
+        final valClass = runner.getVmObject(typeArgumentsResults.last) as VmClass;
+        final tmpValue = elementsResults.map((e) => VmObject.readLogic(e)).toSet(); //runtimeType => Set
+        return valClass.toTypeSet(tmpValue);
       }
     }
     //根据子项数据类型推断
@@ -442,7 +462,7 @@ class VmRunnerCore {
       if (elementsResults.first is MapEntry) {
         return {for (MapEntry e in elementsResults) VmObject.readLogic(e.key): VmObject.readLogic(e.value)}; //runtimeType => Map
       } else {
-        return elementsResults.toSet().map((e) => VmObject.readLogic(e)).toSet(); //runtimeType => Set
+        return elementsResults.map((e) => VmObject.readLogic(e)).toSet(); //runtimeType => Set
       }
     }
     //因为无任何标识参数时，直接定义{}是个Map，另外final test={} 中 test 也为 Map，所以默认返回Map，

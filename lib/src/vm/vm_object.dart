@@ -247,20 +247,6 @@ abstract class VmObject {
     }
   }
 
-  ///转换[target]为double值，为桥接库提供转换，返回值类型使用dynamic可兼容null值
-  static dynamic toDouble(dynamic target) {
-    if (target is int) {
-      return target.toDouble();
-    } else if (target is double) {
-      return target;
-    } else if (target is num) {
-      return target.toDouble();
-    } else if (target is String) {
-      return double.parse(target);
-    }
-    return target;
-  }
-
   ///对函数声明时的参数进行分组
   static void groupDeclarationParameters(List<dynamic>? fromParameters, List<VmHelper> toListArguments, List<VmHelper> toNameArguments) {
     if (fromParameters != null) {
@@ -353,6 +339,15 @@ class VmClass<T> extends VmObject {
     internalProxyMap?.forEach((key, value) => value.bindVmClass(this)); //给代理集合绑定包装类型
     internalStaticPropertyMap?.forEach((key, value) => value.bindStaticScope(this)); //给类静态成员绑定作用域
   }
+
+  ///转换为精确的List<T>类型
+  List<T>? toTypeList(List? source) => source?.map((e) => e as T).toList();
+
+  ///转换为精确的Set<T>类型
+  Set<T>? toTypeSet(Set? source) => source?.map((e) => e as T).toSet();
+
+  ///转换为精确的Mao<T, V>类型，目前Map的推导只有key才准确，实际返回的是Map<T, dynamic>类型
+  Map<T, V>? toTypeMap<V>(Map? source, VmClass<V> vmclass) => source?.map((key, value) => MapEntry(key as T, value as V));
 
   ///判断实例是否为该包装类型的实例
   bool isThisType(dynamic instance) {

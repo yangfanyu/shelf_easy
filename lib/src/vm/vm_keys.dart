@@ -169,6 +169,9 @@ enum VmKeys {
   ///对应[ListLiteral]
   $ListLiteral,
 
+  ///对应[ListLiteral.typeArguments]
+  $ListLiteralTypeArguments,
+
   ///对应[ListLiteral.elements]
   $ListLiteralElements,
 

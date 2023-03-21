@@ -1,4 +1,4 @@
-// import 'dart:io';
+import 'dart:io';
 
 import 'package:shelf_easy/shelf_easy.dart';
 
@@ -155,7 +155,7 @@ void main() {
           ''',
 
         ///支持的其他语法在这个文件中，可取消下面这行代码的注释，然后运行查看控制台的输出
-        // 'code': File('${Directory.current.path}/test/test_vmcode.dart').readAsStringSync(),
+        'code': File('${Directory.current.path}/test/test_vmcode.dart').readAsStringSync(),
       },
     ),
   );
@@ -187,6 +187,6 @@ void main() {
   vmwareApp.call<void>(methodName: 'EmptyClass.sayGoodBye', positionalArguments: [10], namedArguments: {#b: '999'}); //print: EmptyClass.sayGoodBye => 10 999
 
   // vmwareApp.debugObjectStack(); //打印虚拟机中的作用域堆栈信息
-  // vmwareApp.debugObjectStack(index: 3, simple: false); //打印虚拟机中的作用域堆栈信息
+  vmwareApp.debugObjectStack(index: 3, simple: true); //打印虚拟机中的作用域堆栈信息
   // vmwareApp.debugSourceTrees(key: 'main'); //打印虚拟机中的main模块的语法树信息
 }

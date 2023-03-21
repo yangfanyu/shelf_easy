@@ -202,6 +202,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
   Map<VmKeys, Map<VmKeys, dynamic>> visitListLiteral(ListLiteral node) => {
         VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$ListLiteral: {
+          VmKeys.$ListLiteralTypeArguments: node.typeArguments?.arguments.map((e) => e.accept(this)).toList(), //isSet与isMap永远为false，只能用这个推断类型了
           VmKeys.$ListLiteralElements: node.elements.map((e) => e.accept(this)).toList(),
         }
       };
@@ -210,7 +211,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
   Map<VmKeys, Map<VmKeys, dynamic>> visitSetOrMapLiteral(SetOrMapLiteral node) => {
         VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$SetOrMapLiteral: {
-          VmKeys.$SetOrMapLiteralTypeArguments: node.typeArguments?.arguments.map((e) => e.toString()).toList(), //isSet与isMap永远为false，只能用这个推断类型了
+          VmKeys.$SetOrMapLiteralTypeArguments: node.typeArguments?.arguments.map((e) => e.accept(this)).toList(), //isSet与isMap永远为false，只能用这个推断类型了
           VmKeys.$SetOrMapLiteralElements: node.elements.map((e) => e.accept(this)).toList(), //jsonEncode不支持Set转换，这里统一返回List
         }
       };
@@ -1697,7 +1698,8 @@ class VmParserBirdgeItemData {
 
   ///生成filled源代码
   String toFilledCode(String fieldName) {
-    return parameterType == 'double' ? 'VmObject.toDouble($fieldName)' : fieldName;
+    return fieldName; //无法覆盖全部情况，不如直接返回
+    // return parameterType == 'double' ? 'VmObject.toDouble($fieldName)' : fieldName;
   }
 
   ///是否匹配忽略
