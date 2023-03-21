@@ -167,7 +167,11 @@ class VmRunner {
     if (index == null) {
       return {'_objectStack': simple ? _objectStack.map((e) => e.map((key, value) => MapEntry(key, value.toString()))).toList() : _objectStack};
     } else {
-      return {'_objectStack[$index]': simple ? _objectStack[index].map((key, value) => MapEntry(key, value.toString())) : _objectStack[index]};
+      final result = <String, dynamic>{};
+      for (var i = index; i < _objectStack.length; i++) {
+        result['_objectStack[$i]'] = simple ? _objectStack[i].map((key, value) => MapEntry(key, value.toString())) : _objectStack[i];
+      }
+      return result;
     }
   }
 
