@@ -1,3 +1,8 @@
+## 1.1.21
+
+- Adjust the debugging information printing method of the virtual machine object stack.
+- Fix the bug of reading the defined type attribute inside the virtual machine.
+  
 ## 1.1.20
 
 - Adjust the parameter definition position for calling the main function in the EasyVmWare instance.
