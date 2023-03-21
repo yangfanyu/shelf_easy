@@ -187,6 +187,6 @@ void main() {
   vmwareApp.call<void>(methodName: 'EmptyClass.sayGoodBye', positionalArguments: [10], namedArguments: {#b: '999'}); //print: EmptyClass.sayGoodBye => 10 999
 
   // vmwareApp.debugObjectStack(); //打印虚拟机中的作用域堆栈信息
-  vmwareApp.debugObjectStack(index: 3, simple: true); //打印虚拟机中的作用域堆栈信息
+  vmwareApp.debugObjectStack(index: 2, simple: true); //打印虚拟机中的作用域堆栈信息
   // vmwareApp.debugSourceTrees(key: 'main'); //打印虚拟机中的main模块的语法树信息
 }

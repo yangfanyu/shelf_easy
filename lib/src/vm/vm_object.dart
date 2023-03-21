@@ -667,7 +667,7 @@ class VmProxy<T> extends VmObject {
         if (externalStaticPropertyReader != null) return externalStaticPropertyReader!();
         throw ('Not found externalStaticPropertyReader: ${_vmclass.identifier}.$identifier');
       } else {
-        return (internalStaticPropertyOperator as VmValue).getValue();
+        return (internalStaticPropertyOperator as VmValue).getLogic(); //注意：为了保证能够逻辑处理，此处使用的是逻辑值
       }
     } else {
       //读取实例属性
@@ -676,7 +676,7 @@ class VmProxy<T> extends VmObject {
         if (externalInstancePropertyReader != null) return externalInstancePropertyReader!(instanceNative);
         throw ('Not found externalInstancePropertyReader: ${_vmclass.identifier}.$identifier');
       } else {
-        return (VmObject.readLogic(instance) as VmValue).getProperty(identifier).getValue();
+        return (VmObject.readLogic(instance) as VmValue).getProperty(identifier).getLogic(); //注意：为了保证能够逻辑处理，此处使用的是逻辑值
       }
     }
   }
