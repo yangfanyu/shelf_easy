@@ -569,8 +569,7 @@ class VmRunnerCore {
     dynamic value;
     switch (operator) {
       case '!':
-        value = operandValue!;
-        break;
+        return VmObject.readLogic(operandResult)!; //注意：为了保证能够逻辑处理，此处使用的是逻辑值
       case '++':
         value = operandValue + 1; //num
         VmObject.saveValue(operandResult, value);

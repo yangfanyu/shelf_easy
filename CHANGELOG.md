@@ -1,3 +1,9 @@
+## 1.1.20
+
+- Adjust the parameter definition position for calling the main function in the EasyVmWare instance.
+- Enhanced type deduction when scanning iterableLiteral for virtual machines.
+- Add support for the ! operator to PostfixExpression for virtual machines.
+  
 ## 1.1.18
 
 The content of this submission modification is as follows:

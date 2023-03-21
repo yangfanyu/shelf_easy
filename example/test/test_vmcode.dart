@@ -192,6 +192,7 @@ dynamic funcA2(int a, int b, {required int c, int d = 0, int? e}) {
   final str = 'hello world a=$a, b=$b, c=$c, d=$d, e=$e, aaa=$aaa';
   print('\n');
   print('e?.bitLength => ${e?.bitLength} ${e?.bitLength.toString().length}');
+  // print('e!.bitLength => ${e!.bitLength} ${e.bitLength.toString().length}');
   // if (e != null) print('e!.bitLength => ${e!.bitLength} ${e.bitLength.toString().length}');
   print(str);
 
