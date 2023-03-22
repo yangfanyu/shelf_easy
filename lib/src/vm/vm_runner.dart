@@ -78,7 +78,7 @@ class VmRunner {
   ///获取匿名函数的可保存的作用域列表
   List<Map<String, VmObject>>? getAnonymousScopeList() {
     if (_objectStack.length < 4) throw ('Cannot execute getAnonymousScopeList because _objectStack.length < 4: ${_objectStack.length}');
-    return _objectStack.length >= 5 ? _objectStack.sublist(5) : null;
+    return _objectStack.length > 4 ? _objectStack.sublist(4) : null; //下标为4，截取全部运行时临时作用域
   }
 
   ///在虚拟机中的[methodName]指定的任意类型函数
