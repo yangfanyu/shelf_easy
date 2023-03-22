@@ -1,3 +1,7 @@
+## 1.1.22
+
+- Fix the bug of anonymous function scope binding of virtual machine.
+  
 ## 1.1.21
 
 - Adjust the debugging information printing method of the virtual machine object stack.
