@@ -433,6 +433,9 @@ class VmClass<T> extends VmObject {
     return map;
   }
 
+  ///new方法的名称
+  static const newMethodName = 'new';
+
   ///函数的类型名称
   static const functionTypeName = 'Function';
 
@@ -1028,7 +1031,7 @@ class VmValue extends VmObject {
             nameResult[fieldKey] = value;
           }
         }
-        final instance = superclass.getProxy(superclass.identifier, setter: false).runFunction(superclass, listResult, nameResult) as VmSuper; //创建对应的超类的实例
+        final instance = superclass.getProxy(VmClass.newMethodName, setter: false).runFunction(superclass, listResult, nameResult) as VmSuper; //创建对应的超类的实例
         return instance.._initProperties(superclass); //创建超类的字段代理
       }
     }
@@ -1264,8 +1267,8 @@ class VmLazyer extends VmObject {
     if (_completed) return _result;
     final target = instance;
     if (isMethod) {
-      if (target is VmClass) {
-        _result = target.getProxy(property, setter: false).runFunction(target, listArguments, nameArguments); //执行静态函数
+      if (target is VmClass && instanceByProperty) {
+        _result = target.getProxy(VmClass.newMethodName, setter: false).runFunction(target, listArguments, nameArguments); //执行构造函数new
       } else if (target is VmProxy && instanceByProperty) {
         _result = target.runFunction(target, listArguments, nameArguments); //执行顶级函数
       } else if (target is VmValue && instanceByProperty) {
@@ -1274,8 +1277,10 @@ class VmLazyer extends VmObject {
         final listArgumentsNative = listArguments?.map((e) => VmObject.readValue(e)).toList();
         final nameArgumentsNative = nameArguments?.map((key, value) => MapEntry(key, VmObject.readValue(value)));
         return Function.apply(target, listArgumentsNative, nameArgumentsNative); //执行外部函数
+      } else if (target is VmClass) {
+        _result = target.getProxy(property, setter: false).runFunction(target, listArguments, nameArguments); //执行静态函数
       } else {
-        _result = validateNull ? VmObject.readClass(target).getProxy(property, setter: false).runFunction(target, listArguments, nameArguments) : null; //执行实例方法
+        _result = validateNull ? VmObject.readClass(target).getProxy(property, setter: false).runFunction(target, listArguments, nameArguments) : null; //执行实例函数
       }
     } else if (isIndexed) {
       _result = target[property]; //索引List取值

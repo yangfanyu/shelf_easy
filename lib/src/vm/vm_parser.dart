@@ -838,26 +838,14 @@ class VmParserBirdger extends SimpleAstVisitor {
   }
 
   @override
-  List<VmParserBirdgeItemData?> visitConstructorDeclaration(ConstructorDeclaration node) {
-    final name = node.name?.lexeme ?? '';
-    return [
-      VmParserBirdgeItemData(
-        type: VmParserBirdgeItemType.classStaticFunction,
-        name: name,
-        parameters: node.parameters.accept(this), // => visitFormalParameterList
-        isConstructor: true,
-        isFactoryConstructor: node.factoryKeyword != null,
-      ),
-      name.isEmpty
-          ? VmParserBirdgeItemData(
-              type: VmParserBirdgeItemType.classStaticFunction,
-              name: 'new',
-              parameters: node.parameters.accept(this), // => visitFormalParameterList
-              isConstructor: true,
-              isFactoryConstructor: node.factoryKeyword != null,
-            )
-          : null,
-    ];
+  VmParserBirdgeItemData? visitConstructorDeclaration(ConstructorDeclaration node) {
+    return VmParserBirdgeItemData(
+      type: VmParserBirdgeItemType.classStaticFunction,
+      name: node.name?.lexeme ?? 'new',
+      parameters: node.parameters.accept(this), // => visitFormalParameterList
+      isConstructor: true,
+      isFactoryConstructor: node.factoryKeyword != null,
+    );
   }
 
   @override
@@ -1556,9 +1544,6 @@ class VmParserBirdgeItemData {
       if (a == null && b != null) return -1;
       if (a != null && b == null) return 1;
       if (a == null || b == null) return 0;
-      //无名属性
-      if (a.name.isEmpty && b.name.isNotEmpty) return -1;
-      if (a.name.isNotEmpty && b.name.isEmpty) return 1;
       //构造函数
       if (a.isConstructor && !b.isConstructor) return -1;
       if (!a.isConstructor && b.isConstructor) return 1;
@@ -1604,7 +1589,7 @@ class VmParserBirdgeItemData {
       codeParts.add('$indent${indent}externalProxyMap: {');
       unionPartsMap.forEach((key, value) {
         if (value.isNotEmpty) {
-          final identifier = key.isEmpty ? getIdentifier(name) : getIdentifier(key);
+          final identifier = getIdentifier(key);
           codeParts.add('$indent$indent$indent\'$identifier\': VmProxy(identifier: \'$identifier\', ${value.join(', ')}),');
         }
       });
@@ -1623,8 +1608,8 @@ class VmParserBirdgeItemData {
   }) {
     final className = classScope != null ? classScope.name : '';
     final staticDot = classScope != null ? '.' : '';
-    final identifier = classScope != null && name.isEmpty ? getIdentifier(className) : getIdentifier(name);
-    final proxyName = classScope != null && name.isEmpty ? 'new' : name;
+    final identifier = getIdentifier(name);
+    final proxyName = name;
     final codeParts = unionParts ?? <String>{};
     if (hasStaticReader) codeParts.add('externalStaticPropertyReader: () => $className$staticDot$proxyName');
     if (hasStaticWriter) codeParts.add('externalStaticPropertyWriter: (value) => $className$staticDot$proxyName = value');

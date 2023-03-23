@@ -227,9 +227,6 @@ class VmRunnerCore {
   ///当前for语句关键变量标识
   static const _forLoopPartsPrepared_ = '___forLoopPartsPrepared___';
 
-  ///当前定义的class名称标识
-  static const _classDeclarationName_ = '___classDeclarationName___';
-
   ///当前构造的class实例自身
   static const _classConstructorSelf_ = '___classConstructorSelf___';
 
@@ -1068,7 +1065,6 @@ class VmRunnerCore {
     //逻辑处理
     final result = runner._runAloneScope<VmClass>((scope) {
       final staticScope = scope; //绑定类静态作用域
-      runner.addVmObject(VmValue.forVariable(identifier: _classDeclarationName_, initValue: name)); //添加关键变量
       final proxyMap = <String, VmProxy<VmValue>>{}; //字段操作代理集合
       final fieldTree = <Map<VmKeys, dynamic>>[]; //实例字段初始化语法树列表
       final membersResult = _scanList(runner, members) as List; //放在staticScope添加后执行，可自动填入静态成员
@@ -1106,7 +1102,6 @@ class VmRunnerCore {
           throw ('ClassDeclaration unsupport member result: ${item.runtimeType}');
         }
       }
-      runner.delVmObject(_classDeclarationName_); //移除关键变量
       //创建类型并返回
       return VmClass<VmValue>(
         identifier: name,
@@ -1147,7 +1142,7 @@ class VmRunnerCore {
     final nameArguments = <VmHelper>[];
     VmObject.groupDeclarationParameters(parametersResult, listArguments, nameArguments);
     final vmfunctionResult = VmValue.forFunction(
-      identifier: name ?? VmObject.readValue(runner.getVmObject(_classDeclarationName_)),
+      identifier: name ?? VmClass.newMethodName, //new函数为默认构造函数
       isIniter: factoryKeyword == null, //原始构造函数，factory方法也会进入到这个分支
       isStatic: true,
       listArguments: listArguments,

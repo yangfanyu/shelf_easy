@@ -19,7 +19,6 @@ class VmLibrary {
     identifier: 'AbstractClassInstantiationError',
     superclassNames: ['Object', 'Error'],
     externalProxyMap: {
-      'AbstractClassInstantiationError': VmProxy(identifier: 'AbstractClassInstantiationError', externalStaticPropertyReader: () => AbstractClassInstantiationError.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => AbstractClassInstantiationError.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (AbstractClassInstantiationError instance) => instance.hashCode),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (AbstractClassInstantiationError instance) => instance.noSuchMethod),
@@ -34,7 +33,6 @@ class VmLibrary {
     identifier: 'ArgumentError',
     superclassNames: ['Object', 'Error'],
     externalProxyMap: {
-      'ArgumentError': VmProxy(identifier: 'ArgumentError', externalStaticPropertyReader: () => ArgumentError.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => ArgumentError.new),
       'notNull': VmProxy(identifier: 'notNull', externalStaticPropertyReader: () => ArgumentError.notNull),
       'value': VmProxy(identifier: 'value', externalStaticPropertyReader: () => ArgumentError.value),
@@ -55,7 +53,6 @@ class VmLibrary {
     identifier: 'AsciiCodec',
     superclassNames: ['Object', 'Codec', 'Encoding'],
     externalProxyMap: {
-      'AsciiCodec': VmProxy(identifier: 'AsciiCodec', externalStaticPropertyReader: () => AsciiCodec.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => AsciiCodec.new),
       'decode': VmProxy(identifier: 'decode', externalInstancePropertyReader: (AsciiCodec instance) => instance.decode),
       'decoder': VmProxy(identifier: 'decoder', externalInstancePropertyReader: (AsciiCodec instance) => instance.decoder),
@@ -77,7 +74,6 @@ class VmLibrary {
     identifier: 'AsciiDecoder',
     superclassNames: ['Object', 'StreamTransformer', 'StreamTransformerBase', 'Converter', '_UnicodeSubsetDecoder'],
     externalProxyMap: {
-      'AsciiDecoder': VmProxy(identifier: 'AsciiDecoder', externalStaticPropertyReader: () => AsciiDecoder.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => AsciiDecoder.new),
       'bind': VmProxy(identifier: 'bind', externalInstancePropertyReader: (AsciiDecoder instance) => instance.bind),
       'cast': VmProxy(identifier: 'cast', externalInstancePropertyReader: (AsciiDecoder instance) => instance.cast),
@@ -96,7 +92,6 @@ class VmLibrary {
     identifier: 'AsciiEncoder',
     superclassNames: ['Object', 'StreamTransformer', 'StreamTransformerBase', 'Converter', '_UnicodeSubsetEncoder'],
     externalProxyMap: {
-      'AsciiEncoder': VmProxy(identifier: 'AsciiEncoder', externalStaticPropertyReader: () => AsciiEncoder.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => AsciiEncoder.new),
       'bind': VmProxy(identifier: 'bind', externalInstancePropertyReader: (AsciiEncoder instance) => instance.bind),
       'cast': VmProxy(identifier: 'cast', externalInstancePropertyReader: (AsciiEncoder instance) => instance.cast),
@@ -115,7 +110,6 @@ class VmLibrary {
     identifier: 'AssertionError',
     superclassNames: ['Object', 'Error'],
     externalProxyMap: {
-      'AssertionError': VmProxy(identifier: 'AssertionError', externalStaticPropertyReader: () => AssertionError.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => AssertionError.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (AssertionError instance) => instance.hashCode),
       'message': VmProxy(identifier: 'message', externalInstancePropertyReader: (AssertionError instance) => instance.message),
@@ -131,7 +125,6 @@ class VmLibrary {
     identifier: 'AsyncError',
     superclassNames: ['Object', 'Error'],
     externalProxyMap: {
-      'AsyncError': VmProxy(identifier: 'AsyncError', externalStaticPropertyReader: () => AsyncError.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => AsyncError.new),
       'defaultStackTrace': VmProxy(identifier: 'defaultStackTrace', externalStaticPropertyReader: () => AsyncError.defaultStackTrace),
       'error': VmProxy(identifier: 'error', externalInstancePropertyReader: (AsyncError instance) => instance.error),
@@ -148,7 +141,6 @@ class VmLibrary {
     identifier: 'Base64Codec',
     superclassNames: ['Object', 'Codec'],
     externalProxyMap: {
-      'Base64Codec': VmProxy(identifier: 'Base64Codec', externalStaticPropertyReader: () => Base64Codec.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Base64Codec.new),
       'urlSafe': VmProxy(identifier: 'urlSafe', externalStaticPropertyReader: () => Base64Codec.urlSafe),
       'decode': VmProxy(identifier: 'decode', externalInstancePropertyReader: (Base64Codec instance) => instance.decode),
@@ -170,7 +162,6 @@ class VmLibrary {
     identifier: 'Base64Decoder',
     superclassNames: ['Object', 'StreamTransformer', 'StreamTransformerBase', 'Converter'],
     externalProxyMap: {
-      'Base64Decoder': VmProxy(identifier: 'Base64Decoder', externalStaticPropertyReader: () => Base64Decoder.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Base64Decoder.new),
       'bind': VmProxy(identifier: 'bind', externalInstancePropertyReader: (Base64Decoder instance) => instance.bind),
       'cast': VmProxy(identifier: 'cast', externalInstancePropertyReader: (Base64Decoder instance) => instance.cast),
@@ -189,7 +180,6 @@ class VmLibrary {
     identifier: 'Base64Encoder',
     superclassNames: ['Object', 'StreamTransformer', 'StreamTransformerBase', 'Converter'],
     externalProxyMap: {
-      'Base64Encoder': VmProxy(identifier: 'Base64Encoder', externalStaticPropertyReader: () => Base64Encoder.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Base64Encoder.new),
       'urlSafe': VmProxy(identifier: 'urlSafe', externalStaticPropertyReader: () => Base64Encoder.urlSafe),
       'bind': VmProxy(identifier: 'bind', externalInstancePropertyReader: (Base64Encoder instance) => instance.bind),
@@ -334,7 +324,6 @@ class VmLibrary {
     identifier: 'ByteData',
     superclassNames: ['Object', 'TypedData'],
     externalProxyMap: {
-      'ByteData': VmProxy(identifier: 'ByteData', externalStaticPropertyReader: () => ByteData.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => ByteData.new),
       'sublistView': VmProxy(identifier: 'sublistView', externalStaticPropertyReader: () => ByteData.sublistView),
       'view': VmProxy(identifier: 'view', externalStaticPropertyReader: () => ByteData.view),
@@ -374,7 +363,6 @@ class VmLibrary {
     identifier: 'Capability',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Capability': VmProxy(identifier: 'Capability', externalStaticPropertyReader: () => Capability.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Capability.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (Capability instance) => instance.hashCode),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (Capability instance) => instance.noSuchMethod),
@@ -401,7 +389,6 @@ class VmLibrary {
     identifier: 'CertificateException',
     superclassNames: ['Object', 'Exception', 'IOException', 'TlsException'],
     externalProxyMap: {
-      'CertificateException': VmProxy(identifier: 'CertificateException', externalStaticPropertyReader: () => CertificateException.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => CertificateException.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (CertificateException instance) => instance.hashCode),
       'message': VmProxy(identifier: 'message', externalInstancePropertyReader: (CertificateException instance) => instance.message),
@@ -483,7 +470,6 @@ class VmLibrary {
     identifier: 'Completer',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Completer': VmProxy(identifier: 'Completer', externalStaticPropertyReader: () => Completer.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Completer.new),
       'sync': VmProxy(identifier: 'sync', externalStaticPropertyReader: () => Completer.sync),
       'complete': VmProxy(identifier: 'complete', externalInstancePropertyReader: (Completer instance) => instance.complete),
@@ -502,7 +488,6 @@ class VmLibrary {
     identifier: 'ConcurrentModificationError',
     superclassNames: ['Object', 'Error'],
     externalProxyMap: {
-      'ConcurrentModificationError': VmProxy(identifier: 'ConcurrentModificationError', externalStaticPropertyReader: () => ConcurrentModificationError.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => ConcurrentModificationError.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (ConcurrentModificationError instance) => instance.hashCode),
       'modifiedObject': VmProxy(identifier: 'modifiedObject', externalInstancePropertyReader: (ConcurrentModificationError instance) => instance.modifiedObject),
@@ -550,7 +535,6 @@ class VmLibrary {
     identifier: 'CyclicInitializationError',
     superclassNames: ['Object', 'Error'],
     externalProxyMap: {
-      'CyclicInitializationError': VmProxy(identifier: 'CyclicInitializationError', externalStaticPropertyReader: () => CyclicInitializationError.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => CyclicInitializationError.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (CyclicInitializationError instance) => instance.hashCode),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (CyclicInitializationError instance) => instance.noSuchMethod),
@@ -566,7 +550,6 @@ class VmLibrary {
     identifier: 'Datagram',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Datagram': VmProxy(identifier: 'Datagram', externalStaticPropertyReader: () => Datagram.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Datagram.new),
       'address': VmProxy(identifier: 'address', externalInstancePropertyReader: (Datagram instance) => instance.address, externalInstancePropertyWriter: (Datagram instance, value) => instance.address = value),
       'data': VmProxy(identifier: 'data', externalInstancePropertyReader: (Datagram instance) => instance.data, externalInstancePropertyWriter: (Datagram instance, value) => instance.data = value),
@@ -583,7 +566,6 @@ class VmLibrary {
     identifier: 'DateTime',
     superclassNames: ['Object', 'Comparable'],
     externalProxyMap: {
-      'DateTime': VmProxy(identifier: 'DateTime', externalStaticPropertyReader: () => DateTime.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => DateTime.new),
       'fromMicrosecondsSinceEpoch': VmProxy(identifier: 'fromMicrosecondsSinceEpoch', externalStaticPropertyReader: () => DateTime.fromMicrosecondsSinceEpoch),
       'fromMillisecondsSinceEpoch': VmProxy(identifier: 'fromMillisecondsSinceEpoch', externalStaticPropertyReader: () => DateTime.fromMillisecondsSinceEpoch),
@@ -649,7 +631,6 @@ class VmLibrary {
     identifier: 'DeferredLibrary',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'DeferredLibrary': VmProxy(identifier: 'DeferredLibrary', externalStaticPropertyReader: () => DeferredLibrary.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => DeferredLibrary.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (DeferredLibrary instance) => instance.hashCode),
       'libraryName': VmProxy(identifier: 'libraryName', externalInstancePropertyReader: (DeferredLibrary instance) => instance.libraryName),
@@ -666,7 +647,6 @@ class VmLibrary {
     identifier: 'DeferredLoadException',
     superclassNames: ['Object', 'Exception'],
     externalProxyMap: {
-      'DeferredLoadException': VmProxy(identifier: 'DeferredLoadException', externalStaticPropertyReader: () => DeferredLoadException.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => DeferredLoadException.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (DeferredLoadException instance) => instance.hashCode),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (DeferredLoadException instance) => instance.noSuchMethod),
@@ -680,7 +660,6 @@ class VmLibrary {
     identifier: 'Deprecated',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Deprecated': VmProxy(identifier: 'Deprecated', externalStaticPropertyReader: () => Deprecated.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Deprecated.new),
       'expires': VmProxy(identifier: 'expires', externalInstancePropertyReader: (Deprecated instance) => instance.expires),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (Deprecated instance) => instance.hashCode),
@@ -696,7 +675,6 @@ class VmLibrary {
     identifier: 'Directory',
     superclassNames: ['Object', 'FileSystemEntity'],
     externalProxyMap: {
-      'Directory': VmProxy(identifier: 'Directory', externalStaticPropertyReader: () => Directory.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Directory.new),
       'fromRawPath': VmProxy(identifier: 'fromRawPath', externalStaticPropertyReader: () => Directory.fromRawPath),
       'fromUri': VmProxy(identifier: 'fromUri', externalStaticPropertyReader: () => Directory.fromUri),
@@ -777,7 +755,6 @@ class VmLibrary {
     identifier: 'DoubleLinkedQueue',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'Queue'],
     externalProxyMap: {
-      'DoubleLinkedQueue': VmProxy(identifier: 'DoubleLinkedQueue', externalStaticPropertyReader: () => DoubleLinkedQueue.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => DoubleLinkedQueue.new),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => DoubleLinkedQueue.from),
       'of': VmProxy(identifier: 'of', externalStaticPropertyReader: () => DoubleLinkedQueue.of),
@@ -836,7 +813,6 @@ class VmLibrary {
     identifier: 'Duration',
     superclassNames: ['Object', 'Comparable'],
     externalProxyMap: {
-      'Duration': VmProxy(identifier: 'Duration', externalStaticPropertyReader: () => Duration.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Duration.new),
       'hoursPerDay': VmProxy(identifier: 'hoursPerDay', externalStaticPropertyReader: () => Duration.hoursPerDay),
       'microsecondsPerDay': VmProxy(identifier: 'microsecondsPerDay', externalStaticPropertyReader: () => Duration.microsecondsPerDay),
@@ -927,7 +903,6 @@ class VmLibrary {
     identifier: 'Error',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Error': VmProxy(identifier: 'Error', externalStaticPropertyReader: () => Error.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Error.new),
       'safeToString': VmProxy(identifier: 'safeToString', externalStaticPropertyReader: () => Error.safeToString),
       'throwWithStackTrace': VmProxy(identifier: 'throwWithStackTrace', externalStaticPropertyReader: () => Error.throwWithStackTrace),
@@ -959,7 +934,6 @@ class VmLibrary {
     identifier: 'Exception',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Exception': VmProxy(identifier: 'Exception', externalStaticPropertyReader: () => Exception.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Exception.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (Exception instance) => instance.hashCode),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (Exception instance) => instance.noSuchMethod),
@@ -973,7 +947,6 @@ class VmLibrary {
     identifier: 'Expando',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Expando': VmProxy(identifier: 'Expando', externalStaticPropertyReader: () => Expando.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Expando.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (Expando instance) => instance.hashCode),
       'name': VmProxy(identifier: 'name', externalInstancePropertyReader: (Expando instance) => instance.name),
@@ -988,7 +961,6 @@ class VmLibrary {
     identifier: 'FallThroughError',
     superclassNames: ['Object', 'Error'],
     externalProxyMap: {
-      'FallThroughError': VmProxy(identifier: 'FallThroughError', externalStaticPropertyReader: () => FallThroughError.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => FallThroughError.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (FallThroughError instance) => instance.hashCode),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (FallThroughError instance) => instance.noSuchMethod),
@@ -1003,7 +975,6 @@ class VmLibrary {
     identifier: 'File',
     superclassNames: ['Object', 'FileSystemEntity'],
     externalProxyMap: {
-      'File': VmProxy(identifier: 'File', externalStaticPropertyReader: () => File.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => File.new),
       'fromRawPath': VmProxy(identifier: 'fromRawPath', externalStaticPropertyReader: () => File.fromRawPath),
       'fromUri': VmProxy(identifier: 'fromUri', externalStaticPropertyReader: () => File.fromUri),
@@ -1226,7 +1197,6 @@ class VmLibrary {
     identifier: 'FileSystemException',
     superclassNames: ['Object', 'Exception', 'IOException'],
     externalProxyMap: {
-      'FileSystemException': VmProxy(identifier: 'FileSystemException', externalStaticPropertyReader: () => FileSystemException.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => FileSystemException.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (FileSystemException instance) => instance.hashCode),
       'message': VmProxy(identifier: 'message', externalInstancePropertyReader: (FileSystemException instance) => instance.message),
@@ -1275,7 +1245,6 @@ class VmLibrary {
     identifier: 'Finalizer',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Finalizer': VmProxy(identifier: 'Finalizer', externalStaticPropertyReader: () => Finalizer.new, externalStaticFunctionCaller: (a0) => Finalizer.new((b0) => a0(b0))),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Finalizer.new, externalStaticFunctionCaller: (a0) => Finalizer.new((b0) => a0(b0))),
       'attach': VmProxy(identifier: 'attach', externalInstancePropertyReader: (Finalizer instance) => instance.attach),
       'detach': VmProxy(identifier: 'detach', externalInstancePropertyReader: (Finalizer instance) => instance.detach),
@@ -1291,7 +1260,6 @@ class VmLibrary {
     identifier: 'Float32List',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedFloatList'],
     externalProxyMap: {
-      'Float32List': VmProxy(identifier: 'Float32List', externalStaticPropertyReader: () => Float32List.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Float32List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Float32List.fromList),
       'sublistView': VmProxy(identifier: 'sublistView', externalStaticPropertyReader: () => Float32List.sublistView),
@@ -1325,7 +1293,7 @@ class VmLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (Float32List instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (Float32List instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (Float32List instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (Float32List instance) => instance.last, externalInstancePropertyWriter: (Float32List instance, value) => instance.last = value),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (Float32List instance, value) => instance.last = value, externalInstancePropertyReader: (Float32List instance) => instance.last),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (Float32List instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (Float32List instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (Float32List instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (Float32List instance) => instance.lastWhere, externalInstanceFunctionCaller: (Float32List instance, a0, {orElse}) => instance.lastWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
@@ -1368,7 +1336,6 @@ class VmLibrary {
     identifier: 'Float32x4',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Float32x4': VmProxy(identifier: 'Float32x4', externalStaticPropertyReader: () => Float32x4.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Float32x4.new),
       'fromFloat64x2': VmProxy(identifier: 'fromFloat64x2', externalStaticPropertyReader: () => Float32x4.fromFloat64x2),
       'fromInt32x4Bits': VmProxy(identifier: 'fromInt32x4Bits', externalStaticPropertyReader: () => Float32x4.fromInt32x4Bits),
@@ -1667,7 +1634,6 @@ class VmLibrary {
     identifier: 'Float32x4List',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData'],
     externalProxyMap: {
-      'Float32x4List': VmProxy(identifier: 'Float32x4List', externalStaticPropertyReader: () => Float32x4List.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Float32x4List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Float32x4List.fromList),
       'sublistView': VmProxy(identifier: 'sublistView', externalStaticPropertyReader: () => Float32x4List.sublistView),
@@ -1701,7 +1667,7 @@ class VmLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (Float32x4List instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (Float32x4List instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (Float32x4List instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (Float32x4List instance, value) => instance.last = value, externalInstancePropertyReader: (Float32x4List instance) => instance.last),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (Float32x4List instance) => instance.last, externalInstancePropertyWriter: (Float32x4List instance, value) => instance.last = value),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (Float32x4List instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (Float32x4List instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (Float32x4List instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (Float32x4List instance) => instance.lastWhere, externalInstanceFunctionCaller: (Float32x4List instance, a0, {orElse}) => instance.lastWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
@@ -1744,7 +1710,6 @@ class VmLibrary {
     identifier: 'Float64List',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedFloatList'],
     externalProxyMap: {
-      'Float64List': VmProxy(identifier: 'Float64List', externalStaticPropertyReader: () => Float64List.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Float64List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Float64List.fromList),
       'sublistView': VmProxy(identifier: 'sublistView', externalStaticPropertyReader: () => Float64List.sublistView),
@@ -1778,7 +1743,7 @@ class VmLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (Float64List instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (Float64List instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (Float64List instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (Float64List instance) => instance.last, externalInstancePropertyWriter: (Float64List instance, value) => instance.last = value),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (Float64List instance, value) => instance.last = value, externalInstancePropertyReader: (Float64List instance) => instance.last),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (Float64List instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (Float64List instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (Float64List instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (Float64List instance) => instance.lastWhere, externalInstanceFunctionCaller: (Float64List instance, a0, {orElse}) => instance.lastWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
@@ -1821,7 +1786,6 @@ class VmLibrary {
     identifier: 'Float64x2',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Float64x2': VmProxy(identifier: 'Float64x2', externalStaticPropertyReader: () => Float64x2.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Float64x2.new),
       'fromFloat32x4': VmProxy(identifier: 'fromFloat32x4', externalStaticPropertyReader: () => Float64x2.fromFloat32x4),
       'splat': VmProxy(identifier: 'splat', externalStaticPropertyReader: () => Float64x2.splat),
@@ -1849,7 +1813,6 @@ class VmLibrary {
     identifier: 'Float64x2List',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData'],
     externalProxyMap: {
-      'Float64x2List': VmProxy(identifier: 'Float64x2List', externalStaticPropertyReader: () => Float64x2List.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Float64x2List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Float64x2List.fromList),
       'sublistView': VmProxy(identifier: 'sublistView', externalStaticPropertyReader: () => Float64x2List.sublistView),
@@ -1883,7 +1846,7 @@ class VmLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (Float64x2List instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (Float64x2List instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (Float64x2List instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (Float64x2List instance, value) => instance.last = value, externalInstancePropertyReader: (Float64x2List instance) => instance.last),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (Float64x2List instance) => instance.last, externalInstancePropertyWriter: (Float64x2List instance, value) => instance.last = value),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (Float64x2List instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (Float64x2List instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (Float64x2List instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (Float64x2List instance) => instance.lastWhere, externalInstanceFunctionCaller: (Float64x2List instance, a0, {orElse}) => instance.lastWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
@@ -1926,7 +1889,6 @@ class VmLibrary {
     identifier: 'FormatException',
     superclassNames: ['Object', 'Exception'],
     externalProxyMap: {
-      'FormatException': VmProxy(identifier: 'FormatException', externalStaticPropertyReader: () => FormatException.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => FormatException.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (FormatException instance) => instance.hashCode),
       'message': VmProxy(identifier: 'message', externalInstancePropertyReader: (FormatException instance) => instance.message),
@@ -1956,7 +1918,6 @@ class VmLibrary {
     identifier: 'Future',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Future': VmProxy(identifier: 'Future', externalStaticPropertyReader: () => Future.new, externalStaticFunctionCaller: (a0) => Future.new(() => a0())),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Future.new, externalStaticFunctionCaller: (a0) => Future.new(() => a0())),
       'delayed': VmProxy(identifier: 'delayed', externalStaticPropertyReader: () => Future.delayed, externalStaticFunctionCaller: (a0, [a1]) => Future.delayed(a0, a1 == null ? null : () => a1())),
       'error': VmProxy(identifier: 'error', externalStaticPropertyReader: () => Future.error),
@@ -1998,7 +1959,6 @@ class VmLibrary {
     identifier: 'GZipCodec',
     superclassNames: ['Object', 'Codec'],
     externalProxyMap: {
-      'GZipCodec': VmProxy(identifier: 'GZipCodec', externalStaticPropertyReader: () => GZipCodec.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => GZipCodec.new),
       'decode': VmProxy(identifier: 'decode', externalInstancePropertyReader: (GZipCodec instance) => instance.decode),
       'decoder': VmProxy(identifier: 'decoder', externalInstancePropertyReader: (GZipCodec instance) => instance.decoder),
@@ -2025,7 +1985,6 @@ class VmLibrary {
     identifier: 'HandshakeException',
     superclassNames: ['Object', 'Exception', 'IOException', 'TlsException'],
     externalProxyMap: {
-      'HandshakeException': VmProxy(identifier: 'HandshakeException', externalStaticPropertyReader: () => HandshakeException.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => HandshakeException.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (HandshakeException instance) => instance.hashCode),
       'message': VmProxy(identifier: 'message', externalInstancePropertyReader: (HandshakeException instance) => instance.message),
@@ -2042,7 +2001,6 @@ class VmLibrary {
     identifier: 'HashMap',
     superclassNames: ['Object', 'Map'],
     externalProxyMap: {
-      'HashMap': VmProxy(identifier: 'HashMap', externalStaticPropertyReader: () => HashMap.new, externalStaticFunctionCaller: ({equals, hashCode, isValidKey}) => HashMap.new(equals: equals == null ? null : (b0, b1) => equals(b0, b1), hashCode: hashCode == null ? null : (b0) => hashCode(b0), isValidKey: isValidKey == null ? null : (b0) => isValidKey(b0))),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => HashMap.new, externalStaticFunctionCaller: ({equals, hashCode, isValidKey}) => HashMap.new(equals: equals == null ? null : (b0, b1) => equals(b0, b1), hashCode: hashCode == null ? null : (b0) => hashCode(b0), isValidKey: isValidKey == null ? null : (b0) => isValidKey(b0))),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => HashMap.from),
       'fromEntries': VmProxy(identifier: 'fromEntries', externalStaticPropertyReader: () => HashMap.fromEntries),
@@ -2081,7 +2039,6 @@ class VmLibrary {
     identifier: 'HashSet',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'Set'],
     externalProxyMap: {
-      'HashSet': VmProxy(identifier: 'HashSet', externalStaticPropertyReader: () => HashSet.new, externalStaticFunctionCaller: ({equals, hashCode, isValidKey}) => HashSet.new(equals: equals == null ? null : (b0, b1) => equals(b0, b1), hashCode: hashCode == null ? null : (b0) => hashCode(b0), isValidKey: isValidKey == null ? null : (b0) => isValidKey(b0))),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => HashSet.new, externalStaticFunctionCaller: ({equals, hashCode, isValidKey}) => HashSet.new(equals: equals == null ? null : (b0, b1) => equals(b0, b1), hashCode: hashCode == null ? null : (b0) => hashCode(b0), isValidKey: isValidKey == null ? null : (b0) => isValidKey(b0))),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => HashSet.from),
       'identity': VmProxy(identifier: 'identity', externalStaticPropertyReader: () => HashSet.identity),
@@ -2141,7 +2098,6 @@ class VmLibrary {
     identifier: 'HasNextIterator',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'HasNextIterator': VmProxy(identifier: 'HasNextIterator', externalStaticPropertyReader: () => HasNextIterator.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => HasNextIterator.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (HasNextIterator instance) => instance.hashCode),
       'hasNext': VmProxy(identifier: 'hasNext', externalInstancePropertyReader: (HasNextIterator instance) => instance.hasNext),
@@ -2157,7 +2113,6 @@ class VmLibrary {
     identifier: 'HtmlEscape',
     superclassNames: ['Object', 'StreamTransformer', 'StreamTransformerBase', 'Converter'],
     externalProxyMap: {
-      'HtmlEscape': VmProxy(identifier: 'HtmlEscape', externalStaticPropertyReader: () => HtmlEscape.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => HtmlEscape.new),
       'bind': VmProxy(identifier: 'bind', externalInstancePropertyReader: (HtmlEscape instance) => instance.bind),
       'cast': VmProxy(identifier: 'cast', externalInstancePropertyReader: (HtmlEscape instance) => instance.cast),
@@ -2177,7 +2132,6 @@ class VmLibrary {
     identifier: 'HtmlEscapeMode',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'HtmlEscapeMode': VmProxy(identifier: 'HtmlEscapeMode', externalStaticPropertyReader: () => HtmlEscapeMode.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => HtmlEscapeMode.new),
       'attribute': VmProxy(identifier: 'attribute', externalStaticPropertyReader: () => HtmlEscapeMode.attribute),
       'element': VmProxy(identifier: 'element', externalStaticPropertyReader: () => HtmlEscapeMode.element),
@@ -2199,7 +2153,6 @@ class VmLibrary {
     identifier: 'IndexError',
     superclassNames: ['Object', 'Error', 'ArgumentError', 'RangeError'],
     externalProxyMap: {
-      'IndexError': VmProxy(identifier: 'IndexError', externalStaticPropertyReader: () => IndexError.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => IndexError.new),
       'withLength': VmProxy(identifier: 'withLength', externalStaticPropertyReader: () => IndexError.withLength),
       'check': VmProxy(identifier: 'check', externalStaticPropertyReader: () => IndexError.check),
@@ -2269,7 +2222,6 @@ class VmLibrary {
     identifier: 'Int16List',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList'],
     externalProxyMap: {
-      'Int16List': VmProxy(identifier: 'Int16List', externalStaticPropertyReader: () => Int16List.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Int16List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Int16List.fromList),
       'sublistView': VmProxy(identifier: 'sublistView', externalStaticPropertyReader: () => Int16List.sublistView),
@@ -2303,7 +2255,7 @@ class VmLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (Int16List instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (Int16List instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (Int16List instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (Int16List instance) => instance.last, externalInstancePropertyWriter: (Int16List instance, value) => instance.last = value),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (Int16List instance, value) => instance.last = value, externalInstancePropertyReader: (Int16List instance) => instance.last),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (Int16List instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (Int16List instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (Int16List instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (Int16List instance) => instance.lastWhere, externalInstanceFunctionCaller: (Int16List instance, a0, {orElse}) => instance.lastWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
@@ -2346,7 +2298,6 @@ class VmLibrary {
     identifier: 'Int32List',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList'],
     externalProxyMap: {
-      'Int32List': VmProxy(identifier: 'Int32List', externalStaticPropertyReader: () => Int32List.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Int32List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Int32List.fromList),
       'sublistView': VmProxy(identifier: 'sublistView', externalStaticPropertyReader: () => Int32List.sublistView),
@@ -2380,7 +2331,7 @@ class VmLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (Int32List instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (Int32List instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (Int32List instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (Int32List instance) => instance.last, externalInstancePropertyWriter: (Int32List instance, value) => instance.last = value),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (Int32List instance, value) => instance.last = value, externalInstancePropertyReader: (Int32List instance) => instance.last),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (Int32List instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (Int32List instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (Int32List instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (Int32List instance) => instance.lastWhere, externalInstanceFunctionCaller: (Int32List instance, a0, {orElse}) => instance.lastWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
@@ -2423,7 +2374,6 @@ class VmLibrary {
     identifier: 'Int32x4',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Int32x4': VmProxy(identifier: 'Int32x4', externalStaticPropertyReader: () => Int32x4.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Int32x4.new),
       'bool': VmProxy(identifier: 'bool', externalStaticPropertyReader: () => Int32x4.bool),
       'fromFloat32x4Bits': VmProxy(identifier: 'fromFloat32x4Bits', externalStaticPropertyReader: () => Int32x4.fromFloat32x4Bits),
@@ -2715,7 +2665,6 @@ class VmLibrary {
     identifier: 'Int32x4List',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData'],
     externalProxyMap: {
-      'Int32x4List': VmProxy(identifier: 'Int32x4List', externalStaticPropertyReader: () => Int32x4List.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Int32x4List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Int32x4List.fromList),
       'sublistView': VmProxy(identifier: 'sublistView', externalStaticPropertyReader: () => Int32x4List.sublistView),
@@ -2749,7 +2698,7 @@ class VmLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (Int32x4List instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (Int32x4List instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (Int32x4List instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (Int32x4List instance, value) => instance.last = value, externalInstancePropertyReader: (Int32x4List instance) => instance.last),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (Int32x4List instance) => instance.last, externalInstancePropertyWriter: (Int32x4List instance, value) => instance.last = value),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (Int32x4List instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (Int32x4List instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (Int32x4List instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (Int32x4List instance) => instance.lastWhere, externalInstanceFunctionCaller: (Int32x4List instance, a0, {orElse}) => instance.lastWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
@@ -2792,7 +2741,6 @@ class VmLibrary {
     identifier: 'Int64List',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList'],
     externalProxyMap: {
-      'Int64List': VmProxy(identifier: 'Int64List', externalStaticPropertyReader: () => Int64List.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Int64List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Int64List.fromList),
       'sublistView': VmProxy(identifier: 'sublistView', externalStaticPropertyReader: () => Int64List.sublistView),
@@ -2826,7 +2774,7 @@ class VmLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (Int64List instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (Int64List instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (Int64List instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (Int64List instance) => instance.last, externalInstancePropertyWriter: (Int64List instance, value) => instance.last = value),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (Int64List instance, value) => instance.last = value, externalInstancePropertyReader: (Int64List instance) => instance.last),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (Int64List instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (Int64List instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (Int64List instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (Int64List instance) => instance.lastWhere, externalInstanceFunctionCaller: (Int64List instance, a0, {orElse}) => instance.lastWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
@@ -2869,7 +2817,6 @@ class VmLibrary {
     identifier: 'Int8List',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList'],
     externalProxyMap: {
-      'Int8List': VmProxy(identifier: 'Int8List', externalStaticPropertyReader: () => Int8List.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Int8List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Int8List.fromList),
       'sublistView': VmProxy(identifier: 'sublistView', externalStaticPropertyReader: () => Int8List.sublistView),
@@ -2903,7 +2850,7 @@ class VmLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (Int8List instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (Int8List instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (Int8List instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (Int8List instance) => instance.last, externalInstancePropertyWriter: (Int8List instance, value) => instance.last = value),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (Int8List instance, value) => instance.last = value, externalInstancePropertyReader: (Int8List instance) => instance.last),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (Int8List instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (Int8List instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (Int8List instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (Int8List instance) => instance.lastWhere, externalInstanceFunctionCaller: (Int8List instance, a0, {orElse}) => instance.lastWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
@@ -2946,7 +2893,6 @@ class VmLibrary {
     identifier: 'IntegerDivisionByZeroException',
     superclassNames: ['Object', 'Exception', 'Error', 'UnsupportedError'],
     externalProxyMap: {
-      'IntegerDivisionByZeroException': VmProxy(identifier: 'IntegerDivisionByZeroException', externalStaticPropertyReader: () => IntegerDivisionByZeroException.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => IntegerDivisionByZeroException.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (IntegerDivisionByZeroException instance) => instance.hashCode),
       'message': VmProxy(identifier: 'message', externalInstancePropertyReader: (IntegerDivisionByZeroException instance) => instance.message),
@@ -2962,7 +2908,6 @@ class VmLibrary {
     identifier: 'InternetAddress',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'InternetAddress': VmProxy(identifier: 'InternetAddress', externalStaticPropertyReader: () => InternetAddress.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => InternetAddress.new),
       'fromRawAddress': VmProxy(identifier: 'fromRawAddress', externalStaticPropertyReader: () => InternetAddress.fromRawAddress),
       'anyIPv4': VmProxy(identifier: 'anyIPv4', externalStaticPropertyReader: () => InternetAddress.anyIPv4),
@@ -3080,7 +3025,6 @@ class VmLibrary {
     identifier: 'IOSink',
     superclassNames: ['Object', 'Sink', 'EventSink', 'StreamConsumer', 'StreamSink', 'StringSink'],
     externalProxyMap: {
-      'IOSink': VmProxy(identifier: 'IOSink', externalStaticPropertyReader: () => IOSink.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => IOSink.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (IOSink instance) => instance.add),
       'addError': VmProxy(identifier: 'addError', externalInstancePropertyReader: (IOSink instance) => instance.addError),
@@ -3105,7 +3049,6 @@ class VmLibrary {
     identifier: 'Isolate',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Isolate': VmProxy(identifier: 'Isolate', externalStaticPropertyReader: () => Isolate.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Isolate.new),
       'beforeNextEvent': VmProxy(identifier: 'beforeNextEvent', externalStaticPropertyReader: () => Isolate.beforeNextEvent),
       'current': VmProxy(identifier: 'current', externalStaticPropertyReader: () => Isolate.current),
@@ -3142,7 +3085,6 @@ class VmLibrary {
     identifier: 'IsolateSpawnException',
     superclassNames: ['Object', 'Exception'],
     externalProxyMap: {
-      'IsolateSpawnException': VmProxy(identifier: 'IsolateSpawnException', externalStaticPropertyReader: () => IsolateSpawnException.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => IsolateSpawnException.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (IsolateSpawnException instance) => instance.hashCode),
       'message': VmProxy(identifier: 'message', externalInstancePropertyReader: (IsolateSpawnException instance) => instance.message),
@@ -3302,7 +3244,6 @@ class VmLibrary {
     identifier: 'JsonCodec',
     superclassNames: ['Object', 'Codec'],
     externalProxyMap: {
-      'JsonCodec': VmProxy(identifier: 'JsonCodec', externalStaticPropertyReader: () => JsonCodec.new, externalStaticFunctionCaller: ({reviver, toEncodable}) => JsonCodec.new(reviver: reviver == null ? null : (b0, b1) => reviver(b0, b1), toEncodable: toEncodable == null ? null : (b0) => toEncodable(b0))),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => JsonCodec.new, externalStaticFunctionCaller: ({reviver, toEncodable}) => JsonCodec.new(reviver: reviver == null ? null : (b0, b1) => reviver(b0, b1), toEncodable: toEncodable == null ? null : (b0) => toEncodable(b0))),
       'withReviver': VmProxy(identifier: 'withReviver', externalStaticPropertyReader: () => JsonCodec.withReviver, externalStaticFunctionCaller: (a0) => JsonCodec.withReviver((b0, b1) => a0(b0, b1))),
       'decode': VmProxy(identifier: 'decode', externalInstancePropertyReader: (JsonCodec instance) => instance.decode, externalInstanceFunctionCaller: (JsonCodec instance, a0, {reviver}) => instance.decode(a0, reviver: reviver == null ? null : (b0, b1) => reviver(b0, b1))),
@@ -3323,7 +3264,6 @@ class VmLibrary {
     identifier: 'JsonCyclicError',
     superclassNames: ['Object', 'Error', 'JsonUnsupportedObjectError'],
     externalProxyMap: {
-      'JsonCyclicError': VmProxy(identifier: 'JsonCyclicError', externalStaticPropertyReader: () => JsonCyclicError.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => JsonCyclicError.new),
       'cause': VmProxy(identifier: 'cause', externalInstancePropertyReader: (JsonCyclicError instance) => instance.cause),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (JsonCyclicError instance) => instance.hashCode),
@@ -3341,7 +3281,6 @@ class VmLibrary {
     identifier: 'JsonDecoder',
     superclassNames: ['Object', 'StreamTransformer', 'StreamTransformerBase', 'Converter'],
     externalProxyMap: {
-      'JsonDecoder': VmProxy(identifier: 'JsonDecoder', externalStaticPropertyReader: () => JsonDecoder.new, externalStaticFunctionCaller: ([a0]) => JsonDecoder.new(a0 == null ? null : (b0, b1) => a0(b0, b1))),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => JsonDecoder.new, externalStaticFunctionCaller: ([a0]) => JsonDecoder.new(a0 == null ? null : (b0, b1) => a0(b0, b1))),
       'bind': VmProxy(identifier: 'bind', externalInstancePropertyReader: (JsonDecoder instance) => instance.bind),
       'cast': VmProxy(identifier: 'cast', externalInstancePropertyReader: (JsonDecoder instance) => instance.cast),
@@ -3360,7 +3299,6 @@ class VmLibrary {
     identifier: 'JsonEncoder',
     superclassNames: ['Object', 'StreamTransformer', 'StreamTransformerBase', 'Converter'],
     externalProxyMap: {
-      'JsonEncoder': VmProxy(identifier: 'JsonEncoder', externalStaticPropertyReader: () => JsonEncoder.new, externalStaticFunctionCaller: ([a0]) => JsonEncoder.new(a0 == null ? null : (b0) => a0(b0))),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => JsonEncoder.new, externalStaticFunctionCaller: ([a0]) => JsonEncoder.new(a0 == null ? null : (b0) => a0(b0))),
       'withIndent': VmProxy(identifier: 'withIndent', externalStaticPropertyReader: () => JsonEncoder.withIndent, externalStaticFunctionCaller: (a0, [a1]) => JsonEncoder.withIndent(a0, a1 == null ? null : (b0) => a1(b0))),
       'bind': VmProxy(identifier: 'bind', externalInstancePropertyReader: (JsonEncoder instance) => instance.bind),
@@ -3381,7 +3319,6 @@ class VmLibrary {
     identifier: 'JsonUnsupportedObjectError',
     superclassNames: ['Object', 'Error'],
     externalProxyMap: {
-      'JsonUnsupportedObjectError': VmProxy(identifier: 'JsonUnsupportedObjectError', externalStaticPropertyReader: () => JsonUnsupportedObjectError.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => JsonUnsupportedObjectError.new),
       'cause': VmProxy(identifier: 'cause', externalInstancePropertyReader: (JsonUnsupportedObjectError instance) => instance.cause),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (JsonUnsupportedObjectError instance) => instance.hashCode),
@@ -3399,7 +3336,6 @@ class VmLibrary {
     identifier: 'JsonUtf8Encoder',
     superclassNames: ['Object', 'StreamTransformer', 'StreamTransformerBase', 'Converter'],
     externalProxyMap: {
-      'JsonUtf8Encoder': VmProxy(identifier: 'JsonUtf8Encoder', externalStaticPropertyReader: () => JsonUtf8Encoder.new, externalStaticFunctionCaller: ([a0, a1, a2]) => JsonUtf8Encoder.new(a0, a1 == null ? null : (b0) => a1(b0), a2)),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => JsonUtf8Encoder.new, externalStaticFunctionCaller: ([a0, a1, a2]) => JsonUtf8Encoder.new(a0, a1 == null ? null : (b0) => a1(b0), a2)),
       'bind': VmProxy(identifier: 'bind', externalInstancePropertyReader: (JsonUtf8Encoder instance) => instance.bind),
       'cast': VmProxy(identifier: 'cast', externalInstancePropertyReader: (JsonUtf8Encoder instance) => instance.cast),
@@ -3418,7 +3354,6 @@ class VmLibrary {
     identifier: 'Latin1Codec',
     superclassNames: ['Object', 'Codec', 'Encoding'],
     externalProxyMap: {
-      'Latin1Codec': VmProxy(identifier: 'Latin1Codec', externalStaticPropertyReader: () => Latin1Codec.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Latin1Codec.new),
       'decode': VmProxy(identifier: 'decode', externalInstancePropertyReader: (Latin1Codec instance) => instance.decode),
       'decoder': VmProxy(identifier: 'decoder', externalInstancePropertyReader: (Latin1Codec instance) => instance.decoder),
@@ -3440,7 +3375,6 @@ class VmLibrary {
     identifier: 'Latin1Decoder',
     superclassNames: ['Object', 'StreamTransformer', 'StreamTransformerBase', 'Converter', '_UnicodeSubsetDecoder'],
     externalProxyMap: {
-      'Latin1Decoder': VmProxy(identifier: 'Latin1Decoder', externalStaticPropertyReader: () => Latin1Decoder.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Latin1Decoder.new),
       'bind': VmProxy(identifier: 'bind', externalInstancePropertyReader: (Latin1Decoder instance) => instance.bind),
       'cast': VmProxy(identifier: 'cast', externalInstancePropertyReader: (Latin1Decoder instance) => instance.cast),
@@ -3459,7 +3393,6 @@ class VmLibrary {
     identifier: 'Latin1Encoder',
     superclassNames: ['Object', 'StreamTransformer', 'StreamTransformerBase', 'Converter', '_UnicodeSubsetEncoder'],
     externalProxyMap: {
-      'Latin1Encoder': VmProxy(identifier: 'Latin1Encoder', externalStaticPropertyReader: () => Latin1Encoder.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Latin1Encoder.new),
       'bind': VmProxy(identifier: 'bind', externalInstancePropertyReader: (Latin1Encoder instance) => instance.bind),
       'cast': VmProxy(identifier: 'cast', externalInstancePropertyReader: (Latin1Encoder instance) => instance.cast),
@@ -3478,7 +3411,6 @@ class VmLibrary {
     identifier: 'LineSplitter',
     superclassNames: ['Object', 'StreamTransformer', 'StreamTransformerBase'],
     externalProxyMap: {
-      'LineSplitter': VmProxy(identifier: 'LineSplitter', externalStaticPropertyReader: () => LineSplitter.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => LineSplitter.new),
       'split': VmProxy(identifier: 'split', externalStaticPropertyReader: () => LineSplitter.split),
       'bind': VmProxy(identifier: 'bind', externalInstancePropertyReader: (LineSplitter instance) => instance.bind),
@@ -3497,7 +3429,6 @@ class VmLibrary {
     identifier: 'Link',
     superclassNames: ['Object', 'FileSystemEntity'],
     externalProxyMap: {
-      'Link': VmProxy(identifier: 'Link', externalStaticPropertyReader: () => Link.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Link.new),
       'fromRawPath': VmProxy(identifier: 'fromRawPath', externalStaticPropertyReader: () => Link.fromRawPath),
       'fromUri': VmProxy(identifier: 'fromUri', externalStaticPropertyReader: () => Link.fromUri),
@@ -3535,7 +3466,6 @@ class VmLibrary {
     identifier: 'LinkedHashMap',
     superclassNames: ['Object', 'Map'],
     externalProxyMap: {
-      'LinkedHashMap': VmProxy(identifier: 'LinkedHashMap', externalStaticPropertyReader: () => LinkedHashMap.new, externalStaticFunctionCaller: ({equals, hashCode, isValidKey}) => LinkedHashMap.new(equals: equals == null ? null : (b0, b1) => equals(b0, b1), hashCode: hashCode == null ? null : (b0) => hashCode(b0), isValidKey: isValidKey == null ? null : (b0) => isValidKey(b0))),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => LinkedHashMap.new, externalStaticFunctionCaller: ({equals, hashCode, isValidKey}) => LinkedHashMap.new(equals: equals == null ? null : (b0, b1) => equals(b0, b1), hashCode: hashCode == null ? null : (b0) => hashCode(b0), isValidKey: isValidKey == null ? null : (b0) => isValidKey(b0))),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => LinkedHashMap.from),
       'fromEntries': VmProxy(identifier: 'fromEntries', externalStaticPropertyReader: () => LinkedHashMap.fromEntries),
@@ -3574,7 +3504,6 @@ class VmLibrary {
     identifier: 'LinkedHashSet',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'Set'],
     externalProxyMap: {
-      'LinkedHashSet': VmProxy(identifier: 'LinkedHashSet', externalStaticPropertyReader: () => LinkedHashSet.new, externalStaticFunctionCaller: ({equals, hashCode, isValidKey}) => LinkedHashSet.new(equals: equals == null ? null : (b0, b1) => equals(b0, b1), hashCode: hashCode == null ? null : (b0) => hashCode(b0), isValidKey: isValidKey == null ? null : (b0) => isValidKey(b0))),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => LinkedHashSet.new, externalStaticFunctionCaller: ({equals, hashCode, isValidKey}) => LinkedHashSet.new(equals: equals == null ? null : (b0, b1) => equals(b0, b1), hashCode: hashCode == null ? null : (b0) => hashCode(b0), isValidKey: isValidKey == null ? null : (b0) => isValidKey(b0))),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => LinkedHashSet.from),
       'identity': VmProxy(identifier: 'identity', externalStaticPropertyReader: () => LinkedHashSet.identity),
@@ -3634,7 +3563,6 @@ class VmLibrary {
     identifier: 'LinkedList',
     superclassNames: ['Object', 'Iterable'],
     externalProxyMap: {
-      'LinkedList': VmProxy(identifier: 'LinkedList', externalStaticPropertyReader: () => LinkedList.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => LinkedList.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (LinkedList instance) => instance.add),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (LinkedList instance) => instance.addAll),
@@ -3701,7 +3629,6 @@ class VmLibrary {
     identifier: 'List',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable'],
     externalProxyMap: {
-      'List': VmProxy(identifier: 'List', externalStaticPropertyReader: () => List.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => List.new),
       'empty': VmProxy(identifier: 'empty', externalStaticPropertyReader: () => List.empty),
       'filled': VmProxy(identifier: 'filled', externalStaticPropertyReader: () => List.filled),
@@ -3742,7 +3669,7 @@ class VmLibrary {
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (List instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (List instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (List instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (List instance) => instance.lastWhere, externalInstanceFunctionCaller: (List instance, a0, {orElse}) => instance.lastWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
-      'length': VmProxy(identifier: 'length', externalInstancePropertyReader: (List instance) => instance.length, externalInstancePropertyWriter: (List instance, value) => instance.length = value),
+      'length': VmProxy(identifier: 'length', externalInstancePropertyWriter: (List instance, value) => instance.length = value, externalInstancePropertyReader: (List instance) => instance.length),
       'map': VmProxy(identifier: 'map', externalInstancePropertyReader: (List instance) => instance.map, externalInstanceFunctionCaller: (List instance, a0) => instance.map((b0) => a0(b0))),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (List instance) => instance.noSuchMethod),
       'reduce': VmProxy(identifier: 'reduce', externalInstancePropertyReader: (List instance) => instance.reduce, externalInstanceFunctionCaller: (List instance, a0) => instance.reduce((b0, b1) => a0(b0, b1))),
@@ -3914,7 +3841,6 @@ class VmLibrary {
     identifier: 'ListQueue',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'ListIterable', 'Queue'],
     externalProxyMap: {
-      'ListQueue': VmProxy(identifier: 'ListQueue', externalStaticPropertyReader: () => ListQueue.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => ListQueue.new),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => ListQueue.from),
       'of': VmProxy(identifier: 'of', externalStaticPropertyReader: () => ListQueue.of),
@@ -3970,7 +3896,6 @@ class VmLibrary {
     identifier: 'Map',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Map': VmProxy(identifier: 'Map', externalStaticPropertyReader: () => Map.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Map.new),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => Map.from),
       'fromEntries': VmProxy(identifier: 'fromEntries', externalStaticPropertyReader: () => Map.fromEntries),
@@ -4043,7 +3968,6 @@ class VmLibrary {
     identifier: 'MapEntry',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'MapEntry': VmProxy(identifier: 'MapEntry', externalStaticPropertyReader: () => MapEntry.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => MapEntry.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (MapEntry instance) => instance.hashCode),
       'key': VmProxy(identifier: 'key', externalInstancePropertyReader: (MapEntry instance) => instance.key),
@@ -4090,7 +4014,6 @@ class VmLibrary {
     identifier: 'MapView',
     superclassNames: ['Object', 'Map'],
     externalProxyMap: {
-      'MapView': VmProxy(identifier: 'MapView', externalStaticPropertyReader: () => MapView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => MapView.new),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (MapView instance) => instance.addAll),
       'addEntries': VmProxy(identifier: 'addEntries', externalInstancePropertyReader: (MapView instance) => instance.addEntries),
@@ -4171,7 +4094,6 @@ class VmLibrary {
     identifier: 'MutableRectangle',
     superclassNames: ['Object', '_RectangleBase', 'Rectangle'],
     externalProxyMap: {
-      'MutableRectangle': VmProxy(identifier: 'MutableRectangle', externalStaticPropertyReader: () => MutableRectangle.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => MutableRectangle.new),
       'fromPoints': VmProxy(identifier: 'fromPoints', externalStaticPropertyReader: () => MutableRectangle.fromPoints),
       'bottom': VmProxy(identifier: 'bottom', externalInstancePropertyReader: (MutableRectangle instance) => instance.bottom),
@@ -4218,7 +4140,6 @@ class VmLibrary {
     identifier: 'NoSuchMethodError',
     superclassNames: ['Object', 'Error'],
     externalProxyMap: {
-      'NoSuchMethodError': VmProxy(identifier: 'NoSuchMethodError', externalStaticPropertyReader: () => NoSuchMethodError.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => NoSuchMethodError.new),
       'withInvocation': VmProxy(identifier: 'withInvocation', externalStaticPropertyReader: () => NoSuchMethodError.withInvocation),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (NoSuchMethodError instance) => instance.hashCode),
@@ -4234,7 +4155,6 @@ class VmLibrary {
     identifier: 'NullThrownError',
     superclassNames: ['Object', 'Error', 'TypeError'],
     externalProxyMap: {
-      'NullThrownError': VmProxy(identifier: 'NullThrownError', externalStaticPropertyReader: () => NullThrownError.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => NullThrownError.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (NullThrownError instance) => instance.hashCode),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (NullThrownError instance) => instance.noSuchMethod),
@@ -4285,7 +4205,6 @@ class VmLibrary {
     identifier: 'Object',
     superclassNames: [],
     externalProxyMap: {
-      'Object': VmProxy(identifier: 'Object', externalStaticPropertyReader: () => Object.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Object.new),
       'hash': VmProxy(identifier: 'hash', externalStaticPropertyReader: () => Object.hash),
       'hashAll': VmProxy(identifier: 'hashAll', externalStaticPropertyReader: () => Object.hashAll),
@@ -4302,7 +4221,6 @@ class VmLibrary {
     identifier: 'OSError',
     superclassNames: ['Object', 'Exception'],
     externalProxyMap: {
-      'OSError': VmProxy(identifier: 'OSError', externalStaticPropertyReader: () => OSError.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => OSError.new),
       'noErrorCode': VmProxy(identifier: 'noErrorCode', externalStaticPropertyReader: () => OSError.noErrorCode),
       'errorCode': VmProxy(identifier: 'errorCode', externalInstancePropertyReader: (OSError instance) => instance.errorCode),
@@ -4319,7 +4237,6 @@ class VmLibrary {
     identifier: 'OutOfMemoryError',
     superclassNames: ['Object', 'Error'],
     externalProxyMap: {
-      'OutOfMemoryError': VmProxy(identifier: 'OutOfMemoryError', externalStaticPropertyReader: () => OutOfMemoryError.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => OutOfMemoryError.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (OutOfMemoryError instance) => instance.hashCode),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (OutOfMemoryError instance) => instance.noSuchMethod),
@@ -4334,7 +4251,6 @@ class VmLibrary {
     identifier: 'PathNotFoundException',
     superclassNames: ['Object', 'Exception', 'IOException', 'FileSystemException'],
     externalProxyMap: {
-      'PathNotFoundException': VmProxy(identifier: 'PathNotFoundException', externalStaticPropertyReader: () => PathNotFoundException.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => PathNotFoundException.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (PathNotFoundException instance) => instance.hashCode),
       'message': VmProxy(identifier: 'message', externalInstancePropertyReader: (PathNotFoundException instance) => instance.message),
@@ -4412,7 +4328,6 @@ class VmLibrary {
     identifier: 'Point',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Point': VmProxy(identifier: 'Point', externalStaticPropertyReader: () => Point.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Point.new),
       'distanceTo': VmProxy(identifier: 'distanceTo', externalInstancePropertyReader: (Point instance) => instance.distanceTo),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (Point instance) => instance.hashCode),
@@ -4431,7 +4346,6 @@ class VmLibrary {
     identifier: 'pragma',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'pragma': VmProxy(identifier: 'pragma', externalStaticPropertyReader: () => pragma.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => pragma.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (pragma instance) => instance.hashCode),
       'name': VmProxy(identifier: 'name', externalInstancePropertyReader: (pragma instance) => instance.name),
@@ -4469,7 +4383,6 @@ class VmLibrary {
     identifier: 'ProcessException',
     superclassNames: ['Object', 'Exception', 'IOException'],
     externalProxyMap: {
-      'ProcessException': VmProxy(identifier: 'ProcessException', externalStaticPropertyReader: () => ProcessException.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => ProcessException.new),
       'arguments': VmProxy(identifier: 'arguments', externalInstancePropertyReader: (ProcessException instance) => instance.arguments),
       'errorCode': VmProxy(identifier: 'errorCode', externalInstancePropertyReader: (ProcessException instance) => instance.errorCode),
@@ -4501,7 +4414,6 @@ class VmLibrary {
     identifier: 'ProcessResult',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'ProcessResult': VmProxy(identifier: 'ProcessResult', externalStaticPropertyReader: () => ProcessResult.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => ProcessResult.new),
       'exitCode': VmProxy(identifier: 'exitCode', externalInstancePropertyReader: (ProcessResult instance) => instance.exitCode),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (ProcessResult instance) => instance.hashCode),
@@ -4578,7 +4490,6 @@ class VmLibrary {
     identifier: 'Provisional',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Provisional': VmProxy(identifier: 'Provisional', externalStaticPropertyReader: () => Provisional.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Provisional.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (Provisional instance) => instance.hashCode),
       'message': VmProxy(identifier: 'message', externalInstancePropertyReader: (Provisional instance) => instance.message),
@@ -4593,7 +4504,6 @@ class VmLibrary {
     identifier: 'Queue',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable'],
     externalProxyMap: {
-      'Queue': VmProxy(identifier: 'Queue', externalStaticPropertyReader: () => Queue.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Queue.new),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => Queue.from),
       'of': VmProxy(identifier: 'of', externalStaticPropertyReader: () => Queue.of),
@@ -4650,7 +4560,6 @@ class VmLibrary {
     identifier: 'Random',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Random': VmProxy(identifier: 'Random', externalStaticPropertyReader: () => Random.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Random.new),
       'secure': VmProxy(identifier: 'secure', externalStaticPropertyReader: () => Random.secure),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (Random instance) => instance.hashCode),
@@ -4709,7 +4618,6 @@ class VmLibrary {
     identifier: 'RangeError',
     superclassNames: ['Object', 'Error', 'ArgumentError'],
     externalProxyMap: {
-      'RangeError': VmProxy(identifier: 'RangeError', externalStaticPropertyReader: () => RangeError.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => RangeError.new),
       'index': VmProxy(identifier: 'index', externalStaticPropertyReader: () => RangeError.index),
       'range': VmProxy(identifier: 'range', externalStaticPropertyReader: () => RangeError.range),
@@ -4801,7 +4709,6 @@ class VmLibrary {
     identifier: 'RawReceivePort',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'RawReceivePort': VmProxy(identifier: 'RawReceivePort', externalStaticPropertyReader: () => RawReceivePort.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => RawReceivePort.new),
       'close': VmProxy(identifier: 'close', externalInstancePropertyReader: (RawReceivePort instance) => instance.close),
       'handler': VmProxy(identifier: 'handler', externalInstancePropertyWriter: (RawReceivePort instance, value) => instance.handler = value),
@@ -5082,7 +4989,6 @@ class VmLibrary {
     identifier: 'RawSocketOption',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'RawSocketOption': VmProxy(identifier: 'RawSocketOption', externalStaticPropertyReader: () => RawSocketOption.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => RawSocketOption.new),
       'fromBool': VmProxy(identifier: 'fromBool', externalStaticPropertyReader: () => RawSocketOption.fromBool),
       'fromInt': VmProxy(identifier: 'fromInt', externalStaticPropertyReader: () => RawSocketOption.fromInt),
@@ -5196,7 +5102,6 @@ class VmLibrary {
     identifier: 'ReceivePort',
     superclassNames: ['Object', 'Stream'],
     externalProxyMap: {
-      'ReceivePort': VmProxy(identifier: 'ReceivePort', externalStaticPropertyReader: () => ReceivePort.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => ReceivePort.new),
       'fromRawReceivePort': VmProxy(identifier: 'fromRawReceivePort', externalStaticPropertyReader: () => ReceivePort.fromRawReceivePort),
       'any': VmProxy(identifier: 'any', externalInstancePropertyReader: (ReceivePort instance) => instance.any, externalInstanceFunctionCaller: (ReceivePort instance, a0) => instance.any((b0) => a0(b0))),
@@ -5250,7 +5155,6 @@ class VmLibrary {
     identifier: 'Rectangle',
     superclassNames: ['Object', '_RectangleBase'],
     externalProxyMap: {
-      'Rectangle': VmProxy(identifier: 'Rectangle', externalStaticPropertyReader: () => Rectangle.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Rectangle.new),
       'fromPoints': VmProxy(identifier: 'fromPoints', externalStaticPropertyReader: () => Rectangle.fromPoints),
       'bottom': VmProxy(identifier: 'bottom', externalInstancePropertyReader: (Rectangle instance) => instance.bottom),
@@ -5280,7 +5184,6 @@ class VmLibrary {
     identifier: 'RegExp',
     superclassNames: ['Object', 'Pattern'],
     externalProxyMap: {
-      'RegExp': VmProxy(identifier: 'RegExp', externalStaticPropertyReader: () => RegExp.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => RegExp.new),
       'escape': VmProxy(identifier: 'escape', externalStaticPropertyReader: () => RegExp.escape),
       'allMatches': VmProxy(identifier: 'allMatches', externalInstancePropertyReader: (RegExp instance) => instance.allMatches),
@@ -5326,7 +5229,6 @@ class VmLibrary {
     identifier: 'RemoteError',
     superclassNames: ['Object', 'Error'],
     externalProxyMap: {
-      'RemoteError': VmProxy(identifier: 'RemoteError', externalStaticPropertyReader: () => RemoteError.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => RemoteError.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (RemoteError instance) => instance.hashCode),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (RemoteError instance) => instance.noSuchMethod),
@@ -5367,7 +5269,6 @@ class VmLibrary {
     identifier: 'RuneIterator',
     superclassNames: ['Object', 'Iterator', 'BidirectionalIterator'],
     externalProxyMap: {
-      'RuneIterator': VmProxy(identifier: 'RuneIterator', externalStaticPropertyReader: () => RuneIterator.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => RuneIterator.new),
       'at': VmProxy(identifier: 'at', externalStaticPropertyReader: () => RuneIterator.at),
       'current': VmProxy(identifier: 'current', externalInstancePropertyReader: (RuneIterator instance) => instance.current),
@@ -5377,7 +5278,7 @@ class VmLibrary {
       'moveNext': VmProxy(identifier: 'moveNext', externalInstancePropertyReader: (RuneIterator instance) => instance.moveNext),
       'movePrevious': VmProxy(identifier: 'movePrevious', externalInstancePropertyReader: (RuneIterator instance) => instance.movePrevious),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (RuneIterator instance) => instance.noSuchMethod),
-      'rawIndex': VmProxy(identifier: 'rawIndex', externalInstancePropertyReader: (RuneIterator instance) => instance.rawIndex, externalInstancePropertyWriter: (RuneIterator instance, value) => instance.rawIndex = value),
+      'rawIndex': VmProxy(identifier: 'rawIndex', externalInstancePropertyWriter: (RuneIterator instance, value) => instance.rawIndex = value, externalInstancePropertyReader: (RuneIterator instance) => instance.rawIndex),
       'reset': VmProxy(identifier: 'reset', externalInstancePropertyReader: (RuneIterator instance) => instance.reset),
       'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (RuneIterator instance) => instance.runtimeType),
       'string': VmProxy(identifier: 'string', externalInstancePropertyReader: (RuneIterator instance) => instance.string),
@@ -5390,7 +5291,6 @@ class VmLibrary {
     identifier: 'Runes',
     superclassNames: ['Object', 'Iterable'],
     externalProxyMap: {
-      'Runes': VmProxy(identifier: 'Runes', externalStaticPropertyReader: () => Runes.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Runes.new),
       'any': VmProxy(identifier: 'any', externalInstancePropertyReader: (Runes instance) => instance.any, externalInstanceFunctionCaller: (Runes instance, a0) => instance.any((b0) => a0(b0))),
       'cast': VmProxy(identifier: 'cast', externalInstancePropertyReader: (Runes instance) => instance.cast),
@@ -5563,7 +5463,6 @@ class VmLibrary {
     identifier: 'SecurityContext',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'SecurityContext': VmProxy(identifier: 'SecurityContext', externalStaticPropertyReader: () => SecurityContext.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => SecurityContext.new),
       'alpnSupported': VmProxy(identifier: 'alpnSupported', externalStaticPropertyReader: () => SecurityContext.alpnSupported),
       'defaultContext': VmProxy(identifier: 'defaultContext', externalStaticPropertyReader: () => SecurityContext.defaultContext),
@@ -5655,7 +5554,6 @@ class VmLibrary {
     identifier: 'Set',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable'],
     externalProxyMap: {
-      'Set': VmProxy(identifier: 'Set', externalStaticPropertyReader: () => Set.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Set.new),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => Set.from),
       'identity': VmProxy(identifier: 'identity', externalStaticPropertyReader: () => Set.identity),
@@ -5828,7 +5726,6 @@ class VmLibrary {
     identifier: 'SignalException',
     superclassNames: ['Object', 'Exception', 'IOException'],
     externalProxyMap: {
-      'SignalException': VmProxy(identifier: 'SignalException', externalStaticPropertyReader: () => SignalException.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => SignalException.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (SignalException instance) => instance.hashCode),
       'message': VmProxy(identifier: 'message', externalInstancePropertyReader: (SignalException instance) => instance.message),
@@ -5960,7 +5857,6 @@ class VmLibrary {
     identifier: 'SocketException',
     superclassNames: ['Object', 'Exception', 'IOException'],
     externalProxyMap: {
-      'SocketException': VmProxy(identifier: 'SocketException', externalStaticPropertyReader: () => SocketException.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => SocketException.new),
       'closed': VmProxy(identifier: 'closed', externalStaticPropertyReader: () => SocketException.closed),
       'address': VmProxy(identifier: 'address', externalInstancePropertyReader: (SocketException instance) => instance.address),
@@ -5979,7 +5875,6 @@ class VmLibrary {
     identifier: 'SocketMessage',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'SocketMessage': VmProxy(identifier: 'SocketMessage', externalStaticPropertyReader: () => SocketMessage.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => SocketMessage.new),
       'controlMessages': VmProxy(identifier: 'controlMessages', externalInstancePropertyReader: (SocketMessage instance) => instance.controlMessages),
       'data': VmProxy(identifier: 'data', externalInstancePropertyReader: (SocketMessage instance) => instance.data),
@@ -6008,7 +5903,6 @@ class VmLibrary {
     identifier: 'SplayTreeMap',
     superclassNames: ['Object', '_SplayTree', 'Map', 'MapMixin'],
     externalProxyMap: {
-      'SplayTreeMap': VmProxy(identifier: 'SplayTreeMap', externalStaticPropertyReader: () => SplayTreeMap.new, externalStaticFunctionCaller: ([a0, a1]) => SplayTreeMap.new(a0 == null ? null : (b0, b1) => a0(b0, b1), a1 == null ? null : (b0) => a1(b0))),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => SplayTreeMap.new, externalStaticFunctionCaller: ([a0, a1]) => SplayTreeMap.new(a0 == null ? null : (b0, b1) => a0(b0, b1), a1 == null ? null : (b0) => a1(b0))),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => SplayTreeMap.from, externalStaticFunctionCaller: (a0, [a1, a2]) => SplayTreeMap.from(a0, a1 == null ? null : (b0, b1) => a1(b0, b1), a2 == null ? null : (b0) => a2(b0))),
       'fromIterable': VmProxy(identifier: 'fromIterable', externalStaticPropertyReader: () => SplayTreeMap.fromIterable),
@@ -6049,7 +5943,6 @@ class VmLibrary {
     identifier: 'SplayTreeSet',
     superclassNames: ['Object', '_SplayTree', 'Iterable', 'IterableMixin', 'EfficientLengthIterable', 'Set', 'SetMixin'],
     externalProxyMap: {
-      'SplayTreeSet': VmProxy(identifier: 'SplayTreeSet', externalStaticPropertyReader: () => SplayTreeSet.new, externalStaticFunctionCaller: ([a0, a1]) => SplayTreeSet.new(a0 == null ? null : (b0, b1) => a0(b0, b1), a1 == null ? null : (b0) => a1(b0))),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => SplayTreeSet.new, externalStaticFunctionCaller: ([a0, a1]) => SplayTreeSet.new(a0 == null ? null : (b0, b1) => a0(b0, b1), a1 == null ? null : (b0) => a1(b0))),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => SplayTreeSet.from, externalStaticFunctionCaller: (a0, [a1, a2]) => SplayTreeSet.from(a0, a1 == null ? null : (b0, b1) => a1(b0, b1), a2 == null ? null : (b0) => a2(b0))),
       'of': VmProxy(identifier: 'of', externalStaticPropertyReader: () => SplayTreeSet.of, externalStaticFunctionCaller: (a0, [a1, a2]) => SplayTreeSet.of(a0, a1 == null ? null : (b0, b1) => a1(b0, b1), a2 == null ? null : (b0) => a2(b0))),
@@ -6108,7 +6001,6 @@ class VmLibrary {
     identifier: 'StackOverflowError',
     superclassNames: ['Object', 'Error'],
     externalProxyMap: {
-      'StackOverflowError': VmProxy(identifier: 'StackOverflowError', externalStaticPropertyReader: () => StackOverflowError.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => StackOverflowError.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (StackOverflowError instance) => instance.hashCode),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (StackOverflowError instance) => instance.noSuchMethod),
@@ -6138,7 +6030,6 @@ class VmLibrary {
     identifier: 'StateError',
     superclassNames: ['Object', 'Error'],
     externalProxyMap: {
-      'StateError': VmProxy(identifier: 'StateError', externalStaticPropertyReader: () => StateError.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => StateError.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (StateError instance) => instance.hashCode),
       'message': VmProxy(identifier: 'message', externalInstancePropertyReader: (StateError instance) => instance.message),
@@ -6162,7 +6053,7 @@ class VmLibrary {
       'contains': VmProxy(identifier: 'contains', externalInstancePropertyReader: (Stdin instance) => instance.contains),
       'distinct': VmProxy(identifier: 'distinct', externalInstancePropertyReader: (Stdin instance) => instance.distinct, externalInstanceFunctionCaller: (Stdin instance, [a0]) => instance.distinct(a0 == null ? null : (b0, b1) => a0(b0, b1))),
       'drain': VmProxy(identifier: 'drain', externalInstancePropertyReader: (Stdin instance) => instance.drain),
-      'echoMode': VmProxy(identifier: 'echoMode', externalInstancePropertyWriter: (Stdin instance, value) => instance.echoMode = value, externalInstancePropertyReader: (Stdin instance) => instance.echoMode),
+      'echoMode': VmProxy(identifier: 'echoMode', externalInstancePropertyReader: (Stdin instance) => instance.echoMode, externalInstancePropertyWriter: (Stdin instance, value) => instance.echoMode = value),
       'echoNewlineMode': VmProxy(identifier: 'echoNewlineMode', externalInstancePropertyReader: (Stdin instance) => instance.echoNewlineMode, externalInstancePropertyWriter: (Stdin instance, value) => instance.echoNewlineMode = value),
       'elementAt': VmProxy(identifier: 'elementAt', externalInstancePropertyReader: (Stdin instance) => instance.elementAt),
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (Stdin instance) => instance.every, externalInstanceFunctionCaller: (Stdin instance, a0) => instance.every((b0) => a0(b0))),
@@ -6210,7 +6101,6 @@ class VmLibrary {
     identifier: 'StdinException',
     superclassNames: ['Object', 'Exception', 'IOException'],
     externalProxyMap: {
-      'StdinException': VmProxy(identifier: 'StdinException', externalStaticPropertyReader: () => StdinException.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => StdinException.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (StdinException instance) => instance.hashCode),
       'message': VmProxy(identifier: 'message', externalInstancePropertyReader: (StdinException instance) => instance.message),
@@ -6271,7 +6161,6 @@ class VmLibrary {
     identifier: 'StdoutException',
     superclassNames: ['Object', 'Exception', 'IOException'],
     externalProxyMap: {
-      'StdoutException': VmProxy(identifier: 'StdoutException', externalStaticPropertyReader: () => StdoutException.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => StdoutException.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (StdoutException instance) => instance.hashCode),
       'message': VmProxy(identifier: 'message', externalInstancePropertyReader: (StdoutException instance) => instance.message),
@@ -6287,7 +6176,6 @@ class VmLibrary {
     identifier: 'Stopwatch',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Stopwatch': VmProxy(identifier: 'Stopwatch', externalStaticPropertyReader: () => Stopwatch.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Stopwatch.new),
       'elapsed': VmProxy(identifier: 'elapsed', externalInstancePropertyReader: (Stopwatch instance) => instance.elapsed),
       'elapsedMicroseconds': VmProxy(identifier: 'elapsedMicroseconds', externalInstancePropertyReader: (Stopwatch instance) => instance.elapsedMicroseconds),
@@ -6383,7 +6271,6 @@ class VmLibrary {
     identifier: 'StreamController',
     superclassNames: ['Object', 'Sink', 'EventSink', 'StreamConsumer', 'StreamSink'],
     externalProxyMap: {
-      'StreamController': VmProxy(identifier: 'StreamController', externalStaticPropertyReader: () => StreamController.new, externalStaticFunctionCaller: ({onListen, onPause, onResume, onCancel, sync = false}) => StreamController.new(onListen: onListen, onPause: onPause, onResume: onResume, onCancel: onCancel == null ? null : () => onCancel(), sync: sync)),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => StreamController.new, externalStaticFunctionCaller: ({onListen, onPause, onResume, onCancel, sync = false}) => StreamController.new(onListen: onListen, onPause: onPause, onResume: onResume, onCancel: onCancel == null ? null : () => onCancel(), sync: sync)),
       'broadcast': VmProxy(identifier: 'broadcast', externalStaticPropertyReader: () => StreamController.broadcast),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (StreamController instance) => instance.add),
@@ -6412,7 +6299,6 @@ class VmLibrary {
     identifier: 'StreamIterator',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'StreamIterator': VmProxy(identifier: 'StreamIterator', externalStaticPropertyReader: () => StreamIterator.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => StreamIterator.new),
       'cancel': VmProxy(identifier: 'cancel', externalInstancePropertyReader: (StreamIterator instance) => instance.cancel),
       'current': VmProxy(identifier: 'current', externalInstancePropertyReader: (StreamIterator instance) => instance.current),
@@ -6466,7 +6352,6 @@ class VmLibrary {
     identifier: 'StreamTransformer',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'StreamTransformer': VmProxy(identifier: 'StreamTransformer', externalStaticPropertyReader: () => StreamTransformer.new, externalStaticFunctionCaller: (a0) => StreamTransformer.new((b0, b1) => a0(b0, b1))),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => StreamTransformer.new, externalStaticFunctionCaller: (a0) => StreamTransformer.new((b0, b1) => a0(b0, b1))),
       'fromBind': VmProxy(identifier: 'fromBind', externalStaticPropertyReader: () => StreamTransformer.fromBind, externalStaticFunctionCaller: (a0) => StreamTransformer.fromBind((b0) => a0(b0))),
       'fromHandlers': VmProxy(identifier: 'fromHandlers', externalStaticPropertyReader: () => StreamTransformer.fromHandlers, externalStaticFunctionCaller: ({handleData, handleError, handleDone}) => StreamTransformer.fromHandlers(handleData: handleData == null ? null : (b0, b1) => handleData(b0, b1), handleError: handleError == null ? null : (b0, b1, b2) => handleError(b0, b1, b2), handleDone: handleDone == null ? null : (b0) => handleDone(b0))),
@@ -6499,7 +6384,6 @@ class VmLibrary {
     identifier: 'StreamView',
     superclassNames: ['Object', 'Stream'],
     externalProxyMap: {
-      'StreamView': VmProxy(identifier: 'StreamView', externalStaticPropertyReader: () => StreamView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => StreamView.new),
       'any': VmProxy(identifier: 'any', externalInstancePropertyReader: (StreamView instance) => instance.any, externalInstanceFunctionCaller: (StreamView instance, a0) => instance.any((b0) => a0(b0))),
       'asBroadcastStream': VmProxy(identifier: 'asBroadcastStream', externalInstancePropertyReader: (StreamView instance) => instance.asBroadcastStream, externalInstanceFunctionCaller: (StreamView instance, {onListen, onCancel}) => instance.asBroadcastStream(onListen: onListen == null ? null : (b0) => onListen(b0), onCancel: onCancel == null ? null : (b0) => onCancel(b0))),
@@ -6594,7 +6478,6 @@ class VmLibrary {
     identifier: 'StringBuffer',
     superclassNames: ['Object', 'StringSink'],
     externalProxyMap: {
-      'StringBuffer': VmProxy(identifier: 'StringBuffer', externalStaticPropertyReader: () => StringBuffer.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => StringBuffer.new),
       'clear': VmProxy(identifier: 'clear', externalInstancePropertyReader: (StringBuffer instance) => instance.clear),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (StringBuffer instance) => instance.hashCode),
@@ -6686,7 +6569,6 @@ class VmLibrary {
     identifier: 'Symbol',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Symbol': VmProxy(identifier: 'Symbol', externalStaticPropertyReader: () => Symbol.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Symbol.new),
       'empty': VmProxy(identifier: 'empty', externalStaticPropertyReader: () => Symbol.empty),
       'unaryMinus': VmProxy(identifier: 'unaryMinus', externalStaticPropertyReader: () => Symbol.unaryMinus),
@@ -6728,7 +6610,6 @@ class VmLibrary {
     identifier: 'SystemEncoding',
     superclassNames: ['Object', 'Codec', 'Encoding'],
     externalProxyMap: {
-      'SystemEncoding': VmProxy(identifier: 'SystemEncoding', externalStaticPropertyReader: () => SystemEncoding.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => SystemEncoding.new),
       'decode': VmProxy(identifier: 'decode', externalInstancePropertyReader: (SystemEncoding instance) => instance.decode),
       'decoder': VmProxy(identifier: 'decoder', externalInstancePropertyReader: (SystemEncoding instance) => instance.decoder),
@@ -6750,7 +6631,6 @@ class VmLibrary {
     identifier: 'TimeoutException',
     superclassNames: ['Object', 'Exception'],
     externalProxyMap: {
-      'TimeoutException': VmProxy(identifier: 'TimeoutException', externalStaticPropertyReader: () => TimeoutException.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => TimeoutException.new),
       'duration': VmProxy(identifier: 'duration', externalInstancePropertyReader: (TimeoutException instance) => instance.duration),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (TimeoutException instance) => instance.hashCode),
@@ -6766,7 +6646,6 @@ class VmLibrary {
     identifier: 'Timer',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Timer': VmProxy(identifier: 'Timer', externalStaticPropertyReader: () => Timer.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Timer.new),
       'periodic': VmProxy(identifier: 'periodic', externalStaticPropertyReader: () => Timer.periodic, externalStaticFunctionCaller: (a0, a1) => Timer.periodic(a0, (b0) => a1(b0))),
       'run': VmProxy(identifier: 'run', externalStaticPropertyReader: () => Timer.run),
@@ -6785,7 +6664,6 @@ class VmLibrary {
     identifier: 'TlsException',
     superclassNames: ['Object', 'Exception', 'IOException'],
     externalProxyMap: {
-      'TlsException': VmProxy(identifier: 'TlsException', externalStaticPropertyReader: () => TlsException.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => TlsException.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (TlsException instance) => instance.hashCode),
       'message': VmProxy(identifier: 'message', externalInstancePropertyReader: (TlsException instance) => instance.message),
@@ -6857,7 +6735,6 @@ class VmLibrary {
     identifier: 'Uint16List',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList'],
     externalProxyMap: {
-      'Uint16List': VmProxy(identifier: 'Uint16List', externalStaticPropertyReader: () => Uint16List.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Uint16List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Uint16List.fromList),
       'sublistView': VmProxy(identifier: 'sublistView', externalStaticPropertyReader: () => Uint16List.sublistView),
@@ -6876,7 +6753,7 @@ class VmLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (Uint16List instance) => instance.every, externalInstanceFunctionCaller: (Uint16List instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (Uint16List instance) => instance.expand, externalInstanceFunctionCaller: (Uint16List instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (Uint16List instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (Uint16List instance) => instance.first, externalInstancePropertyWriter: (Uint16List instance, value) => instance.first = value),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (Uint16List instance, value) => instance.first = value, externalInstancePropertyReader: (Uint16List instance) => instance.first),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (Uint16List instance) => instance.firstWhere, externalInstanceFunctionCaller: (Uint16List instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (Uint16List instance) => instance.fold, externalInstanceFunctionCaller: (Uint16List instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
       'followedBy': VmProxy(identifier: 'followedBy', externalInstancePropertyReader: (Uint16List instance) => instance.followedBy),
@@ -6934,7 +6811,6 @@ class VmLibrary {
     identifier: 'Uint32List',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList'],
     externalProxyMap: {
-      'Uint32List': VmProxy(identifier: 'Uint32List', externalStaticPropertyReader: () => Uint32List.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Uint32List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Uint32List.fromList),
       'sublistView': VmProxy(identifier: 'sublistView', externalStaticPropertyReader: () => Uint32List.sublistView),
@@ -6953,7 +6829,7 @@ class VmLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (Uint32List instance) => instance.every, externalInstanceFunctionCaller: (Uint32List instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (Uint32List instance) => instance.expand, externalInstanceFunctionCaller: (Uint32List instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (Uint32List instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (Uint32List instance) => instance.first, externalInstancePropertyWriter: (Uint32List instance, value) => instance.first = value),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (Uint32List instance, value) => instance.first = value, externalInstancePropertyReader: (Uint32List instance) => instance.first),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (Uint32List instance) => instance.firstWhere, externalInstanceFunctionCaller: (Uint32List instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (Uint32List instance) => instance.fold, externalInstanceFunctionCaller: (Uint32List instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
       'followedBy': VmProxy(identifier: 'followedBy', externalInstancePropertyReader: (Uint32List instance) => instance.followedBy),
@@ -7011,7 +6887,6 @@ class VmLibrary {
     identifier: 'Uint64List',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList'],
     externalProxyMap: {
-      'Uint64List': VmProxy(identifier: 'Uint64List', externalStaticPropertyReader: () => Uint64List.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Uint64List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Uint64List.fromList),
       'sublistView': VmProxy(identifier: 'sublistView', externalStaticPropertyReader: () => Uint64List.sublistView),
@@ -7030,7 +6905,7 @@ class VmLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (Uint64List instance) => instance.every, externalInstanceFunctionCaller: (Uint64List instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (Uint64List instance) => instance.expand, externalInstanceFunctionCaller: (Uint64List instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (Uint64List instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (Uint64List instance) => instance.first, externalInstancePropertyWriter: (Uint64List instance, value) => instance.first = value),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (Uint64List instance, value) => instance.first = value, externalInstancePropertyReader: (Uint64List instance) => instance.first),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (Uint64List instance) => instance.firstWhere, externalInstanceFunctionCaller: (Uint64List instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (Uint64List instance) => instance.fold, externalInstanceFunctionCaller: (Uint64List instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
       'followedBy': VmProxy(identifier: 'followedBy', externalInstancePropertyReader: (Uint64List instance) => instance.followedBy),
@@ -7088,7 +6963,6 @@ class VmLibrary {
     identifier: 'Uint8ClampedList',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList'],
     externalProxyMap: {
-      'Uint8ClampedList': VmProxy(identifier: 'Uint8ClampedList', externalStaticPropertyReader: () => Uint8ClampedList.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Uint8ClampedList.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Uint8ClampedList.fromList),
       'sublistView': VmProxy(identifier: 'sublistView', externalStaticPropertyReader: () => Uint8ClampedList.sublistView),
@@ -7107,7 +6981,7 @@ class VmLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (Uint8ClampedList instance) => instance.every, externalInstanceFunctionCaller: (Uint8ClampedList instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (Uint8ClampedList instance) => instance.expand, externalInstanceFunctionCaller: (Uint8ClampedList instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (Uint8ClampedList instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (Uint8ClampedList instance) => instance.first, externalInstancePropertyWriter: (Uint8ClampedList instance, value) => instance.first = value),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (Uint8ClampedList instance, value) => instance.first = value, externalInstancePropertyReader: (Uint8ClampedList instance) => instance.first),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (Uint8ClampedList instance) => instance.firstWhere, externalInstanceFunctionCaller: (Uint8ClampedList instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (Uint8ClampedList instance) => instance.fold, externalInstanceFunctionCaller: (Uint8ClampedList instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
       'followedBy': VmProxy(identifier: 'followedBy', externalInstancePropertyReader: (Uint8ClampedList instance) => instance.followedBy),
@@ -7165,7 +7039,6 @@ class VmLibrary {
     identifier: 'Uint8List',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList'],
     externalProxyMap: {
-      'Uint8List': VmProxy(identifier: 'Uint8List', externalStaticPropertyReader: () => Uint8List.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Uint8List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Uint8List.fromList),
       'sublistView': VmProxy(identifier: 'sublistView', externalStaticPropertyReader: () => Uint8List.sublistView),
@@ -7199,7 +7072,7 @@ class VmLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (Uint8List instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (Uint8List instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (Uint8List instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (Uint8List instance) => instance.last, externalInstancePropertyWriter: (Uint8List instance, value) => instance.last = value),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (Uint8List instance, value) => instance.last = value, externalInstancePropertyReader: (Uint8List instance) => instance.last),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (Uint8List instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (Uint8List instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (Uint8List instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (Uint8List instance) => instance.lastWhere, externalInstanceFunctionCaller: (Uint8List instance, a0, {orElse}) => instance.lastWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
@@ -7242,7 +7115,6 @@ class VmLibrary {
     identifier: 'UnimplementedError',
     superclassNames: ['Object', 'Error', 'UnsupportedError'],
     externalProxyMap: {
-      'UnimplementedError': VmProxy(identifier: 'UnimplementedError', externalStaticPropertyReader: () => UnimplementedError.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnimplementedError.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (UnimplementedError instance) => instance.hashCode),
       'message': VmProxy(identifier: 'message', externalInstancePropertyReader: (UnimplementedError instance) => instance.message),
@@ -7258,7 +7130,6 @@ class VmLibrary {
     identifier: 'UnmodifiableByteBufferView',
     superclassNames: ['Object', 'ByteBuffer'],
     externalProxyMap: {
-      'UnmodifiableByteBufferView': VmProxy(identifier: 'UnmodifiableByteBufferView', externalStaticPropertyReader: () => UnmodifiableByteBufferView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableByteBufferView.new),
       'asByteData': VmProxy(identifier: 'asByteData', externalInstancePropertyReader: (UnmodifiableByteBufferView instance) => instance.asByteData),
       'asFloat32List': VmProxy(identifier: 'asFloat32List', externalInstancePropertyReader: (UnmodifiableByteBufferView instance) => instance.asFloat32List),
@@ -7288,7 +7159,6 @@ class VmLibrary {
     identifier: 'UnmodifiableByteDataView',
     superclassNames: ['Object', 'TypedData', 'ByteData'],
     externalProxyMap: {
-      'UnmodifiableByteDataView': VmProxy(identifier: 'UnmodifiableByteDataView', externalStaticPropertyReader: () => UnmodifiableByteDataView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableByteDataView.new),
       'buffer': VmProxy(identifier: 'buffer', externalInstancePropertyReader: (UnmodifiableByteDataView instance) => instance.buffer),
       'elementSizeInBytes': VmProxy(identifier: 'elementSizeInBytes', externalInstancePropertyReader: (UnmodifiableByteDataView instance) => instance.elementSizeInBytes),
@@ -7326,7 +7196,6 @@ class VmLibrary {
     identifier: 'UnmodifiableFloat32ListView',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedFloatList', 'Float32List'],
     externalProxyMap: {
-      'UnmodifiableFloat32ListView': VmProxy(identifier: 'UnmodifiableFloat32ListView', externalStaticPropertyReader: () => UnmodifiableFloat32ListView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableFloat32ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableFloat32ListView instance) => instance.add),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (UnmodifiableFloat32ListView instance) => instance.addAll),
@@ -7341,7 +7210,7 @@ class VmLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (UnmodifiableFloat32ListView instance) => instance.every, externalInstanceFunctionCaller: (UnmodifiableFloat32ListView instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (UnmodifiableFloat32ListView instance) => instance.expand, externalInstanceFunctionCaller: (UnmodifiableFloat32ListView instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (UnmodifiableFloat32ListView instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (UnmodifiableFloat32ListView instance) => instance.first, externalInstancePropertyWriter: (UnmodifiableFloat32ListView instance, value) => instance.first = value),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (UnmodifiableFloat32ListView instance, value) => instance.first = value, externalInstancePropertyReader: (UnmodifiableFloat32ListView instance) => instance.first),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (UnmodifiableFloat32ListView instance) => instance.firstWhere, externalInstanceFunctionCaller: (UnmodifiableFloat32ListView instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (UnmodifiableFloat32ListView instance) => instance.fold, externalInstanceFunctionCaller: (UnmodifiableFloat32ListView instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
       'followedBy': VmProxy(identifier: 'followedBy', externalInstancePropertyReader: (UnmodifiableFloat32ListView instance) => instance.followedBy),
@@ -7399,7 +7268,6 @@ class VmLibrary {
     identifier: 'UnmodifiableFloat32x4ListView',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', 'Float32x4List'],
     externalProxyMap: {
-      'UnmodifiableFloat32x4ListView': VmProxy(identifier: 'UnmodifiableFloat32x4ListView', externalStaticPropertyReader: () => UnmodifiableFloat32x4ListView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableFloat32x4ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.add),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.addAll),
@@ -7414,7 +7282,7 @@ class VmLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.every, externalInstanceFunctionCaller: (UnmodifiableFloat32x4ListView instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.expand, externalInstanceFunctionCaller: (UnmodifiableFloat32x4ListView instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (UnmodifiableFloat32x4ListView instance, value) => instance.first = value, externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.first),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.first, externalInstancePropertyWriter: (UnmodifiableFloat32x4ListView instance, value) => instance.first = value),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.firstWhere, externalInstanceFunctionCaller: (UnmodifiableFloat32x4ListView instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.fold, externalInstanceFunctionCaller: (UnmodifiableFloat32x4ListView instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
       'followedBy': VmProxy(identifier: 'followedBy', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.followedBy),
@@ -7429,7 +7297,7 @@ class VmLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (UnmodifiableFloat32x4ListView instance, value) => instance.last = value, externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.last),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.last, externalInstancePropertyWriter: (UnmodifiableFloat32x4ListView instance, value) => instance.last = value),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (UnmodifiableFloat32x4ListView instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.lastWhere, externalInstanceFunctionCaller: (UnmodifiableFloat32x4ListView instance, a0, {orElse}) => instance.lastWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
@@ -7472,7 +7340,6 @@ class VmLibrary {
     identifier: 'UnmodifiableFloat64ListView',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedFloatList', 'Float64List'],
     externalProxyMap: {
-      'UnmodifiableFloat64ListView': VmProxy(identifier: 'UnmodifiableFloat64ListView', externalStaticPropertyReader: () => UnmodifiableFloat64ListView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableFloat64ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableFloat64ListView instance) => instance.add),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (UnmodifiableFloat64ListView instance) => instance.addAll),
@@ -7487,7 +7354,7 @@ class VmLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (UnmodifiableFloat64ListView instance) => instance.every, externalInstanceFunctionCaller: (UnmodifiableFloat64ListView instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (UnmodifiableFloat64ListView instance) => instance.expand, externalInstanceFunctionCaller: (UnmodifiableFloat64ListView instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (UnmodifiableFloat64ListView instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (UnmodifiableFloat64ListView instance) => instance.first, externalInstancePropertyWriter: (UnmodifiableFloat64ListView instance, value) => instance.first = value),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (UnmodifiableFloat64ListView instance, value) => instance.first = value, externalInstancePropertyReader: (UnmodifiableFloat64ListView instance) => instance.first),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (UnmodifiableFloat64ListView instance) => instance.firstWhere, externalInstanceFunctionCaller: (UnmodifiableFloat64ListView instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (UnmodifiableFloat64ListView instance) => instance.fold, externalInstanceFunctionCaller: (UnmodifiableFloat64ListView instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
       'followedBy': VmProxy(identifier: 'followedBy', externalInstancePropertyReader: (UnmodifiableFloat64ListView instance) => instance.followedBy),
@@ -7545,7 +7412,6 @@ class VmLibrary {
     identifier: 'UnmodifiableFloat64x2ListView',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', 'Float64x2List'],
     externalProxyMap: {
-      'UnmodifiableFloat64x2ListView': VmProxy(identifier: 'UnmodifiableFloat64x2ListView', externalStaticPropertyReader: () => UnmodifiableFloat64x2ListView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableFloat64x2ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.add),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.addAll),
@@ -7560,7 +7426,7 @@ class VmLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.every, externalInstanceFunctionCaller: (UnmodifiableFloat64x2ListView instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.expand, externalInstanceFunctionCaller: (UnmodifiableFloat64x2ListView instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (UnmodifiableFloat64x2ListView instance, value) => instance.first = value, externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.first),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.first, externalInstancePropertyWriter: (UnmodifiableFloat64x2ListView instance, value) => instance.first = value),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.firstWhere, externalInstanceFunctionCaller: (UnmodifiableFloat64x2ListView instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.fold, externalInstanceFunctionCaller: (UnmodifiableFloat64x2ListView instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
       'followedBy': VmProxy(identifier: 'followedBy', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.followedBy),
@@ -7575,7 +7441,7 @@ class VmLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (UnmodifiableFloat64x2ListView instance, value) => instance.last = value, externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.last),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.last, externalInstancePropertyWriter: (UnmodifiableFloat64x2ListView instance, value) => instance.last = value),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (UnmodifiableFloat64x2ListView instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.lastWhere, externalInstanceFunctionCaller: (UnmodifiableFloat64x2ListView instance, a0, {orElse}) => instance.lastWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
@@ -7618,7 +7484,6 @@ class VmLibrary {
     identifier: 'UnmodifiableInt16ListView',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList', 'Int16List'],
     externalProxyMap: {
-      'UnmodifiableInt16ListView': VmProxy(identifier: 'UnmodifiableInt16ListView', externalStaticPropertyReader: () => UnmodifiableInt16ListView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableInt16ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableInt16ListView instance) => instance.add),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (UnmodifiableInt16ListView instance) => instance.addAll),
@@ -7633,7 +7498,7 @@ class VmLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (UnmodifiableInt16ListView instance) => instance.every, externalInstanceFunctionCaller: (UnmodifiableInt16ListView instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (UnmodifiableInt16ListView instance) => instance.expand, externalInstanceFunctionCaller: (UnmodifiableInt16ListView instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (UnmodifiableInt16ListView instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (UnmodifiableInt16ListView instance) => instance.first, externalInstancePropertyWriter: (UnmodifiableInt16ListView instance, value) => instance.first = value),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (UnmodifiableInt16ListView instance, value) => instance.first = value, externalInstancePropertyReader: (UnmodifiableInt16ListView instance) => instance.first),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (UnmodifiableInt16ListView instance) => instance.firstWhere, externalInstanceFunctionCaller: (UnmodifiableInt16ListView instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (UnmodifiableInt16ListView instance) => instance.fold, externalInstanceFunctionCaller: (UnmodifiableInt16ListView instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
       'followedBy': VmProxy(identifier: 'followedBy', externalInstancePropertyReader: (UnmodifiableInt16ListView instance) => instance.followedBy),
@@ -7691,7 +7556,6 @@ class VmLibrary {
     identifier: 'UnmodifiableInt32ListView',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList', 'Int32List'],
     externalProxyMap: {
-      'UnmodifiableInt32ListView': VmProxy(identifier: 'UnmodifiableInt32ListView', externalStaticPropertyReader: () => UnmodifiableInt32ListView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableInt32ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableInt32ListView instance) => instance.add),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (UnmodifiableInt32ListView instance) => instance.addAll),
@@ -7706,7 +7570,7 @@ class VmLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (UnmodifiableInt32ListView instance) => instance.every, externalInstanceFunctionCaller: (UnmodifiableInt32ListView instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (UnmodifiableInt32ListView instance) => instance.expand, externalInstanceFunctionCaller: (UnmodifiableInt32ListView instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (UnmodifiableInt32ListView instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (UnmodifiableInt32ListView instance) => instance.first, externalInstancePropertyWriter: (UnmodifiableInt32ListView instance, value) => instance.first = value),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (UnmodifiableInt32ListView instance, value) => instance.first = value, externalInstancePropertyReader: (UnmodifiableInt32ListView instance) => instance.first),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (UnmodifiableInt32ListView instance) => instance.firstWhere, externalInstanceFunctionCaller: (UnmodifiableInt32ListView instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (UnmodifiableInt32ListView instance) => instance.fold, externalInstanceFunctionCaller: (UnmodifiableInt32ListView instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
       'followedBy': VmProxy(identifier: 'followedBy', externalInstancePropertyReader: (UnmodifiableInt32ListView instance) => instance.followedBy),
@@ -7764,7 +7628,6 @@ class VmLibrary {
     identifier: 'UnmodifiableInt32x4ListView',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', 'Int32x4List'],
     externalProxyMap: {
-      'UnmodifiableInt32x4ListView': VmProxy(identifier: 'UnmodifiableInt32x4ListView', externalStaticPropertyReader: () => UnmodifiableInt32x4ListView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableInt32x4ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.add),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.addAll),
@@ -7779,7 +7642,7 @@ class VmLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.every, externalInstanceFunctionCaller: (UnmodifiableInt32x4ListView instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.expand, externalInstanceFunctionCaller: (UnmodifiableInt32x4ListView instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (UnmodifiableInt32x4ListView instance, value) => instance.first = value, externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.first),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.first, externalInstancePropertyWriter: (UnmodifiableInt32x4ListView instance, value) => instance.first = value),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.firstWhere, externalInstanceFunctionCaller: (UnmodifiableInt32x4ListView instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.fold, externalInstanceFunctionCaller: (UnmodifiableInt32x4ListView instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
       'followedBy': VmProxy(identifier: 'followedBy', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.followedBy),
@@ -7794,7 +7657,7 @@ class VmLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (UnmodifiableInt32x4ListView instance, value) => instance.last = value, externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.last),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.last, externalInstancePropertyWriter: (UnmodifiableInt32x4ListView instance, value) => instance.last = value),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (UnmodifiableInt32x4ListView instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.lastWhere, externalInstanceFunctionCaller: (UnmodifiableInt32x4ListView instance, a0, {orElse}) => instance.lastWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
@@ -7837,7 +7700,6 @@ class VmLibrary {
     identifier: 'UnmodifiableInt64ListView',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList', 'Int64List'],
     externalProxyMap: {
-      'UnmodifiableInt64ListView': VmProxy(identifier: 'UnmodifiableInt64ListView', externalStaticPropertyReader: () => UnmodifiableInt64ListView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableInt64ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableInt64ListView instance) => instance.add),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (UnmodifiableInt64ListView instance) => instance.addAll),
@@ -7852,7 +7714,7 @@ class VmLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (UnmodifiableInt64ListView instance) => instance.every, externalInstanceFunctionCaller: (UnmodifiableInt64ListView instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (UnmodifiableInt64ListView instance) => instance.expand, externalInstanceFunctionCaller: (UnmodifiableInt64ListView instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (UnmodifiableInt64ListView instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (UnmodifiableInt64ListView instance) => instance.first, externalInstancePropertyWriter: (UnmodifiableInt64ListView instance, value) => instance.first = value),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (UnmodifiableInt64ListView instance, value) => instance.first = value, externalInstancePropertyReader: (UnmodifiableInt64ListView instance) => instance.first),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (UnmodifiableInt64ListView instance) => instance.firstWhere, externalInstanceFunctionCaller: (UnmodifiableInt64ListView instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (UnmodifiableInt64ListView instance) => instance.fold, externalInstanceFunctionCaller: (UnmodifiableInt64ListView instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
       'followedBy': VmProxy(identifier: 'followedBy', externalInstancePropertyReader: (UnmodifiableInt64ListView instance) => instance.followedBy),
@@ -7910,7 +7772,6 @@ class VmLibrary {
     identifier: 'UnmodifiableInt8ListView',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList', 'Int8List'],
     externalProxyMap: {
-      'UnmodifiableInt8ListView': VmProxy(identifier: 'UnmodifiableInt8ListView', externalStaticPropertyReader: () => UnmodifiableInt8ListView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableInt8ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableInt8ListView instance) => instance.add),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (UnmodifiableInt8ListView instance) => instance.addAll),
@@ -7925,7 +7786,7 @@ class VmLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (UnmodifiableInt8ListView instance) => instance.every, externalInstanceFunctionCaller: (UnmodifiableInt8ListView instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (UnmodifiableInt8ListView instance) => instance.expand, externalInstanceFunctionCaller: (UnmodifiableInt8ListView instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (UnmodifiableInt8ListView instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (UnmodifiableInt8ListView instance) => instance.first, externalInstancePropertyWriter: (UnmodifiableInt8ListView instance, value) => instance.first = value),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (UnmodifiableInt8ListView instance, value) => instance.first = value, externalInstancePropertyReader: (UnmodifiableInt8ListView instance) => instance.first),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (UnmodifiableInt8ListView instance) => instance.firstWhere, externalInstanceFunctionCaller: (UnmodifiableInt8ListView instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (UnmodifiableInt8ListView instance) => instance.fold, externalInstanceFunctionCaller: (UnmodifiableInt8ListView instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
       'followedBy': VmProxy(identifier: 'followedBy', externalInstancePropertyReader: (UnmodifiableInt8ListView instance) => instance.followedBy),
@@ -7983,7 +7844,6 @@ class VmLibrary {
     identifier: 'UnmodifiableListView',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'ListMixin', 'ListBase', 'UnmodifiableListMixin', 'UnmodifiableListBase'],
     externalProxyMap: {
-      'UnmodifiableListView': VmProxy(identifier: 'UnmodifiableListView', externalStaticPropertyReader: () => UnmodifiableListView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableListView instance) => instance.add),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (UnmodifiableListView instance) => instance.addAll),
@@ -8083,7 +7943,6 @@ class VmLibrary {
     identifier: 'UnmodifiableMapView',
     superclassNames: ['Object', 'Map', 'MapView', '_UnmodifiableMapMixin'],
     externalProxyMap: {
-      'UnmodifiableMapView': VmProxy(identifier: 'UnmodifiableMapView', externalStaticPropertyReader: () => UnmodifiableMapView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableMapView.new),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (UnmodifiableMapView instance) => instance.addAll),
       'addEntries': VmProxy(identifier: 'addEntries', externalInstancePropertyReader: (UnmodifiableMapView instance) => instance.addEntries),
@@ -8116,7 +7975,6 @@ class VmLibrary {
     identifier: 'UnmodifiableSetView',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'Set', 'SetMixin', 'SetBase', '_UnmodifiableSetMixin'],
     externalProxyMap: {
-      'UnmodifiableSetView': VmProxy(identifier: 'UnmodifiableSetView', externalStaticPropertyReader: () => UnmodifiableSetView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableSetView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableSetView instance) => instance.add),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (UnmodifiableSetView instance) => instance.addAll),
@@ -8173,7 +8031,6 @@ class VmLibrary {
     identifier: 'UnmodifiableUint16ListView',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList', 'Uint16List'],
     externalProxyMap: {
-      'UnmodifiableUint16ListView': VmProxy(identifier: 'UnmodifiableUint16ListView', externalStaticPropertyReader: () => UnmodifiableUint16ListView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableUint16ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableUint16ListView instance) => instance.add),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (UnmodifiableUint16ListView instance) => instance.addAll),
@@ -8207,7 +8064,7 @@ class VmLibrary {
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (UnmodifiableUint16ListView instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (UnmodifiableUint16ListView instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (UnmodifiableUint16ListView instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (UnmodifiableUint16ListView instance) => instance.lastWhere, externalInstanceFunctionCaller: (UnmodifiableUint16ListView instance, a0, {orElse}) => instance.lastWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
-      'length': VmProxy(identifier: 'length', externalInstancePropertyWriter: (UnmodifiableUint16ListView instance, value) => instance.length = value, externalInstancePropertyReader: (UnmodifiableUint16ListView instance) => instance.length),
+      'length': VmProxy(identifier: 'length', externalInstancePropertyReader: (UnmodifiableUint16ListView instance) => instance.length, externalInstancePropertyWriter: (UnmodifiableUint16ListView instance, value) => instance.length = value),
       'lengthInBytes': VmProxy(identifier: 'lengthInBytes', externalInstancePropertyReader: (UnmodifiableUint16ListView instance) => instance.lengthInBytes),
       'map': VmProxy(identifier: 'map', externalInstancePropertyReader: (UnmodifiableUint16ListView instance) => instance.map, externalInstanceFunctionCaller: (UnmodifiableUint16ListView instance, a0) => instance.map((b0) => a0(b0))),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (UnmodifiableUint16ListView instance) => instance.noSuchMethod),
@@ -8246,7 +8103,6 @@ class VmLibrary {
     identifier: 'UnmodifiableUint32ListView',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList', 'Uint32List'],
     externalProxyMap: {
-      'UnmodifiableUint32ListView': VmProxy(identifier: 'UnmodifiableUint32ListView', externalStaticPropertyReader: () => UnmodifiableUint32ListView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableUint32ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableUint32ListView instance) => instance.add),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (UnmodifiableUint32ListView instance) => instance.addAll),
@@ -8280,7 +8136,7 @@ class VmLibrary {
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (UnmodifiableUint32ListView instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (UnmodifiableUint32ListView instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (UnmodifiableUint32ListView instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (UnmodifiableUint32ListView instance) => instance.lastWhere, externalInstanceFunctionCaller: (UnmodifiableUint32ListView instance, a0, {orElse}) => instance.lastWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
-      'length': VmProxy(identifier: 'length', externalInstancePropertyWriter: (UnmodifiableUint32ListView instance, value) => instance.length = value, externalInstancePropertyReader: (UnmodifiableUint32ListView instance) => instance.length),
+      'length': VmProxy(identifier: 'length', externalInstancePropertyReader: (UnmodifiableUint32ListView instance) => instance.length, externalInstancePropertyWriter: (UnmodifiableUint32ListView instance, value) => instance.length = value),
       'lengthInBytes': VmProxy(identifier: 'lengthInBytes', externalInstancePropertyReader: (UnmodifiableUint32ListView instance) => instance.lengthInBytes),
       'map': VmProxy(identifier: 'map', externalInstancePropertyReader: (UnmodifiableUint32ListView instance) => instance.map, externalInstanceFunctionCaller: (UnmodifiableUint32ListView instance, a0) => instance.map((b0) => a0(b0))),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (UnmodifiableUint32ListView instance) => instance.noSuchMethod),
@@ -8319,7 +8175,6 @@ class VmLibrary {
     identifier: 'UnmodifiableUint64ListView',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList', 'Uint64List'],
     externalProxyMap: {
-      'UnmodifiableUint64ListView': VmProxy(identifier: 'UnmodifiableUint64ListView', externalStaticPropertyReader: () => UnmodifiableUint64ListView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableUint64ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableUint64ListView instance) => instance.add),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (UnmodifiableUint64ListView instance) => instance.addAll),
@@ -8353,7 +8208,7 @@ class VmLibrary {
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (UnmodifiableUint64ListView instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (UnmodifiableUint64ListView instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (UnmodifiableUint64ListView instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (UnmodifiableUint64ListView instance) => instance.lastWhere, externalInstanceFunctionCaller: (UnmodifiableUint64ListView instance, a0, {orElse}) => instance.lastWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
-      'length': VmProxy(identifier: 'length', externalInstancePropertyWriter: (UnmodifiableUint64ListView instance, value) => instance.length = value, externalInstancePropertyReader: (UnmodifiableUint64ListView instance) => instance.length),
+      'length': VmProxy(identifier: 'length', externalInstancePropertyReader: (UnmodifiableUint64ListView instance) => instance.length, externalInstancePropertyWriter: (UnmodifiableUint64ListView instance, value) => instance.length = value),
       'lengthInBytes': VmProxy(identifier: 'lengthInBytes', externalInstancePropertyReader: (UnmodifiableUint64ListView instance) => instance.lengthInBytes),
       'map': VmProxy(identifier: 'map', externalInstancePropertyReader: (UnmodifiableUint64ListView instance) => instance.map, externalInstanceFunctionCaller: (UnmodifiableUint64ListView instance, a0) => instance.map((b0) => a0(b0))),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (UnmodifiableUint64ListView instance) => instance.noSuchMethod),
@@ -8392,7 +8247,6 @@ class VmLibrary {
     identifier: 'UnmodifiableUint8ClampedListView',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList', 'Uint8ClampedList'],
     externalProxyMap: {
-      'UnmodifiableUint8ClampedListView': VmProxy(identifier: 'UnmodifiableUint8ClampedListView', externalStaticPropertyReader: () => UnmodifiableUint8ClampedListView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableUint8ClampedListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableUint8ClampedListView instance) => instance.add),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (UnmodifiableUint8ClampedListView instance) => instance.addAll),
@@ -8426,7 +8280,7 @@ class VmLibrary {
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (UnmodifiableUint8ClampedListView instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (UnmodifiableUint8ClampedListView instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (UnmodifiableUint8ClampedListView instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (UnmodifiableUint8ClampedListView instance) => instance.lastWhere, externalInstanceFunctionCaller: (UnmodifiableUint8ClampedListView instance, a0, {orElse}) => instance.lastWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
-      'length': VmProxy(identifier: 'length', externalInstancePropertyWriter: (UnmodifiableUint8ClampedListView instance, value) => instance.length = value, externalInstancePropertyReader: (UnmodifiableUint8ClampedListView instance) => instance.length),
+      'length': VmProxy(identifier: 'length', externalInstancePropertyReader: (UnmodifiableUint8ClampedListView instance) => instance.length, externalInstancePropertyWriter: (UnmodifiableUint8ClampedListView instance, value) => instance.length = value),
       'lengthInBytes': VmProxy(identifier: 'lengthInBytes', externalInstancePropertyReader: (UnmodifiableUint8ClampedListView instance) => instance.lengthInBytes),
       'map': VmProxy(identifier: 'map', externalInstancePropertyReader: (UnmodifiableUint8ClampedListView instance) => instance.map, externalInstanceFunctionCaller: (UnmodifiableUint8ClampedListView instance, a0) => instance.map((b0) => a0(b0))),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (UnmodifiableUint8ClampedListView instance) => instance.noSuchMethod),
@@ -8465,7 +8319,6 @@ class VmLibrary {
     identifier: 'UnmodifiableUint8ListView',
     superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList', 'Uint8List'],
     externalProxyMap: {
-      'UnmodifiableUint8ListView': VmProxy(identifier: 'UnmodifiableUint8ListView', externalStaticPropertyReader: () => UnmodifiableUint8ListView.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableUint8ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableUint8ListView instance) => instance.add),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (UnmodifiableUint8ListView instance) => instance.addAll),
@@ -8538,7 +8391,6 @@ class VmLibrary {
     identifier: 'UnsupportedError',
     superclassNames: ['Object', 'Error'],
     externalProxyMap: {
-      'UnsupportedError': VmProxy(identifier: 'UnsupportedError', externalStaticPropertyReader: () => UnsupportedError.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnsupportedError.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (UnsupportedError instance) => instance.hashCode),
       'message': VmProxy(identifier: 'message', externalInstancePropertyReader: (UnsupportedError instance) => instance.message),
@@ -8554,7 +8406,6 @@ class VmLibrary {
     identifier: 'Uri',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'Uri': VmProxy(identifier: 'Uri', externalStaticPropertyReader: () => Uri.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Uri.new),
       'dataFromBytes': VmProxy(identifier: 'dataFromBytes', externalStaticPropertyReader: () => Uri.dataFromBytes),
       'dataFromString': VmProxy(identifier: 'dataFromString', externalStaticPropertyReader: () => Uri.dataFromString),
@@ -8641,7 +8492,6 @@ class VmLibrary {
     identifier: 'Utf8Codec',
     superclassNames: ['Object', 'Codec', 'Encoding'],
     externalProxyMap: {
-      'Utf8Codec': VmProxy(identifier: 'Utf8Codec', externalStaticPropertyReader: () => Utf8Codec.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Utf8Codec.new),
       'decode': VmProxy(identifier: 'decode', externalInstancePropertyReader: (Utf8Codec instance) => instance.decode),
       'decoder': VmProxy(identifier: 'decoder', externalInstancePropertyReader: (Utf8Codec instance) => instance.decoder),
@@ -8663,7 +8513,6 @@ class VmLibrary {
     identifier: 'Utf8Decoder',
     superclassNames: ['Object', 'StreamTransformer', 'StreamTransformerBase', 'Converter'],
     externalProxyMap: {
-      'Utf8Decoder': VmProxy(identifier: 'Utf8Decoder', externalStaticPropertyReader: () => Utf8Decoder.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Utf8Decoder.new),
       'bind': VmProxy(identifier: 'bind', externalInstancePropertyReader: (Utf8Decoder instance) => instance.bind),
       'cast': VmProxy(identifier: 'cast', externalInstancePropertyReader: (Utf8Decoder instance) => instance.cast),
@@ -8682,7 +8531,6 @@ class VmLibrary {
     identifier: 'Utf8Encoder',
     superclassNames: ['Object', 'StreamTransformer', 'StreamTransformerBase', 'Converter'],
     externalProxyMap: {
-      'Utf8Encoder': VmProxy(identifier: 'Utf8Encoder', externalStaticPropertyReader: () => Utf8Encoder.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Utf8Encoder.new),
       'bind': VmProxy(identifier: 'bind', externalInstancePropertyReader: (Utf8Encoder instance) => instance.bind),
       'cast': VmProxy(identifier: 'cast', externalInstancePropertyReader: (Utf8Encoder instance) => instance.cast),
@@ -8701,7 +8549,6 @@ class VmLibrary {
     identifier: 'WeakReference',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'WeakReference': VmProxy(identifier: 'WeakReference', externalStaticPropertyReader: () => WeakReference.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => WeakReference.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (WeakReference instance) => instance.hashCode),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (WeakReference instance) => instance.noSuchMethod),
@@ -8758,7 +8605,6 @@ class VmLibrary {
     identifier: 'ZLibCodec',
     superclassNames: ['Object', 'Codec'],
     externalProxyMap: {
-      'ZLibCodec': VmProxy(identifier: 'ZLibCodec', externalStaticPropertyReader: () => ZLibCodec.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => ZLibCodec.new),
       'decode': VmProxy(identifier: 'decode', externalInstancePropertyReader: (ZLibCodec instance) => instance.decode),
       'decoder': VmProxy(identifier: 'decoder', externalInstancePropertyReader: (ZLibCodec instance) => instance.decoder),
@@ -8785,7 +8631,6 @@ class VmLibrary {
     identifier: 'ZLibDecoder',
     superclassNames: ['Object', 'StreamTransformer', 'StreamTransformerBase', 'Converter'],
     externalProxyMap: {
-      'ZLibDecoder': VmProxy(identifier: 'ZLibDecoder', externalStaticPropertyReader: () => ZLibDecoder.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => ZLibDecoder.new),
       'bind': VmProxy(identifier: 'bind', externalInstancePropertyReader: (ZLibDecoder instance) => instance.bind),
       'cast': VmProxy(identifier: 'cast', externalInstancePropertyReader: (ZLibDecoder instance) => instance.cast),
@@ -8807,7 +8652,6 @@ class VmLibrary {
     identifier: 'ZLibEncoder',
     superclassNames: ['Object', 'StreamTransformer', 'StreamTransformerBase', 'Converter'],
     externalProxyMap: {
-      'ZLibEncoder': VmProxy(identifier: 'ZLibEncoder', externalStaticPropertyReader: () => ZLibEncoder.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => ZLibEncoder.new),
       'bind': VmProxy(identifier: 'bind', externalInstancePropertyReader: (ZLibEncoder instance) => instance.bind),
       'cast': VmProxy(identifier: 'cast', externalInstancePropertyReader: (ZLibEncoder instance) => instance.cast),
@@ -8923,7 +8767,6 @@ class VmLibrary {
     identifier: 'ZoneSpecification',
     superclassNames: ['Object'],
     externalProxyMap: {
-      'ZoneSpecification': VmProxy(identifier: 'ZoneSpecification', externalStaticPropertyReader: () => ZoneSpecification.new, externalStaticFunctionCaller: ({handleUncaughtError, run, runUnary, runBinary, registerCallback, registerUnaryCallback, registerBinaryCallback, errorCallback, scheduleMicrotask, createTimer, createPeriodicTimer, print, fork}) => ZoneSpecification.new(handleUncaughtError: handleUncaughtError == null ? null : (b0, b1, b2, b3, b4) => handleUncaughtError(b0, b1, b2, b3, b4), run: run == null ? null : <R>(b0, b1, b2, b3) => run(b0, b1, b2, b3), runUnary: runUnary == null ? null : <R, T>(b0, b1, b2, b3, b4) => runUnary(b0, b1, b2, b3, b4), runBinary: runBinary == null ? null : <R, T1, T2>(b0, b1, b2, b3, b4, b5) => runBinary(b0, b1, b2, b3, b4, b5), registerCallback: registerCallback == null ? null : <R>(b0, b1, b2, b3) => registerCallback(b0, b1, b2, b3), registerUnaryCallback: registerUnaryCallback == null ? null : <R, T>(b0, b1, b2, b3) => registerUnaryCallback(b0, b1, b2, b3), registerBinaryCallback: registerBinaryCallback == null ? null : <R, T1, T2>(b0, b1, b2, b3) => registerBinaryCallback(b0, b1, b2, b3), errorCallback: errorCallback == null ? null : (b0, b1, b2, b3, b4) => errorCallback(b0, b1, b2, b3, b4), scheduleMicrotask: scheduleMicrotask == null ? null : (b0, b1, b2, b3) => scheduleMicrotask(b0, b1, b2, b3), createTimer: createTimer == null ? null : (b0, b1, b2, b3, b4) => createTimer(b0, b1, b2, b3, b4), createPeriodicTimer: createPeriodicTimer == null ? null : (b0, b1, b2, b3, b4) => createPeriodicTimer(b0, b1, b2, b3, b4), print: print == null ? null : (b0, b1, b2, b3) => print(b0, b1, b2, b3), fork: fork == null ? null : (b0, b1, b2, b3, b4) => fork(b0, b1, b2, b3, b4))),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => ZoneSpecification.new, externalStaticFunctionCaller: ({handleUncaughtError, run, runUnary, runBinary, registerCallback, registerUnaryCallback, registerBinaryCallback, errorCallback, scheduleMicrotask, createTimer, createPeriodicTimer, print, fork}) => ZoneSpecification.new(handleUncaughtError: handleUncaughtError == null ? null : (b0, b1, b2, b3, b4) => handleUncaughtError(b0, b1, b2, b3, b4), run: run == null ? null : <R>(b0, b1, b2, b3) => run(b0, b1, b2, b3), runUnary: runUnary == null ? null : <R, T>(b0, b1, b2, b3, b4) => runUnary(b0, b1, b2, b3, b4), runBinary: runBinary == null ? null : <R, T1, T2>(b0, b1, b2, b3, b4, b5) => runBinary(b0, b1, b2, b3, b4, b5), registerCallback: registerCallback == null ? null : <R>(b0, b1, b2, b3) => registerCallback(b0, b1, b2, b3), registerUnaryCallback: registerUnaryCallback == null ? null : <R, T>(b0, b1, b2, b3) => registerUnaryCallback(b0, b1, b2, b3), registerBinaryCallback: registerBinaryCallback == null ? null : <R, T1, T2>(b0, b1, b2, b3) => registerBinaryCallback(b0, b1, b2, b3), errorCallback: errorCallback == null ? null : (b0, b1, b2, b3, b4) => errorCallback(b0, b1, b2, b3, b4), scheduleMicrotask: scheduleMicrotask == null ? null : (b0, b1, b2, b3) => scheduleMicrotask(b0, b1, b2, b3), createTimer: createTimer == null ? null : (b0, b1, b2, b3, b4) => createTimer(b0, b1, b2, b3, b4), createPeriodicTimer: createPeriodicTimer == null ? null : (b0, b1, b2, b3, b4) => createPeriodicTimer(b0, b1, b2, b3, b4), print: print == null ? null : (b0, b1, b2, b3) => print(b0, b1, b2, b3), fork: fork == null ? null : (b0, b1, b2, b3, b4) => fork(b0, b1, b2, b3, b4))),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => ZoneSpecification.from, externalStaticFunctionCaller: (a0, {handleUncaughtError, run, runUnary, runBinary, registerCallback, registerUnaryCallback, registerBinaryCallback, errorCallback, scheduleMicrotask, createTimer, createPeriodicTimer, print, fork}) => ZoneSpecification.from(a0, handleUncaughtError: handleUncaughtError == null ? null : (b0, b1, b2, b3, b4) => handleUncaughtError(b0, b1, b2, b3, b4), run: run == null ? null : <R>(b0, b1, b2, b3) => run(b0, b1, b2, b3), runUnary: runUnary == null ? null : <R, T>(b0, b1, b2, b3, b4) => runUnary(b0, b1, b2, b3, b4), runBinary: runBinary == null ? null : <R, T1, T2>(b0, b1, b2, b3, b4, b5) => runBinary(b0, b1, b2, b3, b4, b5), registerCallback: registerCallback == null ? null : <R>(b0, b1, b2, b3) => registerCallback(b0, b1, b2, b3), registerUnaryCallback: registerUnaryCallback == null ? null : <R, T>(b0, b1, b2, b3) => registerUnaryCallback(b0, b1, b2, b3), registerBinaryCallback: registerBinaryCallback == null ? null : <R, T1, T2>(b0, b1, b2, b3) => registerBinaryCallback(b0, b1, b2, b3), errorCallback: errorCallback == null ? null : (b0, b1, b2, b3, b4) => errorCallback(b0, b1, b2, b3, b4), scheduleMicrotask: scheduleMicrotask == null ? null : (b0, b1, b2, b3) => scheduleMicrotask(b0, b1, b2, b3), createTimer: createTimer == null ? null : (b0, b1, b2, b3, b4) => createTimer(b0, b1, b2, b3, b4), createPeriodicTimer: createPeriodicTimer == null ? null : (b0, b1, b2, b3, b4) => createPeriodicTimer(b0, b1, b2, b3, b4), print: print == null ? null : (b0, b1, b2, b3) => print(b0, b1, b2, b3), fork: fork == null ? null : (b0, b1, b2, b3, b4) => fork(b0, b1, b2, b3, b4))),
       'createPeriodicTimer': VmProxy(identifier: 'createPeriodicTimer', externalInstancePropertyReader: (ZoneSpecification instance) => instance.createPeriodicTimer),

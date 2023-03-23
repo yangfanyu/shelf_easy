@@ -12,7 +12,6 @@ class ModelLibrary {
     identifier: 'Constant',
     superclassNames: ['Object', 'DbBaseModel'],
     externalProxyMap: {
-      'Constant': VmProxy(identifier: 'Constant', externalStaticPropertyReader: () => Constant.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Constant.new),
       'fromJson': VmProxy(identifier: 'fromJson', externalStaticPropertyReader: () => Constant.fromJson),
       'fromString': VmProxy(identifier: 'fromString', externalStaticPropertyReader: () => Constant.fromString),
@@ -54,7 +53,6 @@ class ModelLibrary {
     identifier: 'Location',
     superclassNames: ['Object', 'DbBaseModel'],
     externalProxyMap: {
-      'Location': VmProxy(identifier: 'Location', externalStaticPropertyReader: () => Location.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Location.new),
       'fromJson': VmProxy(identifier: 'fromJson', externalStaticPropertyReader: () => Location.fromJson),
       'fromString': VmProxy(identifier: 'fromString', externalStaticPropertyReader: () => Location.fromString),
@@ -128,7 +126,6 @@ class ModelLibrary {
     identifier: 'User',
     superclassNames: ['Object', 'DbBaseModel'],
     externalProxyMap: {
-      'User': VmProxy(identifier: 'User', externalStaticPropertyReader: () => User.new),
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => User.new),
       'fromJson': VmProxy(identifier: 'fromJson', externalStaticPropertyReader: () => User.fromJson),
       'fromString': VmProxy(identifier: 'fromString', externalStaticPropertyReader: () => User.fromString),
