@@ -1,3 +1,18 @@
+## 1.2.0
+
+The content of this submission modification is as follows:
+- Fix the bug that the virtual machine class static scope conflicts with the class name.
+  
+The current version of the built-in bridging library for the virtual machine is `dart-sdk-2.19.5` and fully supports the following packages:
+- `dart:async`
+- `dart:collection`
+- `dart:convert`
+- `dart:core`
+- `dart:math`
+- `dart:typed_data`
+- `dart:io`
+- `dart:isolate`
+  
 ## 1.1.22
 
 - Fix the bug of anonymous function scope binding of virtual machine.
