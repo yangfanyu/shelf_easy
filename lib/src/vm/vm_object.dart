@@ -1283,7 +1283,7 @@ class VmLazyer extends VmObject {
         _result = validateNull ? VmObject.readClass(target).getProxy(property, setter: false).runFunction(target, listArguments, nameArguments) : null; //执行实例函数
       }
     } else if (isIndexed) {
-      _result = target[property]; //索引List取值
+      _result = target == null ? null : target[property]; //索引List取值
     } else if (target is VmClass) {
       _result = target.getProxy(property, setter: false).getProperty(target); //读取静态属性
     } else {
@@ -1302,7 +1302,7 @@ class VmLazyer extends VmObject {
     if (isMethod) {
       throw ('Unsupport setValue operator for VmLazyer: isMethod = true');
     } else if (isIndexed) {
-      return target[property] = value; //索引List赋值
+      return target == null ? null : (target[property] = value); //索引List赋值
     } else if (target is VmClass) {
       return target.getProxy(property, setter: true).setProperty(target, value); //写入静态属性
     } else {
