@@ -6470,6 +6470,9 @@ class VmLibrary {
       'trim': VmProxy(identifier: 'trim', externalInstancePropertyReader: (String instance) => instance.trim),
       'trimLeft': VmProxy(identifier: 'trimLeft', externalInstancePropertyReader: (String instance) => instance.trimLeft),
       'trimRight': VmProxy(identifier: 'trimRight', externalInstancePropertyReader: (String instance) => instance.trimRight),
+      'trs': VmProxy(identifier: 'trs', externalInstancePropertyReader: (String instance) => instance.trs),
+      'trsCode': VmProxy(identifier: 'trsCode', externalInstancePropertyReader: (String instance) => instance.trsCode),
+      'trsParams': VmProxy(identifier: 'trsParams', externalInstancePropertyReader: (String instance) => instance.trsParams),
     },
   );
 

@@ -253,6 +253,7 @@ void testEasyCoderVmLib() {
     privatePaths: [
       '$flutterHome/bin/cache/dart-sdk/lib/_http',
       '$flutterHome/bin/cache/dart-sdk/lib/internal',
+      '${Directory.current.path}/lib/src/vm/vm_object.dart', //添加字符串的翻译扩展
     ],
     genByExternal: false,
   );
