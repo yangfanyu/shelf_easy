@@ -1498,6 +1498,9 @@ extension VmTranslate on String {
   ///翻译语言环境
   static String _languageCode = 'zh';
 
+  ///获取语言环境
+  static String get languageCode => _languageCode;
+
   ///改变语言环境
   static void setLanguageCode(String code) => _languageCode = code;
 

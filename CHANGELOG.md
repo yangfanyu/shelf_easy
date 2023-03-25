@@ -1,3 +1,8 @@
+## 1.2.2
+
+- Add null support for index expressions to virtual machines.
+- Add string translation extension VmTranslate.
+  
 ## 1.2.0
 
 The content of this submission modification is as follows:
