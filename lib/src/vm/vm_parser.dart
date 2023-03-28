@@ -1423,7 +1423,16 @@ class VmParserBirdgeItemData {
     required Map<String, VmParserBirdgeItemData> pirvateMap,
     required void Function(String className, String fieldName, String filePath) onNotFoundClassField,
   }) {
-    ///遍历本类的字段找到非factory构造函数
+    //为没有任何构造函数的非抽象类生成new
+    final hasConstructor = properties.any((e) => e != null && e.isConstructor);
+    if (!isAbstract && !hasConstructor) {
+      properties.add(VmParserBirdgeItemData(
+        type: VmParserBirdgeItemType.classStaticFunction,
+        name: 'new',
+        isConstructor: true,
+      ));
+    }
+    //遍历本类的字段找到非factory构造函数
     for (var e in properties) {
       if (e != null && e.isConstructor && !e.isFactoryConstructor) {
         for (var p in e.parameters) {

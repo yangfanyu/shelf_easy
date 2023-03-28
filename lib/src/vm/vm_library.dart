@@ -376,6 +376,7 @@ class VmLibrary {
     identifier: 'CastError',
     superclassNames: ['Object', 'Error'],
     externalProxyMap: {
+      'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => CastError.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (CastError instance) => instance.hashCode),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (CastError instance) => instance.noSuchMethod),
       'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (CastError instance) => instance.runtimeType),
@@ -4297,6 +4298,7 @@ class VmLibrary {
     identifier: 'Platform',
     superclassNames: ['Object'],
     externalProxyMap: {
+      'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Platform.new),
       'environment': VmProxy(identifier: 'environment', externalStaticPropertyReader: () => Platform.environment),
       'executable': VmProxy(identifier: 'executable', externalStaticPropertyReader: () => Platform.executable),
       'executableArguments': VmProxy(identifier: 'executableArguments', externalStaticPropertyReader: () => Platform.executableArguments),
@@ -4400,6 +4402,7 @@ class VmLibrary {
     identifier: 'ProcessInfo',
     superclassNames: ['Object'],
     externalProxyMap: {
+      'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => ProcessInfo.new),
       'currentRss': VmProxy(identifier: 'currentRss', externalStaticPropertyReader: () => ProcessInfo.currentRss),
       'maxRss': VmProxy(identifier: 'maxRss', externalStaticPropertyReader: () => ProcessInfo.maxRss),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (ProcessInfo instance) => instance.hashCode),
@@ -6725,6 +6728,7 @@ class VmLibrary {
     identifier: 'TypeError',
     superclassNames: ['Object', 'Error'],
     externalProxyMap: {
+      'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => TypeError.new),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (TypeError instance) => instance.hashCode),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (TypeError instance) => instance.noSuchMethod),
       'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (TypeError instance) => instance.runtimeType),
