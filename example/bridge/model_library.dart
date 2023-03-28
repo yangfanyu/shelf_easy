@@ -82,6 +82,7 @@ class ModelLibrary {
     identifier: 'LocationDirty',
     superclassNames: ['Object'],
     externalProxyMap: {
+      'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => LocationDirty.new),
       'altitude': VmProxy(identifier: 'altitude', externalInstancePropertyWriter: (LocationDirty instance, value) => instance.altitude = value),
       'city': VmProxy(identifier: 'city', externalInstancePropertyWriter: (LocationDirty instance, value) => instance.city = value),
       'country': VmProxy(identifier: 'country', externalInstancePropertyWriter: (LocationDirty instance, value) => instance.country = value),
@@ -104,6 +105,7 @@ class ModelLibrary {
     identifier: 'LocationQuery',
     superclassNames: ['Object'],
     externalProxyMap: {
+      'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => LocationQuery.new),
       '\$tableName': VmProxy(identifier: '\$tableName', externalStaticPropertyReader: () => LocationQuery.$tableName),
       'altitude': VmProxy(identifier: 'altitude', externalStaticPropertyReader: () => LocationQuery.altitude),
       'city': VmProxy(identifier: 'city', externalStaticPropertyReader: () => LocationQuery.city),
@@ -155,6 +157,7 @@ class ModelLibrary {
     identifier: 'UserDirty',
     superclassNames: ['Object'],
     externalProxyMap: {
+      'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UserDirty.new),
       'age': VmProxy(identifier: 'age', externalInstancePropertyWriter: (UserDirty instance, value) => instance.age = value),
       'data': VmProxy(identifier: 'data', externalInstancePropertyReader: (UserDirty instance) => instance.data),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (UserDirty instance) => instance.hashCode),
@@ -177,6 +180,7 @@ class ModelLibrary {
     identifier: 'UserQuery',
     superclassNames: ['Object'],
     externalProxyMap: {
+      'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UserQuery.new),
       '\$secrecyFieldsExclude': VmProxy(identifier: '\$secrecyFieldsExclude', externalStaticPropertyReader: () => UserQuery.$secrecyFieldsExclude),
       '\$tableName': VmProxy(identifier: '\$tableName', externalStaticPropertyReader: () => UserQuery.$tableName),
       'age': VmProxy(identifier: 'age', externalStaticPropertyReader: () => UserQuery.age),

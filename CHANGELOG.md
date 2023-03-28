@@ -1,3 +1,7 @@
+## 1.2.3
+
+- Added for virtual machine's bridge type generator: default constructor detection for non-abstract classes.
+  
 ## 1.2.2
 
 - Add null support for index expressions to virtual machines.
