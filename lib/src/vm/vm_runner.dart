@@ -591,7 +591,7 @@ class VmRunnerCore {
     final rightHandSide = node[VmKeys.$AssignmentExpressionRightHandSide] as Map<VmKeys, dynamic>?;
     final leftResult = _scanMap(runner, leftHandSide);
     final rightResult = _scanMap(runner, rightHandSide);
-    final leftValue = VmObject.readValue(leftResult);
+    final leftValue = operator == '=' ? null : VmObject.readValue(leftResult); //‘=’表达式不用读取左值，因为有可能是set方法但没有get方法
     final rightValue = VmObject.readValue(rightResult);
     dynamic value;
     switch (operator) {
