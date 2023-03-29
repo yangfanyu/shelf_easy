@@ -1,4 +1,5 @@
 import 'package:dart_style/dart_style.dart';
+import 'package:meta/meta.dart';
 
 import 'vm_keys.dart';
 
@@ -29,32 +30,14 @@ class VmType extends Type {
 ///内部类的超类
 ///
 mixin VmSuper {
-  ///实例的字段作用域列表
-  final _propertyMapList = [<String, VmValue>{}, <String, VmValue>{}];
-
-  ///实例的超类字段作用域
-  Map<String, VmValue> get _superPropertyMap => _propertyMapList.first;
-
-  ///实例的子类字段作用域
-  Map<String, VmValue> get _childPropertyMap => _propertyMapList.last;
-
-  ///强制读取实例的某字段
-  VmValue getProperty(String propertyName) => _childPropertyMap[propertyName] ?? _superPropertyMap[propertyName]!; //必须先尝试从child中读取
-
-  ///实例的超类字段作用域中存在某字段
-  bool hasSuperProperty(String propertyName) => _superPropertyMap.containsKey(propertyName);
-
-  ///实例的子类字段作用域中存在某字段
-  bool hasChildProperty(String propertyName) => _childPropertyMap.containsKey(propertyName);
-
   ///是被虚拟机初始化过的标记key
   static const _initedByVmwareKey = '___initedByVmwareKey___';
 
-  ///超类实例是否被虚拟机初始化过
-  bool get isInitedByVmware => _superPropertyMap.containsKey(_initedByVmwareKey);
+  ///实例的字段作用域列表
+  final _propertyMapList = [<String, VmValue>{}, <String, VmValue>{}];
 
   ///复制超类的全部实例字段，并在子作用域中添加[isInitedByVmware]标记
-  void _initProperties(VmClass superclass) {
+  void _initSuperProperties(VmClass superclass) {
     final propertyMap = _superPropertyMap;
     propertyMap[_initedByVmwareKey] = propertyMap[_initedByVmwareKey] ?? VmValue.forVariable(identifier: _initedByVmwareKey, initValue: true); //添加标记
     superclass.externalProxyMap?.forEach((key, value) {
@@ -63,6 +46,28 @@ mixin VmSuper {
       }
     });
   }
+
+  ///实例的超类字段作用域
+  Map<String, VmValue> get _superPropertyMap => _propertyMapList.first;
+
+  ///实例的子类字段作用域
+  Map<String, VmValue> get _childPropertyMap => _propertyMapList.last;
+
+  ///超类实例是否被虚拟机初始化过
+  @nonVirtual
+  bool get isInitedByVmware => _superPropertyMap.containsKey(_initedByVmwareKey);
+
+  ///强制读取实例的某字段
+  @nonVirtual
+  VmValue getProperty(String propertyName) => _childPropertyMap[propertyName] ?? _superPropertyMap[propertyName]!; //必须先尝试从child中读取
+
+  ///实例的超类字段作用域中存在某字段
+  @nonVirtual
+  bool hasSuperProperty(String propertyName) => _superPropertyMap.containsKey(propertyName);
+
+  ///实例的子类字段作用域中存在某字段
+  @nonVirtual
+  bool hasChildProperty(String propertyName) => _childPropertyMap.containsKey(propertyName);
 
   ///转换为易读的字符串描述，添加了[minLevel]参数使得可以给flutter小部件使用
   @override
@@ -75,6 +80,7 @@ mixin VmSuper {
   }
 
   ///转换为易读的JSON对象
+  @nonVirtual
   Map<String, dynamic> toJson() {
     return {
       '_superPropertyMap': _superPropertyMap,
@@ -1008,7 +1014,7 @@ class VmValue extends VmObject {
       final superclass = vmclass._internalSuperclass!; //必然存在，无需判断
       if (superclass.identifier == VmClass.objectTypeName) {
         final instance = VmInstance(); //默认继承Object类型的使用VmInstance创建实例
-        return instance.._initProperties(superclass); //创建超类的字段代理
+        return instance.._initSuperProperties(superclass); //创建超类的字段代理
       } else {
         final listResult = <dynamic>[];
         final nameResult = <Symbol, dynamic>{};
@@ -1032,7 +1038,7 @@ class VmValue extends VmObject {
           }
         }
         final instance = superclass.getProxy(VmClass.newMethodName, setter: false).runFunction(superclass, listResult, nameResult) as VmSuper; //创建对应的超类的实例
-        return instance.._initProperties(superclass); //创建超类的字段代理
+        return instance.._initSuperProperties(superclass); //创建超类的字段代理
       }
     }
   }
