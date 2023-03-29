@@ -1,3 +1,8 @@
+## 1.2.5
+
+- Add the @nonVirtual annotation to some public methods of the virtual machine's mixin VmSuper.
+- Fix a bug in the assignment expression '=' of the virtual machine.
+  
 ## 1.2.3
 
 - Added for virtual machine's bridge type generator: default constructor detection for non-abstract classes.

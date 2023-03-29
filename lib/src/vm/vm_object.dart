@@ -30,13 +30,13 @@ class VmType extends Type {
 ///内部类的超类
 ///
 mixin VmSuper {
-  ///是被虚拟机初始化过的标记key
+  ///被虚拟机初始化的key
   static const _initedByVmwareKey = '___initedByVmwareKey___';
 
   ///实例的字段作用域列表
   final _propertyMapList = [<String, VmValue>{}, <String, VmValue>{}];
 
-  ///复制超类的全部实例字段，并在子作用域中添加[isInitedByVmware]标记
+  ///复制超类的全部实例字段且标记[isInitedByVmware]为true
   void _initSuperProperties(VmClass superclass) {
     final propertyMap = _superPropertyMap;
     propertyMap[_initedByVmwareKey] = propertyMap[_initedByVmwareKey] ?? VmValue.forVariable(identifier: _initedByVmwareKey, initValue: true); //添加标记
@@ -53,11 +53,11 @@ mixin VmSuper {
   ///实例的子类字段作用域
   Map<String, VmValue> get _childPropertyMap => _propertyMapList.last;
 
-  ///超类实例是否被虚拟机初始化过
+  ///真实超类实例是否被虚拟机初始化的
   @nonVirtual
   bool get isInitedByVmware => _superPropertyMap.containsKey(_initedByVmwareKey);
 
-  ///强制读取实例的某字段
+  ///以先子类后超类的顺序读取实例字段
   @nonVirtual
   VmValue getProperty(String propertyName) => _childPropertyMap[propertyName] ?? _superPropertyMap[propertyName]!; //必须先尝试从child中读取
 
