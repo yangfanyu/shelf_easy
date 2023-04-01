@@ -1,3 +1,18 @@
+## 1.2.7
+
+The content of this submission modification is as follows:
+- Fix the bug that multiple cases with the same logic in the switch expression of the virtual machine do not take effect.
+  
+The current version of the built-in bridging library for the virtual machine is `dart_sdk: ^2.19.0` and fully supports the following packages:
+- `dart:async`
+- `dart:collection`
+- `dart:convert`
+- `dart:core`
+- `dart:math`
+- `dart:typed_data`
+- `dart:io`
+- `dart:isolate`
+  
 ## 1.2.5
 
 - Add the @nonVirtual annotation to some public methods of the virtual machine's mixin VmSuper.
@@ -14,18 +29,7 @@
   
 ## 1.2.0
 
-The content of this submission modification is as follows:
 - Fix the bug that the virtual machine class static scope conflicts with the class name.
-  
-The current version of the built-in bridging library for the virtual machine is `dart-sdk-2.19.5` and fully supports the following packages:
-- `dart:async`
-- `dart:collection`
-- `dart:convert`
-- `dart:core`
-- `dart:math`
-- `dart:typed_data`
-- `dart:io`
-- `dart:isolate`
   
 ## 1.1.22
 
@@ -44,21 +48,9 @@ The current version of the built-in bridging library for the virtual machine is 
   
 ## 1.1.18
 
-The content of this submission modification is as follows:
 - Added int to double implicit conversion to virtual machine's bridge type generator.
 - Add support for ?. expressions to virtual machines.
 - Modify the constraints of dependent packages.
-  
-The current version of the built-in bridging library for the virtual machine is `dart-sdk-2.19.4` and fully supports the following packages:
-- `dart:async`
-- `dart:collection`
-- `dart:convert`
-- `dart:core`
-- `dart:math`
-- `dart:typed_data`
-- `dart:io`
-- `dart:isolate`
-
   
 ## 1.1.16
 
@@ -90,7 +82,6 @@ The current version of the built-in bridging library for the virtual machine is 
 - Refactor documentation
 - Optimize type speculation speed for virtual machines.
 - Modify the VmSuper class so that it can be used by Flutter widgets.
-- The built-in dart bridge library in the virtual machine is adapted to dart-sdk-2.19.4
   
 ## 1.1.5
 
