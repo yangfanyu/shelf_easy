@@ -221,7 +221,8 @@ dynamic funcA2(int a, int b, {required int c, int d = 0, int? e}) {
       print('case a: 5');
       break;
     case 6:
-      print('case a: 6');
+    case 7:
+      print('case a: 6 or 7');
       break;
     default:
       final str = 'default';

@@ -442,13 +442,13 @@ class VmClass<T> extends VmObject {
   ///new方法的名称
   static const newMethodName = 'new';
 
-  ///函数的类型名称
-  static const functionTypeName = 'Function';
-
-  ///函数的类型名称
+  ///Object类型的名称
   static const objectTypeName = 'Object';
 
-  ///动态的类型名称
+  ///Function类型的名称
+  static const functionTypeName = 'Function';
+
+  ///外部智能类型的名称列表
   static const smartTypeNames = ['FutureOr', 'Object', 'Null', 'dynamic', 'void'];
 
   ///非Object子类型Null

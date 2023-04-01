@@ -903,7 +903,7 @@ class VmRunnerCore {
     final expressionResult = _scanMap(runner, expression);
     final expressionValue = VmObject.readValue(expressionResult);
     return runner._runAloneScope((scope) {
-      runner.addVmObject(VmValue.forVariable(identifier: _switchConditionValue_, initValue: expressionValue)); //创建关键变量
+      runner.addVmObject(VmValue.forVariable(identifier: _switchConditionValue_)..setValue(expressionValue)); //创建关键变量-后设置值可成为externalSmart类型
       for (var item in members) {
         final itemResult = _scanMap(runner, item); // => _scanSwitchCase 或 _scanSwitchDefault
         if (itemResult is VmSignal && itemResult.isInterrupt) {
@@ -923,8 +923,10 @@ class VmRunnerCore {
     if (statements == null) return null;
     final expressionResult = _scanMap(runner, expression);
     final expressionValue = VmObject.readValue(expressionResult);
-    final conditionValue = VmObject.readValue(runner.getVmObject(_switchConditionValue_)); //读取关键变量
-    if (expressionValue != conditionValue) return null;
+    final conditionInstance = runner.getVmObject(_switchConditionValue_); //读取关键变量
+    final conditionValue = VmObject.readValue(conditionInstance);
+    if (conditionValue != true && expressionValue != conditionValue) return null;
+    VmObject.saveValue(conditionInstance, true); //设置值为true可连续case
     for (var item in statements) {
       final itemResult = _scanMap(runner, item);
       if (itemResult is VmSignal && itemResult.isInterrupt) {
@@ -992,8 +994,8 @@ class VmRunnerCore {
     if (runner.inCurrentScope(_forLoopPartsPrepared_)) {
       final iterableValue = VmObject.readValue(runner.getVmObject(_forLoopPartsPrepared_)) as Iterator;
       if (!iterableValue.moveNext()) return false;
-      final loopVariable = runner.getVmObject(loopVariableResult.fieldName);
-      VmObject.saveValue(loopVariable, iterableValue.current); //更新循环变量
+      final loopInstance = runner.getVmObject(loopVariableResult.fieldName);
+      VmObject.saveValue(loopInstance, iterableValue.current); //更新循环变量
       return true;
     } else {
       final iterableResult = _scanMap(runner, iterable);
