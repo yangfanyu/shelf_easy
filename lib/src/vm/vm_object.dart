@@ -30,22 +30,27 @@ class VmType extends Type {
 ///内部类的超类
 ///
 mixin VmSuper {
-  ///被虚拟机初始化的key
+  ///被虚拟机初始化过的key
   static const _initedByVmwareKey = '___initedByVmwareKey___';
 
   ///实例的字段作用域列表
   final _propertyMapList = [<String, VmValue>{}, <String, VmValue>{}];
 
-  ///复制超类的全部实例字段且标记[isInitedByVmware]为true
-  void _initSuperProperties(VmClass superclass) {
-    final propertyMap = _superPropertyMap;
-    propertyMap[_initedByVmwareKey] = propertyMap[_initedByVmwareKey] ?? VmValue.forVariable(identifier: _initedByVmwareKey, initValue: true); //添加标记
+  ///添加[isInitedByVmware]标记并继承超类的全部实例字段
+  void _initSuperProperties({required VmClass childclass, required VmClass superclass}) {
+    //添加标记
+    _childPropertyMap[_initedByVmwareKey] = _childPropertyMap[_initedByVmwareKey] ?? VmValue.forVariable(identifier: _initedByVmwareKey, initValue: childclass.identifier);
+    _superPropertyMap[_initedByVmwareKey] = _superPropertyMap[_initedByVmwareKey] ?? VmValue.forVariable(identifier: _initedByVmwareKey, initValue: superclass.identifier);
+    //继承字段
     superclass.externalProxyMap?.forEach((key, value) {
       if (value.isExternalInstanceProxy) {
-        propertyMap[key] = VmValue.forSubproxy(identifier: key, initValue: () => VmLazyer(instance: this, property: key)); //覆盖保存
+        _superPropertyMap[key] = VmValue.forSubproxy(identifier: key, initValue: () => VmLazyer(instance: this, property: key)); //覆盖保存
       }
     });
   }
+
+  ///是否包含某类型标识符
+  bool _hasClassIdentifier(String identifier) => _childPropertyMap[_initedByVmwareKey]?.getValue() == identifier || _superPropertyMap[_initedByVmwareKey]?.getValue() == identifier;
 
   ///实例的超类字段作用域
   Map<String, VmValue> get _superPropertyMap => _propertyMapList.first;
@@ -53,9 +58,9 @@ mixin VmSuper {
   ///实例的子类字段作用域
   Map<String, VmValue> get _childPropertyMap => _propertyMapList.last;
 
-  ///真实超类实例是否被虚拟机初始化的
+  ///真实超类实例是否被虚拟机初始化过，即该实例是否为虚拟机内部定义类的实例
   @nonVirtual
-  bool get isInitedByVmware => _superPropertyMap.containsKey(_initedByVmwareKey);
+  bool get isInitedByVmware => _childPropertyMap.containsKey(_initedByVmwareKey) && _superPropertyMap.containsKey(_initedByVmwareKey);
 
   ///以先子类后超类的顺序读取实例字段
   @nonVirtual
@@ -357,20 +362,19 @@ class VmClass<T> extends VmObject {
 
   ///判断实例是否为该包装类型的实例
   bool isThisType(dynamic instance) {
-    final logic = VmObject.readLogic(instance); //先读取逻辑值进行判断
-    if (logic is VmValue) {
-      return logic._valueType == this; //最底层为 internalMethod 或 internalObject 的对象的逻辑值必然为 VmValue
+    final logic = VmObject.readLogic(instance);
+    if (logic is VmValue && logic._valueType.identifier == identifier) return true; //先使用逻辑值进行判断
+    final value = VmObject.readValue(instance);
+    if (value is VmSuper && value._hasClassIdentifier(identifier)) return true; //再使用原生值进行判断
+    if (isExternal) {
+      return value is T; //外部类型的原生值value如果为VmSuper类型，则已经在前面进行了初步判断。这里使用is表达式即可。
     } else {
-      if (isExternal) {
-        return VmObject.readValue(logic) is T; //外部类型需要读取原生值进行判断
-      } else {
-        return false; //内部类型读取出来的逻辑值必定为 VmValue
-      }
+      return false; //内部类型的原生值value必定为VmSuper类型，则已经在前面进行了精确判断。这里直接返回false即可。
     }
   }
 
   ///将实例转换为该包装类型的实例，实质上是做类型判断
-  T asThisType(dynamic instance) {
+  dynamic asThisType(dynamic instance) {
     if (isThisType(instance)) return instance;
     throw ('Instance type: ${instance.runtimeType} => Not matched class type: $identifier');
   }
@@ -1014,7 +1018,7 @@ class VmValue extends VmObject {
       final superclass = vmclass._internalSuperclass!; //必然存在，无需判断
       if (superclass.identifier == VmClass.objectTypeName) {
         final instance = VmInstance(); //默认继承Object类型的使用VmInstance创建实例
-        return instance.._initSuperProperties(superclass); //创建超类的字段代理
+        return instance.._initSuperProperties(childclass: vmclass, superclass: superclass); //创建超类的字段代理
       } else {
         final listResult = <dynamic>[];
         final nameResult = <Symbol, dynamic>{};
@@ -1038,7 +1042,7 @@ class VmValue extends VmObject {
           }
         }
         final instance = superclass.getProxy(VmClass.newMethodName, setter: false).runFunction(superclass, listResult, nameResult) as VmSuper; //创建对应的超类的实例
-        return instance.._initSuperProperties(superclass); //创建超类的字段代理
+        return instance.._initSuperProperties(childclass: vmclass, superclass: superclass); //创建超类的字段代理
       }
     }
   }
