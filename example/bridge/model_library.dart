@@ -4,7 +4,7 @@ import 'package:shelf_easy/shelf_easy.dart';
 import '../model/all.dart';
 
 ///
-///数据模型
+///测试的数据模型桥接库
 ///
 class ModelLibrary {
   ///class Constant

@@ -1,3 +1,11 @@
+## 1.2.8
+
+- Add parameters to the EasyVmWare.eval function of the virtual machine.
+- Optimize the is expression and as expression of the virtual machine.
+- Modify the example file that generates the virtual machine bridge type: test_vmgen.dart.
+- Add EasyVmWare.debugVmObjectInfo function for virtual machine.
+- Add a default new constructor for the internal definition class of the virtual machine.
+  
 ## 1.2.7
 
 The content of this submission modification is as follows:
