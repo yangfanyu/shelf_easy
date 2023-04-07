@@ -1207,7 +1207,7 @@ class VmValue extends VmObject {
               'listArguments': '[${metaData.listArguments.map((e) => '${e.isClassField ? 'this.' : (e.isSuperField ? 'super.' : '')}${e.fieldName}${e.fieldValue == null ? '' : ' = ${e.getValue()}'}').join(', ')}]',
               'nameArguments': '{${metaData.nameArguments.map((e) => '${e.isClassField ? 'this.' : (e.isSuperField ? 'super.' : '')}${e.fieldName}${e.fieldValue == null ? '' : ' = ${e.getValue()}'}').join(', ')}}',
               'initTree': metaData.initTree.map((e) => e?.keys.map((e) => e.toString()).toList()).toList(),
-              'bodyTree': metaData.bodyTree.keys.map((e) => e.toString()).toList(),
+              'bodyTree': '{${metaData.bodyTree.keys.map((e) => e.toString()).join(', ')}}',
               'staticListener': metaData.staticListener != null,
               'instanceListener': metaData.instanceListener != null,
             }

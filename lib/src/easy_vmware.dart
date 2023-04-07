@@ -79,6 +79,11 @@ class EasyVmWare extends EasyLogger {
     logDebug([_encoder.convert(_runner.toJsonObjectStack(index: index, simple: simple))]);
   }
 
+  ///打印虚拟对象的详细信息
+  void debugVmObjectInfo({required String key}) {
+    logDebug([_encoder.convert(_runner.getVmObject(key))]);
+  }
+
   ///虚拟机全局日志
   static final _vmwareLogger = EasyLogger(logTag: 'EasyVmWare');
 
