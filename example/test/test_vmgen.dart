@@ -8,25 +8,30 @@ void main(List<String> arguments) {
     case 'testlib':
 
       ///为example生成model桥接库
-      generatorLibraryForModel();
+      generateLibraryForModel();
       break;
     case 'flutter':
 
       ///
-      ///为flutter生成桥接库
+      ///为flutter生成flutter的桥接库
       ///
       ///这里全生成了，实际情况可以自己去掉不需要的库，只需确保：
       /// * 生成后调用EasyCode.logVmLibrarydErrors无错误打印
       /// * 且在开发工具里面打开库文件不报错，启动flutter应用正常
       ///
-      generatorLibraryForFlutter();
+      generateLibraryForFlutter();
+      break;
+    case 'dartui':
+
+      ///为flutter生成依赖的dart:ui桥接库
+      generateLibraryForDartUI();
       break;
     default:
       throw ('Unsupport targetName: $targetName');
   }
 }
 
-void generatorLibraryForModel() {
+void generateLibraryForModel() {
   final flutterHome = Platform.environment['FLUTTER_HOME']; //读取环境变量
   final coder = EasyCoder(
     config: EasyCoderConfig(
@@ -38,7 +43,7 @@ void generatorLibraryForModel() {
     outputFile: 'model_library',
     importList: ['../model/all.dart'],
     className: 'ModelLibrary',
-    classDesc: '数据模型',
+    classDesc: '测试的数据模型桥接库',
 
     ///需要生成桥接类的路径，只有公开的声明才生成桥接类
     libraryPaths: [
@@ -63,7 +68,7 @@ void generatorLibraryForModel() {
   coder.logVmLibrarydErrors();
 }
 
-void generatorLibraryForFlutter() {
+void generateLibraryForFlutter() {
   final flutterHome = Platform.environment['FLUTTER_HOME']; //读取环境变量
   final coder = EasyCoder(
     config: EasyCoderConfig(
@@ -87,9 +92,10 @@ void generatorLibraryForFlutter() {
       // 'package:flutter/semantics.dart', //重复的导入项
       'package:flutter/services.dart',
       // 'package:flutter/widgets.dart', //重复的导入项
+      'package:flutter_localizations/flutter_localizations.dart',
     ],
     className: 'FlutterLibrary',
-    classDesc: 'Flutter library',
+    classDesc: 'Flutter完整库桥接类',
     libraryPaths: [
       '$flutterHome/packages/flutter/lib/src/animation',
       '$flutterHome/packages/flutter/lib/src/cupertino',
@@ -103,12 +109,48 @@ void generatorLibraryForFlutter() {
       '$flutterHome/packages/flutter/lib/src/semantics',
       '$flutterHome/packages/flutter/lib/src/services',
       '$flutterHome/packages/flutter/lib/src/widgets',
+      '$flutterHome/packages/flutter_localizations/lib/src/cupertino_localizations.dart',
+      '$flutterHome/packages/flutter_localizations/lib/src/material_localizations.dart',
+      '$flutterHome/packages/flutter_localizations/lib/src/widgets_localizations.dart',
     ],
     privatePaths: [
       '$flutterHome/bin/cache/dart-sdk/lib',
       '$flutterHome/bin/cache/pkg/sky_engine/lib',
       '$flutterHome/packages/flutter/lib',
     ],
+  );
+  coder.logVmLibrarydErrors();
+}
+
+void generateLibraryForDartUI() {
+  final flutterHome = Platform.environment['FLUTTER_HOME']; //读取环境变量
+  final coder = EasyCoder(
+    config: EasyCoderConfig(
+      logLevel: EasyLogLevel.debug,
+      absFolder: '${Directory.current.path}/../../zycloud_widget/lib/src/bridge',
+    ),
+  );
+  coder.generateVmLibraries(
+    outputFile: 'dartui_library',
+    importList: [
+      'dart:ui',
+    ],
+    className: 'DartUILibrary',
+    classDesc: 'Dart的UI库桥接类，与Flutter库分开避免作用域冲突',
+    libraryPaths: [
+      '$flutterHome/bin/cache/pkg/sky_engine/lib/ui',
+    ],
+    privatePaths: [
+      '$flutterHome/bin/cache/dart-sdk/lib',
+      '$flutterHome/bin/cache/pkg/sky_engine/lib',
+      '$flutterHome/packages/flutter/lib',
+    ],
+    excludeFileClass: {
+      '$flutterHome/bin/cache/pkg/sky_engine/lib/ui/painting.dart': ['Codec', 'Gradient', 'Image', 'decodeImageFromList'],
+      '$flutterHome/bin/cache/pkg/sky_engine/lib/ui/text.dart': ['StrutStyle', 'TextStyle'],
+      '$flutterHome/bin/cache/pkg/sky_engine/lib/ui/platform_dispatcher.dart': ['ViewConfiguration'],
+      '$flutterHome/bin/cache/pkg/sky_engine/lib/ui/math.dart': ['clampDouble'],
+    },
   );
   coder.logVmLibrarydErrors();
 }
