@@ -151,6 +151,23 @@ void main() {
             empty.inc2+=10;
             return empty.sayHello('333', sex: 'unknow');
           }
+          void isTypes() {
+            print(outer is Object);
+            print(inner is Object);
+            print(empty is Object);
+            
+            print(outer is OuterClass);
+            print(inner is OuterClass);
+            print(empty is OuterClass);
+
+            print(outer is InnerClass);
+            print(inner is InnerClass);
+            print(empty is InnerClass);
+
+            print(outer is EmptyClass);
+            print(inner is EmptyClass);
+            print(empty is EmptyClass);
+          }
           ''',
 
         ///支持的其他语法在这个文件中，可取消下面这行代码的注释，然后运行查看控制台的输出
@@ -184,6 +201,8 @@ void main() {
   vmwareApp.logWarn(['result9 =>', result9]); //print: result9 => 101.0
 
   vmwareApp.call<void>(methodName: 'EmptyClass.sayGoodBye', positionalArguments: [10], namedArguments: {#b: '999'}); //print: EmptyClass.sayGoodBye => 10 999
+
+  vmwareApp.call<void>(methodName: 'isTypes');
 
   // vmwareApp.debugObjectStack(); //打印虚拟机中的作用域堆栈信息
   vmwareApp.debugObjectStack(index: 2, simple: true); //打印虚拟机中的作用域堆栈信息

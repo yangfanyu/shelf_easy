@@ -120,9 +120,9 @@ class EasyVmWare extends EasyLogger {
   }
 
   ///简洁的执行[sourceCode]源代码中的[methodName]函数
-  static T eval<T>({required String sourceCode, required String methodName}) {
+  static T eval<T>({required String sourceCode, required String methodName, List<dynamic>? positionalArguments, Map<Symbol, dynamic>? namedArguments}) {
     final runner = VmRunner(sourceTrees: {'default': VmParser.parseSource(sourceCode)});
-    final result = runner.callFunction(methodName);
+    final result = runner.callFunction(methodName, positionalArguments: positionalArguments, namedArguments: namedArguments);
     runner.shutdown();
     return result;
   }
