@@ -301,7 +301,7 @@ class VmRunnerCore {
   };
 
   static dynamic _scanMap(VmRunner runner, Map<VmKeys, dynamic>? node) {
-    if (node == null) return null;
+    if (node == null || node.isEmpty) return null;
     if (node.length != 2) throw ('Not two key: ${node.keys.toList()}');
     final key = node.keys.where((e) => e != VmKeys.$NodeSourceKey).first;
     try {
@@ -1075,6 +1075,7 @@ class VmRunnerCore {
       if (!superclass.isExternal) {
         throw ('ClassDeclaration unsupport internal superclass: ${superclass.identifier}'); //内部定义的类型 仅支持继承 添加了VmSuper扩展的外部类
       }
+      bool hasIniter = false; //是否有原始构造函数
       for (var item in membersResult) {
         if (item is List<VmValue>) {
           // => _scanFieldDeclaration 静态变量
@@ -1095,6 +1096,7 @@ class VmRunnerCore {
           // => _scanConstructorDeclaration or _scanMethodDeclaration 构造函数、静态函数
           if (proxyMap.containsKey(item.identifier)) throw ('ClassDeclaration already exists proxy: $name.${item.identifier}');
           proxyMap[item.identifier] = VmProxy(identifier: item.identifier, isExternal: false, internalStaticPropertyOperator: item);
+          if (item.metaData.isIniter) hasIniter = true;
         } else if (item is VmHelper) {
           // => _scanMethodDeclaration 实例函数
           if (proxyMap.containsKey(item.fieldName)) throw ('ClassDeclaration already exists proxy: $name.${item.fieldName}');
@@ -1103,6 +1105,18 @@ class VmRunnerCore {
         } else {
           throw ('ClassDeclaration unsupport member result: ${item.runtimeType}');
         }
+      }
+      //生成无参的原始构造函数
+      if (!hasIniter) {
+        final item = VmValue.forFunction(
+          identifier: VmClass.newMethodName,
+          isIniter: true,
+          isStatic: true,
+          staticListener: runner._staticListener,
+          instanceListener: runner._instanceListener,
+        );
+        runner.addVmObject(item); //添加到静态作用域
+        proxyMap[item.identifier] = VmProxy(identifier: item.identifier, isExternal: false, internalStaticPropertyOperator: item); //添加到代理集合
       }
       //创建类型并返回
       return VmClass<VmValue>(

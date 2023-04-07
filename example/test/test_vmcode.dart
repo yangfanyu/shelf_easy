@@ -386,6 +386,10 @@ final funcResA7_1 = funcA7(Duration(hours: 1, minutes: 1, seconds: 1), print, 99
 /// 类定义与实例测试区
 ///
 
+class TestEmpty {}
+
+final emptyInstance = TestEmpty();
+
 class TestUser {
   static const sexMale = 1;
   static const sexFemale = 2;
