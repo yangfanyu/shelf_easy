@@ -39,8 +39,8 @@ mixin VmSuper {
   ///添加[isInitedByVmware]标记并继承超类的全部实例字段
   void _initSuperProperties({required VmClass childclass, required VmClass superclass}) {
     //添加标记
-    _childPropertyMap[_initedByVmwareKey] = _childPropertyMap[_initedByVmwareKey] ?? VmValue.forVariable(identifier: _initedByVmwareKey, initValue: childclass.identifier);
-    _superPropertyMap[_initedByVmwareKey] = _superPropertyMap[_initedByVmwareKey] ?? VmValue.forVariable(identifier: _initedByVmwareKey, initValue: superclass.identifier);
+    _childPropertyMap[_initedByVmwareKey] = VmValue.forVariable(identifier: _initedByVmwareKey, initValue: childclass.identifier); //覆盖保存
+    _superPropertyMap[_initedByVmwareKey] = VmValue.forVariable(identifier: _initedByVmwareKey, initValue: superclass.identifier); //覆盖保存
     //继承字段
     superclass.externalProxyMap?.forEach((key, value) {
       if (value.isExternalInstanceProxy) {
@@ -51,6 +51,9 @@ mixin VmSuper {
 
   ///是否包含某类型标识符
   bool _hasClassIdentifier(String identifier) => _childPropertyMap[_initedByVmwareKey]?.getValue() == identifier || _superPropertyMap[_initedByVmwareKey]?.getValue() == identifier;
+
+  ///真实的运行时类型名称
+  String get _realRuntimeClassName => _childPropertyMap[_initedByVmwareKey]?.getValue() ?? _superPropertyMap[_initedByVmwareKey]?.getValue() ?? VmObject.readRuntimeClassName(this);
 
   ///实例的超类字段作用域
   Map<String, VmValue> get _superPropertyMap => _propertyMapList.first;
@@ -76,13 +79,7 @@ mixin VmSuper {
 
   ///转换为易读的字符串描述，添加了[minLevel]参数使得可以给flutter小部件使用
   @override
-  String toString({minLevel}) {
-    if (isInitedByVmware) {
-      return '_${runtimeType.toString().toLowerCase()}(${_propertyMapList.map((e) => '{${e.keys.join(', ')}}').join(', ')})_';
-    } else {
-      return '_${runtimeType.toString().toLowerCase()}(___)_';
-    }
-  }
+  String toString({minLevel}) => '(${_propertyMapList.map((e) => '{${e.keys.map((k) => k == _initedByVmwareKey ? '#${e[k]?.getValue()}' : k).join(', ')}}').join(', ')})';
 
   ///转换为易读的JSON对象
   @nonVirtual
@@ -256,6 +253,15 @@ abstract class VmObject {
     } else {
       return target;
     }
+  }
+
+  ///读取运行时的类型名称，去掉模板参数和私有符号
+  static String readRuntimeClassName(dynamic target) => target.runtimeType.toString().split('<').first.replaceAll('_', '');
+
+  ///解析[VmLazyer]类实例的初始调用目标的逻辑值
+  static dynamic parseLogicForLazyer(dynamic target) {
+    final logic = readLogic(target);
+    return logic is VmSuper && logic.isInitedByVmware ? VmValue.forVariable(initValue: logic) : logic; //被虚拟机初始化过的VmSuper类型需要进行包装才能正确的执行逻辑
   }
 
   ///对函数声明时的参数进行分组
@@ -550,7 +556,7 @@ class VmClass<T> extends VmObject {
 
   ///获取任意实例[instance]对应的包装类型，分析本文件可知[instance]必然不是[VmObject]的子类
   static VmClass _getClassByInstance(dynamic instance) {
-    String? typeName = instance.runtimeType.toString().split('<').first.replaceAll('_', ''); //去掉模板参数，去掉私有符号
+    String? typeName = instance is VmSuper && instance.isInitedByVmware ? instance._realRuntimeClassName : VmObject.readRuntimeClassName(instance); //被虚拟机初始化过的VmSuper类型需要读取真实类型
     VmClass? vmclass;
     //先通过类型名从运行时应用库中搜索
     vmclass = _internalClassSearchRunner == null ? null : _internalClassSearchRunner!(typeName);
@@ -1238,7 +1244,7 @@ class VmLazyer extends VmObject {
   ///延迟操作的目标
   final dynamic instance;
 
-  ///延迟操作的属性，类型大概是 int 或 String
+  ///延迟操作的属性，类型一般是 int 或 String
   final dynamic property;
 
   ///构造时是否是通过[property]找到的[instance]
@@ -1264,7 +1270,7 @@ class VmLazyer extends VmObject {
     this.instanceByProperty = false,
     this.listArguments,
     this.nameArguments,
-  })  : instance = VmObject.readLogic(instance),
+  })  : instance = VmObject.parseLogicForLazyer(instance),
         property = VmObject.readValue(property),
         _completed = false,
         super(identifier: '___anonymousVmLazyer___');

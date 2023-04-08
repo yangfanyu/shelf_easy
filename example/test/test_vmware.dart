@@ -18,7 +18,7 @@ class OuterClass with VmSuper {
   });
 
   int sayHello(String name, {required String sex}) {
-    print('OuterClass.sayHello: hello world => $key1 $key2 $inc1 $inc2 $name $sex $hashCode $isInitedByVmware');
+    print('OuterClass.sayHello: hello world => $key1 $key2 $inc1 $inc2 $name $sex $hashCode --- $isInitedByVmware');
     return 111111;
   }
 }
@@ -185,16 +185,16 @@ void main() {
   final result4 = vmwareApp.call<User>(methodName: 'createUser'); //print: Location(xxxxxx)
   vmwareApp.logWarn(['result4 =>', result4]); //print: result4 => User(xxxxxx)
 
-  final result5 = vmwareApp.call<int>(methodName: 'start1'); //print: OuterClass.sayHello: hello world => aa1 bb1 100 200 111 male xxxxxx
+  final result5 = vmwareApp.call<int>(methodName: 'start1'); //print: OuterClass.sayHello: hello world => aa1 bb1 100 200 111 male xxxxxx --- false
   vmwareApp.logWarn(['result5 =>', result5]); //print: result5 => 111111
 
-  final result6 = vmwareApp.call<int>(methodName: 'start2'); //print: InnerClass.sayHello: hello world => aa2 bb2 101 201 222 female cc2 xxxxxx
+  final result6 = vmwareApp.call<int>(methodName: 'start2'); //print: InnerClass.sayHello: hello world => aa2 bb2 101 201 222 female cc2 xxxxxx --- true
   vmwareApp.logWarn(['result6 =>', result6]); //print: result6 => 222222
 
-  final result7 = vmwareApp.call<int>(methodName: 'start3'); //print: OuterClass.sayHello: hello world => aa3 bb3 110 210 333 unknow xxxxxx
+  final result7 = vmwareApp.call<int>(methodName: 'start3'); //print: OuterClass.sayHello: hello world => aa3 bb3 110 210 333 unknow xxxxxx --- true
   vmwareApp.logWarn(['result7 =>', result7]); //print: result7 => 111111
 
-  final result8 = vmwareApp.call<int>(methodName: 'inner.sayHello', positionalArguments: ['666'], namedArguments: {#sex: 'shemale'}); //print: InnerClass.sayHello: hello world => aa2 bb2 101 201 666 shemale cc2 xxxxxx
+  final result8 = vmwareApp.call<int>(methodName: 'inner.sayHello', positionalArguments: ['666'], namedArguments: {#sex: 'shemale'}); //print: InnerClass.sayHello: hello world => aa2 bb2 101 201 666 shemale cc2 xxxxxx --- true
   vmwareApp.logWarn(['result8 =>', result8]); //print: result8 => 222222
 
   final result9 = vmwareApp.call<double>(methodName: 'inner.inc1.toDouble');
