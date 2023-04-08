@@ -1,3 +1,7 @@
+## 1.2.9
+
+- Optimize the identification of internally defined type instances for virtual machines.
+  
 ## 1.2.8
 
 - Add parameters to the EasyVmWare.eval function of the virtual machine.

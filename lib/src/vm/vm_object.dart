@@ -594,8 +594,8 @@ class VmClass<T> extends VmObject {
     for (var i = 0; i < _globalLibraryList.length; i++) {
       vmclass = _globalLibraryList[i];
       if (vmclass.isThisType(instance)) {
-        if (i > 10 && slowTypeSpeculationReport != null) {
-          slowTypeSpeculationReport!(instance, vmclass, i + 1, _globalLibraryList.length); //超过10次循环则认为这个instance的类型推断很慢
+        if (i >= 32 && slowTypeSpeculationReport != null) {
+          slowTypeSpeculationReport!(instance, vmclass, i + 1, _globalLibraryList.length); //超过32次循环则认为这个instance的类型推断很慢
         }
         return vmclass;
       }
