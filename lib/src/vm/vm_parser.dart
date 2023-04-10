@@ -1512,7 +1512,7 @@ class VmParserBirdgeItemData {
           }
         }
       }
-      //替换类内部静态引用值，全局引用值无需处理
+      //替换类内部静态引用参数为成员值，全局引用无需处理
       if (classScope != null) {
         for (var e in parameters) {
           if (e != null && e.parameterValue != null) {
@@ -1523,17 +1523,27 @@ class VmParserBirdgeItemData {
           }
         }
       }
-      //移除函数的拥有私有引用默认值的named参数（判断一下，有可能是const [])
+      //替换函数的私有引用参数为空的值，开发时请手动传入
       if (parameters.isNotEmpty) {
-        parameters.removeWhere((e) {
-          if (e != null && e.isNameAnyParameter && e.isPrivateDefaultValue) {
+        for (var e in parameters) {
+          if (e != null && e.isPrivateDefaultValue) {
+            e.parameterCanNull = false; //改为必传项
+            e.parameterValue = null;
             onIgnorePrivateArgV(classScope?.name ?? '', name, e.name, e.parameterValue ?? '', classScope?.absoluteFilePath ?? absoluteFilePath);
-            return true;
-          } else {
-            return false;
           }
-        });
+        }
       }
+      //移除函数的拥有私有引用默认值的named参数（判断一下，有可能是const [])
+      // if (parameters.isNotEmpty) {
+      //   parameters.removeWhere((e) {
+      //     if (e != null && e.isNameAnyParameter && e.isPrivateDefaultValue) {
+      //       onIgnorePrivateArgV(classScope?.name ?? '', name, e.name, e.parameterValue ?? '', classScope?.absoluteFilePath ?? absoluteFilePath);
+      //       return true;
+      //     } else {
+      //       return false;
+      //     }
+      //   });
+      // }
     }
   }
 
