@@ -1,7 +1,8 @@
-## 1.3.0
+## 1.3.1
 
 The content of this submission modification is as follows:
 - Parameters with private reference defaults are reserved for virtual machine bridge type generators.
+- Optimize the operation expression of the virtual machine.
   
 The current version of the built-in bridging library for the virtual machine is `dart_sdk: ^2.19.0` and fully supports the following packages:
 - `dart:async`
