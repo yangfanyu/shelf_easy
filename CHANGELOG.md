@@ -1,3 +1,18 @@
+## 1.3.0
+
+The content of this submission modification is as follows:
+- Parameters with private reference defaults are reserved for virtual machine bridge type generators.
+  
+The current version of the built-in bridging library for the virtual machine is `dart_sdk: ^2.19.0` and fully supports the following packages:
+- `dart:async`
+- `dart:collection`
+- `dart:convert`
+- `dart:core`
+- `dart:math`
+- `dart:typed_data`
+- `dart:io`
+- `dart:isolate`
+  
 ## 1.2.9
 
 - Optimize the identification of internally defined type instances for virtual machines.
@@ -12,18 +27,7 @@
   
 ## 1.2.7
 
-The content of this submission modification is as follows:
 - Fix the bug that multiple cases with the same logic in the switch expression of the virtual machine do not take effect.
-  
-The current version of the built-in bridging library for the virtual machine is `dart_sdk: ^2.19.0` and fully supports the following packages:
-- `dart:async`
-- `dart:collection`
-- `dart:convert`
-- `dart:core`
-- `dart:math`
-- `dart:typed_data`
-- `dart:io`
-- `dart:isolate`
   
 ## 1.2.5
 

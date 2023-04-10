@@ -480,53 +480,51 @@ class VmRunnerCore {
     final operator = node[VmKeys.$BinaryExpressionOperator] as String?;
     final leftOperand = node[VmKeys.$BinaryExpressionLeftOperand] as Map<VmKeys, dynamic>?;
     final rightOperand = node[VmKeys.$BinaryExpressionRightOperand] as Map<VmKeys, dynamic>?;
+    //由于部分bool条件运算不一定需要右值，所以右值放到对应的条件中进行scan
     final leftResult = _scanMap(runner, leftOperand);
-    final rightResult = _scanMap(runner, rightOperand);
-    final leftValue = VmObject.readValue(leftResult);
-    final rightValue = VmObject.readValue(rightResult);
     switch (operator) {
       case '+':
-        return leftValue + rightValue; //num
+        return VmObject.readValue(leftResult) + VmObject.readValue(_scanMap(runner, rightOperand)); //num
       case '-':
-        return leftValue - rightValue; //num
+        return VmObject.readValue(leftResult) - VmObject.readValue(_scanMap(runner, rightOperand)); //num
       case '*':
-        return leftValue * rightValue; //num
+        return VmObject.readValue(leftResult) * VmObject.readValue(_scanMap(runner, rightOperand)); //num
       case '/':
-        return leftValue / rightValue; //num
+        return VmObject.readValue(leftResult) / VmObject.readValue(_scanMap(runner, rightOperand)); //num
       case '%':
-        return leftValue % rightValue; //num
+        return VmObject.readValue(leftResult) % VmObject.readValue(_scanMap(runner, rightOperand)); //num
       case '~/':
-        return leftValue ~/ rightValue; //num
+        return VmObject.readValue(leftResult) ~/ VmObject.readValue(_scanMap(runner, rightOperand)); //num
       case '>':
-        return leftValue > rightValue; //bool
+        return VmObject.readValue(leftResult) > VmObject.readValue(_scanMap(runner, rightOperand)); //bool
       case '<':
-        return leftValue < rightValue; //bool
+        return VmObject.readValue(leftResult) < VmObject.readValue(_scanMap(runner, rightOperand)); //bool
       case '>=':
-        return leftValue >= rightValue; //bool
+        return VmObject.readValue(leftResult) >= VmObject.readValue(_scanMap(runner, rightOperand)); //bool
       case '<=':
-        return leftValue <= rightValue; //bool
+        return VmObject.readValue(leftResult) <= VmObject.readValue(_scanMap(runner, rightOperand)); //bool
       case '==':
-        return leftValue == rightValue; //bool
+        return VmObject.readValue(leftResult) == VmObject.readValue(_scanMap(runner, rightOperand)); //bool
       case '!=':
-        return leftValue != rightValue; //bool
+        return VmObject.readValue(leftResult) != VmObject.readValue(_scanMap(runner, rightOperand)); //bool
       case '&&':
-        return leftValue && rightValue; //bool
+        return VmObject.readValue(leftResult) && VmObject.readValue(_scanMap(runner, rightOperand)); //bool
       case '||':
-        return leftValue || rightValue; //bool
+        return VmObject.readValue(leftResult) || VmObject.readValue(_scanMap(runner, rightOperand)); //bool
       case '??':
-        return VmObject.readLogic(leftResult) ?? VmObject.readLogic(rightResult); //注意：为了保证能够逻辑处理，此处使用的是逻辑值
+        return VmObject.readLogic(leftResult) ?? VmObject.readLogic(_scanMap(runner, rightOperand)); //注意：为了保证能够逻辑处理，此处使用的是逻辑值
       case '>>':
-        return leftValue >> rightValue; //num
+        return VmObject.readValue(leftResult) >> VmObject.readValue(_scanMap(runner, rightOperand)); //num
       case '<<':
-        return leftValue << rightValue; //num
+        return VmObject.readValue(leftResult) << VmObject.readValue(_scanMap(runner, rightOperand)); //num
       case '&':
-        return leftValue & rightValue; //num
+        return VmObject.readValue(leftResult) & VmObject.readValue(_scanMap(runner, rightOperand)); //num
       case '|':
-        return leftValue | rightValue; //num
+        return VmObject.readValue(leftResult) | VmObject.readValue(_scanMap(runner, rightOperand)); //num
       case '^':
-        return leftValue ^ rightValue; //num
+        return VmObject.readValue(leftResult) ^ VmObject.readValue(_scanMap(runner, rightOperand)); //num
       case '>>>':
-        return leftValue >>> rightValue; //num
+        return VmObject.readValue(leftResult) >>> VmObject.readValue(_scanMap(runner, rightOperand)); //num
       default:
         throw ('Unsupport BinaryExpression: $operator');
     }
@@ -536,106 +534,107 @@ class VmRunnerCore {
     final operator = node[VmKeys.$PrefixExpressionOperator] as String?;
     final operand = node[VmKeys.$PrefixExpressionOperand] as Map<VmKeys, dynamic>?;
     final operandResult = _scanMap(runner, operand);
-    final operandValue = VmObject.readValue(operandResult);
-    dynamic value;
+    dynamic beforeValue = VmObject.readValue(operandResult); //无特殊情况，这里直接读取
+    dynamic afterValue;
     switch (operator) {
       case '-':
-        value = -operandValue; //num
+        afterValue = -beforeValue; //num
         break;
       case '!':
-        value = !operandValue; //bool
+        afterValue = !beforeValue; //bool
         break;
       case '~':
-        value = ~operandValue; //num
+        afterValue = ~beforeValue; //num
         break;
       case '++':
-        value = operandValue + 1; //num
-        VmObject.saveValue(operandResult, value);
+        afterValue = beforeValue + 1; //num
+        VmObject.saveValue(operandResult, afterValue);
         break;
       case '--':
-        value = operandValue - 1; //num
-        VmObject.saveValue(operandResult, value);
+        afterValue = beforeValue - 1; //num
+        VmObject.saveValue(operandResult, afterValue);
         break;
       default:
         throw ('Unsupport PrefixExpression: $operator');
     }
-    return value; //返回计算之后的值
+    return afterValue; //返回计算之后的值
   }
 
   static dynamic _scanPostfixExpression(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) {
     final operator = node[VmKeys.$PostfixExpressionOperator] as String?;
     final operand = node[VmKeys.$PostfixExpressionOperand] as Map<VmKeys, dynamic>?;
     final operandResult = _scanMap(runner, operand);
-    final operandValue = VmObject.readValue(operandResult);
-    dynamic value;
+    dynamic beforeValue;
+    dynamic afterValue;
     switch (operator) {
       case '!':
-        return VmObject.readLogic(operandResult)!; //注意：为了保证能够逻辑处理，此处使用的是逻辑值
+        beforeValue = VmObject.readLogic(operandResult)!; //注意：为了保证能够逻辑处理，此处使用的是逻辑值
+        break;
       case '++':
-        value = operandValue + 1; //num
-        VmObject.saveValue(operandResult, value);
+        beforeValue = VmObject.readValue(operandResult);
+        afterValue = beforeValue + 1; //num
+        VmObject.saveValue(operandResult, afterValue);
         break;
       case '--':
-        value = operandValue - 1; //num
-        VmObject.saveValue(operandResult, value);
+        beforeValue = VmObject.readValue(operandResult);
+        afterValue = beforeValue - 1; //num
+        VmObject.saveValue(operandResult, afterValue);
         break;
       default:
         throw ('Unsupport PostfixExpression: $operator');
     }
-    return operandValue; //返回计算之前的值
+    return beforeValue; //返回计算之前的值
   }
 
   static dynamic _scanAssignmentExpression(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) {
     final operator = node[VmKeys.$AssignmentExpressionOperator] as String?;
     final leftHandSide = node[VmKeys.$AssignmentExpressionLeftHandSide] as Map<VmKeys, dynamic>?;
     final rightHandSide = node[VmKeys.$AssignmentExpressionRightHandSide] as Map<VmKeys, dynamic>?;
+    //由于部分bool条件运算不一定需要右值，所以右值放到对应的条件中进行scan
     final leftResult = _scanMap(runner, leftHandSide);
-    final rightResult = _scanMap(runner, rightHandSide);
-    final leftValue = operator == '=' ? null : VmObject.readValue(leftResult); //‘=’表达式不用读取左值，因为有可能是set方法但没有get方法
-    final rightValue = VmObject.readValue(rightResult);
     dynamic value;
     switch (operator) {
       case '=':
-        value = VmObject.readLogic(rightResult); //注意：为了保证能够逻辑处理，此处使用的是逻辑值
+        value = VmObject.readLogic(_scanMap(runner, rightHandSide)); //注意：为了保证能够逻辑处理，此处使用的是逻辑值
         break;
       case '+=':
-        value = leftValue + rightValue; //num
+        value = VmObject.readValue(leftResult) + VmObject.readValue(_scanMap(runner, rightHandSide)); //num
         break;
       case '-=':
-        value = leftValue - rightValue; //num
+        value = VmObject.readValue(leftResult) - VmObject.readValue(_scanMap(runner, rightHandSide)); //num
         break;
       case '*=':
-        value = leftValue * rightValue; //num
+        value = VmObject.readValue(leftResult) * VmObject.readValue(_scanMap(runner, rightHandSide)); //num
         break;
       case '/=':
-        value = leftValue / rightValue; //num
+        value = VmObject.readValue(leftResult) / VmObject.readValue(_scanMap(runner, rightHandSide)); //num
         break;
       case '%=':
-        value = leftValue % rightValue; //num
+        value = VmObject.readValue(leftResult) % VmObject.readValue(_scanMap(runner, rightHandSide)); //num
         break;
       case '~/=':
-        value = leftValue ~/ rightValue; //num
+        value = VmObject.readValue(leftResult) ~/ VmObject.readValue(_scanMap(runner, rightHandSide)); //num
         break;
       case '??=':
-        value = VmObject.readLogic(leftResult) ?? VmObject.readLogic(rightResult); //注意：为了保证能够逻辑处理，此处使用的是逻辑值
+        value = VmObject.readLogic(leftResult) ?? VmObject.readLogic(_scanMap(runner, rightHandSide)); //注意：为了保证能够逻辑处理，此处使用的是逻辑值
         break;
       case '>>=':
-        value = leftValue >> rightValue; //num
+        value = VmObject.readValue(leftResult) >> VmObject.readValue(_scanMap(runner, rightHandSide)); //num
         break;
       case '<<=':
-        value = leftValue << rightValue; //num
+        value = VmObject.readValue(leftResult) << VmObject.readValue(_scanMap(runner, rightHandSide)); //num
         break;
       case '&=':
-        value = leftValue & rightValue; //num
+        value = VmObject.readValue(leftResult) & VmObject.readValue(_scanMap(runner, rightHandSide)); //num
         break;
       case '|=':
-        value = leftValue | rightValue; //num
+        value = VmObject.readValue(leftResult) | VmObject.readValue(_scanMap(runner, rightHandSide)); //num
         break;
       case '^=':
-        value = leftValue ^ rightValue; //num
+        value = VmObject.readValue(leftResult) ^ VmObject.readValue(_scanMap(runner, rightHandSide)); //num
         break;
       case '>>>=':
-        value = leftValue >>> rightValue; //num
+        value = VmObject.readValue(leftResult) >>> VmObject.readValue(_scanMap(runner, rightHandSide)); //num
         break;
       default:
         throw ('Unsupport AssignmentExpression: $operator');
