@@ -700,6 +700,7 @@ class VmParserBirdger extends SimpleAstVisitor {
       name: node.name.lexeme,
       isFinal: node.isFinal,
       isConst: node.isConst,
+      valueSourceCode: node.initializer?.toSource(),
     );
   }
 
@@ -712,6 +713,7 @@ class VmParserBirdger extends SimpleAstVisitor {
       isAtJS: node.toSource().contains('@JS'),
       isGetter: node.isGetter,
       isSetter: node.isSetter,
+      valueSourceCode: node.toSource(),
     );
   }
 
@@ -858,6 +860,7 @@ class VmParserBirdger extends SimpleAstVisitor {
       isSetter: node.isSetter,
       isOperator: node.isOperator,
       isAbstract: node.isAbstract,
+      valueSourceCode: node.toSource(),
     );
   }
 
@@ -1110,6 +1113,9 @@ class VmParserBirdgeItemData {
   ///作为字段的具体类型数据
   VmParserBirdgeItemData? propertyTypeMeta;
 
+  ///作为变量或函数的源码值
+  String? valueSourceCode;
+
   ///类型直接的extends、implements、with的超类
   List<String> superclassNames;
 
@@ -1150,6 +1156,7 @@ class VmParserBirdgeItemData {
     this.propertyCanNull = false,
     this.propertyTypeName,
     this.propertyTypeMeta,
+    this.valueSourceCode,
     this.superclassNames = const [],
     this.extendsClassName,
     this.absoluteFilePath = '',
@@ -1183,15 +1190,17 @@ class VmParserBirdgeItemData {
   ///是否为类实例属性
   bool get isClassInstanceProperty => type == VmParserBirdgeItemType.classInstanceVariable || type == VmParserBirdgeItemType.classInstanceFunction;
 
+  ///是否为任意的函数
+  bool get isAnyFunctionType => type == VmParserBirdgeItemType.topLevelFunction || type == VmParserBirdgeItemType.classStaticFunction || type == VmParserBirdgeItemType.classInstanceFunction;
+
   ///是否为要生成caller的函数类型的参数
   bool get isCallerFunctionType => parameterType == 'Function' && (parameters.isNotEmpty || parameterReturn);
 
-  ///是否为为私有默认值
-  bool get isPrivateDefaultValue {
-    if (parameterValue == null) return false;
-    final noBlankValue = parameterValue!.replaceAll(' ', '');
-    return noBlankValue.startsWith('_') || noBlankValue.contains('._') || noBlankValue.contains(':_') || noBlankValue.contains(',_') || noBlankValue.contains('(_');
-  }
+  ///可能作为任意函数的参数的引用的默认值
+  bool get maybeDefValueForFunction => type == VmParserBirdgeItemType.topLevelVariable || type == VmParserBirdgeItemType.topLevelFunction || isClassStaticProperty;
+
+  ///提取默认值中的私有标识符的引用
+  List<String> get matchPrivateReferences => matchPrivateNames(parameterValue);
 
   ///参数默认取值内容代码
   String get parameterValueCode {
@@ -1488,13 +1497,28 @@ class VmParserBirdgeItemData {
   ///替换函数的参数的类型别名，替换函数的参数的内部静态引用默认值，移除函数的拥有私有引用默认值的named参数
   void replaceAlias({
     VmParserBirdgeItemData? classScope,
+    required Set<String> privateNames,
+    required Map<String, VmParserBirdgeItemData> privateDefvs,
     required Map<String, VmParserBirdgeItemData> functionRefs,
+    required List<String> ignoreProxyObject,
+    required List<String> ignoreProxyCaller,
     required void Function(String className, String proxyName, String paramName, String aliasName, String filePath) onReplaceProxyAlias,
     required void Function(String className, String proxyName, String paramName, String paramValue, String filePath) onIgnorePrivateArgV,
+    required bool removeNotFoundPrivateParams,
   }) {
     if (type == VmParserBirdgeItemType.classDeclaration) {
       for (var e in properties) {
-        e?.replaceAlias(classScope: this, functionRefs: functionRefs, onReplaceProxyAlias: onReplaceProxyAlias, onIgnorePrivateArgV: onIgnorePrivateArgV);
+        e?.replaceAlias(
+          classScope: this,
+          privateNames: privateNames,
+          privateDefvs: privateDefvs,
+          functionRefs: functionRefs,
+          ignoreProxyObject: ignoreProxyObject,
+          ignoreProxyCaller: ignoreProxyCaller,
+          onReplaceProxyAlias: onReplaceProxyAlias,
+          onIgnorePrivateArgV: onIgnorePrivateArgV,
+          removeNotFoundPrivateParams: removeNotFoundPrivateParams,
+        );
       }
     } else {
       //替换函数字段的参数的别名类型，因为parameters不为空的话才是函数，所以无需判断type了
@@ -1512,10 +1536,10 @@ class VmParserBirdgeItemData {
           }
         }
       }
-      //替换类内部静态引用参数为成员值，全局引用无需处理
+      //替换参数默认值为类内部公开的静态成员的引用
       if (classScope != null) {
         for (var e in parameters) {
-          if (e != null && e.parameterValue != null) {
+          if (e != null && e.parameterValue != null && e.matchPrivateReferences.isEmpty) {
             final isStaticReferValue = classScope.properties.firstWhere((element) => element != null && element.name == e.parameterValue && element.isClassStaticProperty, orElse: () => null) != null;
             if (isStaticReferValue) {
               e.parameterValue = '${classScope.name}.${e.parameterValue}';
@@ -1523,27 +1547,43 @@ class VmParserBirdgeItemData {
           }
         }
       }
-      //替换函数的私有引用参数为空的值，开发时请手动传入
-      if (parameters.isNotEmpty) {
+      //搜索参数默认值为任意私有值且存在的引用标识
+      final hasProxy = classScope == null || !isConstructor || (!classScope.isAbstract || isFactoryConstructor);
+      final hasProxyCaller = hasStaticCaller || hasInstanceCaller;
+      final notIgnoreProxyMatched = !isIgnoreProxyMatched(classScope, name, ignoreProxyObject) && !isIgnoreProxyMatched(classScope, name, ignoreProxyCaller);
+      if (hasProxy && hasProxyCaller && notIgnoreProxyMatched) {
+        final allRemoveParams = <String>{}; //可能需要移除的参数
         for (var e in parameters) {
-          if (e != null && e.isPrivateDefaultValue) {
-            e.parameterCanNull = false; //改为必传项
-            e.parameterValue = null;
-            onIgnorePrivateArgV(classScope?.name ?? '', name, e.name, e.parameterValue ?? '', classScope?.absoluteFilePath ?? absoluteFilePath);
+          if (e != null) {
+            final allRefers = <String>{};
+            var currRefers = e.matchPrivateReferences; //outer
+            while (currRefers.isNotEmpty) {
+              allRefers.addAll(currRefers);
+              final nextRefers = <String>[];
+              for (var refer in currRefers) {
+                final target = privateDefvs[refer];
+                if (target != null) {
+                  nextRefers.addAll(matchPrivateNames(target.valueSourceCode).where((element) => !allRefers.contains(element))); //inner
+                }
+              }
+              currRefers = nextRefers;
+            }
+            if (allRefers.every((refer) => privateDefvs[refer] != null)) {
+              privateNames.addAll(allRefers);
+            } else if (removeNotFoundPrivateParams) {
+              allRemoveParams.add(e.name); //添加到移除项
+              onIgnorePrivateArgV(classScope?.name ?? '', name, e.name, e.parameterValue ?? '', classScope?.absoluteFilePath ?? absoluteFilePath);
+            } else {
+              e.parameterCanNull = false; //修改为必传项
+              e.parameterValue = null;
+              onIgnorePrivateArgV(classScope?.name ?? '', name, e.name, e.parameterValue ?? '', classScope?.absoluteFilePath ?? absoluteFilePath);
+            }
           }
         }
+        if (removeNotFoundPrivateParams && allRemoveParams.isNotEmpty) {
+          parameters.removeWhere((element) => allRemoveParams.contains(element?.name));
+        }
       }
-      //移除函数的拥有私有引用默认值的named参数（判断一下，有可能是const [])
-      // if (parameters.isNotEmpty) {
-      //   parameters.removeWhere((e) {
-      //     if (e != null && e.isNameAnyParameter && e.isPrivateDefaultValue) {
-      //       onIgnorePrivateArgV(classScope?.name ?? '', name, e.name, e.parameterValue ?? '', classScope?.absoluteFilePath ?? absoluteFilePath);
-      //       return true;
-      //     } else {
-      //       return false;
-      //     }
-      //   });
-      // }
     }
   }
 
@@ -1720,4 +1760,12 @@ class VmParserBirdgeItemData {
 
   ///格式化扩展名
   static String extensionName(String name) => '\$${name}Extension\$';
+
+  ///匹配私有名称
+  static List<String> matchPrivateNames(String? code) {
+    if (code == null) return const [];
+    final noBlankValue = code.replaceAll(' ', '');
+    final regExp = RegExp(r'_[a-zA-Z0-9_]+');
+    return regExp.allMatches(noBlankValue).map((e) => e.group(0)!).toList();
+  }
 }

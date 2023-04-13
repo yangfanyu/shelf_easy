@@ -17,13 +17,17 @@ class EasyCoder extends EasyLogger {
   final List<EasyCoderModelInfo> _wrapList;
 
   ///桥接模型错误
-  final List<List<dynamic>> _vmerrList;
+  final List<List<dynamic>> _vmwarnList;
+
+  ///桥接模型错误
+  final List<List<dynamic>> _vmerrorList;
 
   EasyCoder({required EasyCoderConfig config})
       : _config = config,
         _baseList = [],
         _wrapList = [],
-        _vmerrList = [],
+        _vmwarnList = [],
+        _vmerrorList = [],
         super(
           logger: config.logger,
           logLevel: config.logLevel,
@@ -224,6 +228,7 @@ class EasyCoder extends EasyLogger {
     ],
     Map<String, List<String>> includeFileClass = const {}, //某文件只需要指定的类 或 顶级属性
     Map<String, List<String>> excludeFileClass = const {}, //某文件排除掉指定的类 或 顶级属性
+    bool removeNotFoundPrivateParams = true, //当某函数需要生成VmProxy的caller时，但找不到的某参数的私有引用值时：true移除这个参数，false改为必传参数
     bool genByExternal = true,
   }) {
     final indent = _config.indent;
@@ -258,6 +263,8 @@ class EasyCoder extends EasyLogger {
     buffer.write('class $className {\n'); //类开始
 
     //start
+    final privateNames = <String>{}; //私有值属性，用于函数默认值引用
+    final privateDefvs = <String, VmParserBirdgeItemData>{}; //私有值属性，用于函数默认值引用
     final privateDatas = <String, VmParserBirdgeItemData>{}; //私有类数据，用于超类属性的继承
     final functionRefs = <String, VmParserBirdgeItemData>{}; //函数的别名，用于函数参数的替换
     //扫描私有目录，提取全部类作为私有类
@@ -272,7 +279,14 @@ class EasyCoder extends EasyLogger {
     for (var fileItem in privateFiles) {
       final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensionOn: ignoreExtensionOn);
       for (var result in bridgeResults) {
-        if (result != null && result.type == VmParserBirdgeItemType.classDeclaration) {
+        if (result != null && result.isPrivate && result.maybeDefValueForFunction) {
+          result.absoluteFilePath = fileItem.path; //复制文件路径
+          if (privateDefvs.containsKey(result.name)) {
+            logTrace(['ignore repeat private defvs:', result.name, '=>', result.absoluteFilePath]);
+          } else {
+            privateDefvs[result.name] = result;
+          }
+        } else if (result != null && result.type == VmParserBirdgeItemType.classDeclaration) {
           result.absoluteFilePath = fileItem.path; //复制文件路径
           if (privateDatas.containsKey(result.name)) {
             privateDatas[result.name]!.combineClass(result); //合并同名属性
@@ -283,7 +297,7 @@ class EasyCoder extends EasyLogger {
         } else if (result != null && result.type == VmParserBirdgeItemType.functionTypeAlias) {
           result.absoluteFilePath = fileItem.path; //复制文件路径
           if (functionRefs.containsKey(result.name)) {
-            logWarn(['ignore repeat function alias:', result.name, '=>', result.absoluteFilePath]);
+            logTrace(['ignore repeat function alias:', result.name, '=>', result.absoluteFilePath]);
           } else {
             functionRefs[result.name] = result;
           }
@@ -302,7 +316,14 @@ class EasyCoder extends EasyLogger {
     for (var fileItem in libraryFiles) {
       final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensionOn: ignoreExtensionOn);
       for (var result in bridgeResults) {
-        if (result != null && result.type == VmParserBirdgeItemType.classDeclaration && result.isPrivate) {
+        if (result != null && result.isPrivate && result.maybeDefValueForFunction) {
+          result.absoluteFilePath = fileItem.path; //复制文件路径
+          if (privateDefvs.containsKey(result.name)) {
+            logTrace(['ignore repeat private defvs:', result.name, '=>', result.absoluteFilePath]);
+          } else {
+            privateDefvs[result.name] = result;
+          }
+        } else if (result != null && result.type == VmParserBirdgeItemType.classDeclaration && result.isPrivate) {
           result.absoluteFilePath = fileItem.path; //复制文件路径
           if (privateDatas.containsKey(result.name)) {
             privateDatas[result.name]!.combineClass(result); //合并同名属性
@@ -313,7 +334,7 @@ class EasyCoder extends EasyLogger {
         } else if (result != null && result.type == VmParserBirdgeItemType.functionTypeAlias) {
           result.absoluteFilePath = fileItem.path; //复制文件路径
           if (functionRefs.containsKey(result.name)) {
-            logWarn(['ignore repeat function alias:', result.name, '=>', result.absoluteFilePath]);
+            logTrace(['ignore repeat function alias:', result.name, '=>', result.absoluteFilePath]);
           } else {
             functionRefs[result.name] = result;
           }
@@ -334,7 +355,7 @@ class EasyCoder extends EasyLogger {
     final proxyLibraries = <VmParserBirdgeItemData>[];
     for (var fileItem in libraryFiles) {
       if (ignoreIssueFiles.any((element) => fileItem.path.endsWith(element))) {
-        logDebug(['ignore explicit library file =>', fileItem.path]);
+        logTrace(['ignore explicit library file =>', fileItem.path]);
       } else {
         final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensionOn: ignoreExtensionOn);
         for (var result in bridgeResults) {
@@ -349,6 +370,29 @@ class EasyCoder extends EasyLogger {
     }
     classLibraries.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     proxyLibraries.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    //从类中提取私有值
+    privateDatas.forEach((key, item) {
+      for (var e in item.properties) {
+        if (e != null && e.isPrivate && e.maybeDefValueForFunction) {
+          if (privateDefvs.containsKey(item.name)) {
+            logTrace(['ignore repeat private defvs:', item.name, '=>', item.absoluteFilePath]);
+          } else {
+            privateDefvs[e.name] = e;
+          }
+        }
+      }
+    });
+    for (var item in classLibraries) {
+      for (var e in item.properties) {
+        if (e != null && e.isPrivate && e.maybeDefValueForFunction) {
+          if (privateDefvs.containsKey(item.name)) {
+            logTrace(['ignore repeat private defvs:', item.name, '=>', item.absoluteFilePath]);
+          } else {
+            privateDefvs[e.name] = e;
+          }
+        }
+      }
+    }
     //合并同名的class
     final classUnionDatasMap = <String, VmParserBirdgeItemData>{};
     for (var item in classLibraries) {
@@ -372,7 +416,16 @@ class EasyCoder extends EasyLogger {
       //继承构造函数super参数默认值
       value.extendsValue(publicMap: classUnionDatasMap, pirvateMap: privateDatas, onNotFoundClassField: _onVmNotFoundClassField);
       //替换成员函数的参数类型的别名
-      value.replaceAlias(functionRefs: functionRefs, onReplaceProxyAlias: _onVmReplaceProxyAlias, onIgnorePrivateArgV: _onVmIgnorePrivateArgV);
+      value.replaceAlias(
+        privateNames: privateNames,
+        privateDefvs: privateDefvs,
+        functionRefs: functionRefs,
+        ignoreProxyObject: ignoreProxyObject,
+        ignoreProxyCaller: ignoreProxyCaller,
+        onReplaceProxyAlias: _onVmReplaceProxyAlias,
+        onIgnorePrivateArgV: _onVmIgnorePrivateArgV,
+        removeNotFoundPrivateParams: removeNotFoundPrivateParams,
+      );
       //生成代码
       final fieldName = 'class${firstUpperCaseName(key)}';
       final fieldCode = value.toClassCode(
@@ -406,7 +459,16 @@ class EasyCoder extends EasyLogger {
         _onVmIgnoreProxyObject('', item.name, item.absoluteFilePath);
       } else {
         //替换别名
-        item.replaceAlias(functionRefs: functionRefs, onReplaceProxyAlias: _onVmReplaceProxyAlias, onIgnorePrivateArgV: _onVmIgnorePrivateArgV);
+        item.replaceAlias(
+          privateNames: privateNames,
+          privateDefvs: privateDefvs,
+          functionRefs: functionRefs,
+          ignoreProxyObject: ignoreProxyObject,
+          ignoreProxyCaller: ignoreProxyCaller,
+          onReplaceProxyAlias: _onVmReplaceProxyAlias,
+          onIgnorePrivateArgV: _onVmIgnorePrivateArgV,
+          removeNotFoundPrivateParams: removeNotFoundPrivateParams,
+        );
         if (proxyUnionPartsMap.containsKey(item.name)) {
           final unionParts = proxyUnionPartsMap[item.name]!;
           item.toProxyCode(
@@ -439,6 +501,21 @@ class EasyCoder extends EasyLogger {
       });
       buffer.write('$indent];\n');
     }
+    //生成被引用的私有默认值
+    if (privateNames.isNotEmpty) {
+      buffer.write('\n');
+      buffer.write('$indent///all private values\n');
+      for (var name in privateNames) {
+        final item = privateDefvs[name];
+        if (item != null) {
+          if (item.isAnyFunctionType) {
+            buffer.write('$indent${item.valueSourceCode != null && item.valueSourceCode!.startsWith('static') ? '' : 'static '}${item.valueSourceCode}\n');
+          } else {
+            buffer.write('${indent}static ${item.isConst ? 'const' : 'final'} $name = ${item.valueSourceCode};\n');
+          }
+        }
+      }
+    }
     //end
 
     buffer.write('}\n'); //类结束
@@ -455,11 +532,19 @@ class EasyCoder extends EasyLogger {
 
   ///统一打印桥接库生成时的错误
   void logVmLibrarydErrors() {
-    if (_vmerrList.isEmpty) {
+    if (_vmwarnList.isEmpty) {
+      logInfo(['No warn found.']);
+    } else {
+      logWarn(['Total ${_vmwarnList.length} warns found:']);
+      for (var element in _vmwarnList) {
+        logWarn(element);
+      }
+    }
+    if (_vmerrorList.isEmpty) {
       logInfo(['No error found.']);
     } else {
-      logError(['Total ${_vmerrList.length} error found:']);
-      for (var element in _vmerrList) {
+      logError(['Total ${_vmerrorList.length} errors found:']);
+      for (var element in _vmerrorList) {
         logError(element);
       }
     }
@@ -877,12 +962,13 @@ class EasyCoder extends EasyLogger {
   }
 
   void _onVmNotFoundSuperClass(String className, String superName, String classPath) {
-    _vmerrList.add(['cannot found super class:', '$className inherit $superName', '=>', classPath]); //添加到错误列表，便于统一打印
+    //添加到错误列表，便于统一打印
+    _vmerrorList.add(['cannot found super class:', '$className inherit $superName', '=>', classPath]);
   }
 
   void _onVmNotFoundClassField(String className, String fieldName, String classPath) {
-    // _vmerrList.add(['cannot found class field:', '$className.$fieldName', '=>', classPath]); //添加到错误列表，便于统一打印
-    logWarn(['cannot found class field:', '$className.$fieldName', '=>', classPath]); //这里用warn
+    //添加到警告列表，便于统一打印
+    _vmwarnList.add(['cannot found class field:', '$className.$fieldName', '=>', classPath]);
   }
 
   void _onVmIgnoreProxyObject(String className, String proxyName, String classPath) {
@@ -898,7 +984,8 @@ class EasyCoder extends EasyLogger {
   }
 
   void _onVmIgnorePrivateArgV(String className, String proxyName, String paramName, String paramValue, String classPath) {
-    logWarn(['ignore proxy named parameter by private default value:', '$className.$proxyName', paramName, '->', paramValue, '=>', classPath]); //这里用warn
+    //添加到警告列表，便于统一打印
+    _vmwarnList.add(['ignore proxy parameter by private default value:', '$className.$proxyName', paramName, '->', paramValue, '=>', classPath]);
   }
 
   ///将[name]的第一个字母改为大写
