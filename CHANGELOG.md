@@ -1,3 +1,7 @@
+## 1.3.2
+
+- Optimize the handling of private default values ​​in the virtual machine's bridge library generator.
+  
 ## 1.3.1
 
 The content of this submission modification is as follows:
