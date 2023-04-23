@@ -1,3 +1,7 @@
+## 1.3.5
+
+- Optimize the filter parameters of the virtual machine's bridge type generator.
+  
 ## 1.3.3
 
 - Optimize the initialization process of the iterator type of the virtual machine to support the null type.

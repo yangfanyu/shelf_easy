@@ -54,12 +54,12 @@ void generateLibraryForModel() {
 
     ///私有路径不生成桥接类，只是用来查找与复制超类的属性
     privatePaths: [
-      '$flutterHome/bin/cache/dart-sdk/lib/core',
+      '$flutterHome/bin/cache/dart-sdk/lib',
       // '${Directory.current.path}/../lib/src/vm/vm_object.dart', //for OuterClass
     ],
 
-    ///这个用来告诉生成器对应文件下面只需要生成某些类的桥接类
-    includeFileClass: {
+    ///这个用来告诉生成器对应文件或文件夹下面只需要生成某些类的桥接类
+    includePathClass: {
       '${Directory.current.path}/../lib/src/db/db_base.dart': ['DbBaseModel'],
       // '${Directory.current.path}/test/test_vmware.dart': ['OuterClass'], //for OuterClass
     },
@@ -145,11 +145,17 @@ void generateLibraryForDartUI() {
       '$flutterHome/bin/cache/pkg/sky_engine/lib',
       '$flutterHome/packages/flutter/lib',
     ],
-    excludeFileClass: {
-      '$flutterHome/bin/cache/pkg/sky_engine/lib/ui/painting.dart': ['Codec', 'Gradient', 'Image', 'decodeImageFromList'],
-      '$flutterHome/bin/cache/pkg/sky_engine/lib/ui/text.dart': ['StrutStyle', 'TextStyle'],
-      '$flutterHome/bin/cache/pkg/sky_engine/lib/ui/platform_dispatcher.dart': ['ViewConfiguration'],
-      '$flutterHome/bin/cache/pkg/sky_engine/lib/ui/math.dart': ['clampDouble'],
+    excludePathClass: {
+      '$flutterHome/bin/cache/pkg/sky_engine/lib/ui': [
+        'Codec', //dart核心库已包含
+        'Gradient', //fluter库已包含
+        'Image', //fluter库已包含
+        'decodeImageFromList', //fluter库已包含
+        'StrutStyle', //fluter库已包含
+        'TextStyle', //fluter库已包含
+        'ViewConfiguration', //fluter库已包含
+        'clampDouble', //fluter库已包含
+      ],
     },
   );
   coder.logVmLibrarydErrors();

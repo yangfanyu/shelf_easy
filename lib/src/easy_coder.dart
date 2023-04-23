@@ -197,7 +197,7 @@ class EasyCoder extends EasyLogger {
     String classDesc = 'BridgesLibrary',
     required List<String> libraryPaths,
     List<String> privatePaths = const [],
-    List<String> ignoreIssueFiles = const [
+    List<String> ignoreIssuePaths = const [
       '/dart-sdk/lib/core/null.dart', //忽略原因：非Object子类无需生成，在vmobject.dart中文件已内置。输出结果：不会生成该文件的任何内容，下同
       '/dart-sdk/lib/core/record.dart', //忽略原因：生成的代码在开发工具里面报错，这个类貌似也没什么卵用。
       '/flutter/lib/src/services/dom.dart', //忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。
@@ -226,8 +226,8 @@ class EasyCoder extends EasyLogger {
       'Object', //属于dart-sdk库，但是flutter库添加了toJs等不要的扩展
       'Iterable', //属于dart-sdk库，添加出来的扩展属性在开发工具里面报错
     ],
-    Map<String, List<String>> includeFileClass = const {}, //某文件只需要指定的类 或 顶级属性
-    Map<String, List<String>> excludeFileClass = const {}, //某文件排除掉指定的类 或 顶级属性
+    Map<String, List<String>> includePathClass = const {}, //某文件或文件夹只需要指定的类 或 顶级属性
+    Map<String, List<String>> excludePathClass = const {}, //某文件或文件夹排除掉指定的类 或 顶级属性
     bool removeNotFoundPrivateParams = true, //当某函数需要生成VmProxy的caller时，但找不到的某参数的私有引用值时：true移除这个参数，false改为必传参数
     bool genByExternal = true,
   }) {
@@ -354,14 +354,16 @@ class EasyCoder extends EasyLogger {
     final classLibraries = <VmParserBirdgeItemData>[];
     final proxyLibraries = <VmParserBirdgeItemData>[];
     for (var fileItem in libraryFiles) {
-      if (ignoreIssueFiles.any((element) => fileItem.path.endsWith(element))) {
+      if (ignoreIssuePaths.any((element) => fileItem.path.startsWith(element) || fileItem.path.endsWith(element))) {
         logTrace(['ignore explicit library file =>', fileItem.path]);
       } else {
         final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensionOn: ignoreExtensionOn);
         for (var result in bridgeResults) {
           if (result != null && !result.isAtJS && !result.isPrivate && result.type != VmParserBirdgeItemType.functionTypeAlias) {
-            if (includeFileClass.containsKey(fileItem.path) && !includeFileClass[fileItem.path]!.contains(result.name)) continue; //忽略
-            if (excludeFileClass.containsKey(fileItem.path) && excludeFileClass[fileItem.path]!.contains(result.name)) continue; //忽略
+            final includeKey = includePathClass.keys.firstWhere((element) => fileItem.path.startsWith(element), orElse: () => '');
+            if (includeKey.isNotEmpty && !includePathClass[includeKey]!.contains(result.name)) continue; //忽略
+            final excludeKey = excludePathClass.keys.firstWhere((element) => fileItem.path.startsWith(element), orElse: () => '');
+            if (excludeKey.isNotEmpty && excludePathClass[excludeKey]!.contains(result.name)) continue; //忽略
             result.absoluteFilePath = fileItem.path; //复制文件路径
             result.type == VmParserBirdgeItemType.classDeclaration ? classLibraries.add(result) : proxyLibraries.add(result);
           }
