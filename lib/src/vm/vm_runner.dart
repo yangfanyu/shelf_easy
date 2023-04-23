@@ -388,9 +388,16 @@ class VmRunnerCore {
     ) as VmValue;
   }
 
-  static VmHelper _scanNamedType(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) => VmHelper(fieldType: node[VmKeys.$NamedTypeName]);
+  static VmHelper _scanNamedType(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) {
+    final typeName = node[VmKeys.$NamedTypeName] as String?;
+    final typeQuestion = node[VmKeys.$NamedTypeQuestion] as String?;
+    return VmHelper(fieldType: typeName, fieldQuestion: typeQuestion);
+  }
 
-  static VmHelper _scanGenericFunctionType(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) => VmHelper(fieldType: VmClass.functionTypeName);
+  static VmHelper _scanGenericFunctionType(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) {
+    final typeQuestion = node[VmKeys.$GenericFunctionTypeQuestion] as String?;
+    return VmHelper(fieldType: VmClass.functionTypeName, fieldQuestion: typeQuestion);
+  }
 
   static VmObject _scanSimpleIdentifier(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) => runner.getVmObject(node[VmKeys.$SimpleIdentifierName]);
 
@@ -405,7 +412,11 @@ class VmRunnerCore {
     final type = node[VmKeys.$DeclaredIdentifierType] as Map<VmKeys, dynamic>?;
     final name = node[VmKeys.$DeclaredIdentifierName] as String?;
     final typeResult = _scanMap(runner, type) as VmHelper?; // => _scanNamedType or _scanGenericFunctionType or null
-    return VmHelper(fieldType: typeResult?.fieldType, fieldName: name);
+    return VmHelper(
+      fieldType: typeResult?.fieldType,
+      fieldQuestion: typeResult?.fieldQuestion,
+      fieldName: name,
+    );
   }
 
   static dynamic _scanNullLiteral(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) => node[VmKeys.$NullLiteralValue];
@@ -427,11 +438,11 @@ class VmRunnerCore {
     final typeArguments = node[VmKeys.$ListLiteralTypeArguments] as List<Map<VmKeys, dynamic>?>?;
     final elements = node[VmKeys.$ListLiteralElements] as List<Map<VmKeys, dynamic>?>?;
     //逻辑处理
-    final typeArgumentsResults = _scanList(runner, typeArguments)?.map((e) => (e as VmHelper).fieldType!).toList(); // => _scanNamedType or _scanGenericFunctionType or null
+    final typeArgumentsResults = _scanList(runner, typeArguments)?.map((e) => e as VmHelper).toList(); // => _scanNamedType or _scanGenericFunctionType or null
     final elementsResults = _scanList(runner, elements)?.map((e) => VmObject.readLogic(e)).toList(); //虽无影响但防嵌套过深，所以取逻辑值，下同
     if (typeArgumentsResults != null && typeArgumentsResults.isNotEmpty) {
-      final valClass = runner.getVmObject(typeArgumentsResults.last) as VmClass;
-      return valClass.toTypeList(elementsResults);
+      final valClass = runner.getVmObject(typeArgumentsResults.last.fieldType!) as VmClass;
+      return valClass.toTypeList(elementsResults, canNull: typeArgumentsResults.last.canFieldNull);
     } else {
       return elementsResults;
     }
@@ -442,20 +453,20 @@ class VmRunnerCore {
     final typeArguments = node[VmKeys.$SetOrMapLiteralTypeArguments] as List<Map<VmKeys, dynamic>?>?;
     final elements = node[VmKeys.$SetOrMapLiteralElements] as List<Map<VmKeys, dynamic>?>?;
     //逻辑处理
-    final typeArgumentsResults = _scanList(runner, typeArguments)?.map((e) => (e as VmHelper).fieldType!).toList(); // => _scanNamedType or _scanGenericFunctionType or null
+    final typeArgumentsResults = _scanList(runner, typeArguments)?.map((e) => e as VmHelper).toList(); // => _scanNamedType or _scanGenericFunctionType or null
     final elementsResults = _scanList(runner, elements);
     if (elementsResults == null) return null; //runtimeType => Null
     //根据<a,b,c>...推断
     if (typeArgumentsResults != null) {
       if (typeArgumentsResults.length == 2) {
-        final keyClass = runner.getVmObject(typeArgumentsResults.first) as VmClass;
-        final valClass = runner.getVmObject(typeArgumentsResults.last) as VmClass;
+        final keyClass = runner.getVmObject(typeArgumentsResults.first.fieldType!) as VmClass;
+        final valClass = runner.getVmObject(typeArgumentsResults.last.fieldType!) as VmClass;
         final tmpValue = {for (MapEntry e in elementsResults) VmObject.readLogic(e.key): VmObject.readLogic(e.value)}; //runtimeType => Map
-        return keyClass.toTypeMap(tmpValue, valClass); //Map的推导现在是有点问题的
+        return keyClass.toTypeMap(tmpValue, valClass, canNull1: typeArgumentsResults.first.canFieldNull, canNull2: typeArgumentsResults.last.canFieldNull); //Map的推导现在是有点问题的
       } else if (typeArgumentsResults.length == 1) {
-        final valClass = runner.getVmObject(typeArgumentsResults.last) as VmClass;
+        final valClass = runner.getVmObject(typeArgumentsResults.last.fieldType!) as VmClass;
         final tmpValue = elementsResults.map((e) => VmObject.readLogic(e)).toSet(); //runtimeType => Set
-        return valClass.toTypeSet(tmpValue);
+        return valClass.toTypeSet(tmpValue, canNull: typeArgumentsResults.last.canFieldNull);
       }
     }
     //根据子项数据类型推断
@@ -769,6 +780,7 @@ class VmRunnerCore {
     final typeResult = _scanMap(runner, type) as VmHelper?; // => _scanNamedType or _scanGenericFunctionType or null
     return VmHelper(
       fieldType: typeResult?.fieldType,
+      fieldQuestion: typeResult?.fieldQuestion,
       fieldName: name,
       isNamedField: isNamed ?? false,
       isSuperField: true,
@@ -782,6 +794,7 @@ class VmRunnerCore {
     final typeResult = _scanMap(runner, type) as VmHelper?; // => _scanNamedType or _scanGenericFunctionType or null
     return VmHelper(
       fieldType: typeResult?.fieldType,
+      fieldQuestion: typeResult?.fieldQuestion,
       fieldName: name,
       isNamedField: isNamed ?? false,
       isClassField: true,
@@ -795,6 +808,7 @@ class VmRunnerCore {
     final typeResult = _scanMap(runner, type) as VmHelper?; // => _scanNamedType or _scanGenericFunctionType or null
     return VmHelper(
       fieldType: typeResult?.fieldType,
+      fieldQuestion: typeResult?.fieldQuestion,
       fieldName: name,
       isNamedField: isNamed ?? false,
     );
@@ -819,6 +833,7 @@ class VmRunnerCore {
     final defaultValueResult = _scanMap(runner, defaultValue);
     return VmHelper(
       fieldType: parameterResult?.fieldType,
+      fieldQuestion: parameterResult?.fieldQuestion,
       fieldName: name ?? parameterResult?.fieldName,
       fieldValue: defaultValueResult,
       isNamedField: isNamed ?? parameterResult?.isNamedField ?? false,

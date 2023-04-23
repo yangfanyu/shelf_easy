@@ -358,13 +358,38 @@ class VmClass<T> extends VmObject {
   }
 
   ///转换为精确的List<T>类型
-  List<T>? toTypeList(List? source) => source?.map((e) => e as T).toList();
+  List? toTypeList(List? source, {required bool canNull}) {
+    if (source == null) return null;
+    if (canNull) {
+      return List<T?>.from(source);
+    } else {
+      return List<T>.from(source);
+    }
+  }
 
   ///转换为精确的Set<T>类型
-  Set<T>? toTypeSet(Set? source) => source?.map((e) => e as T).toSet();
+  Set? toTypeSet(Set? source, {required bool canNull}) {
+    if (source == null) return null;
+    if (canNull) {
+      return Set<T?>.from(source);
+    } else {
+      return Set<T>.from(source);
+    }
+  }
 
   ///转换为精确的Mao<T, V>类型，目前Map的推导只有key才准确，实际返回的是Map<T, dynamic>类型
-  Map<T, V>? toTypeMap<V>(Map? source, VmClass<V> vmclass) => source?.map((key, value) => MapEntry(key as T, value as V));
+  Map? toTypeMap<V>(Map? source, VmClass<V> vmclass, {required bool canNull1, required bool canNull2}) {
+    if (source == null) return null;
+    if (canNull1 && canNull2) {
+      return Map<T?, V?>.from(source);
+    } else if (canNull1) {
+      return Map<T?, V>.from(source);
+    } else if (canNull2) {
+      return Map<T, V?>.from(source);
+    } else {
+      return Map<T, V>.from(source);
+    }
+  }
 
   ///判断实例是否为该包装类型的实例
   bool isThisType(dynamic instance) {
@@ -1354,6 +1379,9 @@ class VmHelper extends VmObject {
   ///声明时明确指定的类型如：int、double、bool等
   final String? fieldType;
 
+  ///声明的字段类型带的问号
+  final String? fieldQuestion;
+
   ///声明的字段名称
   final String fieldName;
 
@@ -1369,8 +1397,12 @@ class VmHelper extends VmObject {
   ///声明的字段是否为超类的字段
   final bool isSuperField;
 
+  ///声明的字段是否可以为null值
+  bool get canFieldNull => fieldQuestion == '?';
+
   VmHelper({
     this.fieldType,
+    this.fieldQuestion,
     String? fieldName,
     dynamic fieldValue,
     this.isNamedField = false,

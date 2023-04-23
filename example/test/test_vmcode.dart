@@ -43,9 +43,9 @@ late final r1;
 List<String>? aaa1, aaa2 = ['a', 'b', 'c'];
 Map<int, String>? bbb1, bbb2 = {1: 'a', 2: 'b', 3: 'c'};
 Set<int>? ccc1, ccc2 = {1, 2, 3};
-final ddd1 = <String>[], ddd2 = ['a', 'b', 'c'], ddd3 = <String>['a'];
-final eee1 = <String, int>{}, eee2 = {1: 'a', 2: 'b', 3: 'c'}, eee3 = <int, String>{1: 'a'};
-final fff1 = <int>{}, fff2 = {1, 2, 3}, fff3 = <int>{1};
+final ddd1 = <String>[], ddd2 = ['a', 'b', 'c'], ddd3 = <String>['a'], ddd4 = <String?>['a', null, 'b', null];
+final eee1 = <String, int>{}, eee2 = {1: 'a', 2: 'b', 3: 'c'}, eee3 = <int, String>{1: 'a'}, eee4 = <int?, String?>{1: 'a'};
+final fff1 = <int>{}, fff2 = {1, 2, 3}, fff3 = <int>{1}, fff4 = <int?>{1, null, 2};
 final ggg1 = <int, Map<double, Map<bool, String>>>{}, ggg2 = <List<List<Set<List<int>>>>>[], ggg3 = <Set<List<Set<int>>>>{};
 final hhh1 = {
       1: [

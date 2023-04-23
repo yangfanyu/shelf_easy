@@ -107,13 +107,16 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
         VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$NamedType: {
           VmKeys.$NamedTypeName: node.name.name, //可能包含'.'的写法，由VmRunner进行处理
+          VmKeys.$NamedTypeQuestion: node.question?.lexeme,
         }
       };
 
   @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitGenericFunctionType(GenericFunctionType node) => {
         VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
-        VmKeys.$GenericFunctionType: {},
+        VmKeys.$GenericFunctionType: {
+          VmKeys.$GenericFunctionTypeQuestion: node.question?.lexeme,
+        },
       };
 
   @override
