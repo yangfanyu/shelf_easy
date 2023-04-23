@@ -1,4 +1,4 @@
-## 1.3.5
+## 1.3.6
 
 - Optimize the filter parameters of the virtual machine's bridge type generator.
   
