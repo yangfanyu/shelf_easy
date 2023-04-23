@@ -1,3 +1,7 @@
+## 1.3.3
+
+- Optimize the initialization process of the iterator type of the virtual machine to support the null type.
+  
 ## 1.3.2
 
 - Optimize the handling of private default values ​​in the virtual machine's bridge library generator.
