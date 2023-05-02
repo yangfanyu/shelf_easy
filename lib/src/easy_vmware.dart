@@ -85,7 +85,7 @@ class EasyVmWare extends EasyLogger {
   }
 
   ///虚拟机全局日志
-  static final _vmwareLogger = EasyLogger(logTag: 'EasyVmWare');
+  static EasyLogger _vmwareLogger = EasyLogger(logTag: 'EasyVmWare');
 
   ///加载全局作用域
   ///
@@ -97,6 +97,7 @@ class EasyVmWare extends EasyLogger {
   /// * [logSlowTypeSpeculation] 打印慢的类型推断
   ///
   static void loadGlobalLibrary({
+    EasyLogger? globalLogger,
     List<VmClass> customClassList = const [],
     List<VmProxy> customProxyList = const [],
     dynamic Function(dynamic value)? nativeValueConverter,
@@ -104,6 +105,7 @@ class EasyVmWare extends EasyLogger {
     bool logObjectStackInAndOut = false,
     bool logSlowTypeSpeculation = true,
   }) {
+    _vmwareLogger = globalLogger ?? _vmwareLogger;
     VmObject.nativeValueConverter = nativeValueConverter;
     VmClass.quickTypeSpeculationMethod = quickTypeSpeculationMethod;
     if (logSlowTypeSpeculation) {
