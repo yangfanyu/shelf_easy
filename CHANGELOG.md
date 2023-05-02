@@ -1,3 +1,7 @@
+## 1.3.7
+
+- Add global logger configuration options for virtual machines.
+  
 ## 1.3.6
 
 - Optimize the filter parameters of the virtual machine's bridge type generator.
