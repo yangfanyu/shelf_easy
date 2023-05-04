@@ -1,3 +1,7 @@
+## 1.3.8
+
+- Fix the bug of DbJsonWraper's toJson function.
+  
 ## 1.3.7
 
 - Add global logger configuration options for virtual machines.
