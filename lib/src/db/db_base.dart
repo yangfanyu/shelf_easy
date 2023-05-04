@@ -117,7 +117,7 @@ class DbJsonWraper extends DbBaseModel {
   factory DbJsonWraper.fromJson(Map<String, dynamic> map) => DbJsonWraper(data: map);
 
   @override
-  Map<String, dynamic> toJson() => data;
+  Map<String, dynamic> toJson() => DbQueryField.toBaseType(data);
 
   @override
   void updateByJson(Map<String, dynamic> map) => data.addAll(map);

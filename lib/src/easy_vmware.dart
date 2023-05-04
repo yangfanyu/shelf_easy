@@ -89,6 +89,7 @@ class EasyVmWare extends EasyLogger {
 
   ///加载全局作用域
   ///
+  /// * [globalLogger] 自定义全局日志器
   /// * [customClassList] 自定义导入的类型
   /// * [customProxyList] 自定义导入的全局方法或实例
   /// * [nativeValueConverter] 读取原生数据值转换器，如：在flutter中经常需要<Widget>[]类型的参数，但虚拟机中实际上是个<dynamic>[]类型
