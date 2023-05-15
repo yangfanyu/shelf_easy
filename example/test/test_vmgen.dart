@@ -153,7 +153,6 @@ void generateLibraryForDartUI() {
         'decodeImageFromList', //fluter库已包含
         'StrutStyle', //fluter库已包含
         'TextStyle', //fluter库已包含
-        'ViewConfiguration', //fluter库已包含
         'clampDouble', //fluter库已包含
       ],
     },

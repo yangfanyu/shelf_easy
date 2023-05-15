@@ -737,7 +737,7 @@ class VmParserBirdger extends SimpleAstVisitor {
       name: node.name.lexeme,
       properties: members,
       isAtJS: node.toSource().contains('@JS'),
-      isAbstract: node.abstractKeyword != null,
+      isAbstract: node.abstractKeyword != null || node.sealedKeyword != null,
       superclassNames: superclassNames,
       extendsClassName: node.extendsClause?.superclass.name.name,
     );
@@ -756,7 +756,7 @@ class VmParserBirdger extends SimpleAstVisitor {
       name: node.name.lexeme,
       properties: [], //const 默认值无法更改
       isAtJS: node.toSource().contains('@JS'),
-      isAbstract: node.abstractKeyword != null,
+      isAbstract: node.abstractKeyword != null || node.sealedKeyword != null,
       superclassNames: superclassNames,
     );
   }
@@ -816,6 +816,10 @@ class VmParserBirdger extends SimpleAstVisitor {
     if (superclassNames.isEmpty) superclassNames.add('Object');
     final extendedTypeResult = node.extendedType.accept(this); // => visitNamedType
     if (ignoreExtensionOn.contains(extendedTypeResult)) return null;
+    if (extendedTypeResult == null) {
+      // print('---------------------> ${node.toSource().substring(0, node.toSource().indexOf('{'))}'); //目前只发现：@Since("3.0") extension FutureRecord2<T1, T2> on (Future<T1>, Future<T2>)等
+      return null;
+    }
     return VmParserBirdgeItemData(
       type: VmParserBirdgeItemType.classDeclaration,
       name: VmParserBirdgeItemData.extensionName(extendedTypeResult), //生成扩展类名
@@ -862,7 +866,6 @@ class VmParserBirdger extends SimpleAstVisitor {
       isGetter: node.isGetter,
       isSetter: node.isSetter,
       isOperator: node.isOperator,
-      isAbstract: node.isAbstract,
       valueSourceCode: node.toSource(),
     );
   }
@@ -975,12 +978,23 @@ class VmParserBirdger extends SimpleAstVisitor {
 
   @override
   VmParserBirdgeItemData? visitGenericTypeAlias(GenericTypeAlias node) {
-    final functionTypeResult = node.functionType?.accept(this); // => visitGenericFunctionType
-    if (functionTypeResult is VmParserBirdgeItemData) {
+    if (node.functionType == null) {
+      // print('visitGenericTypeAlias ---------> ${node.toSource()}');
+      final superclassNames = <String>[node.type.accept(this)]; // => visitNamedType
+      return VmParserBirdgeItemData(
+        type: VmParserBirdgeItemType.classDeclaration, //等价于visitClassTypeAlias
+        name: node.name.lexeme,
+        properties: [], //const 默认值无法更改
+        isAtJS: node.toSource().contains('@JS'),
+        isAbstract: true, //当成抽象类
+        superclassNames: superclassNames,
+      );
+    } else {
+      final functionTypeResult = node.functionType?.accept(this) as VmParserBirdgeItemData; // => visitGenericFunctionType
       functionTypeResult.type = VmParserBirdgeItemType.functionTypeAlias;
       functionTypeResult.name = node.name.lexeme;
+      return functionTypeResult;
     }
-    return functionTypeResult;
   }
 
   @override
@@ -1230,7 +1244,7 @@ class VmParserBirdgeItemData {
         return ' = $exactValue';
       }
     }
-    return parameterValue == null ? '' : ' = $parameterValue';
+    return parameterValue == null || parameterValue?.trim() == 'null' ? '' : ' = $parameterValue';
   }
 
   ///是否生成externalStaticPropertyReader

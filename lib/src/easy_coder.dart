@@ -199,27 +199,28 @@ class EasyCoder extends EasyLogger {
     List<String> privatePaths = const [],
     List<String> ignoreIssuePaths = const [
       '/dart-sdk/lib/core/null.dart', //忽略原因：非Object子类无需生成，在vmobject.dart中文件已内置。输出结果：不会生成该文件的任何内容，下同
-      '/dart-sdk/lib/core/record.dart', //忽略原因：生成的代码在开发工具里面报错，这个类貌似也没什么卵用。
       '/flutter/lib/src/services/dom.dart', //忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。
-      '/flutter/lib/src/painting/_network_image_web.dart', //忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。
+      '/flutter/lib/src/widgets/window.dart', //忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。
+      '/flutter/lib/src/cupertino/toggleable.dart', //忽略原因：ToggleableStateMixin.buildToggleable参数与material不一样。
+      '_web.dart', //忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。macos可执行：find $FLUTTER_HOME/packages/flutter/lib/ -iname "*_web.dart" 查看具体有哪些文件。
     ],
     List<String> ignoreProxyObject = const [
-      'PlatformSelectableRegionContextMenu.child', //属于dart-sdk库，忽略原因：生成出来的该属性在开发工具报错找不到值，输出结果：PlatformSelectableRegionContextMenu与子类都不会生成标识符为child的VmProxy项，下同
-      'PlatformSelectableRegionContextMenu.registerViewFactory', //属于dart-sdk库，忽略原因：生成出来的该属性在开发工具报错找不到值。
+      'PlatformViewController.disposePostFrame', //于flutter库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。输出结果：PlatformViewController与子类都不会生成标识符为disposePostFrame的VmProxy项，下同
+      'ToggleablePainter.isActive', //于flutter库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。
       // 'jsonDecode',//忽略顶级VmProxy的写法
     ],
     List<String> ignoreProxyCaller = const [
-      'Iterable.forEach', //属于dart-sdk库，忽略原因：Iterable.forEach 应该使用for循环代替。输出结果：Iterable与子类都不会生成forEach对应的Vmproxy的caller属性，下同
-      'Map.fromIterable', //属于dart-sdk库，忽略原因：Map.fromIterable 应该使用for循环代替。
+      'CupertinoRadio.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。输出结果：Radio与子类都不会生成new对应的Vmproxy的caller属性，下同
       'Radio.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
+      'Radio.adaptive', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
       'RadioListTile.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
+      'RadioListTile.adaptive', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
       'RadioMenuButton.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
       'SharedAppData.getValue', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
       'GestureRecognizerFactoryWithHandlers.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
-      'PaginatedDataTable.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错默认值无法找到。
-      'Autocomplete.new', //属于flutter库，忽略原因：生成出来的该属性在加载时报错范型有问题。
-      'RawAutocomplete.new', //属于flutter库，忽略原因：生成出来的该属性在加载时报错范型有问题。
-      'WidgetInspectorService.initServiceExtensions', //属于flutter库，忽略原因：生成出来的该属性的某个参数是：带有一个无法生成默认值的参数[callback]的函数。
+      'PaginatedDataTable.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错无法找到[defaultRowsPerPage]默认值。
+      'ImageProvider.loadImage', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错函数参数的类型不匹配。
+      'WidgetInspectorService.initServiceExtensions', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错[callback]参数没有默认值。
       // 'jsonDecode',//忽略顶级VmProxy的caller的写法
     ],
     List<String> ignoreExtensionOn = const [
@@ -245,7 +246,7 @@ class EasyCoder extends EasyLogger {
       logError(['delete file', outputPath, 'error:', error, '\n', stack]);
     }
     //拼接类内容
-    buffer.write('// ignore_for_file: unnecessary_constructor_name, deprecated_member_use, invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member\n');
+    buffer.write('// ignore_for_file: unnecessary_constructor_name, deprecated_member_use, invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member, avoid_function_literals_in_foreach_calls\n');
     buffer.write('\n');
     if (genByExternal) buffer.write('import \'package:shelf_easy/shelf_easy.dart\';\n');
     for (var element in importList) {
