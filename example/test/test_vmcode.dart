@@ -211,14 +211,14 @@ dynamic funcA2(int a, int b, {required int c, int d = 0, int? e}) {
     final str = 'else';
     print(str);
   }
-
+  const case5Val = 5;
   switch (a) {
     case 4:
       final str = 'haha';
       print('case a: 4 $str');
       break;
-    case 5:
-      print('case a: 5');
+    case case5Val:
+      print('case a: 5 refer');
       break;
     case 6:
     case 7:

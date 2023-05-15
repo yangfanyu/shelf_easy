@@ -658,6 +658,22 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
           VmKeys.$MethodDeclarationBody: node.body.accept(this),
         },
       };
+
+  ///
+  /// analyzer 5.8.0+
+  ///
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>>? visitSwitchPatternCase(SwitchPatternCase node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
+        VmKeys.$SwitchCase: {
+          VmKeys.$SwitchCaseExpression: node.guardedPattern.pattern.accept(this), //转换为 visitSwitchCase
+          VmKeys.$SwitchCaseStatements: node.statements.map((e) => e.accept(this)).toList(),
+        }
+      };
+
+  @override
+  Map<VmKeys, Map<VmKeys, dynamic>>? visitConstantPattern(ConstantPattern node) => node.expression.accept(this); //转换为 visitSwitchCase
 }
 
 ///
