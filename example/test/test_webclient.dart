@@ -33,8 +33,8 @@ void main() async {
     '/doUpload',
     data: {'aaa': 111, 'bbb': 222},
     fileBytes: [
-      File('${Directory.current.path}/screenshot/step_0.png').readAsBytesSync(),
-      File('${Directory.current.path}/screenshot/step_1.png').readAsBytesSync(),
+      File('${Directory.current.path}/flutter_logo.png').readAsBytesSync(),
+      File('${Directory.current.path}/flutter_logo.png').readAsBytesSync(),
     ],
     mediaType: MediaType.parse('image/png'),
   );

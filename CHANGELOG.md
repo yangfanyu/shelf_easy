@@ -1,3 +1,22 @@
+  
+## 2.0.0
+
+The content of this submission modification is as follows:
+- Add visitSwitchPatternCase support for the virtual machine and convert it to visitSwitchCase.
+- Replace deprecated fields in VM parser: name.name to name2.lexeme, IfStatement.condition to IfStatement.expression.
+- Upgrade the bridge type generator of the virtual machine, and update the bridge library to `dart_sdk: ^3.0.0`.
+- Upgrade sdk to `dart_sdk: ^3.0.0`, update pubspec.yaml to the latest version.
+  
+The current version of the built-in bridging library for the virtual machine is `dart_sdk: ^3.0.0` and fully supports the following packages:
+- `dart:async`
+- `dart:collection`
+- `dart:convert`
+- `dart:core`
+- `dart:math`
+- `dart:typed_data`
+- `dart:io`
+- `dart:isolate`
+  
 ## 1.3.8
 
 - Fix the bug of DbJsonWraper's toJson function.
