@@ -4,29 +4,6 @@ import 'package:meta/meta.dart';
 import 'vm_keys.dart';
 
 ///
-///包装类的类型
-///
-class VmType extends Type {
-  ///包装类的类型名称
-  final String name;
-
-  VmType({required this.name});
-
-  @override
-  bool operator ==(Object other) {
-    if (other is VmType) return other.name == name;
-    if (other is Type) return other.toString() == name;
-    return false;
-  }
-
-  @override
-  int get hashCode => name.hashCode;
-
-  @override
-  String toString() => name;
-}
-
-///
 ///内部类的超类
 ///
 mixin VmSuper {
@@ -298,9 +275,6 @@ class VmClass<T> extends VmObject {
   ///是否为外部导入类型
   final bool isExternal;
 
-  ///该包装类的类型实例
-  final VmType vmwareType;
-
   ///该包装类的深度递归的超类名
   final List<String> superclassNames;
 
@@ -328,8 +302,7 @@ class VmClass<T> extends VmObject {
     this.internalStaticPropertyMap,
     this.internalInstanceFieldTree,
     VmClass? internalSuperclass,
-  })  : vmwareType = VmType(name: identifier),
-        _internalSuperclass = isExternal ? null : internalSuperclass {
+  }) : _internalSuperclass = isExternal ? null : internalSuperclass {
     externalProxyMap?.forEach((key, value) => value.bindVmClass(this)); //给代理集合绑定包装类型
     internalProxyMap?.forEach((key, value) => value.bindVmClass(this)); //给代理集合绑定包装类型
     internalStaticPropertyMap?.forEach((key, value) => value.bindStaticScope(this)); //给类静态成员绑定作用域
@@ -443,13 +416,13 @@ class VmClass<T> extends VmObject {
   }
 
   @override
-  VmClass getClass() => VmObject.readClass(vmwareType);
+  VmClass getClass() => VmObject.readClass(T);
 
   @override
   dynamic getLogic() => this; //注意：此处返回自身，用于逻辑调用
 
   @override
-  dynamic getValue() => vmwareType;
+  dynamic getValue() => T;
 
   @override
   dynamic setValue(value) => throw UnimplementedError();
@@ -463,7 +436,6 @@ class VmClass<T> extends VmObject {
       'toString': toString(),
       'identifier': identifier,
       'isExternal': isExternal,
-      'vmwareType': vmwareType.toString(),
       'superclassNames': superclassNames,
     };
     if (externalProxyMap != null) map['externalProxyMap'] = externalProxyMap?.length;
@@ -600,12 +572,14 @@ class VmClass<T> extends VmObject {
       typeName = 'Iterable';
     } else if (instance is Iterator) {
       typeName = 'Iterator';
+    } else if (instance is Uri) {
+      typeName = 'Uri'; //如：_SimpleUri
     } else if (instance is Function) {
-      typeName = 'Function'; //for any Function
+      typeName = 'Function'; //如：() => void
     } else if (instance is Exception) {
-      typeName = 'Exception'; //for VmException
+      typeName = 'Exception'; //如：VmException
     } else if (instance is Type) {
-      typeName = 'Type'; //for VmType
+      typeName = 'Type'; //如：var a = Set
     } else if (quickTypeSpeculationMethod != null) {
       typeName = quickTypeSpeculationMethod!(instance);
     } else {

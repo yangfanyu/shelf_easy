@@ -170,9 +170,9 @@ final methodInvocationRes9 = DateTime(2023, 08, 01); //DateTime 2023-08-01 00:00
 final methodInvocationResA = print;
 final methodInvocationResB = print.runtimeType; // (Object?) => void
 final methodInvocationResC = Set.new.toString().length; //56
-final methodInvocationResD = Set; //Set
+final methodInvocationResD = Set; //Set<dynamic>
 final methodInvocationResE = methodInvocationResC.toString(); //56
-final methodInvocationResF = methodInvocationResD.runtimeType; //VmType
+final methodInvocationResF = methodInvocationResD.runtimeType; //Type
 final methodInvocationResG = methodInvocationMap1.remove(1); //a
 final methodInvocationResH = max(100, 99); //100
 final methodInvocationResI = Random().nextDouble();
