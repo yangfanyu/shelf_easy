@@ -544,7 +544,7 @@ class EasyServer extends EasyLogger {
       //回调上层绑定的监听器
       if (_sessionCloseListener != null) _sessionCloseListener!(session, session.closeCode, session.closeReason);
       //统一进行内存清理操作
-      session.eachChannel((cid) => {quitChannel(session, cid)}); //退出已加入的所有分组
+      session.eachChannel((cid) => quitChannel(session, cid)); //退出已加入的所有分组
       unbindUser(session); //可能已经绑定了用户信息，需要进行解绑操作
       _websoketMap.remove(session.id); //从_socketMap中移除
     }, cancelOnError: false);

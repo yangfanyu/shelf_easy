@@ -306,7 +306,7 @@ int funcA5() {
 
   Future.doWhile(() {
     return false;
-  }).then((value) => print('I am Future.doWhile $value'));
+  }).then((_) => print('I am Future.doWhile'));
 
   print('-----> Future start');
   Future.delayed(Duration(seconds: 2), () {
