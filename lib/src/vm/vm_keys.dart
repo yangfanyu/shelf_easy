@@ -70,7 +70,7 @@ enum VmKeys {
   ///对应[NamedType]
   $NamedType,
 
-  ///对应[NamedType.name]
+  ///对应[NamedType.name2]
   $NamedTypeName,
 
   ///对应[NamedType.question]
@@ -544,8 +544,8 @@ enum VmKeys {
   ///对应[IfStatement]
   $IfStatement,
 
-  ///对应[IfStatement.condition]
-  $IfStatementCondition,
+  ///对应[IfStatement.expression]
+  $IfStatementExpression,
 
   ///对应[IfStatement.thenStatement]
   $IfStatementThenStatement,

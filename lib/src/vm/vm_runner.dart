@@ -902,12 +902,12 @@ class VmRunnerCore {
   static dynamic _scanExpressionStatement(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) => _scanMap(runner, node[VmKeys.$ExpressionStatementExpression]);
 
   static dynamic _scanIfStatement(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) {
-    final condition = node[VmKeys.$IfStatementCondition] as Map<VmKeys, dynamic>?;
+    final expression = node[VmKeys.$IfStatementExpression] as Map<VmKeys, dynamic>?;
     final thenExpression = node[VmKeys.$IfStatementThenStatement] as Map<VmKeys, dynamic>?;
     final elseExpression = node[VmKeys.$IfStatementElseStatement] as Map<VmKeys, dynamic>?;
-    final conditionResult = _scanMap(runner, condition);
-    final conditionValue = VmObject.readValue(conditionResult) as bool;
-    return conditionValue ? _scanMap(runner, thenExpression) : _scanMap(runner, elseExpression);
+    final expressionResult = _scanMap(runner, expression);
+    final expressionValue = VmObject.readValue(expressionResult) as bool;
+    return expressionValue ? _scanMap(runner, thenExpression) : _scanMap(runner, elseExpression);
   }
 
   static dynamic _scanSwitchStatement(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) {

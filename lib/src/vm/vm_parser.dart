@@ -106,7 +106,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
   Map<VmKeys, Map<VmKeys, dynamic>> visitNamedType(NamedType node) => {
         VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$NamedType: {
-          VmKeys.$NamedTypeName: node.name.name, //可能包含'.'的写法，由VmRunner进行处理
+          VmKeys.$NamedTypeName: node.name2.lexeme, //可能包含'.'的写法，由VmRunner进行处理
           VmKeys.$NamedTypeQuestion: node.question?.lexeme,
         }
       };
@@ -503,7 +503,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
   Map<VmKeys, Map<VmKeys, dynamic>> visitIfStatement(IfStatement node) => {
         VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$IfStatement: {
-          VmKeys.$IfStatementCondition: node.condition.accept(this),
+          VmKeys.$IfStatementExpression: node.expression.accept(this),
           VmKeys.$IfStatementThenStatement: node.thenStatement.accept(this),
           VmKeys.$IfStatementElseStatement: node.elseStatement?.accept(this),
         }
@@ -728,9 +728,9 @@ class VmParserBirdger extends SimpleAstVisitor {
       e is List<VmParserBirdgeItemData?> ? members.addAll(e) : members.add(e);
     }
     final superclassNames = <String>[];
-    if (node.extendsClause != null) superclassNames.add(node.extendsClause!.superclass.name.name); //extends最多只有一个
-    if (node.implementsClause != null) superclassNames.addAll(node.implementsClause!.interfaces.map((e) => e.name.name).toList()); //implements可以很多个
-    if (node.withClause != null) superclassNames.addAll(node.withClause!.mixinTypes.map((e) => e.name.name).toList()); //with可以很多个
+    if (node.extendsClause != null) superclassNames.add(node.extendsClause!.superclass.name2.lexeme); //extends最多只有一个
+    if (node.implementsClause != null) superclassNames.addAll(node.implementsClause!.interfaces.map((e) => e.name2.lexeme).toList()); //implements可以很多个
+    if (node.withClause != null) superclassNames.addAll(node.withClause!.mixinTypes.map((e) => e.name2.lexeme).toList()); //with可以很多个
     if (superclassNames.isEmpty) superclassNames.add('Object');
     return VmParserBirdgeItemData(
       type: VmParserBirdgeItemType.classDeclaration,
@@ -739,7 +739,7 @@ class VmParserBirdger extends SimpleAstVisitor {
       isAtJS: node.toSource().contains('@JS'),
       isAbstract: node.abstractKeyword != null || node.sealedKeyword != null,
       superclassNames: superclassNames,
-      extendsClassName: node.extendsClause?.superclass.name.name,
+      extendsClassName: node.extendsClause?.superclass.name2.lexeme,
     );
   }
 
@@ -747,9 +747,9 @@ class VmParserBirdger extends SimpleAstVisitor {
   VmParserBirdgeItemData? visitClassTypeAlias(ClassTypeAlias node) {
     // print('visitClassTypeAlias ---------> ${node.toSource()}');
     final superclassNames = <String>[];
-    superclassNames.add(node.superclass.name.name); //extends最多只有一个
-    if (node.implementsClause != null) superclassNames.addAll(node.implementsClause!.interfaces.map((e) => e.name.name).toList()); //implements可以很多个
-    superclassNames.addAll(node.withClause.mixinTypes.map((e) => e.name.name).toList()); //with可以很多个
+    superclassNames.add(node.superclass.name2.lexeme); //extends最多只有一个
+    if (node.implementsClause != null) superclassNames.addAll(node.implementsClause!.interfaces.map((e) => e.name2.lexeme).toList()); //implements可以很多个
+    superclassNames.addAll(node.withClause.mixinTypes.map((e) => e.name2.lexeme).toList()); //with可以很多个
     if (superclassNames.isEmpty) superclassNames.add('Object');
     return VmParserBirdgeItemData(
       type: VmParserBirdgeItemType.classDeclaration,
@@ -769,7 +769,7 @@ class VmParserBirdger extends SimpleAstVisitor {
       e is List<VmParserBirdgeItemData?> ? members.addAll(e) : members.add(e);
     }
     final superclassNames = <String>[];
-    if (node.implementsClause != null) superclassNames.addAll(node.implementsClause!.interfaces.map((e) => e.name.name).toList()); //implements可以很多个
+    if (node.implementsClause != null) superclassNames.addAll(node.implementsClause!.interfaces.map((e) => e.name2.lexeme).toList()); //implements可以很多个
     if (superclassNames.isEmpty) superclassNames.add('Object');
     return VmParserBirdgeItemData(
       type: VmParserBirdgeItemType.classDeclaration,
@@ -792,8 +792,8 @@ class VmParserBirdger extends SimpleAstVisitor {
             ))
         .toList();
     final superclassNames = <String>[];
-    if (node.implementsClause != null) superclassNames.addAll(node.implementsClause!.interfaces.map((e) => e.name.name).toList()); //implements可以很多个
-    if (node.withClause != null) superclassNames.addAll(node.withClause!.mixinTypes.map((e) => e.name.name).toList()); //with可以很多个
+    if (node.implementsClause != null) superclassNames.addAll(node.implementsClause!.interfaces.map((e) => e.name2.lexeme).toList()); //implements可以很多个
+    if (node.withClause != null) superclassNames.addAll(node.withClause!.mixinTypes.map((e) => e.name2.lexeme).toList()); //with可以很多个
     if (superclassNames.isEmpty) superclassNames.add('Enum'); //必然继承自 Enum
     return VmParserBirdgeItemData(
       type: VmParserBirdgeItemType.classDeclaration,
@@ -974,7 +974,7 @@ class VmParserBirdger extends SimpleAstVisitor {
   }
 
   @override
-  String? visitNamedType(NamedType node) => node.name.name; //这里其实也可能是函数的别名，所以生成代码时需要对 alias 进行查找。这里也可能包含'.'的写法，但主要判断的是Function类型所以不影响代码生成。
+  String? visitNamedType(NamedType node) => node.name2.lexeme; //这里其实也可能是函数的别名，所以生成代码时需要对 alias 进行查找。这里也可能包含'.'的写法，但主要判断的是Function类型所以不影响代码生成。
 
   @override
   VmParserBirdgeItemData? visitGenericTypeAlias(GenericTypeAlias node) {
