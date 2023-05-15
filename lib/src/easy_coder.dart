@@ -221,6 +221,8 @@ class EasyCoder extends EasyLogger {
       'PaginatedDataTable.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错无法找到[defaultRowsPerPage]默认值。
       'ImageProvider.loadImage', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错函数参数的类型不匹配。
       'WidgetInspectorService.initServiceExtensions', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错[callback]参数没有默认值。
+      'Autocomplete.new', //属于flutter库，忽略原因：生成出来的该属性在编译时报错范型有问题。
+      'RawAutocomplete.new', //属于flutter库，忽略原因：生成出来的该属性在编译时报错范型有问题。
       // 'jsonDecode',//忽略顶级VmProxy的caller的写法
     ],
     List<String> ignoreExtensionOn = const [
