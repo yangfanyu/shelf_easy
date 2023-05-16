@@ -386,9 +386,18 @@ final funcResA7_1 = funcA7(Duration(hours: 1, minutes: 1, seconds: 1), print, 99
 /// 类定义与实例测试区
 ///
 
-class TestEmpty {}
+class TestEmpty {
+  const TestEmpty();
 
-final emptyInstance = TestEmpty();
+  const TestEmpty.build();
+
+  factory TestEmpty.create() => TestEmpty();
+}
+
+var emptyInstance1 = TestEmpty();
+var emptyInstance2 = TestEmpty.create();
+var emptyInstance3 = const TestEmpty();
+var emptyInstance4 = const TestEmpty.build();
 
 class TestUser {
   static const sexMale = 1;
@@ -414,7 +423,7 @@ class TestUser {
         _info = '$no info',
         _haha = [0, 1, 2, 3];
 
-  TestUser.a(
+  TestUser.create(
     this.id,
     int no, {
     required this.name,
@@ -422,8 +431,8 @@ class TestUser {
     int? age,
     aaa,
   })  : age = age ?? 18,
-        _desc = '$no desc',
-        _info = '$no info',
+        _desc = '$no create desc',
+        _info = '$no create info',
         _haha = [0, 1, 2, 3];
 
   factory TestUser.fromTest() {
@@ -472,3 +481,4 @@ final userInstance11 = [userInstance0, userInstance1];
 final userInstance12 = {userInstance0, userInstance1};
 final userInstance13 = {0: userInstance0, 1: userInstance1};
 final userInstance14 = userInstance11.map((e) => e.printInfo()).toList();
+final userInstance15 = TestUser.create(10, 20, name: 'Creator', sex: 30, age: 40).printInfo();//String id=10, name=Creator, sex=30, age=40, desc=20 create desc, info=20 create info, _haha=[10, 100, -98, 999]

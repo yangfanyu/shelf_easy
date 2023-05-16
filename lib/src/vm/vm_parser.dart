@@ -106,7 +106,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
   Map<VmKeys, Map<VmKeys, dynamic>> visitNamedType(NamedType node) => {
         VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$NamedType: {
-          VmKeys.$NamedTypeName: node.name2.lexeme, //可能包含'.'的写法，由VmRunner进行处理
+          VmKeys.$NamedTypeName: node.name2.lexeme,
           VmKeys.$NamedTypeQuestion: node.question?.lexeme,
         }
       };
@@ -360,8 +360,8 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
   Map<VmKeys, Map<VmKeys, dynamic>> visitInstanceCreationExpression(InstanceCreationExpression node) => {
         VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$InstanceCreationExpression: {
-          VmKeys.$InstanceCreationExpressionConstructorType: node.constructorName.type.accept(this),
-          VmKeys.$InstanceCreationExpressionConstructorName: node.constructorName.name?.name,
+          VmKeys.$InstanceCreationExpressionConstructorType: node.constructorName.type.importPrefix?.name.lexeme, //前缀如：const EdgeInsets.all(8.0)。把const去掉则由 visitMethodInvocation 处理
+          VmKeys.$InstanceCreationExpressionConstructorName: node.constructorName.type.name2.lexeme,
           VmKeys.$InstanceCreationExpressionArgumentList: node.argumentList.accept(this),
         }
       };

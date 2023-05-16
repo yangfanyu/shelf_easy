@@ -750,22 +750,19 @@ class VmRunnerCore {
 
   static dynamic _scanInstanceCreationExpression(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) {
     //属性读取
-    final constructorType = node[VmKeys.$InstanceCreationExpressionConstructorType] as Map<VmKeys, dynamic>?;
-    final constructorName = node[VmKeys.$InstanceCreationExpressionConstructorName] as String?;
+    final constructorType = node[VmKeys.$InstanceCreationExpressionConstructorType] as String?;
+    final constructorName = node[VmKeys.$InstanceCreationExpressionConstructorName] as String;
     final argumentList = node[VmKeys.$InstanceCreationExpressionArgumentList] as Map<VmKeys, dynamic>?;
     //逻辑处理
-    final constructorTypeResult = _scanMap(runner, constructorType) as VmHelper; // => _scanNamedType
-    final constructorTypeResultTypeList = constructorTypeResult.fieldType!.split('.'); //这个比较特殊，可能包含'.'的写法，如 const EdgeInsets.all(8.0) 这样的。如果把const关键字去掉是由 _scanMethodInvocation 处理
-    final constructorNameResult = constructorName ?? constructorTypeResultTypeList.last;
     final argumentsResult = _scanMap(runner, argumentList) as List?; // => _scanArgumentList or null
     final listArguments = <dynamic>[];
     final nameArguments = <Symbol, dynamic>{};
     VmObject.groupInvocationParameters(argumentsResult, listArguments, nameArguments);
     return VmLazyer(
       isMethod: true,
-      instance: runner.getVmObject(constructorTypeResultTypeList.first),
-      property: constructorNameResult,
-      instanceByProperty: constructorName == null && constructorTypeResultTypeList.length == 1,
+      instance: runner.getVmObject(constructorType ?? constructorName),
+      property: constructorName,
+      instanceByProperty: constructorType == null,
       listArguments: listArguments,
       nameArguments: nameArguments,
     ).getLogic(); //注意：为了保证能够逻辑处理，此处使用的是逻辑值

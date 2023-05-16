@@ -368,10 +368,10 @@ enum VmKeys {
   ///对应[InstanceCreationExpression]
   $InstanceCreationExpression,
 
-  ///对应[InstanceCreationExpression.constructorName].type
+  ///对应[InstanceCreationExpression.constructorName].type.importPrefix
   $InstanceCreationExpressionConstructorType,
 
-  ///对应[InstanceCreationExpression.constructorName].name
+  ///对应[InstanceCreationExpression.constructorName].type.name2
   $InstanceCreationExpressionConstructorName,
 
   ///对应[InstanceCreationExpression.argumentList]
