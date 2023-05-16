@@ -1,7 +1,14 @@
+## 2.0.3
+
+- Fix the bug of _scanInstanceCreationExpression for virtual machines.
+  
 ## 2.0.2
 
-The content of this submission modification is as follows:
 - Remove the VmType class and related content in the virtual machine.
+  
+## 2.0.0
+
+The content of this submission modification is as follows:
 - Add visitSwitchPatternCase support for the virtual machine and convert it to visitSwitchCase.
 - Replace deprecated fields in VM parser: name.name to name2.lexeme, IfStatement.condition to IfStatement.expression.
 - Upgrade the bridge type generator of the virtual machine, and update the bridge library to `dart_sdk: ^3.0.0`.
