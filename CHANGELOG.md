@@ -1,3 +1,8 @@
+## 2.0.4
+
+- Optimize the generation rules of the bridging class library of the virtual machine.
+- Add an implicit break for the non-empty case of the virtual machine.
+  
 ## 2.0.3
 
 - Fix the bug of _scanInstanceCreationExpression for virtual machines.
@@ -14,7 +19,7 @@ The content of this submission modification is as follows:
 - Upgrade the bridge type generator of the virtual machine, and update the bridge library to `dart_sdk: ^3.0.0`.
 - Upgrade sdk to `dart_sdk: ^3.0.0`, update pubspec.yaml to the latest version.
   
-The current version of the built-in bridging library for the virtual machine is `dart_sdk: ^3.0.0` and fully supports the following packages:
+The current version of the built-in bridging library for the virtual machine is `dart_sdk: ^3.0.0` and 99% supports the following packages:
 - `dart:async`
 - `dart:collection`
 - `dart:convert`
