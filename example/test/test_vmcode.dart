@@ -230,6 +230,31 @@ dynamic funcA2(int a, int b, {required int c, int d = 0, int? e}) {
       break;
   }
 
+  //a---> one
+  switch (1) {
+    case 1:
+      print("a---> one");
+      break;
+    case 2:
+      print("a---> two");
+      break;
+  }
+  //b---> one
+  switch (1) {
+    case 1:
+      print("b---> one");
+    case 2:
+      print("b---> two");
+  }
+  //c---> one
+  switch (0) {
+    case 0:
+    case 1:
+      print("c---> one");
+    case 2:
+      print("c---> two");
+  }
+
   int sum = 0;
   for (var i = 0; i < a; i++) {
     final str = 'for part';

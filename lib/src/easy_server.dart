@@ -434,7 +434,7 @@ class EasyServer extends EasyLogger {
             port: server.port,
             pwd: server.pwd,
             binary: server.binary,
-            heartick: (server.heart / 1000).floor(),
+            heartick: server.heart ~/ 1000,
             conntick: 3,
             sslEnable: server.sslEnable,
           ),

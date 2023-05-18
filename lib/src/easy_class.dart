@@ -840,7 +840,7 @@ class EasyServerSession {
       return true; //收到重复包
     }
     if (_reqIds.length >= cacheSize) {
-      _reqIds.removeRange(0, (cacheSize / 2).floor()); //清掉队列前的一半缓存
+      _reqIds.removeRange(0, cacheSize ~/ 2); //清掉队列前的一半缓存
     }
     _reqIds.add(reqId);
     return false;

@@ -52,7 +52,33 @@ void main() {
 
   Future.microtask(func1);
 
-  // Function.apply(Future.microtask, [func1]);//Fuck: type '() => int' is not a subtype of type '() => FutureOr<Y0>' of 'computation'
+  //这个在dart3.0以后不再报错
+  Function.apply(Future.microtask, [func1]); //Fuck: type '() => int' is not a subtype of type '() => FutureOr<Y0>' of 'computation'
+
+  //a---> one
+  switch (1) {
+    case 1:
+      print("a---> one");
+      break;
+    case 2:
+      print("a---> two");
+      break;
+  }
+  //b---> one
+  switch (1) {
+    case 1:
+      print("b---> one");
+    case 2:
+      print("b---> two");
+  }
+  //c---> one
+  switch (0) {
+    case 0:
+    case 1:
+      print("c---> one");
+    case 2:
+      print("c---> two");
+  }
 }
 
 mixin A {

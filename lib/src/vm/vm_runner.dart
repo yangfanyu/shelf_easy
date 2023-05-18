@@ -928,7 +928,7 @@ class VmRunnerCore {
     });
   }
 
-  static dynamic _scanSwitchCase(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) {
+  static VmSignal? _scanSwitchCase(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) {
     final expression = node[VmKeys.$SwitchCaseExpression] as Map<VmKeys, dynamic>?;
     final statements = node[VmKeys.$SwitchCaseStatements] as List<Map<VmKeys, dynamic>?>?;
     if (statements == null) return null;
@@ -947,7 +947,7 @@ class VmRunnerCore {
         return itemResult; //continue应跳过剩下的语句
       }
     }
-    return null;
+    return statements.isNotEmpty ? VmSignal(isBreak: true) : null; //dart3.0发现statements语句不为空的情况下，默认break了，此时应该返回break信号
   }
 
   static dynamic _scanSwitchDefault(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) {
