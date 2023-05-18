@@ -1476,7 +1476,7 @@ class VmParserBirdgeItemData {
     }
     //遍历本类的字段找到非factory构造函数
     for (var e in properties) {
-      if (e != null && e.isConstructor && !e.isFactoryConstructor) {
+      if (e != null && !e.isPrivate && e.isConstructor && !e.isFactoryConstructor) {
         for (var p in e.parameters) {
           //复制super参数的对应超类构造函数的参数的默认值与类型
           if (p != null && p.isSuperParameter) {

@@ -198,19 +198,22 @@ class EasyCoder extends EasyLogger {
     required List<String> libraryPaths,
     List<String> privatePaths = const [],
     List<String> ignoreIssuePaths = const [
-      '/dart-sdk/lib/core/null.dart', //忽略原因：非Object子类无需生成，在vmobject.dart中文件已内置。输出结果：不会生成该文件的任何内容，下同
-      '/flutter/lib/src/services/dom.dart', //忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。
-      '/flutter/lib/src/widgets/window.dart', //忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。
-      '/flutter/lib/src/cupertino/toggleable.dart', //忽略原因：ToggleableStateMixin.buildToggleable参数与material不一样。
-      '_web.dart', //忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。macos可执行：find $FLUTTER_HOME/packages/flutter/lib/ -iname "*_web.dart" 查看具体有哪些文件。
+      '/dart-sdk/lib/core/null.dart', //属于dart-sdk库，忽略原因：非Object子类无需生成，在vmobject.dart中文件已内置。输出结果：不会生成前缀或后缀匹配该路径的任何内容，下同
+      '/flutter/lib/src/services/dom.dart', //属于flutter库，忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。
+      '/flutter/lib/src/widgets/window.dart', //属于flutter库，忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。
+      '/flutter/lib/src/cupertino/toggleable.dart', //属于flutter库，忽略原因：ToggleableStateMixin.buildToggleable参数与material不一样。
+      '_web.dart', //属于flutter库，忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。macos可执行：find $FLUTTER_HOME/packages/flutter/lib/ -iname "*_web.dart" 查看具体有哪些文件。
     ],
     List<String> ignoreProxyObject = const [
-      'PlatformViewController.disposePostFrame', //于flutter库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。输出结果：PlatformViewController与子类都不会生成标识符为disposePostFrame的VmProxy项，下同
-      'ToggleablePainter.isActive', //于flutter库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。
+      'Iterable.asNameMap', //属于dart-sdk库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。输出结果：Iterable与子类都不会生成标识符为asNameMap的VmProxy项，下同
+      'Iterable.byName', //属于dart-sdk库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。
+      'Iterable.wait', //属于dart-sdk库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。
+      'PlatformViewController.disposePostFrame', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。
+      'ToggleablePainter.isActive', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。
       // 'jsonDecode',//忽略顶级VmProxy的写法
     ],
     List<String> ignoreProxyCaller = const [
-      'CupertinoRadio.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。输出结果：Radio与子类都不会生成new对应的Vmproxy的caller属性，下同
+      'CupertinoRadio.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。输出结果：CupertinoRadio与子类都不会生成new对应的Vmproxy的caller属性，下同
       'Radio.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
       'Radio.adaptive', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
       'RadioListTile.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
@@ -226,11 +229,11 @@ class EasyCoder extends EasyLogger {
       // 'jsonDecode',//忽略顶级VmProxy的caller的写法
     ],
     List<String> ignoreExtensionOn = const [
-      'Object', //属于dart-sdk库，但是flutter库添加了toJs等不要的扩展
-      'Iterable', //属于dart-sdk库，添加出来的扩展属性在开发工具里面报错
+      'Object', //属于dart-sdk库，但是flutter库添加了toJs等不需要的扩展
+      // 'Iterable', //属于dart-sdk库，添加出来的部分属性在开发工具里面报错
     ],
-    Map<String, List<String>> includePathClass = const {}, //某文件或文件夹只需要指定的类 或 顶级属性
-    Map<String, List<String>> excludePathClass = const {}, //某文件或文件夹排除掉指定的类 或 顶级属性
+    Map<String, List<String>> includePathClass = const {}, //某文件或文件夹只生成指定的类 或 顶级属性
+    Map<String, List<String>> excludePathClass = const {}, //某文件或文件夹不生成指定的类 或 顶级属性
     bool removeNotFoundPrivateParams = true, //当某函数需要生成VmProxy的caller时，但找不到的某参数的私有引用值时：true移除这个参数，false改为必传参数
     bool genByExternal = true,
   }) {
@@ -248,7 +251,12 @@ class EasyCoder extends EasyLogger {
       logError(['delete file', outputPath, 'error:', error, '\n', stack]);
     }
     //拼接类内容
-    buffer.write('// ignore_for_file: unnecessary_constructor_name, deprecated_member_use, invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member, avoid_function_literals_in_foreach_calls\n');
+    buffer.write('// ignore_for_file: avoid_function_literals_in_foreach_calls\n');
+    buffer.write('// ignore_for_file: deprecated_member_use\n');
+    buffer.write('// ignore_for_file: invalid_use_of_internal_member\n');
+    buffer.write('// ignore_for_file: invalid_use_of_protected_member\n');
+    buffer.write('// ignore_for_file: invalid_use_of_visible_for_testing_member\n');
+    buffer.write('// ignore_for_file: unnecessary_constructor_name\n');
     buffer.write('\n');
     if (genByExternal) buffer.write('import \'package:shelf_easy/shelf_easy.dart\';\n');
     for (var element in importList) {
@@ -279,6 +287,7 @@ class EasyCoder extends EasyLogger {
         privateFiles.addAll(Directory(element).listSync(recursive: true).where((e) => e is File && e.path.endsWith('.dart')).map((e) => e as File));
       }
     }
+    privateFiles.removeWhere((fileItem) => ignoreIssuePaths.any((element) => fileItem.path.startsWith(element) || fileItem.path.endsWith(element)));
     for (var fileItem in privateFiles) {
       final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensionOn: ignoreExtensionOn);
       for (var result in bridgeResults) {
@@ -316,6 +325,7 @@ class EasyCoder extends EasyLogger {
         libraryFiles.addAll(Directory(element).listSync(recursive: true).where((e) => e is File && e.path.endsWith('.dart')).map((e) => e as File));
       }
     }
+    libraryFiles.removeWhere((fileItem) => ignoreIssuePaths.any((element) => fileItem.path.startsWith(element) || fileItem.path.endsWith(element)));
     for (var fileItem in libraryFiles) {
       final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensionOn: ignoreExtensionOn);
       for (var result in bridgeResults) {
@@ -357,19 +367,15 @@ class EasyCoder extends EasyLogger {
     final classLibraries = <VmParserBirdgeItemData>[];
     final proxyLibraries = <VmParserBirdgeItemData>[];
     for (var fileItem in libraryFiles) {
-      if (ignoreIssuePaths.any((element) => fileItem.path.startsWith(element) || fileItem.path.endsWith(element))) {
-        logTrace(['ignore explicit library file =>', fileItem.path]);
-      } else {
-        final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensionOn: ignoreExtensionOn);
-        for (var result in bridgeResults) {
-          if (result != null && !result.isAtJS && !result.isPrivate && result.type != VmParserBirdgeItemType.functionTypeAlias) {
-            final includeKey = includePathClass.keys.firstWhere((element) => fileItem.path.startsWith(element), orElse: () => '');
-            if (includeKey.isNotEmpty && !includePathClass[includeKey]!.contains(result.name)) continue; //忽略
-            final excludeKey = excludePathClass.keys.firstWhere((element) => fileItem.path.startsWith(element), orElse: () => '');
-            if (excludeKey.isNotEmpty && excludePathClass[excludeKey]!.contains(result.name)) continue; //忽略
-            result.absoluteFilePath = fileItem.path; //复制文件路径
-            result.type == VmParserBirdgeItemType.classDeclaration ? classLibraries.add(result) : proxyLibraries.add(result);
-          }
+      final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensionOn: ignoreExtensionOn);
+      for (var result in bridgeResults) {
+        if (result != null && !result.isAtJS && !result.isPrivate && result.type != VmParserBirdgeItemType.functionTypeAlias) {
+          final includeKey = includePathClass.keys.firstWhere((element) => fileItem.path.startsWith(element), orElse: () => '');
+          if (includeKey.isNotEmpty && !includePathClass[includeKey]!.contains(result.name)) continue; //忽略
+          final excludeKey = excludePathClass.keys.firstWhere((element) => fileItem.path.startsWith(element), orElse: () => '');
+          if (excludeKey.isNotEmpty && excludePathClass[excludeKey]!.contains(result.name)) continue; //忽略
+          result.absoluteFilePath = fileItem.path; //复制文件路径
+          result.type == VmParserBirdgeItemType.classDeclaration ? classLibraries.add(result) : proxyLibraries.add(result);
         }
       }
     }
