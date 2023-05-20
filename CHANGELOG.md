@@ -1,4 +1,4 @@
-## 2.0.6
+## 2.1.0
 
 - Optimize the filtering rules of the virtual machine's bridge type generator.
   
