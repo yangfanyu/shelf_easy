@@ -1,4 +1,9 @@
-// ignore_for_file: unnecessary_constructor_name, deprecated_member_use, invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member, avoid_function_literals_in_foreach_calls
+// ignore_for_file: avoid_function_literals_in_foreach_calls
+// ignore_for_file: deprecated_member_use
+// ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: invalid_use_of_protected_member
+// ignore_for_file: invalid_use_of_visible_for_testing_member
+// ignore_for_file: unnecessary_constructor_name
 
 import 'package:shelf_easy/shelf_easy.dart';
 import '../model/all.dart';

@@ -204,6 +204,7 @@ class EasyCoder extends EasyLogger {
       '/flutter/lib/src/cupertino/toggleable.dart', //属于flutter库，忽略原因：ToggleableStateMixin.buildToggleable参数与material不一样。
       '_web.dart', //属于flutter库，忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。macos可执行：find $FLUTTER_HOME/packages/flutter/lib/ -iname "*_web.dart" 查看具体有哪些文件。
     ],
+    Map<String, List<String>> ignoreIssueClass = const {}, //进行内容合并或继承与整理时要忽略的依赖库的类或顶级属性
     List<String> ignoreProxyObject = const [
       'Iterable.asNameMap', //属于dart-sdk库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。输出结果：Iterable与子类都不会生成标识符为asNameMap的VmProxy项，下同
       'Iterable.byName', //属于dart-sdk库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。
@@ -291,6 +292,10 @@ class EasyCoder extends EasyLogger {
     for (var fileItem in privateFiles) {
       final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensionOn: ignoreExtensionOn);
       for (var result in bridgeResults) {
+        if (result != null) {
+          final ignoreKey = ignoreIssueClass.keys.firstWhere((element) => fileItem.path.startsWith(element), orElse: () => '');
+          if (ignoreKey.isNotEmpty && ignoreIssueClass[ignoreKey]!.contains(result.name)) continue; //忽略
+        }
         if (result != null && result.isPrivate && result.maybeDefValueForFunction) {
           result.absoluteFilePath = fileItem.path; //复制文件路径
           if (privateDefvs.containsKey(result.name)) {
@@ -329,6 +334,10 @@ class EasyCoder extends EasyLogger {
     for (var fileItem in libraryFiles) {
       final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensionOn: ignoreExtensionOn);
       for (var result in bridgeResults) {
+        if (result != null) {
+          final ignoreKey = ignoreIssueClass.keys.firstWhere((element) => fileItem.path.startsWith(element), orElse: () => '');
+          if (ignoreKey.isNotEmpty && ignoreIssueClass[ignoreKey]!.contains(result.name)) continue; //忽略
+        }
         if (result != null && result.isPrivate && result.maybeDefValueForFunction) {
           result.absoluteFilePath = fileItem.path; //复制文件路径
           if (privateDefvs.containsKey(result.name)) {
@@ -369,11 +378,13 @@ class EasyCoder extends EasyLogger {
     for (var fileItem in libraryFiles) {
       final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensionOn: ignoreExtensionOn);
       for (var result in bridgeResults) {
-        if (result != null && !result.isAtJS && !result.isPrivate && result.type != VmParserBirdgeItemType.functionTypeAlias) {
+        if (result != null) {
           final includeKey = includePathClass.keys.firstWhere((element) => fileItem.path.startsWith(element), orElse: () => '');
           if (includeKey.isNotEmpty && !includePathClass[includeKey]!.contains(result.name)) continue; //忽略
           final excludeKey = excludePathClass.keys.firstWhere((element) => fileItem.path.startsWith(element), orElse: () => '');
           if (excludeKey.isNotEmpty && excludePathClass[excludeKey]!.contains(result.name)) continue; //忽略
+        }
+        if (result != null && !result.isAtJS && !result.isPrivate && result.type != VmParserBirdgeItemType.functionTypeAlias) {
           result.absoluteFilePath = fileItem.path; //复制文件路径
           result.type == VmParserBirdgeItemType.classDeclaration ? classLibraries.add(result) : proxyLibraries.add(result);
         }

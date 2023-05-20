@@ -1,3 +1,7 @@
+## 2.0.6
+
+- Optimize the filtering rules of the virtual machine's bridge type generator.
+  
 ## 2.0.4
 
 - Optimize the generation rules of the bridging class library of the virtual machine.
