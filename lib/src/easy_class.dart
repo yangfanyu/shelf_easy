@@ -981,6 +981,9 @@ class EasyCoderConfig extends EasyConfig {
   ///嵌套数据类型fromJson方法-值转换（用来解析 List<ValType> 与 Map<KeyType, ValType> 的 ValType ）
   final Map<String, String> nestFromJsonVals;
 
+  ///是否为 VmSuper 的子类，为true时：生成的[toString]函数将被添加 minLevel 参数
+  final bool isSubclassOfVmSuper;
+
   EasyCoderConfig({
     super.logger,
     super.logLevel,
@@ -996,6 +999,7 @@ class EasyCoderConfig extends EasyConfig {
     Map<String, String> customBaseFromJsonVals = const {},
     Map<String, String> customNestFromJsonKeys = const {},
     Map<String, String> customNestFromJsonVals = const {},
+    this.isSubclassOfVmSuper = false,
   })  : fieldsToWrapVals = {
           defaultType: '#',
           ...customFieldsToWrapVals,

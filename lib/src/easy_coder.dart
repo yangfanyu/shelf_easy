@@ -787,7 +787,7 @@ class EasyCoder extends EasyLogger {
 
   void _generateToStringMethod(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
     buffer.write('$indent@override\n');
-    buffer.write('${indent}String toString() {\n');
+    buffer.write('${indent}String toString(${_config.isSubclassOfVmSuper ? '{minLevel}' : ''}) {\n');
     buffer.write('$indent${indent}return \'${modelInfo.className}(\${jsonEncode(toJson())})\';\n');
     buffer.write('$indent}\n\n');
     return;
