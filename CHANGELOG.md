@@ -1,3 +1,7 @@
+## 2.2.0
+
+- Update dependency library constraints. Add the minLevel option to the toString generation rule of the data model generator.
+  
 ## 2.1.0
 
 - Optimize the filtering rules of the virtual machine's bridge type generator.
