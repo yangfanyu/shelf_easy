@@ -366,11 +366,11 @@ class VmClass<T> extends VmObject {
 
   ///判断实例是否为该包装类型的实例
   bool isThisType(dynamic instance, bool question) {
-    if (question && instance == null) return true; //对带'?'的可Null类型的判断
     final logic = VmObject.readLogic(instance);
     if (logic is VmValue && logic._valueType.identifier == identifier) return true; //先使用逻辑值进行判断
     final value = VmObject.readValue(instance);
     if (value is VmSuper && value._hasClassIdentifier(identifier)) return true; //再使用原生值进行判断
+    if (value == null && question) return true; //对带'?'的可Null类型的判断
     if (isExternal) {
       return value is T; //外部类型的原生值value如果为VmSuper类型，则已经在前面进行了初步判断。这里使用is表达式即可。
     } else {

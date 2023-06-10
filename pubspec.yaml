@@ -1,6 +1,6 @@
 name: shelf_easy
 description: This library includes a json model generator, a unified database operator interface, a server and client framework, a virtual machine for AOT code push, and a log module.
-version: 2.2.0
+version: 2.2.1
 repository: https://github.com/yangfanyu/shelf_easy
 
 topics:
@@ -20,7 +20,8 @@ dependencies:
   dart_style: ^2.3.0
   encrypt: ^5.0.0
   fixnum: ^1.1.0
-  http: ^1.0.0
+  # http: ^1.0.0
+  http: ^0.13.0
   http_parser: ^4.0.0
   meta: ^1.8.0
   mime: ^1.0.0

@@ -861,9 +861,9 @@ class VmRunnerCore {
     VmObject.groupInvocationParameters(argumentsResult, listArguments, nameArguments);
     return VmLazyer(
       isMethod: true,
-      instance: targetResult ?? runner.getVmObject(methodName),
+      instance: targetResult ?? (target == null ? runner.getVmObject(methodName) : null),
       property: methodName,
-      instanceByProperty: targetResult == null,
+      instanceByProperty: targetResult == null && target == null, //target为null才是真正的没有前缀，同时排除了cascade的情况
       listArguments: listArguments,
       nameArguments: nameArguments,
     ).getLogic(); //注意：为了保证能够逻辑处理，此处使用的是逻辑值

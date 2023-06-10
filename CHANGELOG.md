@@ -1,3 +1,7 @@
+## 2.2.1
+
+- Downgrade `http` library constraints. Add support for '?' to the 'is' and 'as' operators in the virtual machine.
+  
 ## 2.2.0
 
 - Update dependency library constraints. Add the minLevel option to the toString generation rule of the data model generator.

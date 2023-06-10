@@ -178,6 +178,7 @@ final methodInvocationResH = max(100, 99); //100
 final methodInvocationResI = Random().nextDouble();
 final methodInvocationResJ = pi; //3.141592653589793
 final methodInvocationResK = methodInvocationResA('0000000000000000');
+final methodInvocationResL = (methodInvocationMap1['test'] as List?)?.map((e) => e.toString()).toList();
 
 ///
 /// 函数定义与语句测试区
