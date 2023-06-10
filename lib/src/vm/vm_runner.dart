@@ -689,7 +689,7 @@ class VmRunnerCore {
     final expressionResult = _scanMap(runner, expression);
     final typeResult = _scanMap(runner, type) as VmHelper; // => _scanNamedType or _scanGenericFunctionType
     final typeValue = runner.getVmObject(typeResult.fieldType.toString()) as VmClass;
-    return typeValue.asThisType(expressionResult);
+    return typeValue.asThisType(expressionResult, typeResult.canFieldNull);
   }
 
   static bool _scanIsExpression(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) {
@@ -699,7 +699,7 @@ class VmRunnerCore {
     final expressionResult = _scanMap(runner, expression);
     final typeResult = _scanMap(runner, type) as VmHelper; // => _scanNamedType or _scanGenericFunctionType
     final typeValue = runner.getVmObject(typeResult.fieldType.toString()) as VmClass;
-    return notOperator == '!' ? !typeValue.isThisType(expressionResult) : typeValue.isThisType(expressionResult);
+    return notOperator == '!' ? !typeValue.isThisType(expressionResult, typeResult.canFieldNull) : typeValue.isThisType(expressionResult, typeResult.canFieldNull);
   }
 
   static VmValue _scanCascadeExpression(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) {
@@ -814,8 +814,10 @@ class VmRunnerCore {
   static VmHelper _scanFunctionTypedFormalParameter(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) {
     final name = node[VmKeys.$FunctionTypedFormalParameterName] as String?;
     final isNamed = node[VmKeys.$FunctionTypedFormalParameterIsNamed] as bool?;
+    final question = node[VmKeys.$FunctionTypedFormalParameterQuestion] as String?;
     return VmHelper(
       fieldType: VmClass.functionTypeName,
+      fieldQuestion: question,
       fieldName: name,
       isNamedField: isNamed ?? false,
     );

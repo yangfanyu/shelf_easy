@@ -410,6 +410,7 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
         VmKeys.$FunctionTypedFormalParameter: {
           VmKeys.$FunctionTypedFormalParameterName: node.name.lexeme,
           VmKeys.$FunctionTypedFormalParameterIsNamed: node.isNamed,
+          VmKeys.$FunctionTypedFormalParameterQuestion: node.question?.lexeme,
         }
       };
 

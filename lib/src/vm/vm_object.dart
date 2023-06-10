@@ -365,7 +365,8 @@ class VmClass<T> extends VmObject {
   }
 
   ///判断实例是否为该包装类型的实例
-  bool isThisType(dynamic instance) {
+  bool isThisType(dynamic instance, bool question) {
+    if (question && instance == null) return true; //对带'?'的可Null类型的判断
     final logic = VmObject.readLogic(instance);
     if (logic is VmValue && logic._valueType.identifier == identifier) return true; //先使用逻辑值进行判断
     final value = VmObject.readValue(instance);
@@ -378,8 +379,8 @@ class VmClass<T> extends VmObject {
   }
 
   ///将实例转换为该包装类型的实例，实质上是做类型判断
-  dynamic asThisType(dynamic instance) {
-    if (isThisType(instance)) return instance;
+  dynamic asThisType(dynamic instance, bool question) {
+    if (isThisType(instance, question)) return instance;
     throw ('Instance type: ${instance.runtimeType} => Not matched class type: $identifier');
   }
 
@@ -592,7 +593,7 @@ class VmClass<T> extends VmObject {
     //最后使用实例进行遍历匹配，这个可能会慢的一批
     for (var i = 0; i < _globalLibraryList.length; i++) {
       vmclass = _globalLibraryList[i];
-      if (vmclass.isThisType(instance)) {
+      if (vmclass.isThisType(instance, false)) {
         if (i >= 32 && slowTypeSpeculationReport != null) {
           slowTypeSpeculationReport!(instance, vmclass, i + 1, _globalLibraryList.length); //超过32次循环则认为这个instance的类型推断很慢
         }
