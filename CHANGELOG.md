@@ -1,6 +1,7 @@
-## 2.2.1
+## 2.2.2
 
 - Downgrade `http` library constraints. Add support for '?' to the 'is' and 'as' operators in the virtual machine.
+- Bug fixes for virtual machine functions: VmClass.isThisType and VmRunnerCore._scanMethodInvocation.
   
 ## 2.2.0
 
