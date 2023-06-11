@@ -1,3 +1,7 @@
+## 2.2.3
+
+- Added virtual machine compatibility to the output of the serialized model code generator.
+
 ## 2.2.2
 
 - Downgrade `http` library constraints. Add support for '?' to the 'is' and 'as' operators in the virtual machine.
