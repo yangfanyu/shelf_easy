@@ -22,6 +22,8 @@ class EasyCoder extends EasyLogger {
   ///桥接模型错误
   final List<List<dynamic>> _vmerrorList;
 
+  String get _mapReturnTypeHint => _config.isSubclassOfVmSuper ? '<String, dynamic>' : '';
+
   EasyCoder({required EasyCoderConfig config})
       : _config = config,
         _baseList = [],
@@ -798,9 +800,9 @@ class EasyCoder extends EasyLogger {
       buffer.write('$indent@override\n');
       buffer.write('${indent}Map<String, dynamic> toJson() {\n');
       if (modelInfo.wrapType != null) {
-        buffer.write('$indent${indent}return {\'type\': ${modelInfo.className}, \'args\': {}};\n');
+        buffer.write('$indent${indent}return $_mapReturnTypeHint{\'type\': \'${modelInfo.className}\', \'args\': {}};\n');
       } else {
-        buffer.write('$indent${indent}return {};\n');
+        buffer.write('$indent${indent}return $_mapReturnTypeHint{};\n');
       }
       buffer.write('$indent}\n\n');
       return;
@@ -808,7 +810,7 @@ class EasyCoder extends EasyLogger {
     buffer.write('$indent@override\n');
     buffer.write('${indent}Map<String, dynamic> toJson() {\n');
     if (modelInfo.wrapType != null) {
-      buffer.write('$indent${indent}return {\n');
+      buffer.write('$indent${indent}return $_mapReturnTypeHint{\n');
       buffer.write('$indent$indent$indent\'type\': \'${modelInfo.className}\',\n');
       buffer.write('$indent$indent$indent\'args\': {\n');
       for (var element in modelInfo.classFields) {
@@ -819,7 +821,7 @@ class EasyCoder extends EasyLogger {
       buffer.write('$indent$indent$indent},\n');
       buffer.write('$indent$indent};\n');
     } else {
-      buffer.write('$indent${indent}return {\n');
+      buffer.write('$indent${indent}return $_mapReturnTypeHint{\n');
       for (var element in modelInfo.classFields) {
         final valTemplate = _config.fieldsToJsonVals[element.type] ?? _config.fieldsToJsonVals[EasyCoderConfig.defaultType]!;
         final expression = EasyCoderConfig.compileTemplateCode(valTemplate, element.name, element.type);
@@ -834,13 +836,13 @@ class EasyCoder extends EasyLogger {
     if (modelInfo.classFields.isEmpty) {
       buffer.write('$indent@override\n');
       buffer.write('${indent}Map<String, dynamic> toKValues() {\n');
-      buffer.write('$indent${indent}return {};\n');
+      buffer.write('$indent${indent}return $_mapReturnTypeHint{};\n');
       buffer.write('$indent}\n\n');
       return;
     }
     buffer.write('$indent@override\n');
     buffer.write('${indent}Map<String, dynamic> toKValues() {\n');
-    buffer.write('$indent${indent}return {\n');
+    buffer.write('$indent${indent}return $_mapReturnTypeHint{\n');
     for (var element in modelInfo.classFields) {
       buffer.write('$indent$indent$indent\'${element.name}\': ${element.name},\n');
     }

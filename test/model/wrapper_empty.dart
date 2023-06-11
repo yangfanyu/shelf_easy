@@ -25,7 +25,7 @@ class WrapperEmpty extends DbBaseModel {
 
   @override
   Map<String, dynamic> toJson() {
-    return {'type': WrapperEmpty, 'args': {}};
+    return {'type': 'WrapperEmpty', 'args': {}};
   }
 
   @override

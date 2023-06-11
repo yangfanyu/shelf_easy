@@ -21,6 +21,7 @@ void testEasyCoderModel() {
     config: EasyCoderConfig(
       absFolder: '${Directory.current.path}/test/model',
       logLevel: EasyLogLevel.debug,
+      // isSubclassOfVmSuper: true,
     ),
   );
   coder.generateModel(EasyCoderModelInfo(
