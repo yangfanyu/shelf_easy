@@ -1,3 +1,8 @@
+## 2.2.4
+
+- Implemented FunctionExpressionInvocation related functions for virtual machines.
+- Fix the bug of generic definition of iterable class in virtual machine.
+  
 ## 2.2.3
 
 - Added virtual machine compatibility to the output of the serialized model code generator.

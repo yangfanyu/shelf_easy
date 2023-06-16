@@ -884,7 +884,7 @@ class VmRunnerCore {
       isMethod: true,
       instance: targetResult,
       property: null, //为null即可
-      instanceByProperty: true, //必须设置为true
+      instanceByProperty: true, //必须为true
       listArguments: listArguments,
       nameArguments: nameArguments,
     ).getLogic(); //注意：为了保证能够逻辑处理，此处使用的是逻辑值
