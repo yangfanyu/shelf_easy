@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_if_null_operators, unnecessary_type_check, unnecessary_cast, prefer_typing_uninitialized_variables, unnecessary_null_in_if_null_operators, avoid_init_to_null, unnecessary_null_comparison, prefer_collection_literals, use_function_type_syntax_for_parameters
+// ignore_for_file: prefer_if_null_operators, unnecessary_type_check, unnecessary_cast, prefer_typing_uninitialized_variables, unnecessary_null_in_if_null_operators, avoid_init_to_null, unnecessary_null_comparison, prefer_collection_literals, use_function_type_syntax_for_parameters, prefer_inlined_adds
 
 import 'dart:math';
 
@@ -507,4 +507,5 @@ final userInstance11 = [userInstance0, userInstance1];
 final userInstance12 = {userInstance0, userInstance1};
 final userInstance13 = {0: userInstance0, 1: userInstance1};
 final userInstance14 = userInstance11.map((e) => e.printInfo()).toList();
-final userInstance15 = TestUser.create(10, 20, name: 'Creator', sex: 30, age: 40).printInfo();//String id=10, name=Creator, sex=30, age=40, desc=20 create desc, info=20 create info, _haha=[10, 100, -98, 999]
+final userInstance15 = TestUser.create(10, 20, name: 'Creator', sex: 30, age: 40).printInfo(); //String id=10, name=Creator, sex=30, age=40, desc=20 create desc, info=20 create info, _haha=[10, 100, -98, 999]
+final userInstanceArr = <TestUser>[]..add(userInstance0);//really type is => List<dynamic>

@@ -42,6 +42,9 @@ mixin VmSuper {
   @nonVirtual
   bool get isInitedByVmware => _childPropertyMap.containsKey(_initedByVmwareKey) && _superPropertyMap.containsKey(_initedByVmwareKey);
 
+  ///内部定义类的实例在运行时可能添加了VmValue包装，这个方法用来读取原生this值
+  dynamic get thisNativeValue => this;
+
   ///以先子类后超类的顺序读取实例字段
   @nonVirtual
   VmValue getProperty(String propertyName) => _childPropertyMap[propertyName] ?? _superPropertyMap[propertyName]!; //必须先尝试从child中读取
@@ -59,7 +62,6 @@ mixin VmSuper {
   String toString({minLevel}) => '(${_propertyMapList.map((e) => '{${e.keys.map((k) => k == _initedByVmwareKey ? '#${e[k]?.getValue()}' : k).join(', ')}}').join(', ')})';
 
   ///转换为易读的JSON对象
-  @nonVirtual
   Map<String, dynamic> toJson() {
     return {
       '_superPropertyMap': _superPropertyMap,
@@ -330,9 +332,18 @@ class VmClass<T> extends VmObject {
     internalStaticPropertyMap?.forEach((key, value) => value.bindStaticScope(this)); //给类静态成员绑定作用域
   }
 
+  ///
+  ///内部定义的类型的T为VmVlue，如果使用T进行转换后，某些情况会报错 => type 'VmInstance' is not a subtype of type 'VmValue' of 'value' 如：
+  ///```dart
+  ///  var arr = <InnerClass>[];
+  ///  var val = InnerClass();
+  ///  arr.add(val); // throw => type 'VmInstance' is not a subtype of type 'VmValue' of 'value'
+  /// ```
+  ///
+
   ///转换为精确的List<T>类型
   List? toTypeList(List? source, {required bool canNull}) {
-    if (source == null) return null;
+    if (source == null || !isExternal) return source;
     if (canNull) {
       return List<T?>.from(source);
     } else {
@@ -342,7 +353,7 @@ class VmClass<T> extends VmObject {
 
   ///转换为精确的Set<T>类型
   Set? toTypeSet(Set? source, {required bool canNull}) {
-    if (source == null) return null;
+    if (source == null || !isExternal) return source;
     if (canNull) {
       return Set<T?>.from(source);
     } else {
@@ -352,7 +363,7 @@ class VmClass<T> extends VmObject {
 
   ///转换为精确的Mao<T, V>类型，目前Map的推导只有key才准确，实际返回的是Map<T, dynamic>类型
   Map? toTypeMap<V>(Map? source, VmClass<V> vmclass, {required bool canNull1, required bool canNull2}) {
-    if (source == null) return null;
+    if (source == null || !isExternal) return source;
     if (canNull1 && canNull2) {
       return Map<T?, V?>.from(source);
     } else if (canNull1) {
