@@ -276,6 +276,7 @@ class VmRunnerCore {
     VmKeys.$BlockFunctionBody: _scanBlockFunctionBody,
     VmKeys.$EmptyFunctionBody: _scanEmptyFunctionBody,
     VmKeys.$MethodInvocation: _scanMethodInvocation,
+    VmKeys.$FunctionExpressionInvocation: _scanFunctionExpressionInvocation,
     VmKeys.$ArgumentList: _scanArgumentList,
     VmKeys.$PropertyAccess: _scanPropertyAccess,
     VmKeys.$Block: _scanBlock,
@@ -864,6 +865,26 @@ class VmRunnerCore {
       instance: targetResult ?? (target == null ? runner.getVmObject(methodName) : null),
       property: methodName,
       instanceByProperty: targetResult == null && target == null, //target为null才是真正的没有前缀，同时排除了cascade的情况
+      listArguments: listArguments,
+      nameArguments: nameArguments,
+    ).getLogic(); //注意：为了保证能够逻辑处理，此处使用的是逻辑值
+  }
+
+  static dynamic _scanFunctionExpressionInvocation(VmRunner runner, Map<VmKeys, dynamic> father, Map<VmKeys, dynamic> node) {
+    //属性读取
+    final target = node[VmKeys.$FunctionExpressionInvocationFunction] as Map<VmKeys, dynamic>?;
+    final argumentList = node[VmKeys.$FunctionExpressionInvocationArgumentList] as Map<VmKeys, dynamic>?;
+    //逻辑处理
+    final targetResult = _scanMap(runner, target);
+    final argumentsResult = _scanMap(runner, argumentList) as List?; // => _scanArgumentList or null
+    final listArguments = <dynamic>[];
+    final nameArguments = <Symbol, dynamic>{};
+    VmObject.groupInvocationParameters(argumentsResult, listArguments, nameArguments);
+    return VmLazyer(
+      isMethod: true,
+      instance: targetResult,
+      property: null, //为null即可
+      instanceByProperty: true, //必须设置为true
       listArguments: listArguments,
       nameArguments: nameArguments,
     ).getLogic(); //注意：为了保证能够逻辑处理，此处使用的是逻辑值

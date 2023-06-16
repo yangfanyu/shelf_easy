@@ -459,6 +459,15 @@ class VmParserVisitor extends ThrowingAstVisitor<Map<VmKeys, Map<VmKeys, dynamic
       };
 
   @override
+  Map<VmKeys, Map<VmKeys, dynamic>>? visitFunctionExpressionInvocation(FunctionExpressionInvocation node) => {
+        VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
+        VmKeys.$FunctionExpressionInvocation: {
+          VmKeys.$FunctionExpressionInvocationFunction: node.function.accept(this),
+          VmKeys.$FunctionExpressionInvocationArgumentList: node.argumentList.accept(this),
+        }
+      };
+
+  @override
   Map<VmKeys, Map<VmKeys, dynamic>> visitArgumentList(ArgumentList node) => {
         VmKeys.$NodeSourceKey: {VmKeys.$NodeSourceValue: node.toSource()},
         VmKeys.$ArgumentList: {

@@ -389,7 +389,7 @@ Set funcA6(Duration a, {void b(String c)?}) {
 List funcA7(Duration a, [void b(String d)?, int c = 2]) {
   final res = [a.inHours, a.inMinutes, a.inSeconds];
   res.add(c);
-  if (b != null) b('funcA7 ------------> $res');
+  (b ?? print)('funcA7 ------------> $res ${b == null}');
   return res;
 }
 
@@ -406,7 +406,8 @@ final funcResA2_8 = funcA2(8, 100, c: 200); //hello world a=8, b=100, c=200, d=0
 final funcResA5_0 = funcA5(); //1
 final funcResA6_0 = funcA6(Duration(hours: 1, minutes: 1, seconds: 1), b: print); //{1, 61, 3661}
 final funcResA7_0 = funcA7(Duration(hours: 1, minutes: 1, seconds: 1), print); //[1, 61, 3661, 2]
-final funcResA7_1 = funcA7(Duration(hours: 1, minutes: 1, seconds: 1), print, 999); //[1, 61, 3661, 999]
+final funcResA7_1 = funcA7(Duration(hours: 1, minutes: 1, seconds: 1), print, 888); //[1, 61, 3661, 888]
+final funcResA7_2 = funcA7(Duration(hours: 1, minutes: 1, seconds: 1), null, 999); //[1, 61, 3661, 999]
 
 ///
 /// 类定义与实例测试区

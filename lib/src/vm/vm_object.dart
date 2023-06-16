@@ -293,7 +293,7 @@ class VmClass<T> extends VmObject {
   final List<Map<VmKeys, dynamic>>? internalInstanceFieldTree;
 
   ///内部定义类型继承的父包装类型，当前仅支持继承：添加了VmSuper扩展的外部类型
-  VmClass? _internalSuperclass;
+  final VmClass? _internalSuperclass;
 
   VmClass({
     required super.identifier,
@@ -306,28 +306,6 @@ class VmClass<T> extends VmObject {
     VmClass? internalSuperclass,
   }) : _internalSuperclass = isExternal ? null : internalSuperclass {
     externalProxyMap?.forEach((key, value) => value.bindVmClass(this)); //给代理集合绑定包装类型
-    internalProxyMap?.forEach((key, value) => value.bindVmClass(this)); //给代理集合绑定包装类型
-    internalStaticPropertyMap?.forEach((key, value) => value.bindStaticScope(this)); //给类静态成员绑定作用域
-  }
-
-  ///重新装载该包装类型的属性
-  void reassemble(VmClass vmclass) {
-    if (identifier != vmclass.identifier || isExternal || vmclass.isExternal) {
-      throw ('Unsupport reassemble operator: $identifier<isExternal $isExternal> => ${vmclass.identifier}<isExternal ${vmclass.isExternal}>');
-    }
-    //重置
-    superclassNames.clear();
-    internalProxyMap?.clear();
-    internalStaticPropertyMap?.clear();
-    internalInstanceFieldTree?.clear();
-    _internalSuperclass = null;
-    //复制
-    superclassNames.addAll(vmclass.superclassNames);
-    internalProxyMap?.addAll(vmclass.internalProxyMap as Map<String, VmProxy<T>>? ?? const {});
-    internalStaticPropertyMap?.addAll(vmclass.internalStaticPropertyMap ?? const {});
-    internalInstanceFieldTree?.addAll(vmclass.internalInstanceFieldTree ?? const []);
-    _internalSuperclass = vmclass._internalSuperclass;
-    //绑定
     internalProxyMap?.forEach((key, value) => value.bindVmClass(this)); //给代理集合绑定包装类型
     internalStaticPropertyMap?.forEach((key, value) => value.bindStaticScope(this)); //给类静态成员绑定作用域
   }

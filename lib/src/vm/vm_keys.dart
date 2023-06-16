@@ -496,6 +496,17 @@ enum VmKeys {
   ///对应[MethodInvocation.argumentList]
   $MethodInvocationArgumentList,
 
+  /** ******** FunctionExpressionInvocation ******** **/
+
+  ///对应[FunctionExpressionInvocation]
+  $FunctionExpressionInvocation,
+
+  ///对应[FunctionExpressionInvocation.function]
+  $FunctionExpressionInvocationFunction,
+
+  ///对应[MethodInvocation.argumentList]
+  $FunctionExpressionInvocationArgumentList,
+
   /** ******** ArgumentList ******** **/
 
   ///对应[ArgumentList]
