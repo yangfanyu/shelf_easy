@@ -13,7 +13,7 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:io';
 import 'dart:isolate';
-import 'vm_object.dart';
+import 'vm_base.dart';
 
 ///
 ///Dart核心库桥接类

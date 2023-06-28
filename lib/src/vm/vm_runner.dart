@@ -1,5 +1,5 @@
+import 'vm_base.dart';
 import 'vm_keys.dart';
-import 'vm_object.dart';
 import 'vm_library.dart';
 
 ///

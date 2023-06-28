@@ -55,7 +55,7 @@ void generateLibraryForModel() {
     ///私有路径不生成桥接类，只是用来查找与复制超类的属性
     privatePaths: [
       '$flutterHome/bin/cache/dart-sdk/lib',
-      // '${Directory.current.path}/../lib/src/vm/vm_object.dart', //for OuterClass
+      // '${Directory.current.path}/../lib/src/vm/vm_base.dart', //for OuterClass
     ],
 
     ///这个用来告诉生成器对应文件或文件夹下面只需要生成某些类的桥接类

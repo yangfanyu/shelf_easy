@@ -269,7 +269,7 @@ class EasyCoder extends EasyLogger {
         buffer.write('import \'$element\';\n');
       }
     }
-    if (!genByExternal) buffer.write('import \'vm_object.dart\';\n');
+    if (!genByExternal) buffer.write('import \'vm_base.dart\';\n');
     buffer.write('\n');
     buffer.write('///\n');
     buffer.write('///$classDesc\n');
