@@ -1,6 +1,6 @@
 import 'vm_base.dart';
 import 'vm_keys.dart';
-import 'vm_library.dart';
+import 'vm_library.dart' if (dart.library.html) 'vm_libhtml.dart';
 
 ///
 ///Dart语言子集的运行器

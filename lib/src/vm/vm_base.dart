@@ -370,7 +370,7 @@ class VmClass<T> extends VmObject {
   ///将实例转换为该包装类型的实例，实质上是做类型判断
   dynamic asThisType(dynamic instance, bool question) {
     if (isThisType(instance, question)) return instance;
-    throw ('Instance type: ${instance.runtimeType} => Not matched class type: $identifier');
+    throw ('Instance type: ${VmObject.readClass(instance).identifier} => Not matched class type: $identifier');
   }
 
   ///获取指定字段的代理，[setter]为true表示这是为设置属性而获取的代理，由于set函数在字段的末尾添加了等于符号，所以将优先查找'propertyName='这样的函数
