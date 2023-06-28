@@ -1,3 +1,8 @@
+## 2.3.0
+
+- Add the vm _libhtml.dart file to the virtual machine to reduce the volume of the web side.
+- Rename the vm_object.dart file to vm_base.dart.
+  
 ## 2.2.4
 
 - Implemented FunctionExpressionInvocation related functions for virtual machines.
