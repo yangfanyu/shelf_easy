@@ -1156,10 +1156,11 @@ class VmValue extends VmObject {
         final targeLayzer = _valueData() as VmLazyer;
         return targeLayzer.setValue(VmObject.readValue(value)); //保存超类值
       case VmMetaType.internalValue:
-        throw ('Unsuppport setValue operator for internalValue: $identifier');
+        return _valueData = VmObject.readValue(value, type: _valueType.identifier); //保存VmSuper值
+      // throw ('Unsuppport setValue operator for internalValue: $identifier'); //非方法没有影响，允许修改
       case VmMetaType.internalApply:
         if (metaData.isSetter) return runFunction([value], null);
-        throw ('Unsuppport setValue operator for internalApply: $identifier');
+        throw ('Unsuppport setValue operator for internalApply: $identifier'); //必涉及到作用域，禁止修改
       case VmMetaType.internalAlias:
         return _valueData = VmObject.readLogic(value, type: _valueType.identifier); //保存逻辑值
     }
