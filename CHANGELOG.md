@@ -1,3 +1,7 @@
+## 2.3.1
+
+- Lift the restriction on VmValue assignment of VmMetaType.internalValue type in the virtual machine.
+  
 ## 2.3.0
 
 - Add the vm _libhtml.dart file to the virtual machine to reduce the volume of the web side.
