@@ -1,3 +1,7 @@
+## 3.0.0
+
+- In order to be compatible with more versions, the built-in bridging library of dart language has been removed from the virtual machine.
+  
 ## 2.3.1
 
 - Lift the restriction on VmValue assignment of VmMetaType.internalValue type in the virtual machine.

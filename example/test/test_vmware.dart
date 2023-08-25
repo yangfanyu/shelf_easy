@@ -1,4 +1,4 @@
-import 'dart:io';
+// import 'dart:io';
 
 import 'package:shelf_easy/shelf_easy.dart';
 
@@ -42,6 +42,7 @@ final bridgeOuterClass = VmClass<OuterClass>(
     'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (OuterClass instance) => instance.noSuchMethod),
     'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (OuterClass instance) => instance.runtimeType),
     'sayHello': VmProxy(identifier: 'sayHello', externalInstancePropertyReader: (OuterClass instance) => instance.sayHello),
+    'thisNativeValue': VmProxy(identifier: 'thisNativeValue', externalInstancePropertyReader: (OuterClass instance) => instance.thisNativeValue),
     'toJson': VmProxy(identifier: 'toJson', externalInstancePropertyReader: (OuterClass instance) => instance.toJson),
     'toString': VmProxy(identifier: 'toString', externalInstancePropertyReader: (OuterClass instance) => instance.toString),
   },
@@ -159,7 +160,7 @@ void main() {
           ''',
 
         ///支持的其他语法在这个文件中，可取消下面这行代码的注释，然后运行查看控制台的输出
-        'code': File('${Directory.current.path}/test/test_vmcode.dart').readAsStringSync(),
+        // 'code': File('${Directory.current.path}/test/test_vmcode.dart').readAsStringSync(),
       },
     ),
   );

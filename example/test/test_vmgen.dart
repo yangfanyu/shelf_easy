@@ -7,7 +7,7 @@ void main(List<String> arguments) {
   switch (targetName) {
     case 'dart':
 
-      ///为dart-lang生成核心桥接库：
+      ///为dart-lang生成核心桥接库，当前兼容dart^3.0.0：
       ///
       ///  dart:async
       ///  dart:collection
@@ -22,7 +22,11 @@ void main(List<String> arguments) {
       break;
     case 'model':
 
-      ///为example生成模型桥接库
+      ///为example生成模型桥接库，自定义桥接库的生成只需确保：
+      ///
+      /// 生成后调用EasyCode.logVmLibrarydErrors无错误打印。
+      /// 且在开发工具里面打开库文件不报错，启动应用程序正常即可。
+      ///
       generateLibraryForModel();
       break;
     default:
@@ -72,6 +76,7 @@ void generateLibraryForDart() {
       '${Directory.current.path}/../lib/src/vm/vm_base.dart', //添加字符串的翻译扩展
     ],
   );
+  //统一打印生成过程中的错误信息
   coder.logVmLibrarydErrors();
 }
 
