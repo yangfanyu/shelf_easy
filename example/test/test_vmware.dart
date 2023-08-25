@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:shelf_easy/shelf_easy.dart';
 
+import '../bridge/dart_library.dart';
 import '../bridge/model_library.dart';
 import '../model/all.dart';
 
@@ -47,30 +48,17 @@ final bridgeOuterClass = VmClass<OuterClass>(
 );
 
 void main() {
-  ///必须先调用loadGlobalLibrary导入桥接类库，全局只能调用一次
-  ///
-  ///当前已经内置的库:
-  ///  dart:async
-  ///  dart:collection
-  ///  dart:convert
-  ///  dart:core
-  ///  dart:math
-  ///  dart:typed_data
-  ///  dart:io
-  ///  dart:isolate
+  /// 必须先调用loadGlobalLibrary导入桥接类库，全局只能调用一次
   ///
   /// 在这里我们将之前生成的数据模型桥接库导入，就可以在虚拟机中愉快的使用他们了
   ///
   /// 注意：需要保证桥接类型[VmClass]与桥接代理[VmProxy]的标识符[identifier]全局唯一
   ///
   EasyVmWare.loadGlobalLibrary(
-    customClassList: [
-      ...ModelLibrary.libraryClassList,
-      bridgeOuterClass,
-    ],
-    customProxyList: [
-      ...ModelLibrary.libraryProxyList,
-    ],
+    coreClassList: [...DartLibrary.libraryClassList],
+    coreProxyList: [...DartLibrary.libraryProxyList],
+    userClassList: [...ModelLibrary.libraryClassList, bridgeOuterClass],
+    userProxyList: [...ModelLibrary.libraryProxyList],
   );
 
   ///简洁的执行动态代码

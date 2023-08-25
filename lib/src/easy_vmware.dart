@@ -90,8 +90,10 @@ class EasyVmWare extends EasyLogger {
   ///加载全局作用域
   ///
   /// * [globalLogger] 自定义全局日志器
-  /// * [customClassList] 自定义导入的类型
-  /// * [customProxyList] 自定义导入的全局方法或实例
+  /// * [coreClassList] dart语言的核心类型，如：dart:async、dart:collection、dart:convert、dart:core、dart:math、dart:typed_data、dart:io、dart:isolate 等库
+  /// * [coreProxyList] dart语言的核心全局方法或全局实例
+  /// * [userClassList] 开发时按需导入的类型
+  /// * [userProxyList] 开发时按需导入的全局方法或全局实例
   /// * [nativeValueConverter] 读取原生数据值转换器，如：在flutter中经常需要<Widget>[]类型的参数，但虚拟机中实际上是个<dynamic>[]类型
   /// * [quickTypeSpeculationMethod] 加速类型推测的函数
   /// * [logObjectStackInAndOut] 打印对象栈的变化
@@ -99,8 +101,10 @@ class EasyVmWare extends EasyLogger {
   ///
   static void loadGlobalLibrary({
     EasyLogger? globalLogger,
-    List<VmClass> customClassList = const [],
-    List<VmProxy> customProxyList = const [],
+    List<VmClass> coreClassList = const [],
+    List<VmProxy> coreProxyList = const [],
+    List<VmClass> userClassList = const [],
+    List<VmProxy> userProxyList = const [],
     dynamic Function(dynamic value)? nativeValueConverter,
     String? Function(dynamic instance)? quickTypeSpeculationMethod,
     bool logObjectStackInAndOut = false,
@@ -119,7 +123,12 @@ class EasyVmWare extends EasyLogger {
         (isOk ? _vmwareLogger.logDebug : _vmwareLogger.logError)(['objectStackInAndOutReport ======>', isIn ? 'in' : 'out', '------>', isOk ? 'ok' : 'error', '------>', length, '--->', members]);
       };
     }
-    VmRunner.loadGlobalLibrary(customClassList: customClassList, customProxyList: customProxyList);
+    VmRunner.loadGlobalLibrary(
+      coreClassList: coreClassList,
+      coreProxyList: coreProxyList,
+      userClassList: userClassList,
+      userProxyList: userProxyList,
+    );
   }
 
   ///简洁的执行[sourceCode]源代码中的[methodName]函数

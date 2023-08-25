@@ -3,17 +3,7 @@ import 'dart:io';
 import 'package:shelf_easy/shelf_easy.dart';
 
 void main(List<String> arguments) {
-  final targetName = arguments.isEmpty ? 'testmodel' : arguments.first;
-  switch (targetName) {
-    case 'testmodel':
-      testEasyCoderModel();
-      break;
-    case 'vmlibrary':
-      testEasyCoderVmLib();
-      break;
-    default:
-      throw ('Unsupport targetName: $targetName');
-  }
+  testEasyCoderModel();
 }
 
 void testEasyCoderModel() {
@@ -215,48 +205,4 @@ void testEasyCoderModel() {
   ));
   coder.generateBaseExports();
   coder.generateWrapBuilder();
-}
-
-void testEasyCoderVmLib() {
-  final flutterHome = Platform.environment['FLUTTER_HOME']; //读取环境变量
-  final coder = EasyCoder(
-    config: EasyCoderConfig(
-      logLevel: EasyLogLevel.debug,
-      absFolder: '${Directory.current.path}/lib/src/vm',
-    ),
-  );
-  coder.generateVmLibraries(
-    outputFile: 'vm_library',
-    importList: [
-      'dart:async',
-      'dart:collection',
-      'dart:convert',
-      'dart:core',
-      // 'dart:developer', //与math库的log冲突，生产环境也不需要
-      'dart:math',
-      'dart:typed_data',
-      'dart:io',
-      'dart:isolate',
-    ],
-    className: 'VmLibrary',
-    classDesc: 'Dart核心库桥接类',
-    libraryPaths: [
-      '$flutterHome/bin/cache/dart-sdk/lib/async',
-      '$flutterHome/bin/cache/dart-sdk/lib/collection',
-      '$flutterHome/bin/cache/dart-sdk/lib/convert',
-      '$flutterHome/bin/cache/dart-sdk/lib/core',
-      // '$flutterHome/bin/cache/dart-sdk/lib/developer',//与math库的log冲突，生产环境也不需要
-      '$flutterHome/bin/cache/dart-sdk/lib/math',
-      '$flutterHome/bin/cache/dart-sdk/lib/typed_data',
-      '$flutterHome/bin/cache/dart-sdk/lib/io',
-      '$flutterHome/bin/cache/dart-sdk/lib/isolate',
-    ],
-    privatePaths: [
-      '$flutterHome/bin/cache/dart-sdk/lib/_http',
-      '$flutterHome/bin/cache/dart-sdk/lib/internal',
-      '${Directory.current.path}/lib/src/vm/vm_base.dart', //添加字符串的翻译扩展
-    ],
-    genByExternal: false,
-  );
-  coder.logVmLibrarydErrors();
 }

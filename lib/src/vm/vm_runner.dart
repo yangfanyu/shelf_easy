@@ -1,6 +1,5 @@
 import 'vm_base.dart';
 import 'vm_keys.dart';
-import 'vm_library.dart' if (dart.library.html) 'vm_libhtml.dart';
 
 ///
 ///Dart语言子集的运行器
@@ -182,30 +181,35 @@ class VmRunner {
   static final List<Map<String, VmObject>> _globalScopeList = [{}, {}, {}];
 
   ///加载全局类库与自定义类库
-  static void loadGlobalLibrary({List<VmClass> customClassList = const [], List<VmProxy> customProxyList = const []}) {
-    //基本库
+  static void loadGlobalLibrary({
+    List<VmClass> coreClassList = const [],
+    List<VmProxy> coreProxyList = const [],
+    List<VmClass> userClassList = const [],
+    List<VmProxy> userProxyList = const [],
+  }) {
+    //底层基本库
     final baseScope = _globalScopeList[0];
     for (var vmclass in VmClass.libraryBaseList) {
       if (baseScope.containsKey(vmclass.identifier)) throw ('Already exists VmClass in global base scope, identifier is: ${vmclass.identifier}');
       baseScope[vmclass.identifier] = VmClass.addClass(vmclass); //同时添加到底层的全局类库中
     }
-    //核心库
+    //语言核心库
     final coreScope = _globalScopeList[1];
-    for (var vmclass in VmLibrary.libraryClassList) {
+    for (var vmclass in coreClassList) {
       if (coreScope.containsKey(vmclass.identifier)) throw ('Already exists VmClass in global core scope, identifier is: ${vmclass.identifier}');
       coreScope[vmclass.identifier] = VmClass.addClass(vmclass); //同时添加到底层的全局类库中
     }
-    for (var vmproxy in VmLibrary.libraryProxyList) {
+    for (var vmproxy in coreProxyList) {
       if (coreScope.containsKey(vmproxy.identifier)) throw ('Already exists VmProxy in global core scope, identifier is: ${vmproxy.identifier}');
       coreScope[vmproxy.identifier] = vmproxy;
     }
-    //用户库
+    //用户定制库
     final userScope = _globalScopeList[2];
-    for (var vmclass in customClassList) {
+    for (var vmclass in userClassList) {
       if (userScope.containsKey(vmclass.identifier)) throw ('Already exists VmClass in global user scope, identifier is: ${vmclass.identifier}');
       userScope[vmclass.identifier] = VmClass.addClass(vmclass); //同时添加到底层的全局类库中
     }
-    for (var vmproxy in customProxyList) {
+    for (var vmproxy in userProxyList) {
       if (userScope.containsKey(vmproxy.identifier)) throw ('Already exists VmProxy in global user scope, identifier is: ${vmproxy.identifier}');
       userScope[vmproxy.identifier] = vmproxy;
     }

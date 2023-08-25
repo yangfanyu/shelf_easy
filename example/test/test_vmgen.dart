@@ -3,32 +3,76 @@ import 'dart:io';
 import 'package:shelf_easy/shelf_easy.dart';
 
 void main(List<String> arguments) {
-  final targetName = arguments.isEmpty ? 'testlib' : arguments.first;
+  final targetName = arguments.isEmpty ? 'test' : arguments.first;
   switch (targetName) {
-    case 'testlib':
+    case 'dart':
 
-      ///为example生成model桥接库
+      ///为dart-lang生成核心桥接库：
+      ///
+      ///  dart:async
+      ///  dart:collection
+      ///  dart:convert
+      ///  dart:core
+      ///  dart:math
+      ///  dart:typed_data
+      ///  dart:io
+      ///  dart:isolate
+      ///
+      generateLibraryForDart();
+      break;
+    case 'model':
+
+      ///为example生成模型桥接库
       generateLibraryForModel();
       break;
-    case 'flutter':
-
-      ///
-      ///为flutter生成flutter的桥接库
-      ///
-      ///这里全生成了，实际情况可以自己去掉不需要的库，只需确保：
-      /// * 生成后调用EasyCode.logVmLibrarydErrors无错误打印
-      /// * 且在开发工具里面打开库文件不报错，启动flutter应用正常
-      ///
-      generateLibraryForFlutter();
-      break;
-    case 'dartui':
-
-      ///为flutter生成依赖的dart:ui桥接库
-      generateLibraryForDartUI();
-      break;
     default:
-      throw ('Unsupport targetName: $targetName');
+      generateLibraryForDart();
+      generateLibraryForModel();
+      break;
   }
+}
+
+void generateLibraryForDart() {
+  final flutterHome = Platform.environment['FLUTTER_HOME']; //读取环境变量
+  final coder = EasyCoder(
+    config: EasyCoderConfig(
+      logLevel: EasyLogLevel.debug,
+      absFolder: '${Directory.current.path}/bridge',
+    ),
+  );
+  coder.generateVmLibraries(
+    outputFile: 'dart_library',
+    importList: [
+      'dart:async',
+      'dart:collection',
+      'dart:convert',
+      'dart:core',
+      // 'dart:developer', //与math库的log冲突，生产环境也不需要
+      'dart:math',
+      'dart:typed_data',
+      'dart:io',
+      'dart:isolate',
+    ],
+    className: 'DartLibrary',
+    classDesc: 'Dart核心库桥接类',
+    libraryPaths: [
+      '$flutterHome/bin/cache/dart-sdk/lib/async',
+      '$flutterHome/bin/cache/dart-sdk/lib/collection',
+      '$flutterHome/bin/cache/dart-sdk/lib/convert',
+      '$flutterHome/bin/cache/dart-sdk/lib/core',
+      // '$flutterHome/bin/cache/dart-sdk/lib/developer',//与math库的log冲突，生产环境也不需要
+      '$flutterHome/bin/cache/dart-sdk/lib/math',
+      '$flutterHome/bin/cache/dart-sdk/lib/typed_data',
+      '$flutterHome/bin/cache/dart-sdk/lib/io',
+      '$flutterHome/bin/cache/dart-sdk/lib/isolate',
+    ],
+    privatePaths: [
+      '$flutterHome/bin/cache/dart-sdk/lib/_http',
+      '$flutterHome/bin/cache/dart-sdk/lib/internal',
+      '${Directory.current.path}/../lib/src/vm/vm_base.dart', //添加字符串的翻译扩展
+    ],
+  );
+  coder.logVmLibrarydErrors();
 }
 
 void generateLibraryForModel() {
@@ -65,97 +109,5 @@ void generateLibraryForModel() {
     },
   );
   //统一打印生成过程中的错误信息
-  coder.logVmLibrarydErrors();
-}
-
-void generateLibraryForFlutter() {
-  final flutterHome = Platform.environment['FLUTTER_HOME']; //读取环境变量
-  final coder = EasyCoder(
-    config: EasyCoderConfig(
-      logLevel: EasyLogLevel.debug,
-      absFolder: '${Directory.current.path}/../../zycloud_widget/lib/src/bridge',
-    ),
-  );
-  coder.generateVmLibraries(
-    outputFile: 'flutter_library',
-    importList: [
-      'import \'dart:ui\' as ui show BoxWidthStyle, BoxHeightStyle;',
-      // 'package:flutter/animation.dart', //重复的导入项
-      'package:flutter/cupertino.dart',
-      'package:flutter/foundation.dart',
-      'package:flutter/gestures.dart',
-      'package:flutter/material.dart',
-      // 'package:flutter/painting.dart', //重复的导入项
-      'package:flutter/physics.dart',
-      'package:flutter/rendering.dart',
-      'package:flutter/scheduler.dart',
-      // 'package:flutter/semantics.dart', //重复的导入项
-      'package:flutter/services.dart',
-      // 'package:flutter/widgets.dart', //重复的导入项
-      'package:flutter_localizations/flutter_localizations.dart',
-    ],
-    className: 'FlutterLibrary',
-    classDesc: 'Flutter完整库桥接类',
-    libraryPaths: [
-      '$flutterHome/packages/flutter/lib/src/animation',
-      '$flutterHome/packages/flutter/lib/src/cupertino',
-      '$flutterHome/packages/flutter/lib/src/foundation',
-      '$flutterHome/packages/flutter/lib/src/gestures',
-      '$flutterHome/packages/flutter/lib/src/material',
-      '$flutterHome/packages/flutter/lib/src/painting',
-      '$flutterHome/packages/flutter/lib/src/physics',
-      '$flutterHome/packages/flutter/lib/src/rendering',
-      '$flutterHome/packages/flutter/lib/src/scheduler',
-      '$flutterHome/packages/flutter/lib/src/semantics',
-      '$flutterHome/packages/flutter/lib/src/services',
-      '$flutterHome/packages/flutter/lib/src/widgets',
-      '$flutterHome/packages/flutter_localizations/lib/src/cupertino_localizations.dart',
-      '$flutterHome/packages/flutter_localizations/lib/src/material_localizations.dart',
-      '$flutterHome/packages/flutter_localizations/lib/src/widgets_localizations.dart',
-    ],
-    privatePaths: [
-      '$flutterHome/bin/cache/dart-sdk/lib',
-      '$flutterHome/bin/cache/pkg/sky_engine/lib',
-      '$flutterHome/packages/flutter/lib',
-    ],
-  );
-  coder.logVmLibrarydErrors();
-}
-
-void generateLibraryForDartUI() {
-  final flutterHome = Platform.environment['FLUTTER_HOME']; //读取环境变量
-  final coder = EasyCoder(
-    config: EasyCoderConfig(
-      logLevel: EasyLogLevel.debug,
-      absFolder: '${Directory.current.path}/../../zycloud_widget/lib/src/bridge',
-    ),
-  );
-  coder.generateVmLibraries(
-    outputFile: 'dartui_library',
-    importList: [
-      'dart:ui',
-    ],
-    className: 'DartUILibrary',
-    classDesc: 'Dart的UI库桥接类，与Flutter库分开避免作用域冲突',
-    libraryPaths: [
-      '$flutterHome/bin/cache/pkg/sky_engine/lib/ui',
-    ],
-    privatePaths: [
-      '$flutterHome/bin/cache/dart-sdk/lib',
-      '$flutterHome/bin/cache/pkg/sky_engine/lib',
-      '$flutterHome/packages/flutter/lib',
-    ],
-    excludePathClass: {
-      '$flutterHome/bin/cache/pkg/sky_engine/lib/ui': [
-        'Codec', //dart核心库已包含
-        'Gradient', //fluter库已包含
-        'Image', //fluter库已包含
-        'decodeImageFromList', //fluter库已包含
-        'StrutStyle', //fluter库已包含
-        'TextStyle', //fluter库已包含
-        'clampDouble', //fluter库已包含
-      ],
-    },
-  );
   coder.logVmLibrarydErrors();
 }

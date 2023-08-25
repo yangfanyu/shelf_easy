@@ -5,6 +5,7 @@
 // ignore_for_file: invalid_use_of_visible_for_testing_member
 // ignore_for_file: unnecessary_constructor_name
 
+import 'package:shelf_easy/shelf_easy.dart';
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
@@ -13,12 +14,11 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:io';
 import 'dart:isolate';
-import 'vm_base.dart';
 
 ///
 ///Dart核心库桥接类
 ///
-class VmLibrary {
+class DartLibrary {
   ///class ArgumentError
   static final classArgumentError = VmClass<ArgumentError>(
     identifier: 'ArgumentError',
@@ -4383,6 +4383,7 @@ class VmLibrary {
       'isLinux': VmProxy(identifier: 'isLinux', externalStaticPropertyReader: () => Platform.isLinux),
       'isMacOS': VmProxy(identifier: 'isMacOS', externalStaticPropertyReader: () => Platform.isMacOS),
       'isWindows': VmProxy(identifier: 'isWindows', externalStaticPropertyReader: () => Platform.isWindows),
+      'lineTerminator': VmProxy(identifier: 'lineTerminator', externalStaticPropertyReader: () => Platform.lineTerminator),
       'localeName': VmProxy(identifier: 'localeName', externalStaticPropertyReader: () => Platform.localeName),
       'localHostname': VmProxy(identifier: 'localHostname', externalStaticPropertyReader: () => Platform.localHostname),
       'numberOfProcessors': VmProxy(identifier: 'numberOfProcessors', externalStaticPropertyReader: () => Platform.numberOfProcessors),
