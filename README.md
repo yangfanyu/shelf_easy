@@ -15,7 +15,7 @@ This library is a comprehensive lightweight framework, each module can be used i
 - [4. Dart subset virtual machine module, which can be used in Flutter's AOT environment](#4-dart-subset-virtual-machine-module-which-can-be-used-in-flutters-aot-environment)
   - [Generate virtual machine bridge type](#generate-virtual-machine-bridge-type)
   - [Dart subset virtual machine usage](#dart-subset-virtual-machine-usage)
-  - [Virtual machine usage and Dart code push scheme in Flutter environment](#virtual-machine-usage-and-dart-code-push-scheme-in-flutter-environment)
+  - [Dart code push solution in Flutter environment](#dart-code-push-solution-in-flutter-environment)
 - [5. Log module](#5-log-module)
 - [6. Server and client in cluster environment](#6-server-and-client-in-cluster-environment)
   - [Cluster server](#cluster-server)
@@ -93,13 +93,11 @@ The code for Dart subset virtual machine usage is in the [test/test_vmware.dart]
 
 You can execute `dart test/test_vmware.dart` in the example directory to view the console output.
 
-## Virtual machine usage and Dart code push scheme in Flutter environment
+## Dart code push solution in Flutter environment
 
-Encapsulation of Flutter and some third-party libraries [zycloud_widget](https://github.com/yangfanyu/zycloud_widget)
+Dart network client library for ZyCloud service [zycloud_client](https://github.com/yangfanyu/zycloud_client)
 
-Dart web client for ZyCloud service [zycloud_client](https://github.com/yangfanyu/zycloud_client)
-
-Flutter chat client for ZyCloud service [zycloud_chat](https://github.com/yangfanyu/zycloud_chat)
+Flutter widget library for ZyCloud service [zycloud_widget](https://github.com/yangfanyu/zycloud_widget)
 
 Notice:
 

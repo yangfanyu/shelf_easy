@@ -15,7 +15,7 @@
 - [4、Dart子集虚拟机模块，可用于Flutter的AOT环境](#4dart子集虚拟机模块可用于flutter的aot环境)
   - [生成虚拟机桥接类型](#生成虚拟机桥接类型)
   - [Dart子集虚拟机用法](#dart子集虚拟机用法)
-  - [Flutter环境下虚拟机用法与Dart代码推送方案](#flutter环境下虚拟机用法与dart代码推送方案)
+  - [Flutter环境下的Dart代码推送方案](#flutter环境下的dart代码推送方案)
 - [5、日志模块](#5日志模块)
 - [6、集群环境下的服务器与客户端](#6集群环境下的服务器与客户端)
   - [集群服务器](#集群服务器)
@@ -93,13 +93,11 @@ Dart子集虚拟机用法的代码在 example 目录下的 [test/test_vmware.dar
 
 可以在 example 目录中执行 `dart test/test_vmware.dart` 来查看控制台的输出信息。
 
-## Flutter环境下虚拟机用法与Dart代码推送方案
+## Flutter环境下的Dart代码推送方案
 
-Flutter与部分三方库的封装 [zycloud_widget](https://github.com/yangfanyu/zycloud_widget)
+ZyCloud服务的Dart网络客户端库 [zycloud_client](https://github.com/yangfanyu/zycloud_client)
 
-ZyCloud服务的Dart网络客户端 [zycloud_client](https://github.com/yangfanyu/zycloud_client)
-
-ZyCloud服务的Flutter聊天客户端 [zycloud_chat](https://github.com/yangfanyu/zycloud_chat)
+ZyCloud服务的Flutter小部件库 [zycloud_widget](https://github.com/yangfanyu/zycloud_widget)
 
 注意：
 
