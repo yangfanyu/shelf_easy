@@ -1,3 +1,7 @@
+## 3.0.2
+
+- Optimize the error message when the virtual machine loads code.
+  
 ## 3.0.1
 
 - Modify some annotation information.
