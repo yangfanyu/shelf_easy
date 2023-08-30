@@ -10,17 +10,25 @@ import 'vm_keys.dart';
 class VmParser {
   ///解析源代码[source]的内容，生成可json序列化的语法树数据，[routeList]为排重的路由列表，[routeLogger]为路由路径输出器
   static Map<VmKeys, dynamic> parseSource(String source, {List<String>? routeList, void Function(String route)? routeLogger}) {
-    final result = parseString(content: source);
-    if (routeList != null || routeLogger != null) {
-      result.unit.accept(VmParserRouter(routeList, routeLogger)); //输出分析的全部信息
+    try {
+      final result = parseString(content: source);
+      if (routeList != null || routeLogger != null) {
+        result.unit.accept(VmParserRouter(routeList, routeLogger)); //输出分析的全部信息
+      }
+      return result.unit.accept(VmParserVisitor()) ?? const {};
+    } catch (error) {
+      throw ('\n#######\n$source\n#######\n\n$error');
     }
-    return result.unit.accept(VmParserVisitor()) ?? const {};
   }
 
   ///解析源代码[source]的内容，生成桥接类型元数据的描述列表，[ignoreExtensionOn]为要忽略添加extension的目标类名
   static List<VmParserBirdgeItemData?> bridgeSource(String source, {required List<String> ignoreExtensionOn}) {
-    final result = parseString(content: source);
-    return result.unit.accept(VmParserBirdger(ignoreExtensionOn: ignoreExtensionOn));
+    try {
+      final result = parseString(content: source);
+      return result.unit.accept(VmParserBirdger(ignoreExtensionOn: ignoreExtensionOn));
+    } catch (error) {
+      throw ('\n#######\n$source\n#######\n\n$error');
+    }
   }
 }
 
