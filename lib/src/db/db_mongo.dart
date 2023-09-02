@@ -15,7 +15,7 @@ class DbMongo implements DbBase {
     if (_config.user == null || _config.password == null) {
       _db = Db('mongodb://${_config.host}:${_config.port}/${_config.db}$params');
     } else {
-      _db = Db('mongodb+srv://${_config.user}:${_config.password}@${_config.host}:${_config.port}/${_config.db}$params');
+      _db = Db('mongodb://${_config.user}:${_config.password}@${_config.host}:${_config.port}/${_config.db}$params');
     }
     await _db.open();
   }
