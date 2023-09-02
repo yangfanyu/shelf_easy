@@ -1,6 +1,6 @@
-## 3.0.3
+## 3.0.4
 
-- Fix scheme error for mongodb+srv.
+- Remove mongodb+srv scheme for DbMongo.
   
 ## 3.0.2
 
