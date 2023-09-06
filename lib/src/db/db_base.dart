@@ -60,7 +60,10 @@ class DbConfig {
   ///连接池大小
   final int poolSize;
 
-  ///其他参数
+  ///连接池懒加载
+  final bool poolLazy;
+
+  ///其他连接参数
   final Map<String, String> params;
 
   DbConfig({
@@ -70,6 +73,7 @@ class DbConfig {
     this.password,
     required this.db,
     required this.poolSize,
+    required this.poolLazy,
     required this.params,
   });
 }

@@ -27,6 +27,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
         ) {
     if (_config.user == null && _config.password != null) throw ('_config.user == null && _config.password != null');
     if (_config.user != null && _config.password == null) throw ('_config.user != null && _config.password == null');
+    if (_config.poolSize < 1) throw ('_config.poolSize < 1');
   }
 
   ///连接到数据库
@@ -266,7 +267,16 @@ class EasyUniDb extends EasyLogger implements DbBase {
 
   ///根据[EasyUniDbConfig.driver]来初始化不同的数据库操作实例
   static DbBase _createDatabaseHandle(EasyUniDbConfig config) {
-    final dbcfg = DbConfig(host: config.host, port: config.port, user: config.user, password: config.password, db: config.db, poolSize: config.poolSize, params: config.params);
+    final dbcfg = DbConfig(
+      host: config.host,
+      port: config.port,
+      user: config.user,
+      password: config.password,
+      db: config.db,
+      poolSize: config.poolSize,
+      poolLazy: config.poolLazy,
+      params: config.params,
+    );
     switch (config.driver) {
       case EasyUniDbDriver.hive:
         return hive.create(dbcfg);

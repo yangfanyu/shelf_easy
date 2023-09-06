@@ -930,6 +930,9 @@ class EasyUniDbConfig extends EasyConfig {
   ///连接池大小
   final int poolSize;
 
+  ///连接池懒加载
+  final bool poolLazy;
+
   ///其他连接参数
   final Map<String, String> params;
 
@@ -947,6 +950,7 @@ class EasyUniDbConfig extends EasyConfig {
     this.password,
     required this.db,
     this.poolSize = 8,
+    this.poolLazy = true,
     required this.params,
   });
 }
