@@ -6,27 +6,42 @@ import 'db_base.dart';
 
 class DbMongo implements DbBase {
   final DbConfig _config;
-  late final Db _db;
+
+  Db? _safedb;
+
   DbMongo(this._config);
+
+  bool get _isConnected => _safedb != null && _safedb!.isConnected;
+
+  Db get _db => _safedb!;
 
   @override
   Future<void> connect() async {
+    if (_isConnected) {
+      return;
+    } else {
+      await _safedb?.close();
+      _safedb = null;
+    }
     final params = _config.params.isEmpty ? '' : '?${Uri(queryParameters: _config.params).query}';
     if (_config.user == null || _config.password == null) {
-      _db = Db('mongodb://${_config.host}:${_config.port}/${_config.db}$params');
+      _safedb = Db('mongodb://${_config.host}:${_config.port}/${_config.db}$params');
     } else {
-      _db = Db('mongodb://${_config.user}:${_config.password}@${_config.host}:${_config.port}/${_config.db}$params');
+      _safedb = Db('mongodb://${_config.user}:${_config.password}@${_config.host}:${_config.port}/${_config.db}$params');
     }
-    await _db.open();
+    await _safedb?.open();
   }
 
   @override
   Future<void> destroy() async {
-    await _db.close();
+    await _safedb?.close();
+    _safedb = null;
   }
 
   @override
   Future<DbResult<void>> insertOne<T extends DbBaseModel>(String table, T model, {DbInsertOptions? insertOptions}) async {
+    await connect();
+    if (!_isConnected) throw ('Mongo database is not connected, please try again.');
     final result = await _db.collection(table).insertOne(model.toJson());
     return DbResult(
       success: result.nInserted > 0,
@@ -41,6 +56,8 @@ class DbMongo implements DbBase {
 
   @override
   Future<DbResult<void>> insertMany<T extends DbBaseModel>(String table, List<T> models, {DbInsertOptions? insertOptions}) async {
+    await connect();
+    if (!_isConnected) throw ('Mongo database is not connected, please try again.');
     final result = await _db.collection(table).insertMany(models.map((e) => e.toJson()).toList());
     return DbResult(
       success: result.nInserted > 0,
@@ -55,6 +72,8 @@ class DbMongo implements DbBase {
 
   @override
   Future<DbResult<void>> deleteOne(String table, DbFilter filter, {DbDeleteOptions? deleteOptions}) async {
+    await connect();
+    if (!_isConnected) throw ('Mongo database is not connected, please try again.');
     final result = await _db.collection(table).deleteOne(filter.toJson());
     return DbResult(
       success: result.nRemoved > 0,
@@ -69,6 +88,8 @@ class DbMongo implements DbBase {
 
   @override
   Future<DbResult<void>> deleteMany(String table, DbFilter filter, {DbDeleteOptions? deleteOptions}) async {
+    await connect();
+    if (!_isConnected) throw ('Mongo database is not connected, please try again.');
     final result = await _db.collection(table).deleteMany(filter.toJson());
     return DbResult(
       success: result.nRemoved > 0,
@@ -83,6 +104,8 @@ class DbMongo implements DbBase {
 
   @override
   Future<DbResult<void>> updateOne(String table, DbFilter filter, DbUpdate update, {DbUpdateOptions? updateOptions}) async {
+    await connect();
+    if (!_isConnected) throw ('Mongo database is not connected, please try again.');
     final result = await _db.collection(table).updateOne(
           filter.toJson(),
           update.toJson(),
@@ -101,6 +124,8 @@ class DbMongo implements DbBase {
 
   @override
   Future<DbResult<void>> updateMany(String table, DbFilter filter, DbUpdate update, {DbUpdateOptions? updateOptions}) async {
+    await connect();
+    if (!_isConnected) throw ('Mongo database is not connected, please try again.');
     final result = await _db.collection(table).updateMany(
           filter.toJson(),
           update.toJson(),
@@ -119,6 +144,8 @@ class DbMongo implements DbBase {
 
   @override
   Future<DbResult<T>> findOne<T extends DbBaseModel>(String table, DbFilter filter, {DbFindOptions? findOptions, required T Function(Map<String, dynamic> map) converter}) async {
+    await connect();
+    if (!_isConnected) throw ('Mongo database is not connected, please try again.');
     final result = await _db.collection(table).modernFindOne(
           filter: filter.toJson(),
           skip: findOptions?.$skip,
@@ -143,6 +170,8 @@ class DbMongo implements DbBase {
 
   @override
   Future<DbResult<T>> findMany<T extends DbBaseModel>(String table, DbFilter filter, {DbFindOptions? findOptions, required T Function(Map<String, dynamic> map) converter}) async {
+    await connect();
+    if (!_isConnected) throw ('Mongo database is not connected, please try again.');
     final result = await _db
         .collection(table)
         .modernFind(
@@ -163,6 +192,8 @@ class DbMongo implements DbBase {
 
   @override
   Future<DbResult<T>> findAndDelete<T extends DbBaseModel>(String table, DbFilter filter, {DbFindDeleteOptions? findDeleteOptions, required T Function(Map<String, dynamic> map) converter}) async {
+    await connect();
+    if (!_isConnected) throw ('Mongo database is not connected, please try again.');
     final result = await _db.collection(table).modernFindAndModify(
           query: filter.toJson(),
           remove: true,
@@ -186,6 +217,8 @@ class DbMongo implements DbBase {
 
   @override
   Future<DbResult<T>> findAndUpdate<T extends DbBaseModel>(String table, DbFilter filter, DbUpdate update, {DbFindUpdateOptions? findUpdateOptions, required T Function(Map<String, dynamic> map) converter}) async {
+    await connect();
+    if (!_isConnected) throw ('Mongo database is not connected, please try again.');
     final result = await _db.collection(table).modernFindAndModify(
           query: filter.toJson(),
           update: update.toJson(),
@@ -220,6 +253,8 @@ class DbMongo implements DbBase {
 
   @override
   Future<DbResult<T>> aggregate<T extends DbBaseModel>(String table, List<DbPipeline> pipeline, {DbAggregateOptions? aggregateOptions, required T Function(Map<String, dynamic> map) converter}) async {
+    await connect();
+    if (!_isConnected) throw ('Mongo database is not connected, please try again.');
     final result = await _db.collection(table).modernAggregate(pipeline.map((e) => e.compile()).toList()).toList();
     return DbResult(
       success: true,
@@ -231,6 +266,8 @@ class DbMongo implements DbBase {
 
   @override
   Future<DbResult<int>> count(String table, DbFilter filter, {DbCountOptions? countOptions}) async {
+    await connect();
+    if (!_isConnected) throw ('Mongo database is not connected, please try again.');
     final result = await _db.collection(table).count(filter.toJson());
     return DbResult(
       success: true,
