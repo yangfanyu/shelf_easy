@@ -1,3 +1,7 @@
+## 3.0.6
+
+- Added connection pool implementation and further optimized reconnection for DbMongo class.
+  
 ## 3.0.5
 
 - Fix the problem of disconnection and not reconnection for DbMongo class.
