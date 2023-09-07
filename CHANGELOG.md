@@ -1,3 +1,7 @@
+## 3.0.8
+
+- Added idleTimeMs parameter to DbMongo class and optimized the implementation of connection pool.
+  
 ## 3.0.6
 
 - Added connection pool implementation and further optimized reconnection for DbMongo class.

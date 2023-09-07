@@ -19,13 +19,13 @@ class DbMongo implements DbBase {
 
   ///这样实现可以解决驱动的很多重连问题
   Future<Db> _safeOpen() async {
-    final i = _index;
+    final no = _index;
     _index = (_index + 1) % _pool.length; //更新索引
     final current = DateTime.now().millisecondsSinceEpoch; //当前时间
-    final instance = _pool[i]; //数据库连接实例
-    final activeMs = _time[i]; //上次活跃的时间
-    //已经超过指定闲置时长 或 未连接且不是正在连接
-    if (activeMs + _config.idleTimeMs < current || !(instance.isConnected && instance.state != State.opening)) {
+    final instance = _pool[no]; //数据库连接实例
+    final activeMs = _time[no]; //上次活跃的时间
+    //已超过闲置时长 或 未连接且不是正在连接
+    if (activeMs + _config.idleTimeMs < current || (!instance.isConnected && instance.state != State.opening)) {
       await instance.close();
       await instance.open();
     }
@@ -34,10 +34,10 @@ class DbMongo implements DbBase {
       await Future.delayed(const Duration(milliseconds: 200));
     }
     if (instance.isConnected) {
-      _time[i] = current; //更新活跃时间
+      _time[no] = current; //更新活跃时间
       return instance;
     }
-    throw ('Db instance $i is not connected, state is ${instance.state}, please try again.');
+    throw ('Db instance $no is not connected, state is ${instance.state}, please try again.');
   }
 
   @override
@@ -51,7 +51,10 @@ class DbMongo implements DbBase {
         _pool.add(Db('mongodb://${_config.user}:${_config.password}@${_config.host}:${_config.port}/${_config.db}$params'));
       }
       _time.add(0); //初始化活跃时间
-      if (!_config.poolLazy) await _safeOpen(); //非懒加载则直接打开连接
+    }
+    if (_config.poolLazy) return; //懒初始化，直接返回
+    for (var i = 0; i < _config.poolSize; i++) {
+      await _safeOpen();
     }
   }
 
