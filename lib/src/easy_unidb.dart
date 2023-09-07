@@ -28,6 +28,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
     if (_config.user == null && _config.password != null) throw ('_config.user == null && _config.password != null');
     if (_config.user != null && _config.password == null) throw ('_config.user != null && _config.password == null');
     if (_config.poolSize < 1) throw ('_config.poolSize < 1');
+    if (_config.idleTimeMs < 60000) throw ('_config.idleTimeMs < 60000'); //不能小于1分钟
   }
 
   ///连接到数据库
@@ -275,6 +276,7 @@ class EasyUniDb extends EasyLogger implements DbBase {
       db: config.db,
       poolSize: config.poolSize,
       poolLazy: config.poolLazy,
+      idleTimeMs: config.idleTimeMs,
       params: config.params,
     );
     switch (config.driver) {

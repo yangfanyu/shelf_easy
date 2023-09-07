@@ -933,6 +933,9 @@ class EasyUniDbConfig extends EasyConfig {
   ///连接池懒加载
   final bool poolLazy;
 
+  ///连接空闲毫秒
+  final int idleTimeMs;
+
   ///其他连接参数
   final Map<String, String> params;
 
@@ -951,6 +954,7 @@ class EasyUniDbConfig extends EasyConfig {
     required this.db,
     this.poolSize = 8,
     this.poolLazy = true,
+    this.idleTimeMs = 30 * 60 * 1000, //30分钟
     required this.params,
   });
 }

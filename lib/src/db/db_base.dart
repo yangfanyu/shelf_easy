@@ -63,6 +63,9 @@ class DbConfig {
   ///连接池懒加载
   final bool poolLazy;
 
+  ///连接空闲毫秒
+  final int idleTimeMs;
+
   ///其他连接参数
   final Map<String, String> params;
 
@@ -74,6 +77,7 @@ class DbConfig {
     required this.db,
     required this.poolSize,
     required this.poolLazy,
+    required this.idleTimeMs,
     required this.params,
   });
 }

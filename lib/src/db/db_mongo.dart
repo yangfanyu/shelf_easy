@@ -9,51 +9,49 @@ class DbMongo implements DbBase {
 
   final List<Db> _pool;
 
+  final List<int> _time;
+
   int _index = 0;
 
-  DbMongo(this._config) : _pool = [];
+  DbMongo(this._config)
+      : _pool = [],
+        _time = [];
 
   ///这样实现可以解决驱动的很多重连问题
   Future<Db> _safeOpen() async {
-    late Db instance;
-    if (_index < _pool.length) {
-      instance = _pool[_index];
-    } else {
-      final params = _config.params.isEmpty ? '' : '?${Uri(queryParameters: _config.params).query}';
-      if (_config.user == null || _config.password == null) {
-        _pool.add(instance = Db('mongodb://${_config.host}:${_config.port}/${_config.db}$params'));
-      } else {
-        _pool.add(instance = Db('mongodb://${_config.user}:${_config.password}@${_config.host}:${_config.port}/${_config.db}$params'));
-      }
+    final i = _index;
+    _index = (_index + 1) % _pool.length; //更新索引
+    final current = DateTime.now().millisecondsSinceEpoch; //当前时间
+    final instance = _pool[i]; //数据库连接实例
+    final activeMs = _time[i]; //上次活跃的时间
+    //已经超过指定闲置时长 或 未连接且不是正在连接
+    if (activeMs + _config.idleTimeMs < current || !(instance.isConnected && instance.state != State.opening)) {
+      await instance.close();
+      await instance.open();
     }
-    _index = (_index + 1) % _config.poolSize;
-    switch (instance.state) {
-      case State.init:
-      case State.closing:
-      case State.closed:
-        await instance.close();
-        await instance.open();
-        break;
-      case State.opening:
-      case State.open:
-        if (!instance.isConnected) {
-          await instance.close();
-          await instance.open();
-        }
-        break;
-    }
+    //如果此时正在连接中，则循环等待一定时间
     for (var i = 0; i < 10 && instance.state == State.opening; i++) {
       await Future.delayed(const Duration(milliseconds: 200));
     }
-    if (instance.isConnected) return instance;
-    throw ('Mongo database is not connected, please try again.');
+    if (instance.isConnected) {
+      _time[i] = current; //更新活跃时间
+      return instance;
+    }
+    throw ('Db instance $i is not connected, state is ${instance.state}, please try again.');
   }
 
   @override
   Future<void> connect() async {
-    if (_config.poolLazy) return;
+    if (_pool.isNotEmpty) return; //已初始化，直接返回
     for (var i = 0; i < _config.poolSize; i++) {
-      await _safeOpen();
+      final params = _config.params.isEmpty ? '' : '?${Uri(queryParameters: _config.params).query}';
+      if (_config.user == null || _config.password == null) {
+        _pool.add(Db('mongodb://${_config.host}:${_config.port}/${_config.db}$params'));
+      } else {
+        _pool.add(Db('mongodb://${_config.user}:${_config.password}@${_config.host}:${_config.port}/${_config.db}$params'));
+      }
+      _time.add(0); //初始化活跃时间
+      if (!_config.poolLazy) await _safeOpen(); //非懒加载则直接打开连接
     }
   }
 
