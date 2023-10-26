@@ -1,3 +1,7 @@
+## 3.0.9
+
+- Update dependent libraries and optimize documentation.
+  
 ## 3.0.8
 
 - Added idleTimeMs parameter to DbMongo class and optimized the implementation of connection pool.
