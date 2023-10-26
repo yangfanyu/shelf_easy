@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_if_null_operators, unnecessary_type_check, unnecessary_cast, prefer_typing_uninitialized_variables, unnecessary_null_in_if_null_operators, avoid_init_to_null, unnecessary_null_comparison, prefer_collection_literals, use_function_type_syntax_for_parameters, prefer_inlined_adds
+// ignore_for_file: prefer_if_null_operators, unnecessary_type_check, unnecessary_cast, prefer_typing_uninitialized_variables, unnecessary_null_in_if_null_operators, avoid_init_to_null, unnecessary_null_comparison, prefer_collection_literals, use_function_type_syntax_for_parameters, prefer_inlined_adds, collection_methods_unrelated_type
 
 import 'dart:math';
 

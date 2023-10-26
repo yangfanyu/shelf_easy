@@ -13,11 +13,13 @@ class OuterClass with VmSuper {
   int inc1 = 100;
   int inc2 = 200;
 
+  ///暂时仅构造函数的参数支持[super]和[this]关键字。
   OuterClass(
     this.key1, {
     required this.key2,
   });
 
+  ///成员函数内暂不支持[super]和[this]关键字。成员函数内使用[this]关键字可以用[thisNativeValue]属性代替
   int sayHello(String name, {required String sex}) {
     print('OuterClass.sayHello: hello world => $key1 $key2 $inc1 $inc2 $name $sex $hashCode --- $isInitedByVmware');
     return 111111;

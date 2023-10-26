@@ -1,3 +1,5 @@
+// ignore_for_file: collection_methods_unrelated_type
+
 import 'dart:convert';
 
 import 'package:shelf_easy/shelf_deps.dart';
@@ -87,7 +89,6 @@ main() {
   map3x[objId3] = 1;
   print("ObjectId Map : $map3x ${map3x['000000000000000000000000']} ${map3x[DbQueryField.hexstr2ObjectId('000000000000000000000000')]} ${map3x[objId3]}");
   print("${map3x.containsKey(objId1)} ${map3x.containsKey(DbQueryField.hexstr2ObjectId('000000000000000000000000'))} ${map3x.containsKey('000000000000000000000000')}"); //true true false
-  // ignore: iterable_contains_unrelated_type
   print("${map3x.keys.toSet().contains(objId1)} ${map3x.keys.toSet().contains(DbQueryField.hexstr2ObjectId('000000000000000000000000'))} ${map3x.keys.toSet().contains('000000000000000000000000')}"); //true true false
 
   Map<String, int> map3z = {};

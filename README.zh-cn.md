@@ -17,7 +17,8 @@
   - [Dart子集虚拟机用法](#dart子集虚拟机用法)
   - [Flutter环境下的Dart代码推送方案](#flutter环境下的dart代码推送方案)
 - [5、日志模块](#5日志模块)
-- [6、集群环境下的服务器与客户端](#6集群环境下的服务器与客户端)
+- [6、语言本地化模块](#6语言本地化模块)
+- [7、集群环境下的服务器与客户端](#7集群环境下的服务器与客户端)
   - [集群服务器](#集群服务器)
   - [集群客户端](#集群客户端)
   - [测试的流程](#测试的流程)
@@ -111,7 +112,13 @@ ZyCloud服务的Flutter小部件库 [zycloud_widget](https://github.com/yangfany
 
 可以在 example 目录中执行 `dart test/test_logger.dart` 来查看控制台的输出信息。
 
-# 6、集群环境下的服务器与客户端
+# 6、语言本地化模块
+
+语言本地化模块的代码在 example 目录下的 [test/test_locale.dart](https://github.com/yangfanyu/shelf_easy/tree/main/example/test/test_locale.dart) 文件中。
+
+可以在 example 目录中执行 `dart test/test_locale.dart` 来查看控制台的输出信息。
+
+# 7、集群环境下的服务器与客户端
 
 ## 集群服务器
 

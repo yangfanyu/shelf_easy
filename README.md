@@ -17,7 +17,8 @@ This library is a comprehensive lightweight framework, each module can be used i
   - [Dart subset virtual machine usage](#dart-subset-virtual-machine-usage)
   - [Dart code push solution in Flutter environment](#dart-code-push-solution-in-flutter-environment)
 - [5. Log module](#5-log-module)
-- [6. Server and client in cluster environment](#6-server-and-client-in-cluster-environment)
+- [6. Language localization module](#6-language-localization-module)
+- [7. Server and client in cluster environment](#7-server-and-client-in-cluster-environment)
   - [Cluster server](#cluster-server)
   - [Cluster client](#cluster-client)
   - [Test process](#test-process)
@@ -111,7 +112,13 @@ The code of the log module is in the [test/test_logger.dart](https://github.com/
 
 You can execute `dart test/test_logger.dart` in the example directory to view the console output information.
 
-# 6. Server and client in cluster environment
+# 6. Language localization module
+
+The code of the language localization module is in the [test/test_locale.dart](https://github.com/yangfanyu/shelf_easy/tree/main/example/test/test_locale.dart) file in the example directory.
+
+You can execute `dart test/test_locale.dart` in the example directory to view the console output information.
+
+# 7. Server and client in cluster environment
 
 ## Cluster server
 
