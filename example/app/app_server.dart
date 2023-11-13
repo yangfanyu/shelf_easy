@@ -7,6 +7,17 @@ import 'inner_route.dart';
 import 'outer_route.dart';
 
 void main() {
+  ///跨域与其它响应请求头
+  const httpHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': '*',
+    'Access-Control-Allow-Methods': '*',
+    'Access-Control-Request-Private-Network': 'true',
+    'Access-Control-Allow-Private-Network': 'true',
+    'X-Frame-Options': 'ALLOWALL',
+    // 'Referrer-Policy': 'origin-when-cross-origin',
+  };
+
   ///多台物理设备情况下可以通过[machineBind]与[machineFile]参数来进行主机名称匹配，启动对应[host]的进程
   Easy.startClusterServers(
     // machineBind: true,
@@ -16,7 +27,7 @@ void main() {
     envClusterServerConfig: {
       'develop': {
         'http': [
-          EasyServerConfig(host: '127.0.0.1', port: 8080, links: ['outer', 'inner'], instances: 4),
+          EasyServerConfig(host: 'anyIPv4', port: 8080, links: ['outer', 'inner'], instances: 4, httpHeaders: httpHeaders),
         ],
         'outer': [
           EasyServerConfig(host: '127.0.0.1', port: 8001, links: ['inner']),
@@ -31,7 +42,7 @@ void main() {
       },
       'release': {
         'http': [
-          EasyServerConfig(host: 'localhost', port: 8080, links: ['outer', 'inner'], instances: 4),
+          EasyServerConfig(host: 'localhost', port: 8080, links: ['outer', 'inner'], instances: 4, httpHeaders: httpHeaders),
         ],
         'outer': [
           EasyServerConfig(host: 'localhost', port: 8001, links: ['inner']),

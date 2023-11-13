@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:shelf_easy/shelf_easy.dart';
 
 class HttpRoute {
@@ -32,6 +34,9 @@ class HttpRoute {
       final result = await server.callRemoteForResult('inner', route: 'timeNow');
       return packet.responseOk(data: result.data);
     });
+
+    ///挂载静态目录
+    server.mount('/', '${Directory.current.path}/app/web', listDirectories: false, defaultDocument: 'index.html');
 
     ///Asynchronous error test
     Future.delayed(Duration(seconds: 13), () {

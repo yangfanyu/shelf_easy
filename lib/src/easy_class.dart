@@ -688,17 +688,38 @@ class EasyServerConfig extends EasyConfig {
   ///校验重复包的包id缓存数量
   final int reqIdCache;
 
-  ///获取ip地址的请求头
-  final String ipHeader;
+  ///从请求获取ip地址的请求头
+  final String reqIpHeader;
 
-  //响应http请求的额外请求头信息
+  ///响应数据的gzip压缩级别，
+  final int gzipLevel;
+
+  ///响应数据的gzip压缩最小字节
+  final int gzipMinBytes;
+
+  ///响应数据的gzip压缩需忽略类型
+  final List<String> gzipNotContentTypes;
+
+  ///响应数据的X-Powered-By信息
+  final String xpoweredbyHeader;
+
+  ///响应数据的额外header信息
   final Map<String, String>? httpHeaders;
 
   ///ssl模式key文件路径
   final String? sslKeyFile;
 
+  ///ssl模式key文件密码
+  final String? sslKeyPasswd;
+
   ///ssl模式cer文件路径
   final String? sslCerFile;
+
+  ///ssl模式cer文件密码
+  final String? sslCerPawsswd;
+
+  ///与TCP并发连接有关，参考文献：https://blog.csdn.net/daocaokafei/article/details/115336575
+  final int? backlog;
 
   ///需要远程连接的集群分组
   final List<String>? links;
@@ -734,10 +755,17 @@ class EasyServerConfig extends EasyConfig {
     this.heart = 60 * 1000,
     this.timeout = 60 * 1000 * 3,
     this.reqIdCache = 32,
-    this.ipHeader = 'x-forwarded-for',
+    this.reqIpHeader = 'x-forwarded-for',
+    this.gzipLevel = 4,
+    this.gzipMinBytes = 512,
+    this.gzipNotContentTypes = const [],
+    this.xpoweredbyHeader = 'shelf_easy',
     this.httpHeaders,
     this.sslKeyFile,
+    this.sslKeyPasswd,
     this.sslCerFile,
+    this.sslCerPawsswd,
+    this.backlog,
     this.links,
     this.uniDbConfig,
   }) : clusterConfigs = {};

@@ -6,7 +6,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
-import 'package:shelf_cors_headers/shelf_cors_headers.dart';
+import 'package:shelf_gzip/shelf_gzip.dart';
 import 'package:shelf_multipart/multipart.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:shelf_static/shelf_static.dart';
@@ -445,19 +445,32 @@ class EasyServer extends EasyLogger {
       }
     });
     //处理器
-    final handler = _httpRequestLogger().addMiddleware(corsHeaders(headers: _config.httpHeaders)).addHandler((request) {
-      if (_router != null) {
-        return _router!(request);
-      } else {
-        return webSocketHandler((WebSocketChannel websocket) => _onWebSocketConnect(websocket, request))(request);
-      }
-    });
-    final securityContext = _config.sslEnable
-        ? (SecurityContext()
-          ..usePrivateKey(_config.sslKeyFile!)
-          ..useCertificateChain(_config.sslCerFile!))
-        : null;
-    serve(handler, _config.host, _config.port, securityContext: securityContext, shared: _config.instances > 1).then((server) {
+    var handler = _httpRequestLogger()
+        .addMiddleware(createMiddleware(
+          requestHandler: (request) => (request.method == 'OPTIONS') ? Response.ok(null, headers: _config.httpHeaders) : null,
+          responseHandler: (response) => response.change(headers: _config.httpHeaders),
+        ))
+        .addMiddleware(createGzipMiddleware(
+          minimalGzipContentLength: _config.gzipMinBytes,
+          alreadyCompressedContentType: (contentType) => _config.gzipNotContentTypes.contains(contentType) || isAlreadyCompressedContentType(contentType),
+          compressionLevel: _config.gzipLevel,
+        ))
+        .addHandler(
+          (request) => _router != null ? _router!(request) : webSocketHandler((WebSocketChannel websocket) => _onWebSocketConnect(websocket, request))(request),
+        );
+    serve(
+      handler,
+      _config.host == 'anyIPv4' ? InternetAddress.anyIPv4 : (_config.host == 'anyIPv6' ? InternetAddress.anyIPv6 : _config.host),
+      _config.port,
+      securityContext: _config.sslEnable
+          ? (SecurityContext()
+            ..usePrivateKey(_config.sslKeyFile!, password: _config.sslKeyPasswd)
+            ..useCertificateChain(_config.sslCerFile!, password: _config.sslCerPawsswd))
+          : null,
+      backlog: _config.backlog,
+      shared: _config.instances > 1,
+      poweredByHeader: _config.xpoweredbyHeader,
+    ).then((server) {
       if (_router != null) {
         logInfo(['web server is listening...']);
       } else {
@@ -512,7 +525,7 @@ class EasyServer extends EasyLogger {
   String getRequestIp(Request request) {
     try {
       logTrace(['getRequestIp =>', request.headers]);
-      return request.headers[_config.ipHeader] ?? (request.context['shelf.io.connection_info'] as HttpConnectionInfo?)?.remoteAddress.address ?? '0.0.0.0';
+      return request.headers[_config.reqIpHeader] ?? (request.context['shelf.io.connection_info'] as HttpConnectionInfo?)?.remoteAddress.address ?? '0.0.0.0';
     } catch (error, stack) {
       logError(['getRequestIp =>', error, '\n', stack]);
       return '0.0.0.0';

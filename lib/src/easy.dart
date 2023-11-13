@@ -98,7 +98,7 @@ class Easy {
             heart: serverConfig.heart,
             timeout: serverConfig.timeout,
             reqIdCache: serverConfig.reqIdCache,
-            ipHeader: serverConfig.ipHeader,
+            reqIpHeader: serverConfig.reqIpHeader,
             httpHeaders: serverConfig.httpHeaders,
             sslKeyFile: sslKeyFile ?? serverConfig.sslKeyFile,
             sslCerFile: sslCerFile ?? serverConfig.sslCerFile,
