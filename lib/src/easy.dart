@@ -22,24 +22,11 @@ class Easy {
   /// * [machineBind] 是否只启动与机器名称对应的进程
   /// * [machineFile] 机器名称文件的绝对路径
   /// * [environment] 当前启动的环境
-  /// * [envClusterServerConfig] 环境集群服务器置信息
-  /// * [envClusterDatabaseConfig] 环境数集群据库配置信息
-  /// * [envClusterServerEntryPoint] 环境集群入口函数
-  /// * [envDefaultDatabaseConfig] 环境默认据库配置信息
-  /// * [envDefaultServerEntryPoint] 环境默认入口函数
-  ///
-  /// 下面的选项如果不为null将会覆盖到每个节点
-  ///
-  /// * [logger] 日志记录器
-  /// * [logLevel] 日志输出级别
-  /// * [logFolder] 日志文件输出文件夹
-  /// * [logFileBackup] 日志文件保存数量
-  /// * [logFileMaxBytes] 日志文件每份大小（字节）
-  /// * [pwd] 外部服务器数据加密密码
-  /// * [secret] 内部服务器集群之间数据通讯签名密钥
-  /// * [binary] 服务器是否使用二进制格式传输数据
-  /// * [sslKeyFile] privateKey文件路径
-  /// * [sslCerFile] certificate文件路径
+  /// * [envClusterServerConfig] 集群配置信息
+  /// * [envClusterServerEntryPoint] 集群入口函数
+  /// * [envDefaultServerConfig] 默认配置信息
+  /// * [envDefaultServerEntryPoint] 默认入口函数
+  /// * [defaultLogFolder] 默认日志文件输出文件夹
   ///
   /// 子线程异常处理方式
   ///
@@ -50,84 +37,39 @@ class Easy {
     bool machineBind = false,
     String machineFile = '/etc/hostname',
     required String environment,
-    required Map<String, Map<String, List<EasyServerConfig>>> envClusterServerConfig,
-    Map<String, Map<String, EasyUniDbConfig>>? envClusterDatabaseConfig,
+    required Map<String, Map<String, List<EasyClusterNodeConfig>>> envClusterServerConfig,
     Map<String, Map<String, EasyServerEntryPoint>>? envClusterServerEntryPoint,
-    Map<String, EasyUniDbConfig>? envDefaultDatabaseConfig,
+    Map<String, EasyClusterNodeConfig>? envDefaultServerConfig,
     Map<String, EasyServerEntryPoint>? envDefaultServerEntryPoint,
-    EasyLogHandler logger = EasyLogger.printLogger,
-    EasyLogLevel logLevel = EasyLogLevel.info,
-    String? logFolder,
-    int? logFileBackup,
-    int? logFileMaxBytes,
-    String? pwd,
-    String? secret,
-    bool? binary,
-    String? sslKeyFile,
-    String? sslCerFile,
+    String? defaultLogFolder,
     bool runErrorsZone = true,
     bool errorsAreFatal = false,
   }) async {
     final clusterServerConfig = envClusterServerConfig[environment];
-    final clusterDatabaseConfig = envClusterDatabaseConfig?[environment];
     final clusterServerEntryPoint = envClusterServerEntryPoint?[environment];
-    final defaultDatabaseConfig = envDefaultDatabaseConfig?[environment];
+    final defaultServerConfig = envDefaultServerConfig?[environment];
     final defaultServerEntryPoint = envDefaultServerEntryPoint?[environment];
     final finalServerConfig = <String, List<EasyServerConfig>>{}; //解析后的服务器集群配置信息
-    final finalLogFileFolder = logFolder ?? '${Directory.current.path}/logs'; //日志文件输出文件夹
+    final finalLogFileFolder = defaultLogFolder ?? '${Directory.current.path}/logs'; //日志文件输出文件夹
     clusterServerConfig?.forEach((cluster, serverConfigList) {
       finalServerConfig[cluster] = [];
       for (var serverConfig in serverConfigList) {
-        final databaseConfig = serverConfig.uniDbConfig ?? clusterDatabaseConfig?[cluster] ?? defaultDatabaseConfig;
-        for (var i = 0; i < serverConfig.instances; i++) {
-          final logTag = '$environment-$cluster-${serverConfig.host}:${serverConfig.port}${serverConfig.instances > 1 ? '-$i' : ''}';
-          final logFilePath = '$finalLogFileFolder/$environment-$cluster-${serverConfig.port}${serverConfig.instances > 1 ? '-$i' : ''}';
-          finalServerConfig[cluster]?.add(EasyServerConfig(
-            logger: logger,
-            logLevel: logLevel,
-            logTag: logTag,
-            logFilePath: logFilePath,
-            logFileBackup: logFileBackup ?? serverConfig.logFileBackup,
-            logFileMaxBytes: logFileMaxBytes ?? serverConfig.logFileMaxBytes,
-            host: serverConfig.host,
-            port: serverConfig.port,
-            instances: serverConfig.instances,
-            pwd: pwd ?? serverConfig.pwd,
-            secret: secret ?? serverConfig.secret,
-            binary: binary ?? serverConfig.binary,
-            heart: serverConfig.heart,
-            timeout: serverConfig.timeout,
-            reqIdCache: serverConfig.reqIdCache,
-            reqIpHeader: serverConfig.reqIpHeader,
-            httpHeaders: serverConfig.httpHeaders,
-            sslKeyFile: sslKeyFile ?? serverConfig.sslKeyFile,
-            sslCerFile: sslCerFile ?? serverConfig.sslCerFile,
-            links: serverConfig.links,
-            uniDbConfig: databaseConfig == null
-                ? null
-                : EasyUniDbConfig(
-                    logger: logger,
-                    logLevel: logLevel,
-                    logTag: '$logTag [${databaseConfig.driver.name}://${databaseConfig.host}:${databaseConfig.port}]',
-                    logFilePath: logFilePath,
-                    logFileBackup: logFileBackup ?? databaseConfig.logFileBackup,
-                    logFileMaxBytes: logFileMaxBytes ?? databaseConfig.logFileMaxBytes,
-                    driver: databaseConfig.driver,
-                    host: databaseConfig.host,
-                    port: databaseConfig.port,
-                    user: databaseConfig.user,
-                    password: databaseConfig.password,
-                    db: databaseConfig.db,
-                    poolSize: databaseConfig.poolSize,
-                    params: databaseConfig.params,
-                  ),
-          ));
+        final isolateInstances = serverConfig.isolateInstances ?? defaultServerConfig?.isolateInstances ?? 1;
+        for (var i = 0; i < isolateInstances; i++) {
+          finalServerConfig[cluster]?.add(
+            EasyServerConfig.fromClusterNodeConfig(
+              serverConfig: serverConfig,
+              globalConfig: defaultServerConfig,
+              defaultLogTag: '$environment-$cluster-${serverConfig.host}:${serverConfig.port}${isolateInstances > 1 ? '-$i' : ''}',
+              defaultLogFilePath: '$finalLogFileFolder/$environment-$cluster-${serverConfig.port}${isolateInstances > 1 ? '-$i' : ''}',
+            ),
+          );
         }
       }
     });
     finalServerConfig.forEach((cluster, serverConfigList) {
       for (var serverConfig in serverConfigList) {
-        serverConfig.initClusterConfigs(finalServerConfig); //初始化需要远程连接的集群分组配置信息
+        serverConfig.initClusterLinksConfigs(finalServerConfig); //初始化需要远程连接的集群分组配置信息
         if (machineBind && serverConfig.host != File(machineFile).readAsStringSync().trim()) {
           continue; //不匹配主机名
         }

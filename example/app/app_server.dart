@@ -27,32 +27,32 @@ void main() {
     envClusterServerConfig: {
       'develop': {
         'http': [
-          EasyServerConfig(host: 'anyIPv4', port: 8080, links: ['outer', 'inner'], instances: 4, httpHeaders: httpHeaders),
+          EasyClusterNodeConfig(host: 'anyIPv4', port: 8080, links: ['outer', 'inner'], httpHeaders: httpHeaders, isolateInstances: 4),
         ],
         'outer': [
-          EasyServerConfig(host: '127.0.0.1', port: 8001, links: ['inner']),
-          EasyServerConfig(host: '127.0.0.1', port: 8002, links: ['inner']),
-          EasyServerConfig(host: '127.0.0.1', port: 8003, links: ['inner']),
+          EasyClusterNodeConfig(host: '127.0.0.1', port: 8001, links: ['inner']),
+          EasyClusterNodeConfig(host: '127.0.0.1', port: 8002, links: ['inner']),
+          EasyClusterNodeConfig(host: '127.0.0.1', port: 8003, links: ['inner']),
         ],
         'inner': [
-          EasyServerConfig(host: '127.0.0.1', port: 9001, links: ['outer']),
-          EasyServerConfig(host: '127.0.0.1', port: 9002, links: ['outer']),
-          EasyServerConfig(host: '127.0.0.1', port: 9003, links: ['outer']),
+          EasyClusterNodeConfig(host: '127.0.0.1', port: 9001, links: ['outer']),
+          EasyClusterNodeConfig(host: '127.0.0.1', port: 9002, links: ['outer']),
+          EasyClusterNodeConfig(host: '127.0.0.1', port: 9003, links: ['outer']),
         ]
       },
       'release': {
         'http': [
-          EasyServerConfig(host: 'localhost', port: 8080, links: ['outer', 'inner'], instances: 4, httpHeaders: httpHeaders),
+          EasyClusterNodeConfig(host: 'localhost', port: 8080, links: ['outer', 'inner'], httpHeaders: httpHeaders, isolateInstances: 4),
         ],
         'outer': [
-          EasyServerConfig(host: 'localhost', port: 8001, links: ['inner']),
-          EasyServerConfig(host: 'localhost', port: 8002, links: ['inner']),
-          EasyServerConfig(host: 'localhost', port: 8003, links: ['inner']),
+          EasyClusterNodeConfig(host: 'localhost', port: 8001, links: ['inner']),
+          EasyClusterNodeConfig(host: 'localhost', port: 8002, links: ['inner']),
+          EasyClusterNodeConfig(host: 'localhost', port: 8003, links: ['inner']),
         ],
         'inner': [
-          EasyServerConfig(host: 'localhost', port: 9001, links: ['outer']),
-          EasyServerConfig(host: 'localhost', port: 9002, links: ['outer']),
-          EasyServerConfig(host: 'localhost', port: 9003, links: ['outer']),
+          EasyClusterNodeConfig(host: 'localhost', port: 9001, links: ['outer']),
+          EasyClusterNodeConfig(host: 'localhost', port: 9002, links: ['outer']),
+          EasyClusterNodeConfig(host: 'localhost', port: 9003, links: ['outer']),
         ]
       }
     },
@@ -68,18 +68,28 @@ void main() {
         'inner': innerServerEntryPoint,
       },
     },
-    envDefaultDatabaseConfig: {
-      'develop': EasyUniDbConfig(driver: EasyUniDbDriver.mongo, host: '127.0.0.1', port: 27017, db: 'shelf_easy_example', params: {}),
-      'release': EasyUniDbConfig(driver: EasyUniDbDriver.mongo, host: 'localhost', port: 27017, db: 'shelf_easy_example', params: {}),
+    envDefaultServerConfig: {
+      'develop': EasyClusterNodeConfig(
+        logger: EasyLogger.printAndWriteLogger,
+        logLevel: EasyLogLevel.info,
+        logFileBackup: 3,
+        logFileMaxBytes: 10 * 1024,
+        pwd: '12345678',
+        secret: EasySecurity.uuid.v4(),
+        binary: true,
+        uniDbConfig: EasyUniDbConfig(driver: EasyUniDbDriver.mongo, host: '127.0.0.1', port: 27017, db: 'shelf_easy_example', params: {}),
+      ),
+      'release': EasyClusterNodeConfig(
+        logger: EasyLogger.printAndWriteLogger,
+        logLevel: EasyLogLevel.info,
+        logFileBackup: 3,
+        logFileMaxBytes: 10 * 1024,
+        pwd: '12345678',
+        secret: EasySecurity.uuid.v4(),
+        binary: true,
+        uniDbConfig: EasyUniDbConfig(driver: EasyUniDbDriver.mongo, host: '127.0.0.1', port: 27017, db: 'shelf_easy_example', params: {}),
+      ),
     },
-    logger: EasyLogger.printAndWriteLogger,
-    logLevel: EasyLogLevel.info,
-    logFolder: '${Directory.current.path}/logs',
-    logFileBackup: 3,
-    logFileMaxBytes: 10 * 1024,
-    pwd: '12345678',
-    secret: EasySecurity.uuid.v4(),
-    binary: true,
     //异步Error捕获测试，生产环境下建议使用默认值
     runErrorsZone: false,
     errorsAreFatal: false,

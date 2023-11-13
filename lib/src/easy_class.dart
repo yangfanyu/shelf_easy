@@ -667,9 +667,6 @@ class EasyServerConfig extends EasyConfig {
   ///监听端口号
   final int port;
 
-  ///集群启动的实例数量，建议只对web服务设置设置该值>1，因为websocket服务每个session是有状态的
-  final int instances;
-
   ///数据加解密密码，为null时不启用数据加解密
   final String? pwd;
 
@@ -701,7 +698,7 @@ class EasyServerConfig extends EasyConfig {
   final List<String> gzipNotContentTypes;
 
   ///响应数据的X-Powered-By信息
-  final String xpoweredbyHeader;
+  final String xPoweredByHeader;
 
   ///响应数据的额外header信息
   final Map<String, String>? httpHeaders;
@@ -716,7 +713,7 @@ class EasyServerConfig extends EasyConfig {
   final String? sslCerFile;
 
   ///ssl模式cer文件密码
-  final String? sslCerPawsswd;
+  final String? sslCerPasswd;
 
   ///与TCP并发连接有关，参考文献：https://blog.csdn.net/daocaokafei/article/details/115336575
   final int? backlog;
@@ -724,11 +721,14 @@ class EasyServerConfig extends EasyConfig {
   ///需要远程连接的集群分组
   final List<String>? links;
 
-  ///需要远程连接的集群分组配置信息
-  final Map<String, List<EasyServerConfig>> clusterConfigs;
-
   ///数据库配置信息
   final EasyUniDbConfig? uniDbConfig;
+
+  ///集群节点启动隔离线程的数量，建议只对web服务设置设置该值>1，因为websocket服务每个session是有状态的
+  final int isolateInstances;
+
+  ///集群节点需要远程连接的集群分组配置信息，启动后自动通过[initClusterLinksConfigs]方法进行初始化
+  final Map<String, List<EasyServerConfig>> clusterLinksConfigs;
 
   ///为true时启用ssl证书模式
   bool get sslEnable => sslKeyFile != null && sslCerFile != null;
@@ -748,7 +748,6 @@ class EasyServerConfig extends EasyConfig {
     super.logFileMaxBytes,
     required this.host,
     required this.port,
-    this.instances = 1,
     this.pwd,
     this.secret = 'secret',
     this.binary = false,
@@ -759,21 +758,78 @@ class EasyServerConfig extends EasyConfig {
     this.gzipLevel = 4,
     this.gzipMinBytes = 512,
     this.gzipNotContentTypes = const [],
-    this.xpoweredbyHeader = 'shelf_easy',
+    this.xPoweredByHeader = 'shelf_easy',
     this.httpHeaders,
     this.sslKeyFile,
     this.sslKeyPasswd,
     this.sslCerFile,
-    this.sslCerPawsswd,
+    this.sslCerPasswd,
     this.backlog,
     this.links,
     this.uniDbConfig,
-  }) : clusterConfigs = {};
+    this.isolateInstances = 1,
+  }) : clusterLinksConfigs = {};
+
+  factory EasyServerConfig.fromClusterNodeConfig({
+    required EasyClusterNodeConfig serverConfig,
+    required EasyClusterNodeConfig? globalConfig,
+    required String defaultLogTag,
+    required String defaultLogFilePath,
+  }) {
+    final databaseConfig = serverConfig.uniDbConfig ?? globalConfig?.uniDbConfig;
+    return EasyServerConfig(
+      logger: serverConfig.logger ?? globalConfig?.logger,
+      logLevel: serverConfig.logLevel ?? globalConfig?.logLevel,
+      logTag: serverConfig.logTag ?? globalConfig?.logTag ?? defaultLogTag,
+      logFilePath: serverConfig.logFilePath ?? globalConfig?.logFilePath ?? defaultLogFilePath,
+      logFileBackup: serverConfig.logFileBackup ?? globalConfig?.logFileBackup,
+      logFileMaxBytes: serverConfig.logFileMaxBytes ?? globalConfig?.logFileMaxBytes,
+      host: serverConfig.host ?? globalConfig?.host ?? 'anyIPv4',
+      port: serverConfig.port ?? globalConfig?.port ?? 8080,
+      pwd: serverConfig.pwd ?? globalConfig?.pwd,
+      secret: serverConfig.secret ?? globalConfig?.secret ?? 'secret',
+      binary: serverConfig.binary ?? globalConfig?.binary ?? false,
+      heart: serverConfig.heart ?? globalConfig?.heart ?? 60 * 1000,
+      timeout: serverConfig.timeout ?? globalConfig?.timeout ?? 60 * 1000 * 3,
+      reqIdCache: serverConfig.reqIdCache ?? globalConfig?.reqIdCache ?? 32,
+      reqIpHeader: serverConfig.reqIpHeader ?? globalConfig?.reqIpHeader ?? 'x-forwarded-for',
+      gzipLevel: serverConfig.gzipLevel ?? globalConfig?.gzipLevel ?? 4,
+      gzipMinBytes: serverConfig.gzipMinBytes ?? globalConfig?.gzipMinBytes ?? 512,
+      gzipNotContentTypes: serverConfig.gzipNotContentTypes ?? globalConfig?.gzipNotContentTypes ?? const [],
+      xPoweredByHeader: serverConfig.xPoweredByHeader ?? globalConfig?.xPoweredByHeader ?? 'shelf_easy',
+      httpHeaders: serverConfig.httpHeaders ?? globalConfig?.httpHeaders,
+      sslKeyFile: serverConfig.sslKeyFile ?? globalConfig?.sslKeyFile,
+      sslKeyPasswd: serverConfig.sslKeyPasswd ?? globalConfig?.sslKeyPasswd,
+      sslCerFile: serverConfig.sslCerFile ?? globalConfig?.sslCerFile,
+      sslCerPasswd: serverConfig.sslCerPasswd ?? globalConfig?.sslCerPasswd,
+      backlog: serverConfig.backlog ?? globalConfig?.backlog,
+      links: serverConfig.links ?? globalConfig?.links,
+      uniDbConfig: databaseConfig == null
+          ? null
+          : EasyUniDbConfig(
+              logger: databaseConfig.logger ?? serverConfig.logger ?? globalConfig?.logger,
+              logLevel: databaseConfig.logLevel ?? serverConfig.logLevel ?? globalConfig?.logLevel,
+              logTag: databaseConfig.logTag ?? serverConfig.logTag ?? globalConfig?.logTag ?? '$defaultLogTag [${databaseConfig.driver.name}://${databaseConfig.host}:${databaseConfig.port}]',
+              logFilePath: databaseConfig.logFilePath ?? serverConfig.logFilePath ?? globalConfig?.logFilePath,
+              logFileBackup: databaseConfig.logFileBackup ?? serverConfig.logFileBackup ?? globalConfig?.logFileBackup,
+              logFileMaxBytes: databaseConfig.logFileMaxBytes ?? serverConfig.logFileMaxBytes ?? globalConfig?.logFileMaxBytes,
+              driver: databaseConfig.driver,
+              host: databaseConfig.host,
+              port: databaseConfig.port,
+              user: databaseConfig.user,
+              password: databaseConfig.password,
+              db: databaseConfig.db,
+              poolSize: databaseConfig.poolSize,
+              params: databaseConfig.params,
+            ),
+      isolateInstances: serverConfig.isolateInstances ?? globalConfig?.isolateInstances ?? 1,
+    );
+  }
 
   ///初始化需要远程连接的集群分组配置信息
-  void initClusterConfigs(Map<String, List<EasyServerConfig>> clusterServerConfigs) {
+  void initClusterLinksConfigs(Map<String, List<EasyServerConfig>> clusterServerConfigs) {
     links?.forEach((cluster) {
-      clusterConfigs[cluster] = clusterServerConfigs[cluster] ?? [];
+      clusterLinksConfigs[cluster] = clusterServerConfigs[cluster] ?? [];
     });
   }
 }
@@ -984,6 +1040,109 @@ class EasyUniDbConfig extends EasyConfig {
     this.poolLazy = true,
     this.idleTimeMs = 30 * 60 * 1000, //30分钟
     required this.params,
+  });
+}
+
+///
+///集群节点配置
+///
+class EasyClusterNodeConfig extends EasyConfig {
+  ///监听域名
+  final String? host;
+
+  ///监听端口号
+  final int? port;
+
+  ///数据加解密密码，为null时不启用数据加解密
+  final String? pwd;
+
+  ///内部通讯数据包签名验签密钥
+  final String? secret;
+
+  ///为true时使用二进制收发数据，为false时使用字符串收发数据
+  final bool? binary;
+
+  ///心跳检测周期（毫秒）
+  final int? heart;
+
+  ///两个心跳包之间的最大间隔时间（毫秒）
+  final int? timeout;
+
+  ///校验重复包的包id缓存数量
+  final int? reqIdCache;
+
+  ///从请求获取ip地址的请求头
+  final String? reqIpHeader;
+
+  ///响应数据的gzip压缩级别，
+  final int? gzipLevel;
+
+  ///响应数据的gzip压缩最小字节
+  final int? gzipMinBytes;
+
+  ///响应数据的gzip压缩需忽略类型
+  final List<String>? gzipNotContentTypes;
+
+  ///响应数据的X-Powered-By信息
+  final String? xPoweredByHeader;
+
+  ///响应数据的额外header信息
+  final Map<String, String>? httpHeaders;
+
+  ///ssl模式key文件路径
+  final String? sslKeyFile;
+
+  ///ssl模式key文件密码
+  final String? sslKeyPasswd;
+
+  ///ssl模式cer文件路径
+  final String? sslCerFile;
+
+  ///ssl模式cer文件密码
+  final String? sslCerPasswd;
+
+  ///与TCP并发连接有关，参考文献：https://blog.csdn.net/daocaokafei/article/details/115336575
+  final int? backlog;
+
+  ///需要远程连接的集群分组
+  final List<String>? links;
+
+  ///数据库配置信息
+  final EasyUniDbConfig? uniDbConfig;
+
+  ///集群节点启动隔离线程的数量，建议只对web服务设置设置该值>1，因为websocket服务每个session是有状态的
+  final int? isolateInstances;
+
+  ///默认值见[EasyServerConfig.fromClusterNodeConfig]方法的实现
+  EasyClusterNodeConfig({
+    super.logger,
+    super.logLevel,
+    super.logTag,
+    super.logFilePath,
+    super.logFileBackup,
+    super.logFileMaxBytes,
+    this.host,
+    this.port,
+    this.pwd,
+    this.secret,
+    this.binary,
+    this.heart,
+    this.timeout,
+    this.reqIdCache,
+    this.reqIpHeader,
+    this.gzipLevel,
+    this.gzipMinBytes,
+    this.gzipNotContentTypes,
+    this.xPoweredByHeader,
+    this.httpHeaders,
+    this.sslKeyFile,
+    this.sslKeyPasswd,
+    this.sslCerFile,
+    this.sslCerPasswd,
+    this.backlog,
+    this.links,
+    this.uniDbConfig,
+    this.isolateInstances,
   });
 }
 

@@ -418,8 +418,8 @@ class EasyServer extends EasyLogger {
   ///开启服务器，当设置过http路由时启动为web服务器。否则启动为websocket服务器
   Future<void> start() {
     final completer = Completer();
-    //创建关联的集群节点
-    _config.clusterConfigs.forEach((cluster, serverList) {
+    //连接器
+    _config.clusterLinksConfigs.forEach((cluster, serverList) {
       final clientList = <EasyClient>[];
       for (var server in serverList) {
         clientList.add(EasyClient(
@@ -465,11 +465,11 @@ class EasyServer extends EasyLogger {
       securityContext: _config.sslEnable
           ? (SecurityContext()
             ..usePrivateKey(_config.sslKeyFile!, password: _config.sslKeyPasswd)
-            ..useCertificateChain(_config.sslCerFile!, password: _config.sslCerPawsswd))
+            ..useCertificateChain(_config.sslCerFile!, password: _config.sslCerPasswd))
           : null,
       backlog: _config.backlog,
-      shared: _config.instances > 1,
-      poweredByHeader: _config.xpoweredbyHeader,
+      shared: _config.isolateInstances > 1,
+      poweredByHeader: _config.xPoweredByHeader,
     ).then((server) {
       if (_router != null) {
         logInfo(['web server is listening...']);
