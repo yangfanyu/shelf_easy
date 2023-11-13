@@ -1,5 +1,7 @@
 ## 3.1.0
 
+- Fixed for EasyClient: Unhandled exception caused by not waiting for WebSocketChannel.ready
+
 - Optimize EasyServer startup configuration information and process in cluster environment.
 
 - For the EasyServer class: implement functions such as gzip, add some parameters, and fix the bug that global response headers cannot be added.

@@ -46,6 +46,9 @@ Future<void> userClient800X({required int port, required String uid, required St
         await client.websocketRequest('joinTeam', data: {'cid': cid}); //加入分组
       }
     },
+    onclose: (code, reason) {
+      client.unbindUser(); //解绑口令，否则重连之后口令不正确数据会解析失败
+    },
   );
 
   //sigint
