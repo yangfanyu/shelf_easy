@@ -333,8 +333,14 @@ class EasyClient extends EasyLogger {
     _safeClose(EasyConstant.clientCloseByRetry.code, EasyConstant.clientCloseByRetry.desc); //关闭旧连接
     logTrace(['_safeOpen']);
     _socket = WebSocketChannel.connect(Uri.parse(_config.websocketUrl));
-    _socketInited = false;
-    _socket?.stream.listen((data) => _onWebSocketData(data), onError: _onWebSocketError, onDone: _onWebSocketDone, cancelOnError: false);
+    //如果不对ready进行catchError处理，则如：服务器未打开时抛出的异常无法捕获 = Unhandled exception: SocketException: Connection refused...
+    //参考：https://github.com/dart-lang/web_socket_channel/issues/38
+    _socket?.ready.then((_) {
+      _socketInited = false;
+      _socket?.stream.listen((data) => _onWebSocketData(data), onError: _onWebSocketError, onDone: _onWebSocketDone, cancelOnError: false);
+    }).catchError((error, stack) {
+      _onWebSocketError(error, stack);
+    });
   }
 
   void _safeClose(int code, String reason) {

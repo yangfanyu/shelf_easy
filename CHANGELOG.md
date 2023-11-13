@@ -1,3 +1,9 @@
+## 3.1.0
+
+- Optimize EasyServer startup configuration information and process in cluster environment.
+
+- For the EasyServer class: implement functions such as gzip, add some parameters, and fix the bug that global response headers cannot be added.
+  
 ## 3.0.9
 
 - Update dependent libraries and optimize documentation.

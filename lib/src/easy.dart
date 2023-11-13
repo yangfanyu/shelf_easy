@@ -22,14 +22,11 @@ class Easy {
   /// * [machineBind] 是否只启动与机器名称对应的进程
   /// * [machineFile] 机器名称文件的绝对路径
   /// * [environment] 当前启动的环境
-  /// * [envClusterServerConfig] 集群配置信息
-  /// * [envClusterServerEntryPoint] 集群入口函数
-  /// * [envDefaultServerConfig] 默认配置信息
-  /// * [envDefaultServerEntryPoint] 默认入口函数
+  /// * [envClusterServerConfig] 环境集群配置信息
+  /// * [envClusterServerEntryPoint] 环境集群入口函数
+  /// * [envDefaultServerConfig] 环境默认配置信息
+  /// * [envDefaultServerEntryPoint] 环境默认入口函数
   /// * [defaultLogFolder] 默认日志文件输出文件夹
-  ///
-  /// 子线程异常处理方式
-  ///
   /// * [runErrorsZone] 在runZonedGuarded函数中运行子线程逻辑
   /// * [errorsAreFatal] 为true时若在子线程中产生未捕获的异常，将终止子线程的运行
   ///

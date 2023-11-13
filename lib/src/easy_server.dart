@@ -452,7 +452,7 @@ class EasyServer extends EasyLogger {
         ))
         .addMiddleware(createGzipMiddleware(
           minimalGzipContentLength: _config.gzipMinBytes,
-          alreadyCompressedContentType: (contentType) => _config.gzipNotContentTypes.contains(contentType) || isAlreadyCompressedContentType(contentType),
+          alreadyCompressedContentType: (contentType) => _config.gzipNotContentTypes.contains(contentType.toLowerCase().trim()) || isAlreadyCompressedContentType(contentType),
           compressionLevel: _config.gzipLevel,
         ))
         .addHandler(
