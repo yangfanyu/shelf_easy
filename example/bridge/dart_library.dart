@@ -687,7 +687,7 @@ class DartLibrary {
   ///class DoubleLinkedQueue
   static final classDoubleLinkedQueue = VmClass<DoubleLinkedQueue>(
     identifier: 'DoubleLinkedQueue',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'Queue'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_QueueIterable', 'Queue'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => DoubleLinkedQueue.new),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => DoubleLinkedQueue.from),
@@ -1188,7 +1188,7 @@ class DartLibrary {
   ///class Float32List
   static final classFloat32List = VmClass<Float32List>(
     identifier: 'Float32List',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedFloatList'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedFloatList'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Float32List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Float32List.fromList),
@@ -1568,7 +1568,7 @@ class DartLibrary {
   ///class Float32x4List
   static final classFloat32x4List = VmClass<Float32x4List>(
     identifier: 'Float32x4List',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Float32x4List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Float32x4List.fromList),
@@ -1606,7 +1606,7 @@ class DartLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (Float32x4List instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (Float32x4List instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (Float32x4List instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (Float32x4List instance) => instance.last, externalInstancePropertyWriter: (Float32x4List instance, value) => instance.last = value),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (Float32x4List instance, value) => instance.last = value, externalInstancePropertyReader: (Float32x4List instance) => instance.last),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (Float32x4List instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (Float32x4List instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (Float32x4List instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastOrNull': VmProxy(identifier: 'lastOrNull', externalInstancePropertyReader: (Float32x4List instance) => instance.lastOrNull),
@@ -1650,7 +1650,7 @@ class DartLibrary {
   ///class Float64List
   static final classFloat64List = VmClass<Float64List>(
     identifier: 'Float64List',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedFloatList'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedFloatList'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Float64List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Float64List.fromList),
@@ -1759,7 +1759,7 @@ class DartLibrary {
   ///class Float64x2List
   static final classFloat64x2List = VmClass<Float64x2List>(
     identifier: 'Float64x2List',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Float64x2List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Float64x2List.fromList),
@@ -1797,7 +1797,7 @@ class DartLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (Float64x2List instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (Float64x2List instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (Float64x2List instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (Float64x2List instance) => instance.last, externalInstancePropertyWriter: (Float64x2List instance, value) => instance.last = value),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (Float64x2List instance, value) => instance.last = value, externalInstancePropertyReader: (Float64x2List instance) => instance.last),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (Float64x2List instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (Float64x2List instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (Float64x2List instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastOrNull': VmProxy(identifier: 'lastOrNull', externalInstancePropertyReader: (Float64x2List instance) => instance.lastOrNull),
@@ -1991,7 +1991,7 @@ class DartLibrary {
   ///class HashSet
   static final classHashSet = VmClass<HashSet>(
     identifier: 'HashSet',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'Set'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_SetIterable', 'Set'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => HashSet.new, externalStaticFunctionCaller: ({equals, hashCode, isValidKey}) => HashSet.new(equals: equals == null ? null : (b0, b1) => equals(b0, b1), hashCode: hashCode == null ? null : (b0) => hashCode(b0), isValidKey: isValidKey == null ? null : (b0) => isValidKey(b0))),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => HashSet.from),
@@ -2180,7 +2180,7 @@ class DartLibrary {
   ///class Int16List
   static final classInt16List = VmClass<Int16List>(
     identifier: 'Int16List',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedIntList'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Int16List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Int16List.fromList),
@@ -2262,7 +2262,7 @@ class DartLibrary {
   ///class Int32List
   static final classInt32List = VmClass<Int32List>(
     identifier: 'Int32List',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedIntList'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Int32List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Int32List.fromList),
@@ -2635,7 +2635,7 @@ class DartLibrary {
   ///class Int32x4List
   static final classInt32x4List = VmClass<Int32x4List>(
     identifier: 'Int32x4List',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Int32x4List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Int32x4List.fromList),
@@ -2673,7 +2673,7 @@ class DartLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (Int32x4List instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (Int32x4List instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (Int32x4List instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (Int32x4List instance) => instance.last, externalInstancePropertyWriter: (Int32x4List instance, value) => instance.last = value),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (Int32x4List instance, value) => instance.last = value, externalInstancePropertyReader: (Int32x4List instance) => instance.last),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (Int32x4List instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (Int32x4List instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (Int32x4List instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastOrNull': VmProxy(identifier: 'lastOrNull', externalInstancePropertyReader: (Int32x4List instance) => instance.lastOrNull),
@@ -2717,7 +2717,7 @@ class DartLibrary {
   ///class Int64List
   static final classInt64List = VmClass<Int64List>(
     identifier: 'Int64List',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedIntList'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Int64List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Int64List.fromList),
@@ -2799,7 +2799,7 @@ class DartLibrary {
   ///class Int8List
   static final classInt8List = VmClass<Int8List>(
     identifier: 'Int8List',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedIntList'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Int8List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Int8List.fromList),
@@ -3045,7 +3045,9 @@ class DartLibrary {
       'exit': VmProxy(identifier: 'exit', externalStaticPropertyReader: () => Isolate.exit),
       'immediate': VmProxy(identifier: 'immediate', externalStaticPropertyReader: () => Isolate.immediate),
       'packageConfig': VmProxy(identifier: 'packageConfig', externalStaticPropertyReader: () => Isolate.packageConfig),
+      'packageConfigSync': VmProxy(identifier: 'packageConfigSync', externalStaticPropertyReader: () => Isolate.packageConfigSync),
       'resolvePackageUri': VmProxy(identifier: 'resolvePackageUri', externalStaticPropertyReader: () => Isolate.resolvePackageUri),
+      'resolvePackageUriSync': VmProxy(identifier: 'resolvePackageUriSync', externalStaticPropertyReader: () => Isolate.resolvePackageUriSync),
       'run': VmProxy(identifier: 'run', externalStaticPropertyReader: () => Isolate.run, externalStaticFunctionCaller: (a0, {debugName}) => Isolate.run(() => a0(), debugName: debugName)),
       'spawn': VmProxy(identifier: 'spawn', externalStaticPropertyReader: () => Isolate.spawn, externalStaticFunctionCaller: (a0, a1, {paused = false, errorsAreFatal = true, onExit, onError, debugName}) => Isolate.spawn((b0) => a0(b0), a1, paused: paused, errorsAreFatal: errorsAreFatal, onExit: onExit, onError: onError, debugName: debugName)),
       'spawnUri': VmProxy(identifier: 'spawnUri', externalStaticPropertyReader: () => Isolate.spawnUri),
@@ -3510,7 +3512,7 @@ class DartLibrary {
   ///class LinkedHashSet
   static final classLinkedHashSet = VmClass<LinkedHashSet>(
     identifier: 'LinkedHashSet',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'Set'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_SetIterable', 'Set'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => LinkedHashSet.new, externalStaticFunctionCaller: ({equals, hashCode, isValidKey}) => LinkedHashSet.new(equals: equals == null ? null : (b0, b1) => equals(b0, b1), hashCode: hashCode == null ? null : (b0) => hashCode(b0), isValidKey: isValidKey == null ? null : (b0) => isValidKey(b0))),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => LinkedHashSet.from),
@@ -3647,7 +3649,7 @@ class DartLibrary {
   ///class List
   static final classList = VmClass<List>(
     identifier: 'List',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable'],
     externalProxyMap: {
       'empty': VmProxy(identifier: 'empty', externalStaticPropertyReader: () => List.empty),
       'filled': VmProxy(identifier: 'filled', externalStaticPropertyReader: () => List.filled),
@@ -3670,7 +3672,7 @@ class DartLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (List instance) => instance.every, externalInstanceFunctionCaller: (List instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (List instance) => instance.expand, externalInstanceFunctionCaller: (List instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (List instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (List instance, value) => instance.first = value, externalInstancePropertyReader: (List instance) => instance.first),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (List instance) => instance.first, externalInstancePropertyWriter: (List instance, value) => instance.first = value),
       'firstOrNull': VmProxy(identifier: 'firstOrNull', externalInstancePropertyReader: (List instance) => instance.firstOrNull),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (List instance) => instance.firstWhere, externalInstanceFunctionCaller: (List instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (List instance) => instance.fold, externalInstanceFunctionCaller: (List instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
@@ -3687,7 +3689,7 @@ class DartLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (List instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (List instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (List instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (List instance, value) => instance.last = value, externalInstancePropertyReader: (List instance) => instance.last),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (List instance) => instance.last, externalInstancePropertyWriter: (List instance, value) => instance.last = value),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (List instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (List instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (List instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastOrNull': VmProxy(identifier: 'lastOrNull', externalInstancePropertyReader: (List instance) => instance.lastOrNull),
@@ -3729,7 +3731,7 @@ class DartLibrary {
   ///class ListBase
   static final classListBase = VmClass<ListBase>(
     identifier: 'ListBase',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List'],
     externalProxyMap: {
       'listToString': VmProxy(identifier: 'listToString', externalStaticPropertyReader: () => ListBase.listToString),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (ListBase instance) => instance.add),
@@ -3761,12 +3763,12 @@ class DartLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (ListBase instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (ListBase instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (ListBase instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (ListBase instance) => instance.last, externalInstancePropertyWriter: (ListBase instance, value) => instance.last = value),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (ListBase instance, value) => instance.last = value, externalInstancePropertyReader: (ListBase instance) => instance.last),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (ListBase instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (ListBase instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (ListBase instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastOrNull': VmProxy(identifier: 'lastOrNull', externalInstancePropertyReader: (ListBase instance) => instance.lastOrNull),
       'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (ListBase instance) => instance.lastWhere, externalInstanceFunctionCaller: (ListBase instance, a0, {orElse}) => instance.lastWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
-      'length': VmProxy(identifier: 'length', externalInstancePropertyWriter: (ListBase instance, value) => instance.length = value, externalInstancePropertyReader: (ListBase instance) => instance.length),
+      'length': VmProxy(identifier: 'length', externalInstancePropertyReader: (ListBase instance) => instance.length, externalInstancePropertyWriter: (ListBase instance, value) => instance.length = value),
       'map': VmProxy(identifier: 'map', externalInstancePropertyReader: (ListBase instance) => instance.map, externalInstanceFunctionCaller: (ListBase instance, a0) => instance.map((b0) => a0(b0))),
       'nonNulls': VmProxy(identifier: 'nonNulls', externalInstancePropertyReader: (ListBase instance) => instance.nonNulls),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (ListBase instance) => instance.noSuchMethod),
@@ -3803,7 +3805,7 @@ class DartLibrary {
   ///class ListMixin
   static final classListMixin = VmClass<ListMixin>(
     identifier: 'ListMixin',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'ListBase'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'ListBase'],
     externalProxyMap: {
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (ListMixin instance) => instance.add),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (ListMixin instance) => instance.addAll),
@@ -3817,7 +3819,7 @@ class DartLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (ListMixin instance) => instance.every, externalInstanceFunctionCaller: (ListMixin instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (ListMixin instance) => instance.expand, externalInstanceFunctionCaller: (ListMixin instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (ListMixin instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (ListMixin instance) => instance.first, externalInstancePropertyWriter: (ListMixin instance, value) => instance.first = value),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (ListMixin instance, value) => instance.first = value, externalInstancePropertyReader: (ListMixin instance) => instance.first),
       'firstOrNull': VmProxy(identifier: 'firstOrNull', externalInstancePropertyReader: (ListMixin instance) => instance.firstOrNull),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (ListMixin instance) => instance.firstWhere, externalInstanceFunctionCaller: (ListMixin instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (ListMixin instance) => instance.fold, externalInstanceFunctionCaller: (ListMixin instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
@@ -3839,7 +3841,7 @@ class DartLibrary {
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (ListMixin instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (ListMixin instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastOrNull': VmProxy(identifier: 'lastOrNull', externalInstancePropertyReader: (ListMixin instance) => instance.lastOrNull),
       'lastWhere': VmProxy(identifier: 'lastWhere', externalInstancePropertyReader: (ListMixin instance) => instance.lastWhere, externalInstanceFunctionCaller: (ListMixin instance, a0, {orElse}) => instance.lastWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
-      'length': VmProxy(identifier: 'length', externalInstancePropertyReader: (ListMixin instance) => instance.length, externalInstancePropertyWriter: (ListMixin instance, value) => instance.length = value),
+      'length': VmProxy(identifier: 'length', externalInstancePropertyWriter: (ListMixin instance, value) => instance.length = value, externalInstancePropertyReader: (ListMixin instance) => instance.length),
       'map': VmProxy(identifier: 'map', externalInstancePropertyReader: (ListMixin instance) => instance.map, externalInstanceFunctionCaller: (ListMixin instance, a0) => instance.map((b0) => a0(b0))),
       'nonNulls': VmProxy(identifier: 'nonNulls', externalInstancePropertyReader: (ListMixin instance) => instance.nonNulls),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (ListMixin instance) => instance.noSuchMethod),
@@ -3876,7 +3878,7 @@ class DartLibrary {
   ///class ListQueue
   static final classListQueue = VmClass<ListQueue>(
     identifier: 'ListQueue',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'ListIterable', 'Queue'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', 'ListIterable', '_QueueIterable', 'Queue'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => ListQueue.new),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => ListQueue.from),
@@ -4568,7 +4570,7 @@ class DartLibrary {
   ///class Queue
   static final classQueue = VmClass<Queue>(
     identifier: 'Queue',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_QueueIterable'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Queue.new),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => Queue.from),
@@ -4785,6 +4787,7 @@ class DartLibrary {
       'close': VmProxy(identifier: 'close', externalInstancePropertyReader: (RawReceivePort instance) => instance.close),
       'handler': VmProxy(identifier: 'handler', externalInstancePropertyWriter: (RawReceivePort instance, value) => instance.handler = value),
       'hashCode': VmProxy(identifier: 'hashCode', externalInstancePropertyReader: (RawReceivePort instance) => instance.hashCode),
+      'keepIsolateAlive': VmProxy(identifier: 'keepIsolateAlive', externalInstancePropertyReader: (RawReceivePort instance) => instance.keepIsolateAlive, externalInstancePropertyWriter: (RawReceivePort instance, value) => instance.keepIsolateAlive = value),
       'noSuchMethod': VmProxy(identifier: 'noSuchMethod', externalInstancePropertyReader: (RawReceivePort instance) => instance.noSuchMethod),
       'runtimeType': VmProxy(identifier: 'runtimeType', externalInstancePropertyReader: (RawReceivePort instance) => instance.runtimeType),
       'sendPort': VmProxy(identifier: 'sendPort', externalInstancePropertyReader: (RawReceivePort instance) => instance.sendPort),
@@ -5642,7 +5645,7 @@ class DartLibrary {
   ///class Set
   static final classSet = VmClass<Set>(
     identifier: 'Set',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_SetIterable'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Set.new),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => Set.from),
@@ -5709,7 +5712,7 @@ class DartLibrary {
   ///class SetBase
   static final classSetBase = VmClass<SetBase>(
     identifier: 'SetBase',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'Set'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_SetIterable', 'Set'],
     externalProxyMap: {
       'setToString': VmProxy(identifier: 'setToString', externalStaticPropertyReader: () => SetBase.setToString),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (SetBase instance) => instance.add),
@@ -5771,7 +5774,7 @@ class DartLibrary {
   ///class SetMixin
   static final classSetMixin = VmClass<SetMixin>(
     identifier: 'SetMixin',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'Set', 'SetBase'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_SetIterable', 'Set', 'SetBase'],
     externalProxyMap: {
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (SetMixin instance) => instance.add),
       'addAll': VmProxy(identifier: 'addAll', externalInstancePropertyReader: (SetMixin instance) => instance.addAll),
@@ -6049,7 +6052,7 @@ class DartLibrary {
   ///class SplayTreeSet
   static final classSplayTreeSet = VmClass<SplayTreeSet>(
     identifier: 'SplayTreeSet',
-    superclassNames: ['Object', '_SplayTree', 'Iterable', 'EfficientLengthIterable', 'Set', 'SetBase', 'SetMixin'],
+    superclassNames: ['Object', '_SplayTree', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_SetIterable', 'Set', 'SetBase', 'SetMixin'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => SplayTreeSet.new, externalStaticFunctionCaller: ([a0, a1]) => SplayTreeSet.new(a0 == null ? null : (b0, b1) => a0(b0, b1), a1 == null ? null : (b0) => a1(b0))),
       'from': VmProxy(identifier: 'from', externalStaticPropertyReader: () => SplayTreeSet.from, externalStaticFunctionCaller: (a0, [a1, a2]) => SplayTreeSet.from(a0, a1 == null ? null : (b0, b1) => a1(b0, b1), a2 == null ? null : (b0) => a2(b0))),
@@ -6851,7 +6854,7 @@ class DartLibrary {
   ///class Uint16List
   static final classUint16List = VmClass<Uint16List>(
     identifier: 'Uint16List',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedIntList'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Uint16List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Uint16List.fromList),
@@ -6933,7 +6936,7 @@ class DartLibrary {
   ///class Uint32List
   static final classUint32List = VmClass<Uint32List>(
     identifier: 'Uint32List',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedIntList'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Uint32List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Uint32List.fromList),
@@ -7015,7 +7018,7 @@ class DartLibrary {
   ///class Uint64List
   static final classUint64List = VmClass<Uint64List>(
     identifier: 'Uint64List',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedIntList'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Uint64List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Uint64List.fromList),
@@ -7097,7 +7100,7 @@ class DartLibrary {
   ///class Uint8ClampedList
   static final classUint8ClampedList = VmClass<Uint8ClampedList>(
     identifier: 'Uint8ClampedList',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedIntList'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Uint8ClampedList.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Uint8ClampedList.fromList),
@@ -7179,7 +7182,7 @@ class DartLibrary {
   ///class Uint8List
   static final classUint8List = VmClass<Uint8List>(
     identifier: 'Uint8List',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedIntList'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => Uint8List.new),
       'fromList': VmProxy(identifier: 'fromList', externalStaticPropertyReader: () => Uint8List.fromList),
@@ -7342,7 +7345,7 @@ class DartLibrary {
   ///class UnmodifiableFloat32ListView
   static final classUnmodifiableFloat32ListView = VmClass<UnmodifiableFloat32ListView>(
     identifier: 'UnmodifiableFloat32ListView',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedFloatList', 'Float32List'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedFloatList', 'Float32List'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableFloat32ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableFloat32ListView instance) => instance.add),
@@ -7359,7 +7362,7 @@ class DartLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (UnmodifiableFloat32ListView instance) => instance.every, externalInstanceFunctionCaller: (UnmodifiableFloat32ListView instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (UnmodifiableFloat32ListView instance) => instance.expand, externalInstanceFunctionCaller: (UnmodifiableFloat32ListView instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (UnmodifiableFloat32ListView instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (UnmodifiableFloat32ListView instance, value) => instance.first = value, externalInstancePropertyReader: (UnmodifiableFloat32ListView instance) => instance.first),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (UnmodifiableFloat32ListView instance) => instance.first, externalInstancePropertyWriter: (UnmodifiableFloat32ListView instance, value) => instance.first = value),
       'firstOrNull': VmProxy(identifier: 'firstOrNull', externalInstancePropertyReader: (UnmodifiableFloat32ListView instance) => instance.firstOrNull),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (UnmodifiableFloat32ListView instance) => instance.firstWhere, externalInstanceFunctionCaller: (UnmodifiableFloat32ListView instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (UnmodifiableFloat32ListView instance) => instance.fold, externalInstanceFunctionCaller: (UnmodifiableFloat32ListView instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
@@ -7420,7 +7423,7 @@ class DartLibrary {
   ///class UnmodifiableFloat32x4ListView
   static final classUnmodifiableFloat32x4ListView = VmClass<UnmodifiableFloat32x4ListView>(
     identifier: 'UnmodifiableFloat32x4ListView',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', 'Float32x4List'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', 'Float32x4List'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableFloat32x4ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.add),
@@ -7437,7 +7440,7 @@ class DartLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.every, externalInstanceFunctionCaller: (UnmodifiableFloat32x4ListView instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.expand, externalInstanceFunctionCaller: (UnmodifiableFloat32x4ListView instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (UnmodifiableFloat32x4ListView instance, value) => instance.first = value, externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.first),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.first, externalInstancePropertyWriter: (UnmodifiableFloat32x4ListView instance, value) => instance.first = value),
       'firstOrNull': VmProxy(identifier: 'firstOrNull', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.firstOrNull),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.firstWhere, externalInstanceFunctionCaller: (UnmodifiableFloat32x4ListView instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.fold, externalInstanceFunctionCaller: (UnmodifiableFloat32x4ListView instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
@@ -7454,7 +7457,7 @@ class DartLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.last, externalInstancePropertyWriter: (UnmodifiableFloat32x4ListView instance, value) => instance.last = value),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (UnmodifiableFloat32x4ListView instance, value) => instance.last = value, externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.last),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (UnmodifiableFloat32x4ListView instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastOrNull': VmProxy(identifier: 'lastOrNull', externalInstancePropertyReader: (UnmodifiableFloat32x4ListView instance) => instance.lastOrNull),
@@ -7498,7 +7501,7 @@ class DartLibrary {
   ///class UnmodifiableFloat64ListView
   static final classUnmodifiableFloat64ListView = VmClass<UnmodifiableFloat64ListView>(
     identifier: 'UnmodifiableFloat64ListView',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedFloatList', 'Float64List'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedFloatList', 'Float64List'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableFloat64ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableFloat64ListView instance) => instance.add),
@@ -7515,7 +7518,7 @@ class DartLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (UnmodifiableFloat64ListView instance) => instance.every, externalInstanceFunctionCaller: (UnmodifiableFloat64ListView instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (UnmodifiableFloat64ListView instance) => instance.expand, externalInstanceFunctionCaller: (UnmodifiableFloat64ListView instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (UnmodifiableFloat64ListView instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (UnmodifiableFloat64ListView instance, value) => instance.first = value, externalInstancePropertyReader: (UnmodifiableFloat64ListView instance) => instance.first),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (UnmodifiableFloat64ListView instance) => instance.first, externalInstancePropertyWriter: (UnmodifiableFloat64ListView instance, value) => instance.first = value),
       'firstOrNull': VmProxy(identifier: 'firstOrNull', externalInstancePropertyReader: (UnmodifiableFloat64ListView instance) => instance.firstOrNull),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (UnmodifiableFloat64ListView instance) => instance.firstWhere, externalInstanceFunctionCaller: (UnmodifiableFloat64ListView instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (UnmodifiableFloat64ListView instance) => instance.fold, externalInstanceFunctionCaller: (UnmodifiableFloat64ListView instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
@@ -7576,7 +7579,7 @@ class DartLibrary {
   ///class UnmodifiableFloat64x2ListView
   static final classUnmodifiableFloat64x2ListView = VmClass<UnmodifiableFloat64x2ListView>(
     identifier: 'UnmodifiableFloat64x2ListView',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', 'Float64x2List'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', 'Float64x2List'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableFloat64x2ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.add),
@@ -7593,7 +7596,7 @@ class DartLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.every, externalInstanceFunctionCaller: (UnmodifiableFloat64x2ListView instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.expand, externalInstanceFunctionCaller: (UnmodifiableFloat64x2ListView instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (UnmodifiableFloat64x2ListView instance, value) => instance.first = value, externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.first),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.first, externalInstancePropertyWriter: (UnmodifiableFloat64x2ListView instance, value) => instance.first = value),
       'firstOrNull': VmProxy(identifier: 'firstOrNull', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.firstOrNull),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.firstWhere, externalInstanceFunctionCaller: (UnmodifiableFloat64x2ListView instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.fold, externalInstanceFunctionCaller: (UnmodifiableFloat64x2ListView instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
@@ -7610,7 +7613,7 @@ class DartLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.last, externalInstancePropertyWriter: (UnmodifiableFloat64x2ListView instance, value) => instance.last = value),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (UnmodifiableFloat64x2ListView instance, value) => instance.last = value, externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.last),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (UnmodifiableFloat64x2ListView instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastOrNull': VmProxy(identifier: 'lastOrNull', externalInstancePropertyReader: (UnmodifiableFloat64x2ListView instance) => instance.lastOrNull),
@@ -7654,7 +7657,7 @@ class DartLibrary {
   ///class UnmodifiableInt16ListView
   static final classUnmodifiableInt16ListView = VmClass<UnmodifiableInt16ListView>(
     identifier: 'UnmodifiableInt16ListView',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList', 'Int16List'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedIntList', 'Int16List'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableInt16ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableInt16ListView instance) => instance.add),
@@ -7671,7 +7674,7 @@ class DartLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (UnmodifiableInt16ListView instance) => instance.every, externalInstanceFunctionCaller: (UnmodifiableInt16ListView instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (UnmodifiableInt16ListView instance) => instance.expand, externalInstanceFunctionCaller: (UnmodifiableInt16ListView instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (UnmodifiableInt16ListView instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (UnmodifiableInt16ListView instance, value) => instance.first = value, externalInstancePropertyReader: (UnmodifiableInt16ListView instance) => instance.first),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (UnmodifiableInt16ListView instance) => instance.first, externalInstancePropertyWriter: (UnmodifiableInt16ListView instance, value) => instance.first = value),
       'firstOrNull': VmProxy(identifier: 'firstOrNull', externalInstancePropertyReader: (UnmodifiableInt16ListView instance) => instance.firstOrNull),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (UnmodifiableInt16ListView instance) => instance.firstWhere, externalInstanceFunctionCaller: (UnmodifiableInt16ListView instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (UnmodifiableInt16ListView instance) => instance.fold, externalInstanceFunctionCaller: (UnmodifiableInt16ListView instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
@@ -7732,7 +7735,7 @@ class DartLibrary {
   ///class UnmodifiableInt32ListView
   static final classUnmodifiableInt32ListView = VmClass<UnmodifiableInt32ListView>(
     identifier: 'UnmodifiableInt32ListView',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList', 'Int32List'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedIntList', 'Int32List'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableInt32ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableInt32ListView instance) => instance.add),
@@ -7749,7 +7752,7 @@ class DartLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (UnmodifiableInt32ListView instance) => instance.every, externalInstanceFunctionCaller: (UnmodifiableInt32ListView instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (UnmodifiableInt32ListView instance) => instance.expand, externalInstanceFunctionCaller: (UnmodifiableInt32ListView instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (UnmodifiableInt32ListView instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (UnmodifiableInt32ListView instance, value) => instance.first = value, externalInstancePropertyReader: (UnmodifiableInt32ListView instance) => instance.first),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (UnmodifiableInt32ListView instance) => instance.first, externalInstancePropertyWriter: (UnmodifiableInt32ListView instance, value) => instance.first = value),
       'firstOrNull': VmProxy(identifier: 'firstOrNull', externalInstancePropertyReader: (UnmodifiableInt32ListView instance) => instance.firstOrNull),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (UnmodifiableInt32ListView instance) => instance.firstWhere, externalInstanceFunctionCaller: (UnmodifiableInt32ListView instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (UnmodifiableInt32ListView instance) => instance.fold, externalInstanceFunctionCaller: (UnmodifiableInt32ListView instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
@@ -7810,7 +7813,7 @@ class DartLibrary {
   ///class UnmodifiableInt32x4ListView
   static final classUnmodifiableInt32x4ListView = VmClass<UnmodifiableInt32x4ListView>(
     identifier: 'UnmodifiableInt32x4ListView',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', 'Int32x4List'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', 'Int32x4List'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableInt32x4ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.add),
@@ -7827,7 +7830,7 @@ class DartLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.every, externalInstanceFunctionCaller: (UnmodifiableInt32x4ListView instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.expand, externalInstanceFunctionCaller: (UnmodifiableInt32x4ListView instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (UnmodifiableInt32x4ListView instance, value) => instance.first = value, externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.first),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.first, externalInstancePropertyWriter: (UnmodifiableInt32x4ListView instance, value) => instance.first = value),
       'firstOrNull': VmProxy(identifier: 'firstOrNull', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.firstOrNull),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.firstWhere, externalInstanceFunctionCaller: (UnmodifiableInt32x4ListView instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.fold, externalInstanceFunctionCaller: (UnmodifiableInt32x4ListView instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
@@ -7844,7 +7847,7 @@ class DartLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.last, externalInstancePropertyWriter: (UnmodifiableInt32x4ListView instance, value) => instance.last = value),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (UnmodifiableInt32x4ListView instance, value) => instance.last = value, externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.last),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (UnmodifiableInt32x4ListView instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastOrNull': VmProxy(identifier: 'lastOrNull', externalInstancePropertyReader: (UnmodifiableInt32x4ListView instance) => instance.lastOrNull),
@@ -7888,7 +7891,7 @@ class DartLibrary {
   ///class UnmodifiableInt64ListView
   static final classUnmodifiableInt64ListView = VmClass<UnmodifiableInt64ListView>(
     identifier: 'UnmodifiableInt64ListView',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList', 'Int64List'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedIntList', 'Int64List'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableInt64ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableInt64ListView instance) => instance.add),
@@ -7905,7 +7908,7 @@ class DartLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (UnmodifiableInt64ListView instance) => instance.every, externalInstanceFunctionCaller: (UnmodifiableInt64ListView instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (UnmodifiableInt64ListView instance) => instance.expand, externalInstanceFunctionCaller: (UnmodifiableInt64ListView instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (UnmodifiableInt64ListView instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (UnmodifiableInt64ListView instance, value) => instance.first = value, externalInstancePropertyReader: (UnmodifiableInt64ListView instance) => instance.first),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (UnmodifiableInt64ListView instance) => instance.first, externalInstancePropertyWriter: (UnmodifiableInt64ListView instance, value) => instance.first = value),
       'firstOrNull': VmProxy(identifier: 'firstOrNull', externalInstancePropertyReader: (UnmodifiableInt64ListView instance) => instance.firstOrNull),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (UnmodifiableInt64ListView instance) => instance.firstWhere, externalInstanceFunctionCaller: (UnmodifiableInt64ListView instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (UnmodifiableInt64ListView instance) => instance.fold, externalInstanceFunctionCaller: (UnmodifiableInt64ListView instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
@@ -7966,7 +7969,7 @@ class DartLibrary {
   ///class UnmodifiableInt8ListView
   static final classUnmodifiableInt8ListView = VmClass<UnmodifiableInt8ListView>(
     identifier: 'UnmodifiableInt8ListView',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList', 'Int8List'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedIntList', 'Int8List'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableInt8ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableInt8ListView instance) => instance.add),
@@ -7983,7 +7986,7 @@ class DartLibrary {
       'every': VmProxy(identifier: 'every', externalInstancePropertyReader: (UnmodifiableInt8ListView instance) => instance.every, externalInstanceFunctionCaller: (UnmodifiableInt8ListView instance, a0) => instance.every((b0) => a0(b0))),
       'expand': VmProxy(identifier: 'expand', externalInstancePropertyReader: (UnmodifiableInt8ListView instance) => instance.expand, externalInstanceFunctionCaller: (UnmodifiableInt8ListView instance, a0) => instance.expand((b0) => a0(b0))),
       'fillRange': VmProxy(identifier: 'fillRange', externalInstancePropertyReader: (UnmodifiableInt8ListView instance) => instance.fillRange),
-      'first': VmProxy(identifier: 'first', externalInstancePropertyWriter: (UnmodifiableInt8ListView instance, value) => instance.first = value, externalInstancePropertyReader: (UnmodifiableInt8ListView instance) => instance.first),
+      'first': VmProxy(identifier: 'first', externalInstancePropertyReader: (UnmodifiableInt8ListView instance) => instance.first, externalInstancePropertyWriter: (UnmodifiableInt8ListView instance, value) => instance.first = value),
       'firstOrNull': VmProxy(identifier: 'firstOrNull', externalInstancePropertyReader: (UnmodifiableInt8ListView instance) => instance.firstOrNull),
       'firstWhere': VmProxy(identifier: 'firstWhere', externalInstancePropertyReader: (UnmodifiableInt8ListView instance) => instance.firstWhere, externalInstanceFunctionCaller: (UnmodifiableInt8ListView instance, a0, {orElse}) => instance.firstWhere((b0) => a0(b0), orElse: orElse == null ? null : () => orElse())),
       'fold': VmProxy(identifier: 'fold', externalInstancePropertyReader: (UnmodifiableInt8ListView instance) => instance.fold, externalInstanceFunctionCaller: (UnmodifiableInt8ListView instance, a0, a1) => instance.fold(a0, (b0, b1) => a1(b0, b1))),
@@ -8044,7 +8047,7 @@ class DartLibrary {
   ///class UnmodifiableListView
   static final classUnmodifiableListView = VmClass<UnmodifiableListView>(
     identifier: 'UnmodifiableListView',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'ListBase', 'UnmodifiableListMixin', 'UnmodifiableListBase'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'ListBase', 'UnmodifiableListMixin', 'UnmodifiableListBase'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableListView instance) => instance.add),
@@ -8076,7 +8079,7 @@ class DartLibrary {
       'isNotEmpty': VmProxy(identifier: 'isNotEmpty', externalInstancePropertyReader: (UnmodifiableListView instance) => instance.isNotEmpty),
       'iterator': VmProxy(identifier: 'iterator', externalInstancePropertyReader: (UnmodifiableListView instance) => instance.iterator),
       'join': VmProxy(identifier: 'join', externalInstancePropertyReader: (UnmodifiableListView instance) => instance.join),
-      'last': VmProxy(identifier: 'last', externalInstancePropertyWriter: (UnmodifiableListView instance, value) => instance.last = value, externalInstancePropertyReader: (UnmodifiableListView instance) => instance.last),
+      'last': VmProxy(identifier: 'last', externalInstancePropertyReader: (UnmodifiableListView instance) => instance.last, externalInstancePropertyWriter: (UnmodifiableListView instance, value) => instance.last = value),
       'lastIndexOf': VmProxy(identifier: 'lastIndexOf', externalInstancePropertyReader: (UnmodifiableListView instance) => instance.lastIndexOf),
       'lastIndexWhere': VmProxy(identifier: 'lastIndexWhere', externalInstancePropertyReader: (UnmodifiableListView instance) => instance.lastIndexWhere, externalInstanceFunctionCaller: (UnmodifiableListView instance, a0, [a1]) => instance.lastIndexWhere((b0) => a0(b0), a1)),
       'lastOrNull': VmProxy(identifier: 'lastOrNull', externalInstancePropertyReader: (UnmodifiableListView instance) => instance.lastOrNull),
@@ -8181,7 +8184,7 @@ class DartLibrary {
   ///class UnmodifiableSetView
   static final classUnmodifiableSetView = VmClass<UnmodifiableSetView>(
     identifier: 'UnmodifiableSetView',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'Set', 'SetBase', '_UnmodifiableSetMixin'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_SetIterable', 'Set', 'SetBase', '_UnmodifiableSetMixin'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableSetView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableSetView instance) => instance.add),
@@ -8243,7 +8246,7 @@ class DartLibrary {
   ///class UnmodifiableUint16ListView
   static final classUnmodifiableUint16ListView = VmClass<UnmodifiableUint16ListView>(
     identifier: 'UnmodifiableUint16ListView',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList', 'Uint16List'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedIntList', 'Uint16List'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableUint16ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableUint16ListView instance) => instance.add),
@@ -8321,7 +8324,7 @@ class DartLibrary {
   ///class UnmodifiableUint32ListView
   static final classUnmodifiableUint32ListView = VmClass<UnmodifiableUint32ListView>(
     identifier: 'UnmodifiableUint32ListView',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList', 'Uint32List'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedIntList', 'Uint32List'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableUint32ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableUint32ListView instance) => instance.add),
@@ -8399,7 +8402,7 @@ class DartLibrary {
   ///class UnmodifiableUint64ListView
   static final classUnmodifiableUint64ListView = VmClass<UnmodifiableUint64ListView>(
     identifier: 'UnmodifiableUint64ListView',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList', 'Uint64List'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedIntList', 'Uint64List'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableUint64ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableUint64ListView instance) => instance.add),
@@ -8477,7 +8480,7 @@ class DartLibrary {
   ///class UnmodifiableUint8ClampedListView
   static final classUnmodifiableUint8ClampedListView = VmClass<UnmodifiableUint8ClampedListView>(
     identifier: 'UnmodifiableUint8ClampedListView',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList', 'Uint8ClampedList'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedIntList', 'Uint8ClampedList'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableUint8ClampedListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableUint8ClampedListView instance) => instance.add),
@@ -8555,7 +8558,7 @@ class DartLibrary {
   ///class UnmodifiableUint8ListView
   static final classUnmodifiableUint8ListView = VmClass<UnmodifiableUint8ListView>(
     identifier: 'UnmodifiableUint8ListView',
-    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'List', 'TypedData', '_TypedIntList', 'Uint8List'],
+    superclassNames: ['Object', 'Iterable', 'EfficientLengthIterable', 'HideEfficientLengthIterable', '_ListIterable', 'List', 'TypedData', '_TypedIntList', 'Uint8List'],
     externalProxyMap: {
       'new': VmProxy(identifier: 'new', externalStaticPropertyReader: () => UnmodifiableUint8ListView.new),
       'add': VmProxy(identifier: 'add', externalInstancePropertyReader: (UnmodifiableUint8ListView instance) => instance.add),

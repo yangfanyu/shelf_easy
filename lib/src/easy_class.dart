@@ -580,28 +580,28 @@ class EasySecurity {
 ///客户端配置
 ///
 class EasyClientConfig extends EasyConfig {
-  ///服务器域名
+  ///http、websocket服务器域名
   final String host;
 
-  ///服务器端口号
+  ///http、websocket服务器端口号
   final int port;
 
-  ///数据加解密密码
+  ///http、websocket数据加解密密码
   final String? pwd;
 
-  ///是否用二进制传输
+  ///http、websocket是否用二进制传输
   final bool binary;
 
-  ///请求超时时间（毫秒）
+  ///websocket请求超时时间（毫秒）
   final int timeout;
 
-  ///发送心跳包的间隔（秒）
+  ///websocket发送心跳包的间隔（秒），建议与服务端[EasyServerConfig.heart]保持一致
   final int heartick;
 
-  ///断线重连的间隔（秒）
+  ///websocket断线重连的间隔（秒）
   final int conntick;
 
-  ///是否启用ssl证书模式
+  ///http、websocket是否启用ssl证书模式
   final bool sslEnable;
 
   ///http请求地址
@@ -621,7 +621,7 @@ class EasyClientConfig extends EasyConfig {
     required this.port,
     this.pwd,
     this.binary = false,
-    this.timeout = 10 * 1000,
+    this.timeout = 30 * 1000,
     this.heartick = 60,
     this.conntick = 6,
     this.sslEnable = false,

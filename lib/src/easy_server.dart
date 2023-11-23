@@ -434,8 +434,9 @@ class EasyServer extends EasyLogger {
             port: server.port,
             pwd: server.pwd,
             binary: server.binary,
-            heartick: server.heart ~/ 1000,
-            conntick: 3,
+            timeout: 15 * 1000, //客户端默认值的一半
+            heartick: server.heart ~/ 1000, //与服务器检测周期保持一致
+            conntick: 3, //客户端默认值的一半
             sslEnable: server.sslEnable,
           ),
         ));
