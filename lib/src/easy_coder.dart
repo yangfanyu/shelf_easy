@@ -191,7 +191,61 @@ class EasyCoder extends EasyLogger {
     }
   }
 
+  static const defaultIgnoreIssuePaths = [
+    '/dart-sdk/lib/core/null.dart', //属于dart-sdk库，忽略原因：非Object子类无需生成，在vmobject.dart中文件已内置。输出结果：不会生成前缀或后缀匹配该路径的任何内容，下同
+    '/flutter/lib/src/services/dom.dart', //属于flutter库，忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。
+    '/flutter/lib/src/widgets/window.dart', //属于flutter库，忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。
+    '/flutter/lib/src/cupertino/toggleable.dart', //属于flutter库，忽略原因：ToggleableStateMixin.buildToggleable参数与material不一样。
+    '_web.dart', //属于flutter库，忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。macos可执行：find $FLUTTER_HOME/packages/flutter/lib/ -iname "*_web.dart" 查看具体有哪些文件。
+  ];
+  static const defaultIgnoreProxyObject = [
+    'Iterable.asNameMap', //属于dart-sdk库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。输出结果：Iterable与子类都不会生成标识符为asNameMap的VmProxy项，下同
+    'Iterable.byName', //属于dart-sdk库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。
+    'Iterable.wait', //属于dart-sdk库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。
+    'Isolate.packageConfigSync', //属于dart-sdk库，忽略原因：生成出来的该属性在开发工具里面警告dart-3.2.0之后不保证支持。
+    'Isolate.resolvePackageUriSync', //属于dart-sdk库，忽略原因：生成出来的该属性在开发工具里面警告dart-3.2.0之后不保证支持。
+    'SingletonFlutterWindow.debugPhysicalSizeOverride', //属于dart-ui库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。
+    'PlatformViewController.disposePostFrame', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。
+    'ToggleablePainter.isActive', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。
+    'HtmlElementView.buildImpl', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。
+    // 'jsonDecode',//忽略顶级VmProxy的写法
+  ];
+  static const defaultIgnoreProxyCaller = [
+    'CupertinoRadio.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。输出结果：CupertinoRadio与子类都不会生成new对应的Vmproxy的caller属性，下同
+    'Radio.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
+    'Radio.adaptive', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
+    'RadioListTile.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
+    'RadioListTile.adaptive', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
+    'RadioMenuButton.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
+    'SharedAppData.getValue', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
+    'GestureRecognizerFactoryWithHandlers.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
+    'PaginatedDataTable.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错无法找到[defaultRowsPerPage]默认值。
+    'ImageProvider.loadImage', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错函数参数的类型不匹配。
+    'WidgetInspectorService.initServiceExtensions', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错[callback]参数没有默认值。
+    'WidgetInspectorService.registerServiceExtension', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错[callback]参数没有默认值。
+    'Autocomplete.new', //属于flutter库，忽略原因：生成出来的该属性在编译时报错范型有问题。
+    'RawAutocomplete.new', //属于flutter库，忽略原因：生成出来的该属性在编译时报错范型有问题。
+    // 'jsonDecode',//忽略顶级VmProxy的caller的写法
+  ];
+  static const defaultIgnoreExtensionOn = [
+    'Object', //属于dart-sdk库，但是flutter库添加了toJs等不需要的扩展
+    'Future', //属于dart-sdk库，但是flutter库添加了toJs等不需要的扩展
+  ];
+
   ///生成文件夹下的桥接类
+  ///
+  /// * [libraryPaths] 需要生成桥接类型的文件或文件夹路径列表，只有公开的声明才生成桥接类型
+  /// * [privatePaths] 不生成桥接类型私有文件或文件夹路径列表，只是用来查找与复制超类的属性
+  /// * [ignoreIssueClass] 扫描阶段，前缀匹配[Map.keys]子项的文件或文件夹路径，忽略[Map.values]子项中指定的类或顶级属性
+  /// * [ignoreIssuePaths] 扫描阶段，前缀或者后缀匹配列表子项的文件或文件夹路径，完全忽略这些匹配项的任何文件中的全部内容
+  /// * [ignoreProxyObject] 分析阶段，如 ['Iterable.asNameMap'] 则输出结果：Iterable与其子类都不会生成标识符为asNameMap的VmProxy项
+  /// * [ignoreProxyCaller] 分析阶段，如 ['CupertinoRadio.new'] 则输出结果：CupertinoRadio与其子类都不会生成new对应的Vmproxy的caller属性
+  /// * [ignoreExtensionOn] 分析阶段，如 ['Object'] 则输出结果：Object与其子类都不会生成标任何对Object添加的 extension on Object { ...}
+  /// * [includePathClass] 生成阶段，前缀匹配[Map.keys]子项即文件或文件夹路径，只需生成[Map.values]子项中指定的类或顶级属性
+  /// * [excludePathClass] 生成阶段，前缀匹配[Map.keys]子项即文件或文件夹路径，不用生成[Map.values]子项中指定的类或顶级属性
+  /// * [removeNotFoundPrivateParams] 当某函数需要生成VmProxy的caller时，但找不到的某参数的私有引用值时：true移除这个参数，false改为必传参数
+  /// * [genByExternal] 外部调用固定为true
+  ///
   void generateVmLibraries({
     String outputFile = 'bridges_library',
     List<String> importList = const [],
@@ -199,47 +253,21 @@ class EasyCoder extends EasyLogger {
     String classDesc = 'BridgesLibrary',
     required List<String> libraryPaths,
     List<String> privatePaths = const [],
-    List<String> ignoreIssuePaths = const [
-      '/dart-sdk/lib/core/null.dart', //属于dart-sdk库，忽略原因：非Object子类无需生成，在vmobject.dart中文件已内置。输出结果：不会生成前缀或后缀匹配该路径的任何内容，下同
-      '/flutter/lib/src/services/dom.dart', //属于flutter库，忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。
-      '/flutter/lib/src/widgets/window.dart', //属于flutter库，忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。
-      '/flutter/lib/src/cupertino/toggleable.dart', //属于flutter库，忽略原因：ToggleableStateMixin.buildToggleable参数与material不一样。
-      '_web.dart', //属于flutter库，忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。macos可执行：find $FLUTTER_HOME/packages/flutter/lib/ -iname "*_web.dart" 查看具体有哪些文件。
-    ],
-    Map<String, List<String>> ignoreIssueClass = const {}, //进行内容合并或继承与整理时要忽略的依赖库的类或顶级属性
-    List<String> ignoreProxyObject = const [
-      'Iterable.asNameMap', //属于dart-sdk库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。输出结果：Iterable与子类都不会生成标识符为asNameMap的VmProxy项，下同
-      'Iterable.byName', //属于dart-sdk库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。
-      'Iterable.wait', //属于dart-sdk库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。
-      'PlatformViewController.disposePostFrame', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。
-      'ToggleablePainter.isActive', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错找不到该属性。
-      // 'jsonDecode',//忽略顶级VmProxy的写法
-    ],
-    List<String> ignoreProxyCaller = const [
-      'CupertinoRadio.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。输出结果：CupertinoRadio与子类都不会生成new对应的Vmproxy的caller属性，下同
-      'Radio.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
-      'Radio.adaptive', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
-      'RadioListTile.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
-      'RadioListTile.adaptive', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
-      'RadioMenuButton.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
-      'SharedAppData.getValue', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
-      'GestureRecognizerFactoryWithHandlers.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错范型有问题。
-      'PaginatedDataTable.new', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错无法找到[defaultRowsPerPage]默认值。
-      'ImageProvider.loadImage', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错函数参数的类型不匹配。
-      'WidgetInspectorService.initServiceExtensions', //属于flutter库，忽略原因：生成出来的该属性在开发工具里面报错[callback]参数没有默认值。
-      'Autocomplete.new', //属于flutter库，忽略原因：生成出来的该属性在编译时报错范型有问题。
-      'RawAutocomplete.new', //属于flutter库，忽略原因：生成出来的该属性在编译时报错范型有问题。
-      // 'jsonDecode',//忽略顶级VmProxy的caller的写法
-    ],
-    List<String> ignoreExtensionOn = const [
-      'Object', //属于dart-sdk库，但是flutter库添加了toJs等不需要的扩展
-      // 'Iterable', //属于dart-sdk库，添加出来的部分属性在开发工具里面报错
-    ],
-    Map<String, List<String>> includePathClass = const {}, //某文件或文件夹只生成指定的类 或 顶级属性
-    Map<String, List<String>> excludePathClass = const {}, //某文件或文件夹不生成指定的类 或 顶级属性
-    bool removeNotFoundPrivateParams = true, //当某函数需要生成VmProxy的caller时，但找不到的某参数的私有引用值时：true移除这个参数，false改为必传参数
+    Map<String, List<String>> ignoreIssueClass = const {},
+    List<String> ignoreIssuePaths = defaultIgnoreIssuePaths,
+    List<String> ignoreProxyObject = defaultIgnoreProxyObject,
+    List<String> ignoreProxyCaller = defaultIgnoreProxyCaller,
+    List<String> ignoreExtensionOn = defaultIgnoreExtensionOn,
+    Map<String, List<String>> includePathClass = const {},
+    Map<String, List<String>> excludePathClass = const {},
+    bool removeNotFoundPrivateParams = true,
     bool genByExternal = true,
   }) {
+    if (ignoreIssuePaths.hashCode != defaultIgnoreIssuePaths.hashCode) ignoreIssuePaths.addAll(defaultIgnoreIssuePaths);
+    if (ignoreProxyObject.hashCode != defaultIgnoreProxyObject.hashCode) ignoreProxyObject.addAll(defaultIgnoreProxyObject);
+    if (ignoreProxyCaller.hashCode != defaultIgnoreProxyCaller.hashCode) ignoreProxyCaller.addAll(defaultIgnoreProxyCaller);
+    if (ignoreExtensionOn.hashCode != defaultIgnoreExtensionOn.hashCode) ignoreExtensionOn.addAll(defaultIgnoreExtensionOn);
+    //合并配置参数
     final indent = _config.indent;
     final outputPath = '${_config.absFolder}/$outputFile.dart'; //输入文件路径
     final buffer = StringBuffer();
@@ -292,7 +320,7 @@ class EasyCoder extends EasyLogger {
     }
     privateFiles.removeWhere((fileItem) => ignoreIssuePaths.any((element) => fileItem.path.startsWith(element) || fileItem.path.endsWith(element)));
     for (var fileItem in privateFiles) {
-      final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensionOn: ignoreExtensionOn);
+      final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensionOn: ignoreExtensionOn, logSourcePath: fileItem.path);
       for (var result in bridgeResults) {
         if (result != null) {
           final ignoreKey = ignoreIssueClass.keys.firstWhere((element) => fileItem.path.startsWith(element), orElse: () => '');
@@ -334,7 +362,7 @@ class EasyCoder extends EasyLogger {
     }
     libraryFiles.removeWhere((fileItem) => ignoreIssuePaths.any((element) => fileItem.path.startsWith(element) || fileItem.path.endsWith(element)));
     for (var fileItem in libraryFiles) {
-      final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensionOn: ignoreExtensionOn);
+      final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensionOn: ignoreExtensionOn, logSourcePath: fileItem.path);
       for (var result in bridgeResults) {
         if (result != null) {
           final ignoreKey = ignoreIssueClass.keys.firstWhere((element) => fileItem.path.startsWith(element), orElse: () => '');
@@ -378,7 +406,7 @@ class EasyCoder extends EasyLogger {
     final classLibraries = <VmParserBirdgeItemData>[];
     final proxyLibraries = <VmParserBirdgeItemData>[];
     for (var fileItem in libraryFiles) {
-      final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensionOn: ignoreExtensionOn);
+      final bridgeResults = VmParser.bridgeSource(fileItem.readAsStringSync(), ignoreExtensionOn: ignoreExtensionOn, logSourcePath: fileItem.path);
       for (var result in bridgeResults) {
         if (result != null) {
           final includeKey = includePathClass.keys.firstWhere((element) => fileItem.path.startsWith(element), orElse: () => '');

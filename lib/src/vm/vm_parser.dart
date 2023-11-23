@@ -16,18 +16,18 @@ class VmParser {
         result.unit.accept(VmParserRouter(routeList, routeLogger)); //输出分析的全部信息
       }
       return result.unit.accept(VmParserVisitor()) ?? const {};
-    } catch (error) {
-      throw ('\n#######\n$source\n#######\n\n$error');
+    } catch (error, stack) {
+      throw ('\n\n#######\n\n$source\n\n#######\n\n$error\n\n#######\n\n$stack\n\n#######\n\n');
     }
   }
 
-  ///解析源代码[source]的内容，生成桥接类型元数据的描述列表，[ignoreExtensionOn]为要忽略添加extension的目标类名
-  static List<VmParserBirdgeItemData?> bridgeSource(String source, {required List<String> ignoreExtensionOn}) {
+  ///解析源代码[source]的内容，生成桥接类型元数据的描述列表，[ignoreExtensionOn]为要忽略添加extension的目标类名，[logSourcePath]用于在抛出异常时打印的源文件路径
+  static List<VmParserBirdgeItemData?> bridgeSource(String source, {required List<String> ignoreExtensionOn, required String logSourcePath}) {
     try {
       final result = parseString(content: source);
       return result.unit.accept(VmParserBirdger(ignoreExtensionOn: ignoreExtensionOn));
-    } catch (error) {
-      throw ('\n#######\n$source\n#######\n\n$error');
+    } catch (error, stack) {
+      throw ('\n\n#######\n\n$source\n\n#######\n\n$error\n\n#######\n\n$stack\n\n#######\n\nSource At => $logSourcePath\n\n#######\n\n');
     }
   }
 }
@@ -1014,7 +1014,10 @@ class VmParserBirdger extends SimpleAstVisitor {
   VmParserBirdgeItemData? visitGenericTypeAlias(GenericTypeAlias node) {
     if (node.functionType == null) {
       // print('visitGenericTypeAlias ---------> ${node.toSource()}');
-      final superclassNames = <String>[node.type.accept(this)]; // => visitNamedType
+      final aliasTarget = node.type.accept(this); // => visitNamedType or null（如 typedef _WordBoundaryRecord = ({TextPosition wordStart, TextPosition wordEnd}) 返回null）
+      final superclassNames = <String>[];
+      if (aliasTarget is String) superclassNames.add(aliasTarget);
+      if (superclassNames.isEmpty) superclassNames.add('Object');
       return VmParserBirdgeItemData(
         type: VmParserBirdgeItemType.classDeclaration, //等价于visitClassTypeAlias
         name: node.name.lexeme,

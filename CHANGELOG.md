@@ -1,3 +1,9 @@
+## 3.2.0
+
+- Add filtering for deprecated properties of dart sdk 3.2.0+ in the code generator's default parameters.
+
+- Modify some default values and code comment information.
+  
 ## 3.1.0
 
 - Fixed for EasyClient: Unhandled exception caused by not waiting for WebSocketChannel.ready
