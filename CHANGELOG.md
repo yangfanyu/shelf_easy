@@ -1,3 +1,7 @@
+## 3.2.2
+
+- Add EasyClientConfig.fromSourceAndArgs method.
+  
 ## 3.2.1
 
 - Optimize the bridge code generator and adapt it to dart-3.2.0 and flutter-3.16.0.
