@@ -626,6 +626,41 @@ class EasyClientConfig extends EasyConfig {
     this.conntick = 6,
     this.sslEnable = false,
   });
+
+  factory EasyClientConfig.fromSourceAndArgs({
+    required EasyClientConfig source,
+    EasyLogHandler? logger,
+    EasyLogLevel? logLevel,
+    String? logTag,
+    String? logFilePath,
+    int? logFileBackup,
+    int? logFileMaxBytes,
+    String? host,
+    int? port,
+    String? pwd,
+    bool? binary,
+    int? timeout,
+    int? heartick,
+    int? conntick,
+    bool? sslEnable,
+  }) {
+    return EasyClientConfig(
+      logger: logger ?? source.logger,
+      logLevel: logLevel ?? source.logLevel,
+      logTag: logTag ?? source.logTag,
+      logFilePath: logFilePath ?? source.logFilePath,
+      logFileBackup: logFileBackup ?? source.logFileBackup,
+      logFileMaxBytes: logFileMaxBytes ?? source.logFileMaxBytes,
+      host: host ?? source.host,
+      port: port ?? source.port,
+      pwd: pwd ?? source.pwd,
+      binary: binary ?? source.binary,
+      timeout: timeout ?? source.timeout,
+      heartick: heartick ?? source.heartick,
+      conntick: conntick ?? source.conntick,
+      sslEnable: sslEnable ?? source.sslEnable,
+    );
+  }
 }
 
 ///
