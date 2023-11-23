@@ -1,6 +1,6 @@
-## 3.2.0
+## 3.2.1
 
-- Add filtering for deprecated properties of dart sdk 3.2.0+ in the code generator's default parameters.
+- Optimize the bridge code generator and adapt it to dart-3.2.0 and flutter-3.16.0.
 
 - Modify some default values and code comment information.
   
