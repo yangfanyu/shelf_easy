@@ -309,11 +309,14 @@ class DbPipeline extends DbBaseModel {
   ///过滤操作
   final DbFilter? $match;
 
+  ///投影操作
+  final Set<DbQueryField>? $project;
+
+  ///展开操作
+  final dynamic $unwind;
+
   ///分组操作
   final Set<DbQueryField>? $group;
-
-  ///计数字段
-  final String? $count;
 
   ///跳过数量
   final int? $skip;
@@ -324,7 +327,7 @@ class DbPipeline extends DbBaseModel {
   ///排序参数
   final Set<DbQueryField>? $sort;
 
-  DbPipeline({this.$match, this.$group, this.$count, this.$skip, this.$limit, this.$sort});
+  DbPipeline({this.$match, this.$project, this.$unwind, this.$group, this.$skip, this.$limit, this.$sort});
 
   @override
   Map<String, dynamic> toJson() {
@@ -332,17 +335,28 @@ class DbPipeline extends DbBaseModel {
     if ($match != null) {
       map['\$match'] = $match?.toJson();
     }
+    if ($project != null) {
+      final projectFields = <String, dynamic>{};
+      for (var element in $project!) {
+        if (element._pipline$project != null) projectFields[element._pipline$project!] = '\$${element.name}';
+        if (element._value$projection != null) projectFields[element.name] = element._value$projection; //兼容为1或0的情况
+      }
+      map['\$project'] = projectFields;
+    }
+    if ($unwind != null) {
+      map['\$unwind'] = $unwind is String ? '\$${$unwind}' : $unwind;
+    }
     if ($group != null) {
       final groupIds = <String, dynamic>{};
       final groupFields = <String, Map<String, dynamic>>{};
       for (var element in $group!) {
-        if (element._group$id != null) groupIds[element._group$id!] = '\$${element._name}';
-        if (element._group$sum != null) groupFields[element._group$sum!] = {'\$sum': '\$${element._name}'};
-        if (element._group$avg != null) groupFields[element._group$avg!] = {'\$avg': '\$${element._name}'};
-        if (element._group$min != null) groupFields[element._group$min!] = {'\$min': '\$${element._name}'};
-        if (element._group$max != null) groupFields[element._group$max!] = {'\$max': '\$${element._name}'};
+        if (element._pipline$id != null) groupIds[element._pipline$id!] = '\$${element._name}';
+        if (element._pipline$sum != null) groupFields[element._pipline$sum!] = {'\$sum': '\$${element._name}'};
+        if (element._pipline$avg != null) groupFields[element._pipline$avg!] = {'\$avg': '\$${element._name}'};
+        if (element._pipline$min != null) groupFields[element._pipline$min!] = {'\$min': '\$${element._name}'};
+        if (element._pipline$max != null) groupFields[element._pipline$max!] = {'\$max': '\$${element._name}'};
+        if (element._pipline$row != null) groupFields[element._pipline$row!] = {'\$sum': 1}; //额外添加的row解析
       }
-      if ($count != null) groupFields[$count!] = {'\$sum': 1};
       if (groupIds.length == 1) {
         map['\$group'] = {'_id': groupIds.values.first, ...groupFields};
       } else {
@@ -630,15 +644,19 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
 
   int? _value$projection;
 
-  String? _group$id;
+  String? _pipline$id;
 
-  String? _group$sum;
+  String? _pipline$sum;
 
-  String? _group$avg;
+  String? _pipline$avg;
 
-  String? _group$min;
+  String? _pipline$min;
 
-  String? _group$max;
+  String? _pipline$max;
+
+  String? _pipline$row;
+
+  String? _pipline$project;
 
   String get name => _name;
 
@@ -743,19 +761,25 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
   /* **************** 聚合操作 ********** */
 
   ///将该字段作为分组id
-  void $id({String? asField}) => _group$id = asField ?? _name;
+  void $id({String? asField}) => _pipline$id = asField ?? _name;
 
   ///计算该字段的总和值
-  void $sum({String? asField}) => _group$sum = asField ?? _name;
+  void $sum({String? asField}) => _pipline$sum = asField ?? _name;
 
   ///计算该字段的平均值
-  void $avg({String? asField}) => _group$avg = asField ?? _name;
+  void $avg({String? asField}) => _pipline$avg = asField ?? _name;
 
-  ///获取该字段的最小值。
-  void $min({String? asField}) => _group$min = asField ?? _name;
+  ///获取该字段的最小值
+  void $min({String? asField}) => _pipline$min = asField ?? _name;
 
-  ///获取该字段的最大值。
-  void $max({String? asField}) => _group$max = asField ?? _name;
+  ///获取该字段的最大值
+  void $max({String? asField}) => _pipline$max = asField ?? _name;
+
+  ///将该字段做为行数名，即 field:{$sum:1}
+  void $row({String? asField}) => _pipline$row = asField ?? _name;
+
+  ///将该字段做进行投影，注意和 $projection 是有区别的
+  void $project({String? asField}) => _pipline$project = asField ?? _name;
 
   /* **************** 工具函数 ********** */
 

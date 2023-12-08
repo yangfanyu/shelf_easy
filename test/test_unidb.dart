@@ -8,10 +8,10 @@ import 'model/address.dart';
 import 'model/user.dart';
 
 void main() {
-  testJsonTool();
+  // testJsonTool();
   testHelpClass();
-  testDataBase();
-  testAggregate();
+  // testDataBase();
+  // testAggregate();
 }
 
 void testJsonTool() {
@@ -191,6 +191,64 @@ void testHelpClass() {
       ).toJson(),
     ),
   );
+
+  print('\n List<DbPipeline>');
+  print(encoder.convert(
+    [
+      DbPipeline(
+        $match: DbFilter(
+          {
+            UserQuery.age..$gte(15),
+          },
+          $or: [
+            {
+              UserQuery.age..$eq(11),
+            },
+            {
+              UserQuery.age..$eq(22),
+            },
+            {
+              UserQuery.age..$eq(33),
+            },
+          ],
+        ),
+      ),
+      DbPipeline(
+        $project: {
+          UserQuery.id..$project(),
+          UserQuery.age..include(),
+          UserQuery.name..exclude(),
+          UserQuery.rmb..$project(asField: 'rmbxxx'),
+          DbQueryField('aaa.bbb')..$project(asField: 'ccc_ddd'),
+        },
+      ),
+      DbPipeline(
+        $unwind: UserQuery.age.name,
+      ),
+      DbPipeline(
+        $unwind: {'path': '\$sizes'},
+      ),
+      DbPipeline(
+        $group: {
+          UserQuery.age..$id(),
+          UserQuery.name..$id(asField: 'nick'),
+          UserQuery.rmb..$sum(),
+          DbQueryField('usercnt')..$row(),
+        },
+      ),
+      DbPipeline(
+        $sort: {
+          UserQuery.id..sortAsc(),
+        },
+      ),
+      DbPipeline(
+        $skip: 1,
+      ),
+      DbPipeline(
+        $limit: 2,
+      ),
+    ],
+  ));
 }
 
 void testDataBase() {
@@ -601,8 +659,8 @@ void testAggregate() {
             UserQuery.rmb..$min(asField: 'minRmb'),
             UserQuery.rmb..$max(asField: 'maxRmb'),
             UserQuery.rmb..$avg(asField: 'avgRmb'),
+            DbQueryField('usercnt')..$row(),
           },
-          $count: 'usercnt',
         ),
         DbPipeline(
           $sort: {
@@ -639,8 +697,8 @@ void testAggregate() {
             UserQuery.age..$id(),
             UserQuery.name..$id(asField: 'nick'),
             UserQuery.rmb..$sum(),
+            DbQueryField('usercnt')..$row(),
           },
-          $count: 'usercnt',
         ),
         DbPipeline(
           $sort: {

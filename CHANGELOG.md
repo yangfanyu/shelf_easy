@@ -1,3 +1,7 @@
+## 3.2.3
+
+- Optimized class DbPipeline class. And added $project, $unwind operators.
+  
 ## 3.2.2
 
 - Add EasyClientConfig.fromSourceAndArgs method.
