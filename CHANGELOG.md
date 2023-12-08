@@ -1,4 +1,4 @@
-## 3.2.3
+## 3.3.0
 
 - Optimized class DbPipeline class. And added $project, $unwind operators.
   
