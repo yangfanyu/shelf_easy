@@ -1,3 +1,7 @@
+## 3.3.3
+
+- Optimize the http interface of the server and add the 'all' method.
+  
 ## 3.3.0
 
 - Optimized class DbPipeline class. And added $project, $unwind operators.

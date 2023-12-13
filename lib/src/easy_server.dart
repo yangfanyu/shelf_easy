@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
@@ -149,8 +150,19 @@ class EasyServer extends EasyLogger {
     _router ??= Router();
     _router?.post(route, (Request request) async {
       logTrace(['_onHttpRoute <=', request.headers]);
+      //合并二进制包
+      final requestBytes = <int>[];
+      if (_config.binary) {
+        final requestBytesList = await request.read().toList();
+        for (var element in requestBytesList) {
+          requestBytes.addAll(element);
+        }
+        if (requestBytesList.length > 1) {
+          logTrace(['_onHttpRoute <= requestBytesList.length is ${requestBytesList.length}, so merge to one list.']);
+        }
+      }
       //解析请求数据
-      final requestData = _config.binary ? (await request.read().toList()).first : await request.readAsString();
+      final requestData = _config.binary ? Uint8List.fromList(requestBytes) : await request.readAsString();
       logTrace(['_onHttpRoute <=', requestData]);
       final requestUid = (request.headers['easy-security-identity'] ?? '').trim();
       final requestToken = (tokenConverter == null || requestUid.isEmpty) ? null : await tokenConverter(requestUid);
@@ -179,7 +191,7 @@ class EasyServer extends EasyLogger {
     _router?.post(route, (Request request) async {
       logTrace(['_onHttpUpload <=', request.headers]);
       //读取表单数据
-      final requestBytesList = <List<int>>[];
+      final requestBytesList = <Uint8List>[];
       final requestMediaTypes = <MediaType>[];
       await for (final part in request.parts) {
         requestBytesList.add(await part.readBytes());
