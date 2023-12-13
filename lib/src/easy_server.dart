@@ -110,6 +110,12 @@ class EasyServer extends EasyLogger {
     _sessionCloseListener = sessionCloseListener;
   }
 
+  ///挂载http服务的自定义的ALL请求路由，调用过此方法后过启动为web服务器
+  void all(String route, Function handler) {
+    _router ??= Router();
+    _router?.all(route, handler);
+  }
+
   ///挂载http服务的自定义的GET请求路由，调用过此方法后过启动为web服务器
   void get(String route, Function handler) {
     _router ??= Router();
@@ -150,6 +156,7 @@ class EasyServer extends EasyLogger {
       final requestToken = (tokenConverter == null || requestUid.isEmpty) ? null : await tokenConverter(requestUid);
       final requestPacket = EasySecurity.decrypt(requestData, requestToken ?? _config.pwd);
       if (requestPacket == null) {
+        logError(['_onHttpRoute <=', requestData, requestUid, requestToken, requestPacket]);
         return Response.internalServerError(headers: responseHeaders);
       }
       logDebug(['_onHttpRoute <<<<<<', requestPacket]);
@@ -158,6 +165,7 @@ class EasyServer extends EasyLogger {
       logDebug(['_onHttpRoute >>>>>>', responsePacket]);
       final responseData = EasySecurity.encrypt(responsePacket, requestToken ?? _config.pwd, _config.binary);
       if (responseData == null) {
+        logError(['_onHttpRoute =>', responsePacket, responseData]);
         return Response.internalServerError(headers: responseHeaders);
       }
       logTrace(['_onHttpRoute =>', responseData]);
@@ -190,6 +198,7 @@ class EasyServer extends EasyLogger {
         requestFiles.add(file);
       }
       if (requestPacket == null) {
+        logError(['_onHttpUpload <=', requestUid, requestToken, requestPacket, requestFiles]);
         return Response.internalServerError(headers: responseHeaders);
       }
       logDebug(['_onHttpUpload <<<<<<', requestPacket, '\n', requestFiles]);
@@ -198,6 +207,7 @@ class EasyServer extends EasyLogger {
       logDebug(['_onHttpUpload >>>>>>', responsePacket]);
       final responseData = EasySecurity.encrypt(responsePacket, requestToken ?? _config.pwd, _config.binary);
       if (responseData == null) {
+        logError(['_onHttpUpload =>', responsePacket, responseData]);
         return Response.internalServerError(headers: responseHeaders);
       }
       logTrace(['_onHttpUpload =>', responseData]);
