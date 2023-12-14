@@ -40,7 +40,7 @@ class EasyCoder extends EasyLogger {
         );
 
   ///生成数据库模型
-  void generateModel(EasyCoderModelInfo modelInfo) {
+  void generateModel(EasyCoderModelInfo modelInfo, {List<String> headerComments = const []}) {
     final indent = _config.indent;
     final outputPath = '${_config.absFolder}/${modelInfo.outputFile?.toLowerCase() ?? modelInfo.className.toLowerCase()}.dart'; //输入文件路径
     final buffer = StringBuffer();
@@ -55,6 +55,10 @@ class EasyCoder extends EasyLogger {
       logError(['delete file', outputPath, 'error:', error, '\n', stack]);
     }
     //拼接类内容
+    for (var element in headerComments) {
+      buffer.write('$element\n');
+    }
+    if (headerComments.isNotEmpty) buffer.write('\n');
     _generateImports(indent, modelInfo, buffer); //import内容
     buffer.write('///${modelInfo.classDesc.join('\n///')}\n'); //类描述信息
     buffer.write('class ${modelInfo.className} extends ${_config.baseClass} {\n'); //类开始
