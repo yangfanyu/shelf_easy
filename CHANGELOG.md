@@ -1,8 +1,8 @@
-## 3.3.4
+## 3.5.0
 
-- Optimize the http interface of the server and add the 'all' method.
+- Update the bson, uuid, and mongo_dart libraries to the latest version.
   
-## 3.3.3
+## 3.3.4
 
 - Optimize the http interface of the server and add the 'all' method.
   
