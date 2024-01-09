@@ -94,7 +94,7 @@ main() {
   Map<String, int> map3z = {};
   map3z['000000000000000000000000'] = 2;
   map3z['000000000000000000000001'] = 3;
-  print("ObjectId Map : $map3z ${map3z['000000000000000000000000']} ${map3z[objId3]} ${map3z[objId3.toHexString()]}");
+  print("ObjectId Map : $map3z ${map3z['000000000000000000000000']} ${map3z[objId3]} ${map3z[objId3.oid]}");
 
   //jsonEncode操作Map时只支持以字符串为键
   Map<int, int> map4 = {

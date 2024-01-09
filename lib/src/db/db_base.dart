@@ -788,7 +788,7 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
   ///经过测试发现：jsonEncode操作Map时只支持以字符串为key，mongo数据库保存Map时只支持以字符串为key
   static dynamic toBaseType(dynamic v) {
     if (v is Map) {
-      return v.map((key, value) => MapEntry(key is String ? key : (key is ObjectId ? key.toHexString() : (key is Enum ? key.name : key.toString())), toBaseType(value)));
+      return v.map((key, value) => MapEntry(key is String ? key : (key is ObjectId ? key.oid : (key is Enum ? key.name : key.toString())), toBaseType(value)));
     } else if (v is List) {
       return v.map((value) => toBaseType(value)).toList();
     } else if (v is Enum) {
