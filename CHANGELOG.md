@@ -1,3 +1,7 @@
+## 3.5.1
+
+- Add ignore for web_sql in EasyCoder.defaultIgnoreIssuePaths.
+  
 ## 3.5.0
 
 - Update the bson, uuid, and mongo_dart libraries to the latest version.
