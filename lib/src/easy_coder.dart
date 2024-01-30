@@ -197,6 +197,7 @@ class EasyCoder extends EasyLogger {
 
   static const defaultIgnoreIssuePaths = [
     '/dart-sdk/lib/core/null.dart', //属于dart-sdk库，忽略原因：非Object子类无需生成，在vmobject.dart中文件已内置。输出结果：不会生成前缀或后缀匹配该路径的任何内容，下同
+    '/dart-sdk/lib/web_sql/dart2js/web_sql_dart2js.dart', //属于dart-sdk库，忽略原因：analyzer^6.4.0以后会分析失败，原生flutter环境也不需要。
     '/flutter/lib/src/services/dom.dart', //属于flutter库，忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。
     '/flutter/lib/src/widgets/window.dart', //属于flutter库，忽略原因：生成的代码在开发工具里面报错，原生flutter环境也不需要。
     '/flutter/lib/src/cupertino/toggleable.dart', //属于flutter库，忽略原因：ToggleableStateMixin.buildToggleable参数与material不一样。
