@@ -765,8 +765,8 @@ class EasyServerConfig extends EasyConfig {
   ///集群节点需要远程连接的集群分组配置信息，启动后自动通过[initClusterLinksConfigs]方法进行初始化
   final Map<String, List<EasyServerConfig>> clusterLinksConfigs;
 
-  ///为true时启用ssl证书模式
-  bool get sslEnable => sslKeyFile != null && sslCerFile != null;
+  ///为true时启用ssl证书模式，对空字符串进行判断来支持这种情况：默认配置启用证书，而指定配置无证书
+  bool get sslEnable => sslKeyFile != null && sslKeyFile != '' && sslCerFile != null && sslCerFile != '';
 
   ///http请求地址
   String get httpUrl => sslEnable ? 'https://$host:$port' : 'http://$host:$port';

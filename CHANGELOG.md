@@ -1,3 +1,7 @@
+## 3.5.2
+
+- Modified the judgment rules of EasyServerConfig.sslEnable.
+  
 ## 3.5.1
 
 - Add ignore for web_sql in EasyCoder.defaultIgnoreIssuePaths.
