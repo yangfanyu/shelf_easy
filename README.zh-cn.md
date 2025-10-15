@@ -12,13 +12,9 @@
   - [Web客户端](#web客户端)
   - [Websocket服务器](#websocket服务器)
   - [Websocket客户端](#websocket客户端)
-- [4、Dart子集虚拟机模块，可用于Flutter的AOT环境](#4dart子集虚拟机模块可用于flutter的aot环境)
-  - [生成虚拟机桥接类型](#生成虚拟机桥接类型)
-  - [Dart子集虚拟机用法](#dart子集虚拟机用法)
-  - [Flutter环境下的Dart代码推送方案](#flutter环境下的dart代码推送方案)
-- [5、日志模块](#5日志模块)
-- [6、语言本地化模块](#6语言本地化模块)
-- [7、集群环境下的服务器与客户端](#7集群环境下的服务器与客户端)
+- [4、日志模块](#4日志模块)
+- [5、语言本地化模块](#5语言本地化模块)
+- [6、集群环境下的服务器与客户端](#6集群环境下的服务器与客户端)
   - [集群服务器](#集群服务器)
   - [集群客户端](#集群客户端)
   - [测试的流程](#测试的流程)
@@ -77,48 +73,19 @@ Websocket服务器的示例代码在 example 目录下的 [test/test_wssserver.d
 
 可以在 example 目录中执行 `dart test/test_wssclient.dart` 来发起Websocket客户端调用。
 
-# 4、Dart子集虚拟机模块，可用于Flutter的AOT环境
-
-flutter环境由于不能在AOT环境推送代码，热更新成了个难题。幸运的是dart官方提供了 `dart:analyzer` 代码分析包，本模块基于这个包开发。
-
-## 生成虚拟机桥接类型
-
-生成虚拟机桥接类型的代码在 example 目录下的 [test/test_vmgen.dart](https://github.com/yangfanyu/shelf_easy/tree/main/example/test/test_vmgen.dart) 文件中。
-
-可以在 example 目录中执行 `dart test/test_vmgen.dart` 来生成桥接类型。生成的文件在 [bridge](https://github.com/yangfanyu/shelf_easy/tree/main/example/bridge) 目录中。
-
-
-## Dart子集虚拟机用法
-
-Dart子集虚拟机用法的代码在 example 目录下的 [test/test_vmware.dart](https://github.com/yangfanyu/shelf_easy/tree/main/example/test/test_vmware.dart) 文件中。
-
-可以在 example 目录中执行 `dart test/test_vmware.dart` 来查看控制台的输出信息。
-
-## Flutter环境下的Dart代码推送方案
-
-ZyCloud服务的Dart网络客户端库 [zycloud_client](https://github.com/yangfanyu/zycloud_client)
-
-ZyCloud服务的Flutter小部件库 [zycloud_widget](https://github.com/yangfanyu/zycloud_widget)
-
-注意：
-
-1. 当前虚拟机有部分语法尚未兼容，但已兼容的语法足以完成大多数需求。 
-   
-2. 作者已使用本方案进行了生产环境下的项目实践，此实践项目在AOT环境下实现了99%的 `dart` 代码推送。
-
-# 5、日志模块
+# 4、日志模块
 
 日志模块的代码在 example 目录下的 [test/test_logger.dart](https://github.com/yangfanyu/shelf_easy/tree/main/example/test/test_logger.dart) 文件中。
 
 可以在 example 目录中执行 `dart test/test_logger.dart` 来查看控制台的输出信息。
 
-# 6、语言本地化模块
+# 5、语言本地化模块
 
 语言本地化模块的代码在 example 目录下的 [test/test_locale.dart](https://github.com/yangfanyu/shelf_easy/tree/main/example/test/test_locale.dart) 文件中。
 
 可以在 example 目录中执行 `dart test/test_locale.dart` 来查看控制台的输出信息。
 
-# 7、集群环境下的服务器与客户端
+# 6、集群环境下的服务器与客户端
 
 ## 集群服务器
 

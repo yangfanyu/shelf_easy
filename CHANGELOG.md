@@ -1,3 +1,9 @@
+## 4.0.0
+  
+- Upgrade to the latest dependent libraries.
+
+- Due to the rapid updates of the dart analyzer, the vm module of this project became difficult to maintain, so the vm module was removed.
+
 ## 3.5.2
 
 - Modified the judgment rules of EasyServerConfig.sslEnable.

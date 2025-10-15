@@ -30,7 +30,7 @@ class Easy {
   /// * [runErrorsZone] 在runZonedGuarded函数中运行子线程逻辑
   /// * [errorsAreFatal] 为true时若在子线程中产生未捕获的异常，将终止子线程的运行
   ///
-  static startClusterServers({
+  static Future<void> startClusterServers({
     bool machineBind = false,
     String machineFile = '/etc/hostname',
     required String environment,

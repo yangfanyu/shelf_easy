@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:shelf_easy/shelf_deps.dart';
 import 'package:shelf_easy/shelf_easy.dart';
 
-main() {
+void main() {
   // Assign compile-time constant to p0.
   Point p0 = Point.origin0;
   // Create new point using const constructor.

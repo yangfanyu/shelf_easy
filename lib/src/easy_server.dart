@@ -8,7 +8,7 @@ import 'package:mime/mime.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 import 'package:shelf_gzip/shelf_gzip.dart';
-import 'package:shelf_multipart/multipart.dart';
+import 'package:shelf_multipart/shelf_multipart.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:shelf_static/shelf_static.dart';
 import 'package:shelf_web_socket/shelf_web_socket.dart';
@@ -193,11 +193,16 @@ class EasyServer extends EasyLogger {
       //读取表单数据
       final requestBytesList = <Uint8List>[];
       final requestMediaTypes = <MediaType>[];
-      await for (final part in request.parts) {
-        requestBytesList.add(await part.readBytes());
-        requestMediaTypes.add(MediaType.parse(part.headers['content-type'] ?? defaultMediatype));
+      if (request.multipart() case var multipart?) {
+        await for (final part in multipart.parts) {
+          requestBytesList.add(await part.readBytes());
+          requestMediaTypes.add(MediaType.parse(part.headers['content-type'] ?? defaultMediatype));
+        }
+        logTrace(['_onHttpUpload <=', requestBytesList.first]);
+      } else {
+        logError(['_onHttpUpload <=', request.headers]);
+        return Response.internalServerError(headers: responseHeaders);
       }
-      logTrace(['_onHttpUpload <=', requestBytesList.first]);
       //解析请求数据
       final requestUid = (request.headers['easy-security-identity'] ?? '').trim();
       final requestToken = (tokenConverter == null || requestUid.isEmpty) ? null : await tokenConverter(requestUid);
@@ -479,7 +484,7 @@ class EasyServer extends EasyLogger {
           compressionLevel: _config.gzipLevel,
         ))
         .addHandler(
-          (request) => _router != null ? _router!(request) : webSocketHandler((WebSocketChannel websocket) => _onWebSocketConnect(websocket, request))(request),
+          (request) => _router != null ? _router!(request) : webSocketHandler((websocket, subprotocol) => _onWebSocketConnect(websocket, request))(request),
         );
     serve(
       handler,

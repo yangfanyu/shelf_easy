@@ -1207,10 +1207,10 @@ class EasyCoderConfig extends EasyConfig {
   ///基本数据类型fromJson方法-值转换（用来解析 非List 与 非Map 类型）
   final Map<String, String> baseFromJsonVals;
 
-  ///嵌套数据类型fromJson方法-键转换（用来解析 Map<KeyType, ValType >的 KeyType 。jsonEncode操作Map时只支持以字符串为key，mongo数据库保存Map时只支持以字符串为key）
+  ///嵌套数据类型fromJson方法-键转换（用来解析 `Map<KeyType, ValType>` 的 `KeyType`。jsonEncode操作Map时只支持以字符串为key，mongo数据库保存Map时只支持以字符串为key）
   final Map<String, String> nestFromJsonKeys;
 
-  ///嵌套数据类型fromJson方法-值转换（用来解析 List<ValType> 与 Map<KeyType, ValType> 的 ValType ）
+  ///嵌套数据类型fromJson方法-值转换（用来解析 `List<ValType>` 与 `Map<KeyType, ValType>` 的 `ValType`）
   final Map<String, String> nestFromJsonVals;
 
   ///是否为 VmSuper 的子类，为true时：生成的[toString]函数将被添加 minLevel 参数
