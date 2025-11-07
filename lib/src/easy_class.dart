@@ -1213,9 +1213,6 @@ class EasyCoderConfig extends EasyConfig {
   ///嵌套数据类型fromJson方法-值转换（用来解析 `List<ValType>` 与 `Map<KeyType, ValType>` 的 `ValType`）
   final Map<String, String> nestFromJsonVals;
 
-  ///是否为 VmSuper 的子类，为true时：生成的[toString]函数将被添加 minLevel 参数
-  final bool isSubclassOfVmSuper;
-
   EasyCoderConfig({
     super.logger,
     super.logLevel,
@@ -1231,7 +1228,6 @@ class EasyCoderConfig extends EasyConfig {
     Map<String, String> customBaseFromJsonVals = const {},
     Map<String, String> customNestFromJsonKeys = const {},
     Map<String, String> customNestFromJsonVals = const {},
-    this.isSubclassOfVmSuper = false,
   })  : fieldsToWrapVals = {
           defaultType: '#',
           ...customFieldsToWrapVals,
@@ -1373,39 +1369,5 @@ class EasyCoderFieldInfo {
     this.defVal,
     this.zhText,
     this.enText,
-  });
-}
-
-///
-///Dart子集虚拟程序配置
-///
-class EasyVmWareConfig extends EasyConfig {
-  ///打印代码解析的路由
-  final bool debugRoute;
-
-  ///程序入口函数的名称
-  final String mainMethod;
-
-  ///程序入口函数的列表参数
-  final List<dynamic>? mainListArgs;
-
-  ///程序入口函数的命名参数
-  final Map<Symbol, dynamic>? mainNameArgs;
-
-  ///程序应用库代码内容集合
-  final Map<String, String> sourceCodes;
-
-  EasyVmWareConfig({
-    super.logger,
-    super.logLevel,
-    super.logTag,
-    super.logFilePath,
-    super.logFileBackup,
-    super.logFileMaxBytes,
-    this.debugRoute = false,
-    this.mainMethod = 'main',
-    this.mainListArgs,
-    this.mainNameArgs,
-    this.sourceCodes = const {},
   });
 }
