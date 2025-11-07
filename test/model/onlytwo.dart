@@ -15,8 +15,8 @@ class OnlyTwo extends DbBaseModel {
   OnlyTwo({
     String? test1,
     String? test2,
-  })  : test1 = test1 ?? '',
-        test2 = test2 ?? '';
+  }) : test1 = test1 ?? '',
+       test2 = test2 ?? '';
 
   factory OnlyTwo.fromString(String data) {
     return OnlyTwo.fromJson(jsonDecode(data.substring(data.indexOf('(') + 1, data.lastIndexOf(')'))));

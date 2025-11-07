@@ -7,16 +7,19 @@ import 'package:shelf_easy/src/wk/wk_unsupport.dart' if (dart.library.io) 'packa
 void main() async {
   final logger = EasyLogger(logTag: '[MASTER]');
 
-  runZonedGuarded(() {
-    Timer.periodic(Duration(seconds: 2), (timer) {
-      throw ('main error');
-    });
-    for (int i = 0; i < 2; i++) {
-      startWorkers(i);
-    }
-  }, (error, stack) {
-    logger.logError([error, '\n', stack]);
-  });
+  runZonedGuarded(
+    () {
+      Timer.periodic(Duration(seconds: 2), (timer) {
+        throw ('main error');
+      });
+      for (int i = 0; i < 2; i++) {
+        startWorkers(i);
+      }
+    },
+    (error, stack) {
+      logger.logError([error, '\n', stack]);
+    },
+  );
   // Timer.periodic(Duration(seconds: 5), (timer) {
   //   throw ('outer error');
   // });
@@ -43,13 +46,15 @@ void startWorkers(int index) {
   //   logger.logError([error, '\n', stack]);
   // });
 
-  final wk = worker.create(WkConfig(
-    serviceConfig: {
-      'index': index,
-    },
-    serviceHandler: _serviceHandler,
-    messageHandler: _messageHandler,
-  ));
+  final wk = worker.create(
+    WkConfig(
+      serviceConfig: {
+        'index': index,
+      },
+      serviceHandler: _serviceHandler,
+      messageHandler: _messageHandler,
+    ),
+  );
   wk.start(runErrorsZone: false, errorsAreFatal: true);
 }
 

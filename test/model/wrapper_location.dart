@@ -21,9 +21,9 @@ class WrapperLocation extends DbBaseModel {
     double? latitude,
     double? longitude,
     double? accuracy,
-  })  : latitude = latitude ?? 0,
-        longitude = longitude ?? 0,
-        accuracy = accuracy ?? 0;
+  }) : latitude = latitude ?? 0,
+       longitude = longitude ?? 0,
+       accuracy = accuracy ?? 0;
 
   factory WrapperLocation.fromString(String data) {
     return WrapperLocation.fromJson(jsonDecode(data.substring(data.indexOf('(') + 1, data.lastIndexOf(')'))));

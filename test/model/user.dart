@@ -87,16 +87,16 @@ class User extends DbBaseModel {
     List<Address>? addressList,
     List<ObjectId>? friendList,
     Map<int, Map<ObjectId, Address>>? ageObjectIdAddressMap,
-  })  : _id = id ?? ObjectId(),
-        name = name ?? '名称',
-        age = age ?? 10,
-        rmb = rmb ?? 100,
-        pwd = pwd ?? '12345678',
-        address = address ?? Address(),
-        accessList = accessList ?? [],
-        addressList = addressList ?? [],
-        friendList = friendList ?? [],
-        ageObjectIdAddressMap = ageObjectIdAddressMap ?? {};
+  }) : _id = id ?? ObjectId(),
+       name = name ?? '名称',
+       age = age ?? 10,
+       rmb = rmb ?? 100,
+       pwd = pwd ?? '12345678',
+       address = address ?? Address(),
+       accessList = accessList ?? [],
+       addressList = addressList ?? [],
+       friendList = friendList ?? [],
+       ageObjectIdAddressMap = ageObjectIdAddressMap ?? {};
 
   factory User.fromString(String data) {
     return User.fromJson(jsonDecode(data.substring(data.indexOf('(') + 1, data.lastIndexOf(')'))));

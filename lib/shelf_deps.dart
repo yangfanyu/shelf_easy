@@ -1,5 +1,3 @@
-library shelf_deps;
-
 export 'package:crypto/crypto.dart';
 export 'package:encrypt/encrypt.dart';
 export 'package:bson/bson.dart' show ObjectId;

@@ -32,7 +32,7 @@ void main() {
         null,
         $or: [
           {UserQuery.no..$eq('ddd')},
-          {UserQuery.no..$eq('eee')}
+          {UserQuery.no..$eq('eee')},
         ],
       ),
     );

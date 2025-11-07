@@ -71,11 +71,14 @@ class WkNative implements WkBase {
 
   ///子线程入口函数
   static void _entryPointZone(WkConfig config) {
-    runZonedGuarded(() {
-      _entryPoint(config);
-    }, (error, stack) {
-      config.messageHandler(config.serviceConfig, WkMessage.runZonedGuardedError, [error, stack]);
-    });
+    runZonedGuarded(
+      () {
+        _entryPoint(config);
+      },
+      (error, stack) {
+        config.messageHandler(config.serviceConfig, WkMessage.runZonedGuardedError, [error, stack]);
+      },
+    );
   }
 
   static void _entryPoint(WkConfig config) {

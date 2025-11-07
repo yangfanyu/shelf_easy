@@ -15,16 +15,16 @@ class EasyUniDb extends EasyLogger implements DbBase {
   final DbBase _handle;
 
   EasyUniDb({required EasyUniDbConfig config})
-      : _config = config,
-        _handle = _createDatabaseHandle(config),
-        super(
-          logger: config.logger,
-          logLevel: config.logLevel,
-          logTag: config.logTag ?? '${config.driver.name}://${config.host}:${config.port}',
-          logFilePath: config.logFilePath,
-          logFileBackup: config.logFileBackup,
-          logFileMaxBytes: config.logFileMaxBytes,
-        ) {
+    : _config = config,
+      _handle = _createDatabaseHandle(config),
+      super(
+        logger: config.logger,
+        logLevel: config.logLevel,
+        logTag: config.logTag ?? '${config.driver.name}://${config.host}:${config.port}',
+        logFilePath: config.logFilePath,
+        logFileBackup: config.logFileBackup,
+        logFileMaxBytes: config.logFileMaxBytes,
+      ) {
     if (_config.user == null && _config.password != null) throw ('_config.user == null && _config.password != null');
     if (_config.user != null && _config.password == null) throw ('_config.user != null && _config.password == null');
     if (_config.poolSize < 1) throw ('_config.poolSize < 1');
@@ -250,7 +250,11 @@ class EasyUniDb extends EasyLogger implements DbBase {
   @override
   Future<DbResult<void>> withTransaction(Future<String> Function(DbSession session) operate, {DbTransactionOptions? transactionOptions, void Function({String? msg, String? warn, String? err})? onmessage}) async {
     try {
-      final result = await _handle.withTransaction(operate, transactionOptions: transactionOptions, onmessage: onmessage ?? ({msg, warn, err}) => _defaultTransactionMessageListener(this, msg: msg, warn: warn, err: err));
+      final result = await _handle.withTransaction(
+        operate,
+        transactionOptions: transactionOptions,
+        onmessage: onmessage ?? ({msg, warn, err}) => _defaultTransactionMessageListener(this, msg: msg, warn: warn, err: err),
+      );
       (result.success ? logDebug : logWarn)(['withTransaction =>', transactionOptions, result]);
       return result;
     } catch (error, stack) {

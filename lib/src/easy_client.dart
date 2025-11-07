@@ -68,28 +68,28 @@ class EasyClient extends EasyLogger {
   void Function(int second, int delay)? _onheart;
 
   EasyClient({required EasyClientConfig config})
-      : _config = config,
-        _listenersMap = {},
-        _requesterMap = {},
-        _timerInc = 0,
-        _reqIdInc = 0,
-        _netDelay = 0,
-        _retryCnt = 0,
-        _paused = false,
-        _expired = false,
-        _thread = null,
-        _socket = null,
-        _socketInited = false,
-        _timer = null,
-        _token = null,
-        super(
-          logger: config.logger,
-          logLevel: config.logLevel,
-          logTag: config.logTag ?? '${config.sslEnable ? 'ssl-client://' : 'client://'}${config.host}:${config.port}',
-          logFilePath: config.logFilePath,
-          logFileBackup: config.logFileBackup,
-          logFileMaxBytes: config.logFileMaxBytes,
-        ) {
+    : _config = config,
+      _listenersMap = {},
+      _requesterMap = {},
+      _timerInc = 0,
+      _reqIdInc = 0,
+      _netDelay = 0,
+      _retryCnt = 0,
+      _paused = false,
+      _expired = false,
+      _thread = null,
+      _socket = null,
+      _socketInited = false,
+      _timer = null,
+      _token = null,
+      super(
+        logger: config.logger,
+        logLevel: config.logLevel,
+        logTag: config.logTag ?? '${config.sslEnable ? 'ssl-client://' : 'client://'}${config.host}:${config.port}',
+        logFilePath: config.logFilePath,
+        logFileBackup: config.logFileBackup,
+        logFileMaxBytes: config.logFileMaxBytes,
+      ) {
     if (_config.timeout < 5 * 1000) throw ('_config.timeout < 5 * 1000');
     if (_config.heartick < 30) throw ('_config.heartick < 30');
     if (_config.conntick < 3) throw ('_config.conntick < 3');
@@ -169,11 +169,13 @@ class EasyClient extends EasyLogger {
       final url = Uri.parse('${_config.httpUrl}$route');
       final response = fileBytes == null || mediaType == null
           ? await http.post(url, body: requestData, headers: {'content-type': _config.binary ? 'application/octet-stream' : 'text/plain', 'easy-security-identity': _uid ?? ''}..addAll(headers ?? {}))
-          : await http.Response.fromStream(await (http.MultipartRequest('POST', url)
-                ..headers.addAll({'easy-security-identity': _uid ?? ''})
-                ..files.add(_config.binary ? http.MultipartFile.fromBytes('data', requestData) : http.MultipartFile.fromString('data', requestData))
-                ..files.addAll(fileBytes.map((bytes) => http.MultipartFile.fromBytes('file_${fieldId++}', bytes, contentType: mediaType))))
-              .send());
+          : await http.Response.fromStream(
+              await (http.MultipartRequest('POST', url)
+                    ..headers.addAll({'easy-security-identity': _uid ?? ''})
+                    ..files.add(_config.binary ? http.MultipartFile.fromBytes('data', requestData) : http.MultipartFile.fromString('data', requestData))
+                    ..files.addAll(fileBytes.map((bytes) => http.MultipartFile.fromBytes('file_${fieldId++}', bytes, contentType: mediaType))))
+                  .send(),
+            );
       logTrace(['httpResponse <=', response.headers]);
       final responseBody = _config.binary ? response.bodyBytes : response.body;
       logTrace(['httpResponse <=', responseBody]);
@@ -335,12 +337,14 @@ class EasyClient extends EasyLogger {
     _socket = WebSocketChannel.connect(Uri.parse(_config.websocketUrl));
     //如果不对ready进行catchError或try{}catch{}处理，则如：服务器未打开时抛出的异常无法捕获 = Unhandled exception: SocketException: Connection refused...
     //WebSocketChannel.connect流程与[httpRequest]方法中的http.post异步请求类似，参考：https://github.com/dart-lang/web_socket_channel/issues/38
-    _socket?.ready.then((_) {
-      _socketInited = false;
-      _socket?.stream.listen((data) => _onWebSocketData(data), onError: _onWebSocketError, onDone: _onWebSocketDone, cancelOnError: false);
-    }).catchError((error, stack) {
-      _onWebSocketError(error, stack);
-    });
+    _socket?.ready
+        .then((_) {
+          _socketInited = false;
+          _socket?.stream.listen((data) => _onWebSocketData(data), onError: _onWebSocketError, onDone: _onWebSocketDone, cancelOnError: false);
+        })
+        .catchError((error, stack) {
+          _onWebSocketError(error, stack);
+        });
   }
 
   void _safeClose(int code, String reason) {

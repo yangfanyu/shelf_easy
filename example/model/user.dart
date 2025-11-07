@@ -53,12 +53,12 @@ class User extends DbBaseModel {
     this.locationList,
     this.locationMap,
     int? time,
-  })  : _id = id ?? ObjectId(),
-        no = no ?? '',
-        pwd = pwd ?? '',
-        sex = sex ?? Constant.sexUnknow,
-        age = age ?? 18,
-        _time = time ?? DateTime.now().millisecondsSinceEpoch;
+  }) : _id = id ?? ObjectId(),
+       no = no ?? '',
+       pwd = pwd ?? '',
+       sex = sex ?? Constant.sexUnknow,
+       age = age ?? 18,
+       _time = time ?? DateTime.now().millisecondsSinceEpoch;
 
   factory User.fromString(String data) {
     return User.fromJson(jsonDecode(data.substring(data.indexOf('(') + 1, data.lastIndexOf(')'))));

@@ -29,11 +29,11 @@ class Address extends DbBaseModel {
     String? city,
     String? area,
     Location? location,
-  })  : country = country ?? '',
-        province = province ?? '',
-        city = city ?? '',
-        area = area ?? '',
-        location = location ?? Location();
+  }) : country = country ?? '',
+       province = province ?? '',
+       city = city ?? '',
+       area = area ?? '',
+       location = location ?? Location();
 
   factory Address.fromString(String data) {
     return Address.fromJson(jsonDecode(data.substring(data.indexOf('(') + 1, data.lastIndexOf(')'))));

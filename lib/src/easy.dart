@@ -71,16 +71,20 @@ class Easy {
           continue; //不匹配主机名
         }
         final serverEntryPoint = clusterServerEntryPoint?[cluster] ?? defaultServerEntryPoint;
-        _workerList.add(worker.create(WkConfig(
-          serviceConfig: {
-            'environment': environment,
-            'cluster': cluster,
-            'serverConfig': serverConfig,
-            'serverEntryPoint': serverEntryPoint,
-          },
-          serviceHandler: _serviceHandler,
-          messageHandler: _messageHandler,
-        )));
+        _workerList.add(
+          worker.create(
+            WkConfig(
+              serviceConfig: {
+                'environment': environment,
+                'cluster': cluster,
+                'serverConfig': serverConfig,
+                'serverEntryPoint': serverEntryPoint,
+              },
+              serviceHandler: _serviceHandler,
+              messageHandler: _messageHandler,
+            ),
+          ),
+        );
       }
     });
     for (var wk in _workerList) {

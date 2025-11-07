@@ -112,10 +112,7 @@ class Point {
   final int y;
   final List<String> msg;
   const Point(this.x, this.y) : msg = const [];
-  Point.clone(Point other)
-      : x = other.x,
-        y = other.y,
-        msg = [];
+  Point.clone(Point other) : x = other.x, y = other.y, msg = [];
   factory Point.from(Point other) {
     return Point(other.x, other.y);
   }

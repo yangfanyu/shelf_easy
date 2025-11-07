@@ -6,7 +6,7 @@ void main() {
       '你好': {'en': 'Hello'},
       '世界': {'en': 'World'},
       '我是 @name': {'en': 'I am @name'},
-      '翻译器': {'en': 'Translator'}
+      '翻译器': {'en': 'Translator'},
     },
   );
 

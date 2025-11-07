@@ -50,15 +50,15 @@ class Location extends DbBaseModel {
     double? longitude,
     double? altitude,
     int? time,
-  })  : _id = id ?? ObjectId(),
-        country = country ?? '',
-        province = province ?? '',
-        city = city ?? '',
-        district = district ?? '',
-        latitude = latitude ?? 16.666666,
-        longitude = longitude ?? 116.666666,
-        altitude = altitude ?? 1,
-        _time = time ?? DateTime.now().millisecondsSinceEpoch;
+  }) : _id = id ?? ObjectId(),
+       country = country ?? '',
+       province = province ?? '',
+       city = city ?? '',
+       district = district ?? '',
+       latitude = latitude ?? 16.666666,
+       longitude = longitude ?? 116.666666,
+       altitude = altitude ?? 1,
+       _time = time ?? DateTime.now().millisecondsSinceEpoch;
 
   factory Location.fromString(String data) {
     return Location.fromJson(jsonDecode(data.substring(data.indexOf('(') + 1, data.lastIndexOf(')'))));

@@ -13,9 +13,7 @@ class DbMongo implements DbBase {
 
   int _index = 0;
 
-  DbMongo(this._config)
-      : _pool = [],
-        _time = [];
+  DbMongo(this._config) : _pool = [], _time = [];
 
   ///这样实现可以解决驱动的很多重连问题
   Future<Db> _safeOpen() async {
@@ -126,7 +124,9 @@ class DbMongo implements DbBase {
   @override
   Future<DbResult<void>> updateOne(String table, DbFilter filter, DbUpdate update, {DbUpdateOptions? updateOptions}) async {
     final db = await _safeOpen();
-    final result = await db.collection(table).updateOne(
+    final result = await db
+        .collection(table)
+        .updateOne(
           filter.toJson(),
           update.toJson(),
           upsert: updateOptions?.$upsert,
@@ -145,7 +145,9 @@ class DbMongo implements DbBase {
   @override
   Future<DbResult<void>> updateMany(String table, DbFilter filter, DbUpdate update, {DbUpdateOptions? updateOptions}) async {
     final db = await _safeOpen();
-    final result = await db.collection(table).updateMany(
+    final result = await db
+        .collection(table)
+        .updateMany(
           filter.toJson(),
           update.toJson(),
           upsert: updateOptions?.$upsert,
@@ -164,7 +166,9 @@ class DbMongo implements DbBase {
   @override
   Future<DbResult<T>> findOne<T extends DbBaseModel>(String table, DbFilter filter, {DbFindOptions? findOptions, required T Function(Map<String, dynamic> map) converter}) async {
     final db = await _safeOpen();
-    final result = await db.collection(table).modernFindOne(
+    final result = await db
+        .collection(table)
+        .modernFindOne(
           filter: filter.toJson(),
           skip: findOptions?.$skip,
           sort: findOptions?.$sortToJson(),
@@ -210,7 +214,9 @@ class DbMongo implements DbBase {
   @override
   Future<DbResult<T>> findAndDelete<T extends DbBaseModel>(String table, DbFilter filter, {DbFindDeleteOptions? findDeleteOptions, required T Function(Map<String, dynamic> map) converter}) async {
     final db = await _safeOpen();
-    final result = await db.collection(table).modernFindAndModify(
+    final result = await db
+        .collection(table)
+        .modernFindAndModify(
           query: filter.toJson(),
           remove: true,
           fields: findDeleteOptions?.$projectionToJson(),
@@ -234,7 +240,9 @@ class DbMongo implements DbBase {
   @override
   Future<DbResult<T>> findAndUpdate<T extends DbBaseModel>(String table, DbFilter filter, DbUpdate update, {DbFindUpdateOptions? findUpdateOptions, required T Function(Map<String, dynamic> map) converter}) async {
     final db = await _safeOpen();
-    final result = await db.collection(table).modernFindAndModify(
+    final result = await db
+        .collection(table)
+        .modernFindAndModify(
           query: filter.toJson(),
           update: update.toJson(),
           remove: false,

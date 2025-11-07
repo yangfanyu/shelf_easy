@@ -1,5 +1,3 @@
-library shelf_easy;
-
 export 'src/db/db_base.dart';
 export 'src/wk/wk_base.dart';
 export 'src/easy_class.dart';

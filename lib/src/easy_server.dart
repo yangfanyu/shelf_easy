@@ -85,21 +85,21 @@ class EasyServer extends EasyLogger {
   EasyServerConfig get config => _config;
 
   EasyServer({required EasyServerConfig config})
-      : _config = config,
-        _clusterClientMap = {},
-        _websocketRouteMap = {},
-        _websoketRemoteMap = {},
-        _websoketMap = {},
-        _websoketSessionMap = {},
-        _websoketChannelMap = {},
-        super(
-          logger: config.logger,
-          logLevel: config.logLevel,
-          logTag: config.logTag ?? '${config.sslEnable ? 'ssl-server://' : 'server://'}${config.host}:${config.port}',
-          logFilePath: config.logFilePath,
-          logFileBackup: config.logFileBackup,
-          logFileMaxBytes: config.logFileMaxBytes,
-        ) {
+    : _config = config,
+      _clusterClientMap = {},
+      _websocketRouteMap = {},
+      _websoketRemoteMap = {},
+      _websoketMap = {},
+      _websoketSessionMap = {},
+      _websoketChannelMap = {},
+      super(
+        logger: config.logger,
+        logLevel: config.logLevel,
+        logTag: config.logTag ?? '${config.sslEnable ? 'ssl-server://' : 'server://'}${config.host}:${config.port}',
+        logFilePath: config.logFilePath,
+        logFileBackup: config.logFileBackup,
+        logFileMaxBytes: config.logFileMaxBytes,
+      ) {
     if (_config.heart < 30 * 1000) throw ('_config.heart < 30 * 1000');
     if (_config.timeout < _config.heart * 2) throw ('_config.timeout < _config.heart * 2');
     if (_config.reqIdCache < 16) throw ('_config.reqIdCache < 16');
@@ -449,24 +449,26 @@ class EasyServer extends EasyLogger {
     _config.clusterLinksConfigs.forEach((cluster, serverList) {
       final clientList = <EasyClient>[];
       for (var server in serverList) {
-        clientList.add(EasyClient(
-          config: EasyClientConfig(
-            logger: _config.logger,
-            logLevel: _config.logLevel,
-            logTag: '$logTag [${server.websocketUrl}]',
-            logFilePath: _config.logFilePath,
-            logFileBackup: _config.logFileBackup,
-            logFileMaxBytes: _config.logFileMaxBytes,
-            host: server.host,
-            port: server.port,
-            pwd: server.pwd,
-            binary: server.binary,
-            timeout: 15 * 1000, //客户端默认值的一半
-            heartick: server.heart ~/ 1000, //与服务器检测周期保持一致
-            conntick: 3, //客户端默认值的一半
-            sslEnable: server.sslEnable,
+        clientList.add(
+          EasyClient(
+            config: EasyClientConfig(
+              logger: _config.logger,
+              logLevel: _config.logLevel,
+              logTag: '$logTag [${server.websocketUrl}]',
+              logFilePath: _config.logFilePath,
+              logFileBackup: _config.logFileBackup,
+              logFileMaxBytes: _config.logFileMaxBytes,
+              host: server.host,
+              port: server.port,
+              pwd: server.pwd,
+              binary: server.binary,
+              timeout: 15 * 1000, //客户端默认值的一半
+              heartick: server.heart ~/ 1000, //与服务器检测周期保持一致
+              conntick: 3, //客户端默认值的一半
+              sslEnable: server.sslEnable,
+            ),
           ),
-        ));
+        );
       }
       if (clientList.isNotEmpty) {
         _clusterClientMap[cluster] = clientList;
@@ -474,15 +476,19 @@ class EasyServer extends EasyLogger {
     });
     //处理器
     var handler = _httpRequestLogger()
-        .addMiddleware(createMiddleware(
-          requestHandler: (request) => (request.method == 'OPTIONS') ? Response.ok(null, headers: _config.httpHeaders) : null,
-          responseHandler: (response) => response.change(headers: _config.httpHeaders),
-        ))
-        .addMiddleware(createGzipMiddleware(
-          minimalGzipContentLength: _config.gzipMinBytes,
-          alreadyCompressedContentType: (contentType) => _config.gzipNotContentTypes.contains(contentType.toLowerCase().trim()) || isAlreadyCompressedContentType(contentType),
-          compressionLevel: _config.gzipLevel,
-        ))
+        .addMiddleware(
+          createMiddleware(
+            requestHandler: (request) => (request.method == 'OPTIONS') ? Response.ok(null, headers: _config.httpHeaders) : null,
+            responseHandler: (response) => response.change(headers: _config.httpHeaders),
+          ),
+        )
+        .addMiddleware(
+          createGzipMiddleware(
+            minimalGzipContentLength: _config.gzipMinBytes,
+            alreadyCompressedContentType: (contentType) => _config.gzipNotContentTypes.contains(contentType.toLowerCase().trim()) || isAlreadyCompressedContentType(contentType),
+            compressionLevel: _config.gzipLevel,
+          ),
+        )
         .addHandler(
           (request) => _router != null ? _router!(request) : webSocketHandler((websocket, subprotocol) => _onWebSocketConnect(websocket, request))(request),
         );
@@ -492,8 +498,8 @@ class EasyServer extends EasyLogger {
       _config.port,
       securityContext: _config.sslEnable
           ? (SecurityContext()
-            ..usePrivateKey(_config.sslKeyFile!, password: _config.sslKeyPasswd)
-            ..useCertificateChain(_config.sslCerFile!, password: _config.sslCerPasswd))
+              ..usePrivateKey(_config.sslKeyFile!, password: _config.sslKeyPasswd)
+              ..useCertificateChain(_config.sslCerFile!, password: _config.sslCerPasswd))
           : null,
       backlog: _config.backlog,
       shared: _config.isolateInstances > 1,
@@ -574,21 +580,26 @@ class EasyServer extends EasyLogger {
   void _onWebSocketConnect(WebSocketChannel websocket, Request request) {
     final session = EasyServerSession(socket: websocket, ip: getRequestIp(request));
     _websoketMap[session.id] = session; //绑定到_socketMap
-    websocket.stream.listen((data) {
-      logTrace(['_onWebSocketData <=', session.info, data]);
-      _onWebSocketMessage(session, data);
-    }, onError: (Object error, StackTrace stack) {
-      logError(['_onWebSocketError =>', session.info, error, '\n', stack]);
-      session.close(EasyConstant.serverCloseBySocketError.code, EasyConstant.serverCloseBySocketError.desc);
-    }, onDone: () {
-      logDebug(['_onWebSocketDone =>', session.info, session.closeCode, session.closeReason]);
-      //回调上层绑定的监听器
-      if (_sessionCloseListener != null) _sessionCloseListener!(session, session.closeCode, session.closeReason);
-      //统一进行内存清理操作
-      session.eachChannel((cid) => quitChannel(session, cid)); //退出已加入的所有分组
-      unbindUser(session); //可能已经绑定了用户信息，需要进行解绑操作
-      _websoketMap.remove(session.id); //从_socketMap中移除
-    }, cancelOnError: false);
+    websocket.stream.listen(
+      (data) {
+        logTrace(['_onWebSocketData <=', session.info, data]);
+        _onWebSocketMessage(session, data);
+      },
+      onError: (Object error, StackTrace stack) {
+        logError(['_onWebSocketError =>', session.info, error, '\n', stack]);
+        session.close(EasyConstant.serverCloseBySocketError.code, EasyConstant.serverCloseBySocketError.desc);
+      },
+      onDone: () {
+        logDebug(['_onWebSocketDone =>', session.info, session.closeCode, session.closeReason]);
+        //回调上层绑定的监听器
+        if (_sessionCloseListener != null) _sessionCloseListener!(session, session.closeCode, session.closeReason);
+        //统一进行内存清理操作
+        session.eachChannel((cid) => quitChannel(session, cid)); //退出已加入的所有分组
+        unbindUser(session); //可能已经绑定了用户信息，需要进行解绑操作
+        _websoketMap.remove(session.id); //从_socketMap中移除
+      },
+      cancelOnError: false,
+    );
     logDebug(['_onWebSocketOpen =>', session.info]);
     pushInitiate(session);
   }
@@ -693,14 +704,17 @@ class EasyServer extends EasyLogger {
         final watch = Stopwatch()..start();
         String requestUid = (request.headers['easy-security-identity'] ?? '').trim();
         requestUid = requestUid.isEmpty ? 'uid' : requestUid;
-        return Future.sync(() => innerHandler(request)).then((response) {
-          logInfo(['_onHttpRequest =>', '[${getRequestIp(request)} $requestUid]', request.method, response.statusCode, watch.elapsed, request.requestedUri.path, request.requestedUri.query]);
-          return response;
-        }, onError: (Object error, StackTrace stack) {
-          if (error is HijackException) throw error; //这一行不能去掉，否则启动时报错
-          logError(['_onHttpRequest =>', '[${getRequestIp(request)}] $requestUid', request.method, watch.elapsed, request.requestedUri.path, request.requestedUri.query, error, '\n', stack]);
-          throw error;
-        });
+        return Future.sync(() => innerHandler(request)).then(
+          (response) {
+            logInfo(['_onHttpRequest =>', '[${getRequestIp(request)} $requestUid]', request.method, response.statusCode, watch.elapsed, request.requestedUri.path, request.requestedUri.query]);
+            return response;
+          },
+          onError: (Object error, StackTrace stack) {
+            if (error is HijackException) throw error; //这一行不能去掉，否则启动时报错
+            logError(['_onHttpRequest =>', '[${getRequestIp(request)}] $requestUid', request.method, watch.elapsed, request.requestedUri.path, request.requestedUri.query, error, '\n', stack]);
+            throw error;
+          },
+        );
       };
     };
   }

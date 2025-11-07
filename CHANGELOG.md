@@ -1,3 +1,9 @@
+## 4.0.2
+
+- Adjust code format and optimize EasyCoder.  
+
+- Delete residual content of virtual machine module.
+  
 ## 4.0.1
   
 - Upgrade to the latest dependent libraries.

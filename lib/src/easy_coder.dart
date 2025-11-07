@@ -16,17 +16,17 @@ class EasyCoder extends EasyLogger {
   final List<EasyCoderModelInfo> _wrapList;
 
   EasyCoder({required EasyCoderConfig config})
-      : _config = config,
-        _baseList = [],
-        _wrapList = [],
-        super(
-          logger: config.logger,
-          logLevel: config.logLevel,
-          logTag: config.logTag ?? 'EasyCoder',
-          logFilePath: config.logFilePath,
-          logFileBackup: config.logFileBackup,
-          logFileMaxBytes: config.logFileMaxBytes,
-        );
+    : _config = config,
+      _baseList = [],
+      _wrapList = [],
+      super(
+        logger: config.logger,
+        logLevel: config.logLevel,
+        logTag: config.logTag ?? 'EasyCoder',
+        logFilePath: config.logFilePath,
+        logFileBackup: config.logFileBackup,
+        logFileMaxBytes: config.logFileMaxBytes,
+      );
 
   ///生成数据库模型
   void generateModel(EasyCoderModelInfo modelInfo, {List<String> headerComments = const []}) {
@@ -293,7 +293,7 @@ class EasyCoder extends EasyLogger {
     if (notNullAbleFields.isEmpty) {
       buffer.write('$indent});\n\n');
     } else if (notNullAbleFields.length > 1) {
-      buffer.write('$indent})  : ');
+      buffer.write('$indent}) : ');
     } else {
       buffer.write('$indent}) : ');
     }
@@ -303,7 +303,7 @@ class EasyCoder extends EasyLogger {
       if (element == notNullAbleFields.last) {
         //需要先判断是否为最后一个字段
         if (notNullAbleFields.length > 1) {
-          buffer.write('$indent$indent$indent$indent${element.name} = $publicName ?? $defaultValue;\n\n');
+          buffer.write(' $indent$indent$indent${element.name} = $publicName ?? $defaultValue;\n\n');
         } else {
           //当总共一个字段时，这也是第一个字段
           buffer.write('${element.name} = $publicName ?? $defaultValue;\n\n');
@@ -313,7 +313,7 @@ class EasyCoder extends EasyLogger {
         buffer.write('${element.name} = $publicName ?? $defaultValue,\n');
       } else {
         //能运行到这里说明 notNullAbleFields.length >= 3
-        buffer.write('$indent$indent$indent$indent${element.name} = $publicName ?? $defaultValue,\n');
+        buffer.write(' $indent$indent$indent${element.name} = $publicName ?? $defaultValue,\n');
       }
     }
   }

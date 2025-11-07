@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:shelf_easy/shelf_easy.dart';
 
-
 void main() {
   final logger = EasyLogger(
     logger: EasyLogger.printAndWriteLogger, //这里设置为：同时输出到控制台和文件（默认情况下输出到控制台）

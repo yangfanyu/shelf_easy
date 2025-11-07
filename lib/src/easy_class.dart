@@ -150,12 +150,12 @@ class EasyLogger {
     String? logFilePath,
     int? logFileBackup,
     int? logFileMaxBytes,
-  })  : _logger = logger ?? EasyLogger.printLogger,
-        _logLevel = logLevel ?? EasyLogLevel.trace,
-        _logTag = logTag ?? 'EasyLogger',
-        _logFilePath = logFilePath,
-        _logFileBackup = logFileBackup ?? 8,
-        _logFileMaxBytes = logFileMaxBytes ?? 8 * 1024 * 1024;
+  }) : _logger = logger ?? EasyLogger.printLogger,
+       _logLevel = logLevel ?? EasyLogLevel.trace,
+       _logTag = logTag ?? 'EasyLogger',
+       _logFilePath = logFilePath,
+       _logFileBackup = logFileBackup ?? 8,
+       _logFileMaxBytes = logFileMaxBytes ?? 8 * 1024 * 1024;
 
   void logTrace(List<dynamic> args) {
     if (EasyLogLevel.trace.index >= _logLevel.index) {
@@ -267,7 +267,7 @@ class EasyLogger {
       File? file = _filesMap[instance._logFilePath];
       if (file == null) {
         file = File('${instance._logFilePath}.log');
-        _filesMap[instance._logFilePath!] = file;
+        _filesMap[instance._logFilePath] = file;
         if (!file.existsSync()) file.createSync(recursive: true); //同步创建
       }
       //同步写入可避免顺序混乱
@@ -910,15 +910,17 @@ class EasyServerSession {
   ///[socket] 客户端的websocket连接
   ///
   ///[ip] 客户端ip地址
-  EasyServerSession({required WebSocketChannel socket, required String ip})
-      : _id = _increment++,
-        _socket = socket,
-        _ip = ip,
-        _context = {},
-        _channel = {},
-        _reqIds = [],
-        _uid = null,
-        _lastHeart = DateTime.now().millisecondsSinceEpoch;
+  EasyServerSession({
+    required WebSocketChannel socket,
+    required String ip,
+  }) : _id = _increment++,
+       _socket = socket,
+       _ip = ip,
+       _context = {},
+       _channel = {},
+       _reqIds = [],
+       _uid = null,
+       _lastHeart = DateTime.now().millisecondsSinceEpoch;
 
   ///发送数据
   void send(dynamic data) {
@@ -1228,44 +1230,44 @@ class EasyCoderConfig extends EasyConfig {
     Map<String, String> customBaseFromJsonVals = const {},
     Map<String, String> customNestFromJsonKeys = const {},
     Map<String, String> customNestFromJsonVals = const {},
-  })  : fieldsToWrapVals = {
-          defaultType: '#',
-          ...customFieldsToWrapVals,
-        },
-        fieldsToJsonVals = {
-          defaultType: 'DbQueryField.toBaseType(#)',
-          ...customFieldsToJsonVals,
-        },
-        baseFromJsonVals = {
-          'int': 'DbQueryField.tryParseInt(#)',
-          'double': 'DbQueryField.tryParseDouble(#)',
-          'num': 'DbQueryField.tryParseNum(#)',
-          'bool': 'DbQueryField.tryParseBool(#)',
-          'String': 'DbQueryField.tryParseString(#)',
-          'ObjectId': 'DbQueryField.tryParseObjectId(#)',
-          defaultType: '# is Map ? @.fromJson(#) : #',
-          ...customBaseFromJsonVals,
-        },
-        nestFromJsonKeys = {
-          'int': 'DbQueryField.parseInt(#)',
-          'double': 'DbQueryField.parseDouble(#)',
-          'num': 'DbQueryField.parseNum(#)',
-          'bool': 'DbQueryField.parseBool(#)',
-          'String': 'DbQueryField.parseString(#)',
-          'ObjectId': 'DbQueryField.parseObjectId(#)',
-          defaultType: '@.fromString(#)',
-          ...customNestFromJsonKeys,
-        },
-        nestFromJsonVals = {
-          'int': 'DbQueryField.parseInt(#)',
-          'double': 'DbQueryField.parseDouble(#)',
-          'num': 'DbQueryField.parseNum(#)',
-          'bool': 'DbQueryField.parseBool(#)',
-          'String': 'DbQueryField.parseString(#)',
-          'ObjectId': 'DbQueryField.parseObjectId(#)',
-          defaultType: '@.fromJson(#)',
-          ...customNestFromJsonVals,
-        };
+  }) : fieldsToWrapVals = {
+         defaultType: '#',
+         ...customFieldsToWrapVals,
+       },
+       fieldsToJsonVals = {
+         defaultType: 'DbQueryField.toBaseType(#)',
+         ...customFieldsToJsonVals,
+       },
+       baseFromJsonVals = {
+         'int': 'DbQueryField.tryParseInt(#)',
+         'double': 'DbQueryField.tryParseDouble(#)',
+         'num': 'DbQueryField.tryParseNum(#)',
+         'bool': 'DbQueryField.tryParseBool(#)',
+         'String': 'DbQueryField.tryParseString(#)',
+         'ObjectId': 'DbQueryField.tryParseObjectId(#)',
+         defaultType: '# is Map ? @.fromJson(#) : #',
+         ...customBaseFromJsonVals,
+       },
+       nestFromJsonKeys = {
+         'int': 'DbQueryField.parseInt(#)',
+         'double': 'DbQueryField.parseDouble(#)',
+         'num': 'DbQueryField.parseNum(#)',
+         'bool': 'DbQueryField.parseBool(#)',
+         'String': 'DbQueryField.parseString(#)',
+         'ObjectId': 'DbQueryField.parseObjectId(#)',
+         defaultType: '@.fromString(#)',
+         ...customNestFromJsonKeys,
+       },
+       nestFromJsonVals = {
+         'int': 'DbQueryField.parseInt(#)',
+         'double': 'DbQueryField.parseDouble(#)',
+         'num': 'DbQueryField.parseNum(#)',
+         'bool': 'DbQueryField.parseBool(#)',
+         'String': 'DbQueryField.parseString(#)',
+         'ObjectId': 'DbQueryField.parseObjectId(#)',
+         defaultType: '@.fromJson(#)',
+         ...customNestFromJsonVals,
+       };
 
   static String compileTemplateCode(String templateCode, String valueCode, String typeCode) {
     return templateCode.replaceAll('#', valueCode).replaceAll('@', typeCode);

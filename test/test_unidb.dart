@@ -19,7 +19,7 @@ void testJsonTool() {
   final user = User(
     age: 88,
     ageObjectIdAddressMap: {
-      1: {ObjectId(): Address()}
+      1: {ObjectId(): Address()},
     },
   );
   final userString = user.toString();
@@ -51,7 +51,7 @@ void testHelpClass() {
           {
             UserQuery.name..$eq('or'),
             UserQuery.age..$lte(20),
-          }
+          },
         ],
         $and: [
           {
@@ -61,7 +61,7 @@ void testHelpClass() {
           {
             UserQuery.name..$eq('and'),
             UserQuery.age..$lte(20),
-          }
+          },
         ],
         $nor: [
           {
@@ -71,7 +71,7 @@ void testHelpClass() {
           {
             UserQuery.name..$eq('nor'),
             UserQuery.age..$lte(20),
-          }
+          },
         ],
       ).toJson(),
     ),
@@ -193,62 +193,64 @@ void testHelpClass() {
   );
 
   print('\n List<DbPipeline>');
-  print(encoder.convert(
-    [
-      DbPipeline(
-        $match: DbFilter(
-          {
-            UserQuery.age..$gte(15),
-          },
-          $or: [
+  print(
+    encoder.convert(
+      [
+        DbPipeline(
+          $match: DbFilter(
             {
-              UserQuery.age..$eq(11),
+              UserQuery.age..$gte(15),
             },
-            {
-              UserQuery.age..$eq(22),
-            },
-            {
-              UserQuery.age..$eq(33),
-            },
-          ],
+            $or: [
+              {
+                UserQuery.age..$eq(11),
+              },
+              {
+                UserQuery.age..$eq(22),
+              },
+              {
+                UserQuery.age..$eq(33),
+              },
+            ],
+          ),
         ),
-      ),
-      DbPipeline(
-        $project: {
-          UserQuery.id..$project(),
-          UserQuery.age..include(),
-          UserQuery.name..exclude(),
-          UserQuery.rmb..$project(asField: 'rmbxxx'),
-          DbQueryField('aaa.bbb')..$project(asField: 'ccc_ddd'),
-        },
-      ),
-      DbPipeline(
-        $unwind: UserQuery.age.name,
-      ),
-      DbPipeline(
-        $unwind: {'path': '\$sizes'},
-      ),
-      DbPipeline(
-        $group: {
-          UserQuery.age..$id(),
-          UserQuery.name..$id(asField: 'nick'),
-          UserQuery.rmb..$sum(),
-          DbQueryField('usercnt')..$row(),
-        },
-      ),
-      DbPipeline(
-        $sort: {
-          UserQuery.id..sortAsc(),
-        },
-      ),
-      DbPipeline(
-        $skip: 1,
-      ),
-      DbPipeline(
-        $limit: 2,
-      ),
-    ],
-  ));
+        DbPipeline(
+          $project: {
+            UserQuery.id..$project(),
+            UserQuery.age..include(),
+            UserQuery.name..exclude(),
+            UserQuery.rmb..$project(asField: 'rmbxxx'),
+            DbQueryField('aaa.bbb')..$project(asField: 'ccc_ddd'),
+          },
+        ),
+        DbPipeline(
+          $unwind: UserQuery.age.name,
+        ),
+        DbPipeline(
+          $unwind: {'path': '\$sizes'},
+        ),
+        DbPipeline(
+          $group: {
+            UserQuery.age..$id(),
+            UserQuery.name..$id(asField: 'nick'),
+            UserQuery.rmb..$sum(),
+            DbQueryField('usercnt')..$row(),
+          },
+        ),
+        DbPipeline(
+          $sort: {
+            UserQuery.id..sortAsc(),
+          },
+        ),
+        DbPipeline(
+          $skip: 1,
+        ),
+        DbPipeline(
+          $limit: 2,
+        ),
+      ],
+    ),
+  );
 }
 
 void testDataBase() {
@@ -266,10 +268,11 @@ void testDataBase() {
     await database.deleteOne(UserQuery.$tableName, DbFilter({}));
     //deleteMany with exists
     await database.deleteMany(
-        UserQuery.$tableName,
-        DbFilter({
-          UserQuery.rmb..$exists(false),
-        }));
+      UserQuery.$tableName,
+      DbFilter({
+        UserQuery.rmb..$exists(false),
+      }),
+    );
     //deleteMany without filter
     await database.deleteMany(UserQuery.$tableName, DbFilter({}));
     //insertOne
@@ -280,16 +283,14 @@ void testDataBase() {
     );
     //insertMany
     await database.insertMany(UserQuery.$tableName, [
-      User(name: '用户2', friendList: [
-        user.id
-      ], ageObjectIdAddressMap: {
-        1: {ObjectId(): Address()}
-      }, accessList: [
-        201,
-        202,
-        203,
-        204
-      ]),
+      User(
+        name: '用户2',
+        friendList: [user.id],
+        ageObjectIdAddressMap: {
+          1: {ObjectId(): Address()},
+        },
+        accessList: [201, 202, 203, 204],
+      ),
       User(name: '用户3', friendList: [user.id], accessList: [-1, 301, 302, 303, 304]),
       User(name: '用户4', friendList: [user.id], accessList: [-1, 401, 402, 403, 404]),
     ]);
@@ -597,9 +598,11 @@ void testDataBase() {
         DbFilter({
           UserQuery.id..$eq(user.id),
         }),
-        DbUpdate($set: {
-          UserQuery.address..$set(address),
-        }),
+        DbUpdate(
+          $set: {
+            UserQuery.address..$set(address),
+          },
+        ),
         updateOptions: DbUpdateOptions(session: session),
       );
       return 'Finished message';
@@ -666,7 +669,7 @@ void testAggregate() {
           $sort: {
             UserQuery.id..sortAsc(),
           },
-        )
+        ),
       ],
       converter: DbJsonWraper.fromJson,
     );
