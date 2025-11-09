@@ -30,14 +30,11 @@ extension EasyLocale on String {
   ///翻译本字符串对应当前语言的值
   String get trs => _languageData[this]?[_languageCode] ?? this;
 
-  ///翻译本字符串对应指定语言的值
-  String trsCode(String code) => _languageData[this]?[code] ?? this;
-
-  ///翻译本字符串对应当前语言的值，并替换参数
-  String trsParams(Map<String, String> params) {
-    var template = trs;
-    params.forEach((key, value) {
-      template = template.replaceAll('@$key', value);
+  ///翻译本字符串对应指定内容的值
+  String trsFree({String? code, Map<String, dynamic>? args}) {
+    var template = _languageData[this]?[code ?? _languageCode] ?? this;
+    args?.forEach((key, value) {
+      template = template.replaceAll('@$key', value.toString());
     });
     return template;
   }

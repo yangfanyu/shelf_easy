@@ -1,3 +1,7 @@
+## 4.0.3
+
+- Optimize the header copying method of EasyClient.  
+  
 ## 4.0.2
 
 - Adjust code format and optimize EasyCoder.  
