@@ -1,4 +1,6 @@
-## 4.0.3
+## 4.1.0
+
+- Merge EasyLocale's trsParams method and trsCode metohd into the new method: trsFree.
 
 - Optimize the header copying method of EasyClient.  
   
