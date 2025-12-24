@@ -1,3 +1,9 @@
+## 5.0.0
+
+- Add generation functionality to the model generator: nationalization language mapping table for field names, translation methods.
+
+- Removed the wrap function in the data model generator.  
+  
 ## 4.1.0
 
 - Merge EasyLocale's trsParams method and trsCode metohd into the new method: trsFree.

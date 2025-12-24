@@ -3,7 +3,7 @@
 ///
 extension EasyLocale on String {
   ///翻译语言数据
-  static Map<String, Map<String, String?>> _languageData = {};
+  static Map<String, Map<String, String?>?> _languageData = {};
 
   ///翻译语言环境
   static String _languageCode = 'zh';
@@ -15,14 +15,13 @@ extension EasyLocale on String {
   static void setLanguageCode(String code) => _languageCode = code;
 
   ///设置语言数据
-  static void setLanguageData(Map<String, Map<String, String?>> data) => _languageData = data;
+  static void setLanguageData(Map<String, Map<String, String?>?> data) => _languageData = data;
 
   ///设置语言字段
   static void setLanguageItem(String key, Map<String, String?> item) {
     var valMap = _languageData[key];
     if (valMap == null) {
-      valMap = {};
-      _languageData[key] = valMap;
+      _languageData[key] = valMap = {};
     }
     valMap.addAll(item);
   }
