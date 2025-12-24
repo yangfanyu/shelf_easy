@@ -1200,9 +1200,6 @@ class EasyCoderConfig extends EasyConfig {
   ///代码缩进单位
   final String indent;
 
-  ///成员数据类型builder方法
-  final Map<String, String> fieldsToWrapVals;
-
   ///成员数据类型toJson方法
   final Map<String, String> fieldsToJsonVals;
 
@@ -1225,16 +1222,11 @@ class EasyCoderConfig extends EasyConfig {
     required this.absFolder,
     this.baseClass = 'DbBaseModel',
     this.indent = '  ',
-    Map<String, String> customFieldsToWrapVals = const {},
     Map<String, String> customFieldsToJsonVals = const {},
     Map<String, String> customBaseFromJsonVals = const {},
     Map<String, String> customNestFromJsonKeys = const {},
     Map<String, String> customNestFromJsonVals = const {},
-  }) : fieldsToWrapVals = {
-         defaultType: '#',
-         ...customFieldsToWrapVals,
-       },
-       fieldsToJsonVals = {
+  }) : fieldsToJsonVals = {
          defaultType: 'DbQueryField.toBaseType(#)',
          ...customFieldsToJsonVals,
        },
@@ -1299,11 +1291,14 @@ class EasyCoderModelInfo {
   ///模型实例的扩展字段，这一部分字段不参与序列化和查询
   final List<EasyCoderFieldInfo> extraFields;
 
-  ///对应的包装类型。不为null时生成的json格式：{type: xxx, args: {...}}
-  final String? wrapType;
-
-  ///是否生成[constFields]字段的Map映射，为true时[constFields]的每个子项类型必须为int
+  ///是否生成[constFields]中字段的[值]的国际化语言Map映射，为true时[constFields]的每个子项类型必须为int
   final bool constMap;
+
+  ///是否生成[xxxxxFields]中字段的[名]的国际化语言Map映射
+  final bool fieldMap;
+
+  ///是否生成字段辅助类
+  final bool field;
 
   ///是否生成写入辅助类
   final bool dirty;
@@ -1313,14 +1308,15 @@ class EasyCoderModelInfo {
 
   EasyCoderModelInfo({
     this.outputFile,
-    required this.importList,
-    required this.classDesc,
+    this.importList = const [],
+    this.classDesc = const [],
     required this.className,
     this.constFields = const [],
     this.classFields = const [],
     this.extraFields = const [],
-    this.wrapType,
     this.constMap = false,
+    this.fieldMap = false,
+    this.field = true,
     this.dirty = true,
     this.query = true,
   });
@@ -1349,9 +1345,6 @@ class EasyCoderFieldInfo {
   ///是否可以为null
   final bool nullAble;
 
-  ///包装字段不使用键值对
-  final bool wrapFlat;
-
   ///字段默认值
   final String? defVal;
 
@@ -1364,10 +1357,9 @@ class EasyCoderFieldInfo {
   EasyCoderFieldInfo({
     required this.type,
     required this.name,
-    required this.desc,
+    this.desc = const [],
     this.secrecy = false,
     this.nullAble = false,
-    this.wrapFlat = false,
     this.defVal,
     this.zhText,
     this.enText,

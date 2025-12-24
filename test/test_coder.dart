@@ -196,33 +196,5 @@ void testEasyCoderModel() {
       className: 'Empty',
     ),
   );
-  coder.generateModel(
-    EasyCoderModelInfo(
-      outputFile: 'wrapper_location',
-      importList: ['location.dart'],
-      classDesc: ['', '位置包装类', ''],
-      className: 'WrapperLocation',
-      classFields: [
-        EasyCoderFieldInfo(type: 'double', name: 'latitude', desc: ['纬度']),
-        EasyCoderFieldInfo(type: 'double', name: 'longitude', desc: ['经度']),
-        EasyCoderFieldInfo(type: 'double', name: 'accuracy', desc: ['精确度']),
-      ],
-      wrapType: 'Location',
-      dirty: false,
-      query: false,
-    ),
-  );
-  coder.generateModel(
-    EasyCoderModelInfo(
-      outputFile: 'wrapper_empty',
-      importList: ['empty.dart'],
-      classDesc: ['', '无字段包装类', ''],
-      className: 'WrapperEmpty',
-      wrapType: 'Empty',
-      dirty: false,
-      query: false,
-    ),
-  );
   coder.generateBaseExports();
-  coder.generateWrapBuilder();
 }
