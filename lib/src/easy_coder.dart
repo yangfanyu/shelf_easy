@@ -10,11 +10,11 @@ class EasyCoder extends EasyLogger {
   final EasyCoderConfig _config;
 
   ///普通模型列表
-  final List<EasyCoderModelInfo> _baseList;
+  final List<EasyCoderModelInfo> _modelList;
 
   EasyCoder({required EasyCoderConfig config})
     : _config = config,
-      _baseList = [],
+      _modelList = [],
       super(
         logger: config.logger,
         logLevel: config.logLevel,
@@ -58,10 +58,14 @@ class EasyCoder extends EasyLogger {
     _generateUpdateByJsonMethod(indent, modelInfo, buffer); //updateByJson函数
     _generateUpdateByKValuesMethod(indent, modelInfo, buffer); //updateByKValues函数
     buffer.write('}\n'); //类结束
+    //字段辅助类
+    _generateFieldClass(indent, modelInfo, buffer);
     //写入辅助类
     _generateDirtyClass(indent, modelInfo, buffer);
     //查询辅助类
     _generateQueryClass(indent, modelInfo, buffer);
+    //翻译辅助类
+    _generateLocaleExtension(indent, modelInfo, buffer);
     //写入到文件
     try {
       File(outputPath)
@@ -72,11 +76,11 @@ class EasyCoder extends EasyLogger {
       logError(['write to file', outputPath, 'error:', error, '\n', stack]);
     }
     //保存历史记录
-    _baseList.add(modelInfo);
+    _modelList.add(modelInfo);
   }
 
   ///生成基本模型导出文件
-  void generateBaseExports({String outputFile = 'all'}) {
+  void generateModelExports({String outputFile = 'all'}) {
     final outputPath = '${_config.absFolder}/$outputFile.dart'; //输入文件路径
     final buffer = StringBuffer();
     //删除旧文件
@@ -89,8 +93,8 @@ class EasyCoder extends EasyLogger {
     } catch (error, stack) {
       logError(['delete file', outputPath, 'error:', error, '\n', stack]);
     }
-    if (_baseList.isEmpty) return;
-    for (var element in _baseList) {
+    if (_modelList.isEmpty) return;
+    for (var element in _modelList) {
       final path = '${element.outputFile?.toLowerCase() ?? element.className.toLowerCase()}.dart'; //输入文件路径
       buffer.write('export \'$path\';\n');
     }
@@ -136,15 +140,15 @@ class EasyCoder extends EasyLogger {
       buffer.write('${indent}static const ${element.type} ${element.name} = ${element.defVal};\n\n');
     }
     if (modelInfo.constMap && modelInfo.constFields.isNotEmpty) {
-      buffer.write('${indent}static const Map<String, Map<int, String>> constMap = {\n');
+      buffer.write('${indent}static const Map<String, Map<int, String?>> constMap = {\n');
       buffer.write('$indent$indent\'zh\': {\n');
       for (var element in modelInfo.constFields) {
-        buffer.write('$indent$indent$indent${element.defVal}: \'${element.zhText}\',\n');
+        buffer.write('$indent$indent$indent${element.defVal}: ${element.zhText == null ? null : '\'${element.zhText}\''},\n');
       }
       buffer.write('$indent$indent},\n');
       buffer.write('$indent$indent\'en\': {\n');
       for (var element in modelInfo.constFields) {
-        buffer.write('$indent$indent$indent${element.defVal}: \'${element.enText}\',\n');
+        buffer.write('$indent$indent$indent${element.defVal}: ${element.enText == null ? null : '\'${element.enText}\''},\n');
       }
       buffer.write('$indent$indent},\n');
       buffer.write('$indent};\n\n');
@@ -167,6 +171,20 @@ class EasyCoder extends EasyLogger {
       if (element.name.startsWith('_')) {
         privateFields.add(element);
       }
+    }
+    if (modelInfo.fieldMap && modelInfo.classFields.isNotEmpty) {
+      buffer.write('${indent}static const Map<String, Map<String, String?>> fieldMap = {\n');
+      buffer.write('$indent$indent\'zh\': {\n');
+      for (var element in modelInfo.classFields) {
+        buffer.write('$indent$indent$indent\'${element.name}\': ${element.zhText == null ? null : '\'${element.zhText}\''},\n');
+      }
+      buffer.write('$indent$indent},\n');
+      buffer.write('$indent$indent\'en\': {\n');
+      for (var element in modelInfo.classFields) {
+        buffer.write('$indent$indent$indent\'${element.name}\': ${element.enText == null ? null : '\'${element.enText}\''},\n');
+      }
+      buffer.write('$indent$indent},\n');
+      buffer.write('$indent};\n\n');
     }
     //私有字段生成get函数
     for (var element in privateFields) {
@@ -392,6 +410,27 @@ class EasyCoder extends EasyLogger {
     return;
   }
 
+  void _generateFieldClass(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
+    if (modelInfo.field && modelInfo.classFields.isNotEmpty) {
+      buffer.write('\n');
+      buffer.write('class ${modelInfo.className}Field {\n');
+      for (var element in modelInfo.classFields) {
+        final publicName = _getFieldPublicName(element.name);
+        if (element.desc.isEmpty) {
+          buffer.write('$indent///Field ${element.name}\n');
+        } else {
+          buffer.write('$indent///${element.desc.join('\n$indent///')}\n');
+        }
+        if (element == modelInfo.classFields.last) {
+          buffer.write('${indent}static const String $publicName = \'${element.name}\';\n');
+        } else {
+          buffer.write('${indent}static const String $publicName = \'${element.name}\';\n\n');
+        }
+      }
+      buffer.write('}\n');
+    }
+  }
+
   void _generateDirtyClass(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
     if (modelInfo.dirty && modelInfo.classFields.isNotEmpty) {
       buffer.write('\n');
@@ -452,6 +491,25 @@ class EasyCoder extends EasyLogger {
         }
       }
       buffer.write('}\n');
+    }
+  }
+
+  void _generateLocaleExtension(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
+    if (modelInfo.locale) {
+      if (modelInfo.constMap && modelInfo.constFields.isNotEmpty) {
+        buffer.write('\n');
+        buffer.write('extension ${modelInfo.className}IntExtension on int {\n');
+        buffer.write('${indent}String get trs${modelInfo.className}Const => ${modelInfo.className}.constMap[EasyLocale.languageCode]?[this] ?? toString();\n\n');
+        buffer.write('${indent}String trs${modelInfo.className}ConstByCode(String code) => ${modelInfo.className}.constMap[code]?[this] ?? toString();\n');
+        buffer.write('}\n');
+      }
+      if (modelInfo.fieldMap && modelInfo.classFields.isNotEmpty) {
+        buffer.write('\n');
+        buffer.write('extension ${modelInfo.className}StringExtension on String {\n');
+        buffer.write('${indent}String get trs${modelInfo.className}Field => ${modelInfo.className}.fieldMap[EasyLocale.languageCode]?[this] ?? this;\n\n');
+        buffer.write('${indent}String trs${modelInfo.className}FieldByCode(String code) => ${modelInfo.className}.fieldMap[code]?[this] ?? this;\n');
+        buffer.write('}\n');
+      }
     }
   }
 

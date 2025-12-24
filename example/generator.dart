@@ -61,5 +61,5 @@ void main() {
     ),
   );
   //导出文件
-  coder.generateBaseExports();
+  coder.generateModelExports();
 }

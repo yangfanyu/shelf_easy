@@ -12,6 +12,17 @@ class OnlyTwo extends DbBaseModel {
   ///
   String test2;
 
+  static const Map<String, Map<String, String?>> fieldMap = {
+    'zh': {
+      'test1': null,
+      'test2': null,
+    },
+    'en': {
+      'test1': null,
+      'test2': null,
+    },
+  };
+
   OnlyTwo({
     String? test1,
     String? test2,
@@ -64,6 +75,14 @@ class OnlyTwo extends DbBaseModel {
   }
 }
 
+class OnlyTwoField {
+  ///
+  static const String test1 = 'test1';
+
+  ///
+  static const String test2 = 'test2';
+}
+
 class OnlyTwoDirty {
   final Map<String, dynamic> data = {};
 
@@ -82,4 +101,10 @@ class OnlyTwoQuery {
 
   ///
   static DbQueryField<String, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get test2 => DbQueryField('test2');
+}
+
+extension OnlyTwoStringExtension on String {
+  String get trsOnlyTwoField => OnlyTwo.fieldMap[EasyLocale.languageCode]?[this] ?? this;
+
+  String trsOnlyTwoFieldByCode(String code) => OnlyTwo.fieldMap[code]?[this] ?? this;
 }

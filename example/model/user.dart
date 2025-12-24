@@ -37,6 +37,31 @@ class User extends DbBaseModel {
   ///创建时间
   int _time;
 
+  static const Map<String, Map<String, String?>> fieldMap = {
+    'zh': {
+      '_id': null,
+      'no': null,
+      'pwd': null,
+      'sex': null,
+      'age': null,
+      'location': null,
+      'locationList': null,
+      'locationMap': null,
+      '_time': null,
+    },
+    'en': {
+      '_id': null,
+      'no': null,
+      'pwd': null,
+      'sex': null,
+      'age': null,
+      'location': null,
+      'locationList': null,
+      'locationMap': null,
+      '_time': null,
+    },
+  };
+
   ///唯一标志
   ObjectId get id => _id;
 
@@ -141,6 +166,35 @@ class User extends DbBaseModel {
   }
 }
 
+class UserField {
+  ///唯一标志
+  static const String id = '_id';
+
+  ///账号
+  static const String no = 'no';
+
+  ///密码
+  static const String pwd = 'pwd';
+
+  ///性别
+  static const String sex = 'sex';
+
+  ///年龄
+  static const String age = 'age';
+
+  ///当前位置
+  static const String location = 'location';
+
+  ///位置列表
+  static const String locationList = 'locationList';
+
+  ///位置集合
+  static const String locationMap = 'locationMap';
+
+  ///创建时间
+  static const String time = '_time';
+}
+
 class UserDirty {
   final Map<String, dynamic> data = {};
 
@@ -207,4 +261,10 @@ class UserQuery {
 
   ///创建时间
   static DbQueryField<int, int, DBUnsupportArrayOperate> get time => DbQueryField('_time');
+}
+
+extension UserStringExtension on String {
+  String get trsUserField => User.fieldMap[EasyLocale.languageCode]?[this] ?? this;
+
+  String trsUserFieldByCode(String code) => User.fieldMap[code]?[this] ?? this;
 }

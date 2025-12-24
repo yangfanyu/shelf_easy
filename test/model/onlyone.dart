@@ -9,6 +9,15 @@ class OnlyOne extends DbBaseModel {
   ///
   String test1;
 
+  static const Map<String, Map<String, String?>> fieldMap = {
+    'zh': {
+      'test1': null,
+    },
+    'en': {
+      'test1': null,
+    },
+  };
+
   OnlyOne({
     String? test1,
   }) : test1 = test1 ?? '';
@@ -54,6 +63,11 @@ class OnlyOne extends DbBaseModel {
   }
 }
 
+class OnlyOneField {
+  ///
+  static const String test1 = 'test1';
+}
+
 class OnlyOneDirty {
   final Map<String, dynamic> data = {};
 
@@ -66,4 +80,10 @@ class OnlyOneQuery {
 
   ///
   static DbQueryField<String, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get test1 => DbQueryField('test1');
+}
+
+extension OnlyOneStringExtension on String {
+  String get trsOnlyOneField => OnlyOne.fieldMap[EasyLocale.languageCode]?[this] ?? this;
+
+  String trsOnlyOneFieldByCode(String code) => OnlyOne.fieldMap[code]?[this] ?? this;
 }

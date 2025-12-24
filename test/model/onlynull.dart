@@ -12,6 +12,17 @@ class OnlyNull extends DbBaseModel {
   ///
   String? test2;
 
+  static const Map<String, Map<String, String?>> fieldMap = {
+    'zh': {
+      'test1': null,
+      'test2': null,
+    },
+    'en': {
+      'test1': null,
+      'test2': null,
+    },
+  };
+
   OnlyNull({
     this.test1,
     this.test2,
@@ -63,6 +74,14 @@ class OnlyNull extends DbBaseModel {
   }
 }
 
+class OnlyNullField {
+  ///
+  static const String test1 = 'test1';
+
+  ///
+  static const String test2 = 'test2';
+}
+
 class OnlyNullDirty {
   final Map<String, dynamic> data = {};
 
@@ -81,4 +100,10 @@ class OnlyNullQuery {
 
   ///
   static DbQueryField<String, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get test2 => DbQueryField('test2');
+}
+
+extension OnlyNullStringExtension on String {
+  String get trsOnlyNullField => OnlyNull.fieldMap[EasyLocale.languageCode]?[this] ?? this;
+
+  String trsOnlyNullFieldByCode(String code) => OnlyNull.fieldMap[code]?[this] ?? this;
 }

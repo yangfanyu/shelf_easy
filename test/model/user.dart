@@ -17,14 +17,14 @@ class User extends DbBaseModel {
   ///女性
   static const int sexFemale = 2;
 
-  static const Map<String, Map<int, String>> constMap = {
+  static const Map<String, Map<int, String?>> constMap = {
     'zh': {
-      1: 'null',
-      2: 'null',
+      1: '男',
+      2: '女',
     },
     'en': {
-      1: 'null',
-      2: 'null',
+      1: 'Male',
+      2: 'Female',
     },
   };
 
@@ -64,6 +64,35 @@ class User extends DbBaseModel {
 
   ///测试复杂类型
   Map<int, Map<ObjectId, Address>> ageObjectIdAddressMap;
+
+  static const Map<String, Map<String, String?>> fieldMap = {
+    'zh': {
+      '_id': null,
+      'name': '姓名',
+      'age': '年龄',
+      'rmb': null,
+      'pwd': null,
+      'address': null,
+      'addressBak': null,
+      'accessList': null,
+      'addressList': null,
+      'friendList': null,
+      'ageObjectIdAddressMap': null,
+    },
+    'en': {
+      '_id': null,
+      'name': 'Name',
+      'age': 'Age',
+      'rmb': null,
+      'pwd': null,
+      'address': null,
+      'addressBak': null,
+      'accessList': null,
+      'addressList': null,
+      'friendList': null,
+      'ageObjectIdAddressMap': null,
+    },
+  };
 
   ///
   ///标志
@@ -189,6 +218,45 @@ class User extends DbBaseModel {
   }
 }
 
+class UserField {
+  ///
+  ///标志
+  ///
+  static const String id = '_id';
+
+  ///
+  ///姓名
+  ///
+  static const String name = 'name';
+
+  ///年龄
+  static const String age = 'age';
+
+  ///RMB
+  static const String rmb = 'rmb';
+
+  ///密码
+  static const String pwd = 'pwd';
+
+  ///归属地址
+  static const String address = 'address';
+
+  ///备用地址
+  static const String addressBak = 'addressBak';
+
+  ///权限列表
+  static const String accessList = 'accessList';
+
+  ///通讯地址
+  static const String addressList = 'addressList';
+
+  ///好友id列表
+  static const String friendList = 'friendList';
+
+  ///测试复杂类型
+  static const String ageObjectIdAddressMap = 'ageObjectIdAddressMap';
+}
+
 class UserDirty {
   final Map<String, dynamic> data = {};
 
@@ -278,4 +346,16 @@ class UserQuery {
 
   ///测试复杂类型
   static DbQueryField<Map<int, Map<ObjectId, Address>>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get ageObjectIdAddressMap => DbQueryField('ageObjectIdAddressMap');
+}
+
+extension UserIntExtension on int {
+  String get trsUserConst => User.constMap[EasyLocale.languageCode]?[this] ?? toString();
+
+  String trsUserConstByCode(String code) => User.constMap[code]?[this] ?? toString();
+}
+
+extension UserStringExtension on String {
+  String get trsUserField => User.fieldMap[EasyLocale.languageCode]?[this] ?? this;
+
+  String trsUserFieldByCode(String code) => User.fieldMap[code]?[this] ?? this;
 }

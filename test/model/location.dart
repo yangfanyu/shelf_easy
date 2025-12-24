@@ -15,6 +15,19 @@ class Location extends DbBaseModel {
   ///精确度
   double accuracy;
 
+  static const Map<String, Map<String, String?>> fieldMap = {
+    'zh': {
+      'latitude': null,
+      'longitude': null,
+      'accuracy': null,
+    },
+    'en': {
+      'latitude': null,
+      'longitude': null,
+      'accuracy': null,
+    },
+  };
+
   Location({
     double? latitude,
     double? longitude,
@@ -74,6 +87,17 @@ class Location extends DbBaseModel {
   }
 }
 
+class LocationField {
+  ///纬度
+  static const String latitude = 'latitude';
+
+  ///经度
+  static const String longitude = 'longitude';
+
+  ///精确度
+  static const String accuracy = 'accuracy';
+}
+
 class LocationDirty {
   final Map<String, dynamic> data = {};
 
@@ -98,4 +122,10 @@ class LocationQuery {
 
   ///精确度
   static DbQueryField<double, double, DBUnsupportArrayOperate> get accuracy => DbQueryField('accuracy');
+}
+
+extension LocationStringExtension on String {
+  String get trsLocationField => Location.fieldMap[EasyLocale.languageCode]?[this] ?? this;
+
+  String trsLocationFieldByCode(String code) => Location.fieldMap[code]?[this] ?? this;
 }

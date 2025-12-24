@@ -19,13 +19,13 @@ void testEasyCoderModel() {
       classDesc: ['', '用户类', ''],
       className: 'User',
       constFields: [
-        EasyCoderFieldInfo(type: 'int', name: 'sexMale', desc: ['男性'], defVal: '1'),
-        EasyCoderFieldInfo(type: 'int', name: 'sexFemale', desc: ['女性'], defVal: '2'),
+        EasyCoderFieldInfo(type: 'int', name: 'sexMale', desc: ['男性'], defVal: '1', zhText: '男', enText: 'Male'),
+        EasyCoderFieldInfo(type: 'int', name: 'sexFemale', desc: ['女性'], defVal: '2', zhText: '女', enText: 'Female'),
       ],
       classFields: [
         EasyCoderFieldInfo(type: 'ObjectId', name: '_id', desc: ['', '标志', ''], secrecy: true),
-        EasyCoderFieldInfo(type: 'String', name: 'name', desc: ['', '姓名', ''], defVal: '\'名称\''),
-        EasyCoderFieldInfo(type: 'int', name: 'age', desc: ['年龄'], secrecy: true, defVal: '10'),
+        EasyCoderFieldInfo(type: 'String', name: 'name', desc: ['', '姓名', ''], defVal: '\'名称\'', zhText: '姓名', enText: 'Name'),
+        EasyCoderFieldInfo(type: 'int', name: 'age', desc: ['年龄'], secrecy: true, defVal: '10', zhText: '年龄', enText: 'Age'),
         EasyCoderFieldInfo(type: 'double', name: 'rmb', desc: ['RMB'], secrecy: true, defVal: '100'),
         EasyCoderFieldInfo(type: 'String', name: 'pwd', desc: ['密码'], secrecy: true, defVal: '\'12345678\''),
         EasyCoderFieldInfo(type: 'Address', name: 'address', desc: ['归属地址']),
@@ -196,5 +196,5 @@ void testEasyCoderModel() {
       className: 'Empty',
     ),
   );
-  coder.generateBaseExports();
+  coder.generateModelExports();
 }

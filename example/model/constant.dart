@@ -15,7 +15,7 @@ class Constant extends DbBaseModel {
   ///性别：未知
   static const int sexUnknow = 103;
 
-  static const Map<String, Map<int, String>> constMap = {
+  static const Map<String, Map<int, String?>> constMap = {
     'zh': {
       101: '男',
       102: '女',
@@ -58,4 +58,10 @@ class Constant extends DbBaseModel {
 
   @override
   void updateByKValues(Map<String, dynamic> map) {}
+}
+
+extension ConstantIntExtension on int {
+  String get trsConstantConst => Constant.constMap[EasyLocale.languageCode]?[this] ?? toString();
+
+  String trsConstantConstByCode(String code) => Constant.constMap[code]?[this] ?? toString();
 }

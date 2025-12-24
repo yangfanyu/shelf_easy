@@ -1291,10 +1291,10 @@ class EasyCoderModelInfo {
   ///模型实例的扩展字段，这一部分字段不参与序列化和查询
   final List<EasyCoderFieldInfo> extraFields;
 
-  ///是否生成[constFields]中字段的[值]的国际化语言Map映射，为true时[constFields]的每个子项类型必须为int
+  ///是否生成[constFields]中字段的[值]的国际化语言Map映射，为[true]时[constFields]的每个子项类型必须为int
   final bool constMap;
 
-  ///是否生成[xxxxxFields]中字段的[名]的国际化语言Map映射
+  ///是否生成[classFields]中字段的[名]的国际化语言Map映射，为[true]时[field]若为[true]则尝试生成字段名Map
   final bool fieldMap;
 
   ///是否生成字段辅助类
@@ -1306,6 +1306,9 @@ class EasyCoderModelInfo {
   ///是否生成查询辅助类
   final bool query;
 
+  ///是否生成翻译辅助类
+  final bool locale;
+
   EasyCoderModelInfo({
     this.outputFile,
     this.importList = const [],
@@ -1315,10 +1318,11 @@ class EasyCoderModelInfo {
     this.classFields = const [],
     this.extraFields = const [],
     this.constMap = false,
-    this.fieldMap = false,
+    this.fieldMap = true,
     this.field = true,
     this.dirty = true,
     this.query = true,
+    this.locale = true,
   });
 
   bool get hasObjectIdField {

@@ -23,6 +23,23 @@ class Address extends DbBaseModel {
   ///县（区）
   Location location;
 
+  static const Map<String, Map<String, String?>> fieldMap = {
+    'zh': {
+      'country': null,
+      'province': null,
+      'city': null,
+      'area': null,
+      'location': null,
+    },
+    'en': {
+      'country': null,
+      'province': null,
+      'city': null,
+      'area': null,
+      'location': null,
+    },
+  };
+
   Address({
     String? country,
     String? province,
@@ -96,6 +113,23 @@ class Address extends DbBaseModel {
   }
 }
 
+class AddressField {
+  ///国家
+  static const String country = 'country';
+
+  ///省份
+  static const String province = 'province';
+
+  ///市
+  static const String city = 'city';
+
+  ///县（区）
+  static const String area = 'area';
+
+  ///县（区）
+  static const String location = 'location';
+}
+
 class AddressDirty {
   final Map<String, dynamic> data = {};
 
@@ -132,4 +166,10 @@ class AddressQuery {
 
   ///县（区）
   static DbQueryField<Location, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get location => DbQueryField('location');
+}
+
+extension AddressStringExtension on String {
+  String get trsAddressField => Address.fieldMap[EasyLocale.languageCode]?[this] ?? this;
+
+  String trsAddressFieldByCode(String code) => Address.fieldMap[code]?[this] ?? this;
 }

@@ -201,6 +201,141 @@ class Complex extends DbBaseModel {
   ///Field mapMapListListMapListObjectId
   Map<String, Map<String, List<List<Map<String, List<ObjectId>>>>>> mapMapListListMapListObjectId;
 
+  static const Map<String, Map<String, String?>> fieldMap = {
+    'zh': {
+      '_id': null,
+      'baseInt': null,
+      'baseDouble': null,
+      'baseNum': null,
+      'baseBool': null,
+      'baseString': null,
+      'baseAddress': null,
+      'baseObjectId': null,
+      'baseJsonWraper': null,
+      'listInt': null,
+      'listDouble': null,
+      'listNum': null,
+      'listBool': null,
+      'listString': null,
+      'listAddress': null,
+      'listObjectId': null,
+      'mapInt': null,
+      'mapDouble': null,
+      'mapNum': null,
+      'mapBool': null,
+      'mapString': null,
+      'mapAddress': null,
+      'mapObjectId': null,
+      'map2Int': null,
+      'map2Double': null,
+      'map2Num': null,
+      'map2Bool': null,
+      'map2String': null,
+      'map2Address': null,
+      'map2ObjectId': null,
+      'map3Int': null,
+      'map3Double': null,
+      'map3Num': null,
+      'map3Bool': null,
+      'map3String': null,
+      'map3Address': null,
+      'map3ObjectId': null,
+      'map4Int': null,
+      'map4Double': null,
+      'map4Num': null,
+      'map4Bool': null,
+      'map4String': null,
+      'map4Address': null,
+      'map4ObjectId': null,
+      'map5Int': null,
+      'map5Double': null,
+      'map5Num': null,
+      'map5Bool': null,
+      'map5String': null,
+      'map5Address': null,
+      'map5ObjectId': null,
+      'map6Int': null,
+      'map6Double': null,
+      'map6Num': null,
+      'map6Bool': null,
+      'map6String': null,
+      'map6Address': null,
+      'map6ObjectId': null,
+      'listListMapMapListMapDouble': null,
+      'listListMapMapListMapAddress': null,
+      'listListMapMapListMapObjectId': null,
+      'mapMapListListMapListDouble': null,
+      'mapMapListListMapListAddress': null,
+      'mapMapListListMapListObjectId': null,
+    },
+    'en': {
+      '_id': null,
+      'baseInt': null,
+      'baseDouble': null,
+      'baseNum': null,
+      'baseBool': null,
+      'baseString': null,
+      'baseAddress': null,
+      'baseObjectId': null,
+      'baseJsonWraper': null,
+      'listInt': null,
+      'listDouble': null,
+      'listNum': null,
+      'listBool': null,
+      'listString': null,
+      'listAddress': null,
+      'listObjectId': null,
+      'mapInt': null,
+      'mapDouble': null,
+      'mapNum': null,
+      'mapBool': null,
+      'mapString': null,
+      'mapAddress': null,
+      'mapObjectId': null,
+      'map2Int': null,
+      'map2Double': null,
+      'map2Num': null,
+      'map2Bool': null,
+      'map2String': null,
+      'map2Address': null,
+      'map2ObjectId': null,
+      'map3Int': null,
+      'map3Double': null,
+      'map3Num': null,
+      'map3Bool': null,
+      'map3String': null,
+      'map3Address': null,
+      'map3ObjectId': null,
+      'map4Int': null,
+      'map4Double': null,
+      'map4Num': null,
+      'map4Bool': null,
+      'map4String': null,
+      'map4Address': null,
+      'map4ObjectId': null,
+      'map5Int': null,
+      'map5Double': null,
+      'map5Num': null,
+      'map5Bool': null,
+      'map5String': null,
+      'map5Address': null,
+      'map5ObjectId': null,
+      'map6Int': null,
+      'map6Double': null,
+      'map6Num': null,
+      'map6Bool': null,
+      'map6String': null,
+      'map6Address': null,
+      'map6ObjectId': null,
+      'listListMapMapListMapDouble': null,
+      'listListMapMapListMapAddress': null,
+      'listListMapMapListMapObjectId': null,
+      'mapMapListListMapListDouble': null,
+      'mapMapListListMapListAddress': null,
+      'mapMapListListMapListObjectId': null,
+    },
+  };
+
   ///Field _id
   ObjectId get id => _id;
 
@@ -690,6 +825,200 @@ class Complex extends DbBaseModel {
   }
 }
 
+class ComplexField {
+  ///Field _id
+  static const String id = '_id';
+
+  ///Field baseInt
+  static const String baseInt = 'baseInt';
+
+  ///Field baseDouble
+  static const String baseDouble = 'baseDouble';
+
+  ///Field baseNum
+  static const String baseNum = 'baseNum';
+
+  ///Field baseBool
+  static const String baseBool = 'baseBool';
+
+  ///Field baseString
+  static const String baseString = 'baseString';
+
+  ///Field baseAddress
+  static const String baseAddress = 'baseAddress';
+
+  ///Field baseObjectId
+  static const String baseObjectId = 'baseObjectId';
+
+  ///Field baseJsonWraper
+  static const String baseJsonWraper = 'baseJsonWraper';
+
+  ///Field listInt
+  static const String listInt = 'listInt';
+
+  ///Field listDouble
+  static const String listDouble = 'listDouble';
+
+  ///Field listNum
+  static const String listNum = 'listNum';
+
+  ///Field listBool
+  static const String listBool = 'listBool';
+
+  ///Field listString
+  static const String listString = 'listString';
+
+  ///Field listAddress
+  static const String listAddress = 'listAddress';
+
+  ///Field listObjectId
+  static const String listObjectId = 'listObjectId';
+
+  ///Field mapInt
+  static const String mapInt = 'mapInt';
+
+  ///Field mapDouble
+  static const String mapDouble = 'mapDouble';
+
+  ///Field mapNum
+  static const String mapNum = 'mapNum';
+
+  ///Field mapBool
+  static const String mapBool = 'mapBool';
+
+  ///Field mapString
+  static const String mapString = 'mapString';
+
+  ///Field mapAddress
+  static const String mapAddress = 'mapAddress';
+
+  ///Field mapObjectId
+  static const String mapObjectId = 'mapObjectId';
+
+  ///Field map2Int
+  static const String map2Int = 'map2Int';
+
+  ///Field map2Double
+  static const String map2Double = 'map2Double';
+
+  ///Field map2Num
+  static const String map2Num = 'map2Num';
+
+  ///Field map2Bool
+  static const String map2Bool = 'map2Bool';
+
+  ///Field map2String
+  static const String map2String = 'map2String';
+
+  ///Field map2Address
+  static const String map2Address = 'map2Address';
+
+  ///Field map2ObjectId
+  static const String map2ObjectId = 'map2ObjectId';
+
+  ///Field map3Int
+  static const String map3Int = 'map3Int';
+
+  ///Field map3Double
+  static const String map3Double = 'map3Double';
+
+  ///Field map3Num
+  static const String map3Num = 'map3Num';
+
+  ///Field map3Bool
+  static const String map3Bool = 'map3Bool';
+
+  ///Field map3String
+  static const String map3String = 'map3String';
+
+  ///Field map3Address
+  static const String map3Address = 'map3Address';
+
+  ///Field map3ObjectId
+  static const String map3ObjectId = 'map3ObjectId';
+
+  ///Field map4Int
+  static const String map4Int = 'map4Int';
+
+  ///Field map4Double
+  static const String map4Double = 'map4Double';
+
+  ///Field map4Num
+  static const String map4Num = 'map4Num';
+
+  ///Field map4Bool
+  static const String map4Bool = 'map4Bool';
+
+  ///Field map4String
+  static const String map4String = 'map4String';
+
+  ///Field map4Address
+  static const String map4Address = 'map4Address';
+
+  ///Field map4ObjectId
+  static const String map4ObjectId = 'map4ObjectId';
+
+  ///Field map5Int
+  static const String map5Int = 'map5Int';
+
+  ///Field map5Double
+  static const String map5Double = 'map5Double';
+
+  ///Field map5Num
+  static const String map5Num = 'map5Num';
+
+  ///Field map5Bool
+  static const String map5Bool = 'map5Bool';
+
+  ///Field map5String
+  static const String map5String = 'map5String';
+
+  ///Field map5Address
+  static const String map5Address = 'map5Address';
+
+  ///Field map5ObjectId
+  static const String map5ObjectId = 'map5ObjectId';
+
+  ///Field map6Int
+  static const String map6Int = 'map6Int';
+
+  ///Field map6Double
+  static const String map6Double = 'map6Double';
+
+  ///Field map6Num
+  static const String map6Num = 'map6Num';
+
+  ///Field map6Bool
+  static const String map6Bool = 'map6Bool';
+
+  ///Field map6String
+  static const String map6String = 'map6String';
+
+  ///Field map6Address
+  static const String map6Address = 'map6Address';
+
+  ///Field map6ObjectId
+  static const String map6ObjectId = 'map6ObjectId';
+
+  ///Field listListMapMapListMapDouble
+  static const String listListMapMapListMapDouble = 'listListMapMapListMapDouble';
+
+  ///Field listListMapMapListMapAddress
+  static const String listListMapMapListMapAddress = 'listListMapMapListMapAddress';
+
+  ///Field listListMapMapListMapObjectId
+  static const String listListMapMapListMapObjectId = 'listListMapMapListMapObjectId';
+
+  ///Field mapMapListListMapListDouble
+  static const String mapMapListListMapListDouble = 'mapMapListListMapListDouble';
+
+  ///Field mapMapListListMapListAddress
+  static const String mapMapListListMapListAddress = 'mapMapListListMapListAddress';
+
+  ///Field mapMapListListMapListObjectId
+  static const String mapMapListListMapListObjectId = 'mapMapListListMapListObjectId';
+}
+
 class ComplexDirty {
   final Map<String, dynamic> data = {};
 
@@ -1080,4 +1409,10 @@ class ComplexQuery {
 
   ///Field mapMapListListMapListObjectId
   static DbQueryField<Map<String, Map<String, List<List<Map<String, List<ObjectId>>>>>>, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get mapMapListListMapListObjectId => DbQueryField('mapMapListListMapListObjectId');
+}
+
+extension ComplexStringExtension on String {
+  String get trsComplexField => Complex.fieldMap[EasyLocale.languageCode]?[this] ?? this;
+
+  String trsComplexFieldByCode(String code) => Complex.fieldMap[code]?[this] ?? this;
 }

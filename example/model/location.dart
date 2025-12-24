@@ -34,6 +34,31 @@ class Location extends DbBaseModel {
   ///创建时间
   int _time;
 
+  static const Map<String, Map<String, String?>> fieldMap = {
+    'zh': {
+      '_id': null,
+      'country': null,
+      'province': null,
+      'city': null,
+      'district': null,
+      'latitude': null,
+      'longitude': null,
+      'altitude': null,
+      '_time': null,
+    },
+    'en': {
+      '_id': null,
+      'country': null,
+      'province': null,
+      'city': null,
+      'district': null,
+      'latitude': null,
+      'longitude': null,
+      'altitude': null,
+      '_time': null,
+    },
+  };
+
   ///唯一标志
   ObjectId get id => _id;
 
@@ -141,6 +166,35 @@ class Location extends DbBaseModel {
   }
 }
 
+class LocationField {
+  ///唯一标志
+  static const String id = '_id';
+
+  ///国家
+  static const String country = 'country';
+
+  ///省
+  static const String province = 'province';
+
+  ///市
+  static const String city = 'city';
+
+  ///区
+  static const String district = 'district';
+
+  ///纬度
+  static const String latitude = 'latitude';
+
+  ///经度
+  static const String longitude = 'longitude';
+
+  ///海拔
+  static const String altitude = 'altitude';
+
+  ///创建时间
+  static const String time = '_time';
+}
+
 class LocationDirty {
   final Map<String, dynamic> data = {};
 
@@ -201,4 +255,10 @@ class LocationQuery {
 
   ///创建时间
   static DbQueryField<int, int, DBUnsupportArrayOperate> get time => DbQueryField('_time');
+}
+
+extension LocationStringExtension on String {
+  String get trsLocationField => Location.fieldMap[EasyLocale.languageCode]?[this] ?? this;
+
+  String trsLocationFieldByCode(String code) => Location.fieldMap[code]?[this] ?? this;
 }
