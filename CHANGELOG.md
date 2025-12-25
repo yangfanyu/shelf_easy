@@ -1,3 +1,7 @@
+## 5.0.1
+
+- Modified the rule for the output file path of the code generator.  
+  
 ## 5.0.0
 
 - Add generation functionality to the model generator: nationalization language mapping table for field names, translation methods.
