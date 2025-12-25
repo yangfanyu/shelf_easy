@@ -27,7 +27,7 @@ class EasyCoder extends EasyLogger {
   ///生成数据库模型
   void generateModel(EasyCoderModelInfo modelInfo, {List<String> headerComments = const []}) {
     final indent = _config.indent;
-    final outputPath = '${_config.absFolder}/${modelInfo.outputFile?.toLowerCase() ?? modelInfo.className.toLowerCase()}.dart'; //输入文件路径
+    final outputPath = '${_config.absFolder}/${modelInfo.actualOutputFile}'; //输出文件路径
     final buffer = StringBuffer();
     //删除旧文件
     try {
@@ -80,8 +80,8 @@ class EasyCoder extends EasyLogger {
   }
 
   ///生成基本模型导出文件
-  void generateModelExports({String outputFile = 'all'}) {
-    final outputPath = '${_config.absFolder}/$outputFile.dart'; //输入文件路径
+  void generateModelExports({String outputFile = 'all.dart'}) {
+    final outputPath = '${_config.absFolder}/$outputFile'; //输出文件路径
     final buffer = StringBuffer();
     //删除旧文件
     try {
@@ -95,8 +95,7 @@ class EasyCoder extends EasyLogger {
     }
     if (_modelList.isEmpty) return;
     for (var element in _modelList) {
-      final path = '${element.outputFile?.toLowerCase() ?? element.className.toLowerCase()}.dart'; //输入文件路径
-      buffer.write('export \'$path\';\n');
+      buffer.write('export \'${element.actualOutputFile}\';\n'); //输出文件路径
     }
     //写入到文件
     try {

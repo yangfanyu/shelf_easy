@@ -1325,8 +1325,18 @@ class EasyCoderModelInfo {
     this.locale = true,
   });
 
+  ///是否有ObjectId类型的字段
   bool get hasObjectIdField {
     return constFields.any((e) => e.type.contains('ObjectId')) || classFields.any((e) => e.type.contains('ObjectId')) || extraFields.any((e) => e.type.contains('ObjectId'));
+  }
+
+  ///获取代码的实际输出文件名称
+  String get actualOutputFile {
+    if (outputFile == null) {
+      return '${className.replaceAllMapped(RegExp(r'(?<=[a-z])[A-Z]'), (m) => '_${m.group(0)}').toLowerCase()}.dart';
+    } else {
+      return outputFile!;
+    }
   }
 }
 
