@@ -1,3 +1,7 @@
+## 5.0.2
+
+- Optimize the array item matching method of DbQueryField.  
+  
 ## 5.0.1
 
 - Modified the rule for the output file path of the code generator.  
