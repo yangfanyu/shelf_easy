@@ -696,20 +696,21 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
     _cmds['\$options'] = options;
   }
 
-  ///[every$ne]表示数组每一个子项都不等于，其它表示数组中任意一项满足对应条件即可
-  void $itemMatch({ITEM_TYPE? $eq, ITEM_TYPE? $ne, ITEM_TYPE? $gt, ITEM_TYPE? $lt, ITEM_TYPE? $gte, ITEM_TYPE? $lte, ITEM_TYPE? every$ne}) {
-    if (every$ne == null) {
-      final exp = {};
-      if ($eq != null) exp['\$eq'] = $eq;
-      if ($ne != null) exp['\$ne'] = $ne;
-      if ($gt != null) exp['\$gt'] = $gt;
-      if ($lt != null) exp['\$lt'] = $lt;
-      if ($gte != null) exp['\$gte'] = $gte;
-      if ($lte != null) exp['\$lte'] = $lte;
-      _cmds['\$elemMatch'] = exp;
-    } else {
-      _cmds['\$ne'] = every$ne;
-    }
+  ///数组中任一项满足过滤条件
+  void $itemAnyMatch({DbFilter? filter, ITEM_TYPE? $eq, ITEM_TYPE? $ne, ITEM_TYPE? $gt, ITEM_TYPE? $lt, ITEM_TYPE? $gte, ITEM_TYPE? $lte}) {
+    final exp = filter?.toJson() ?? {};
+    if ($eq != null) exp['\$eq'] = $eq;
+    if ($ne != null) exp['\$ne'] = $ne;
+    if ($gt != null) exp['\$gt'] = $gt;
+    if ($lt != null) exp['\$lt'] = $lt;
+    if ($gte != null) exp['\$gte'] = $gte;
+    if ($lte != null) exp['\$lte'] = $lte;
+    _cmds['\$elemMatch'] = exp;
+  }
+
+  ///数组每一个项都满足过滤条件
+  void $itemAllMatch({ITEM_TYPE? $ne}) {
+    _cmds['\$ne'] = $ne;
   }
   /* **************** 赋值操作 ********** */
 

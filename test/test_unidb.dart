@@ -29,7 +29,7 @@ void testJsonTool() {
 }
 
 void testHelpClass() {
-  final encoder = JsonEncoder.withIndent('  ');
+  final encoder = JsonEncoder.withIndent('|  ');
   print('\n DbFilter');
   print(
     encoder.convert(
@@ -41,7 +41,17 @@ void testHelpClass() {
             ..$gte(10)
             ..$lte(20),
           UserQuery.address..$eq(Address()),
-          UserQuery.accessList..$itemMatch($gte: 1, $lte: 0),
+          UserQuery.accessList..$itemAnyMatch($gte: 1, $lte: 0),
+          UserQuery.addressList..$itemAnyMatch(
+            filter: DbFilter(
+              {
+                AddressQuery.province..$eq('北京'),
+                AddressQuery.city..$eq('北京市'),
+                AddressQuery.area..$eq('海淀区'),
+              },
+            ),
+          ),
+          UserQuery.friendList..$itemAllMatch($ne: DbQueryField.emptyObjectId),
         },
         $or: [
           {
@@ -377,7 +387,7 @@ void testDataBase() {
     await database.findOne(
       UserQuery.$tableName,
       DbFilter({
-        UserQuery.accessList..$itemMatch($eq: 202),
+        UserQuery.accessList..$itemAnyMatch($eq: 202),
       }),
       converter: User.fromJson,
       findOptions: DbFindOptions(
@@ -449,7 +459,7 @@ void testDataBase() {
     await database.findMany(
       UserQuery.$tableName,
       DbFilter({
-        UserQuery.accessList..$itemMatch($gte: 200, $lte: 400),
+        UserQuery.accessList..$itemAnyMatch($gte: 200, $lte: 400),
       }),
       converter: User.fromJson,
       findOptions: DbFindOptions(
@@ -463,7 +473,7 @@ void testDataBase() {
     await database.findMany(
       UserQuery.$tableName,
       DbFilter({
-        UserQuery.accessList..$itemMatch($ne: -1),
+        UserQuery.accessList..$itemAnyMatch($ne: -1),
       }),
       converter: User.fromJson,
       findOptions: DbFindOptions(
@@ -477,7 +487,7 @@ void testDataBase() {
     await database.findMany(
       UserQuery.$tableName,
       DbFilter({
-        UserQuery.accessList..$itemMatch(every$ne: -1),
+        UserQuery.accessList..$itemAllMatch($ne: -1),
       }),
       converter: User.fromJson,
       findOptions: DbFindOptions(
