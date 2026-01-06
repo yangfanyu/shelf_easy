@@ -567,11 +567,15 @@ class EasyServer extends EasyLogger {
   }
 
   void _onServerHeart() {
+    final expiredSessions = <EasyServerSession>[];
     _websoketMap.forEach((id, session) {
       if (session.isExpired(_config.timeout)) {
-        session.close(EasyConstant.serverCloseByTimeoutError.code, EasyConstant.serverCloseByTimeoutError.desc); //清除超时的链接
+        expiredSessions.add(session); //收集超时的连接，session.close会触发done事件，导致迭代的时候同时发生删除，所以需要先收集后关闭
       }
     });
+    for (var session in expiredSessions) {
+      session.close(EasyConstant.serverCloseByTimeoutError.code, EasyConstant.serverCloseByTimeoutError.desc); //清除超时的连接
+    }
     logInfo(['_onServerHeart => total', _websoketMap.length, 'socket, total', _websoketSessionMap.length, 'session']);
     //回调上层绑定的监听器
     if (_serverHeartListener != null) _serverHeartListener!(_websoketMap.length, _websoketSessionMap.length);
