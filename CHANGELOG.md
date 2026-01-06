@@ -1,3 +1,7 @@
+## 5.0.3
+
+- Fix the issue where the session table of EasyServer is modified during iteration.  
+  
 ## 5.0.2
 
 - Optimize the array item matching method of DbQueryField.  
