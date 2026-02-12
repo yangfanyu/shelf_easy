@@ -512,7 +512,7 @@ class EasyCoder extends EasyLogger {
     }
   }
 
-  String _getFieldPublicName(String name) => name.replaceAll('_', '');
+  String _getFieldPublicName(String name) => name.replaceFirst(RegExp(r'^_+'), '');
 
   String _getFieldDefaultValue(String name, String type, String? defVal) {
     if (defVal != null) return defVal;

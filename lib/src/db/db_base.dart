@@ -662,6 +662,14 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
 
   DbQueryField(this._name) : _cmds = {};
 
+  // TODO 是否有必要重写hashCode和operator==？
+
+  // @override
+  // int get hashCode => _name.hashCode;
+
+  // @override
+  // bool operator ==(Object other) => other is DbQueryField && other._name == _name;
+
   /* **************** 指令操作 ********** */
   ///等于
   void $eq(FD_TYPE value) => _cmds['\$eq'] = toBaseType(value);
