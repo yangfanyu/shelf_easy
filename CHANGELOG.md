@@ -1,3 +1,7 @@
+## 5.0.4
+
+- Modify the underscore replacement rule for the public name of the code generator.  
+  
 ## 5.0.3
 
 - Fix the issue where the session table of EasyServer is modified during iteration.  
