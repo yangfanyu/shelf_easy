@@ -298,6 +298,9 @@ class DbUpdate extends DbBaseModel {
     if ($pop != null) {
       map['\$pop'] = {for (var element in $pop!) element._name: element._value$pop ?? DBUnsupportNullValue('\$pop', element._name)};
     }
+    if (map.isEmpty) {
+      DBUnsupportNoneFieldUpdate(); //没有任何更新字段时，抛出异常，即：禁止直接写入{}覆盖整个原数据的危险操作
+    }
     return map;
   }
 }
@@ -947,5 +950,14 @@ class DBUnsupportNumberOperate {
 class DBUnsupportArrayOperate {
   DBUnsupportArrayOperate() {
     throw UnsupportedError('DBUnsupportArrayOperate: This field unsupport array operate.');
+  }
+}
+
+///
+///更新不支持没有字段
+///
+class DBUnsupportNoneFieldUpdate {
+  DBUnsupportNoneFieldUpdate() {
+    throw UnsupportedError('DBUnsupportNoneFieldUpdate: This update unsupport none field.');
   }
 }
