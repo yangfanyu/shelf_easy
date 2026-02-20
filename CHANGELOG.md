@@ -1,3 +1,7 @@
+## 5.0.5
+
+- When DbUpdate does not have any update fields, it throws a DBUnsupportNoneFieldUpdate exception, completely eliminating the risk of overwriting the entire document due to errors.  
+  
 ## 5.0.4
 
 - Modify the underscore replacement rule for the public name of the code generator.  
