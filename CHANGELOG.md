@@ -1,3 +1,7 @@
+## 5.0.6
+
+- Add the httpDownload method to EasyServer.  
+  
 ## 5.0.5
 
 - When DbUpdate does not have any update fields, it throws a DBUnsupportNoneFieldUpdate exception, completely eliminating the risk of overwriting the entire document due to errors.  
