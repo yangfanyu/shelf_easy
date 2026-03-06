@@ -32,6 +32,9 @@ typedef HttpRouteHandler = Future<EasyPacket?> Function(Request request, EasyPac
 ///http上传处理方法
 typedef HttpUploadHandler = Future<EasyPacket?> Function(Request request, EasyPacket packet, List<File> files);
 
+///http下载处理方法
+typedef HttpDownloadHandler = Future<Stream<List<int>>?> Function(Request request, EasyPacket packet);
+
 ///websocket路由处理方法
 typedef WebsocketRouteHandler = Future<EasyPacket?> Function(EasyServerSession session, EasyPacket packet);
 
@@ -229,6 +232,45 @@ class EasyServer extends EasyLogger {
       }
       logTrace(['_onHttpUpload =>', responseData]);
       return Response.ok(responseData, headers: {'content-type': _config.binary ? 'application/octet-stream' : 'text/plain'}..addAll(responseHeaders ?? {}));
+    });
+  }
+
+  ///设置http服务的AES加密通讯的文件下载路由，调用过此方法后过启动为web服务器
+  void httpDownload(String route, HttpDownloadHandler handler, {HttpTokenConverter? tokenConverter, Map<String, Object>? responseHeaders}) {
+    _router ??= Router();
+    _router?.post(route, (Request request) async {
+      logTrace(['_onHttpDownload <=', request.headers]);
+      //合并二进制包
+      final requestBytes = <int>[];
+      if (_config.binary) {
+        final requestBytesList = await request.read().toList();
+        for (var element in requestBytesList) {
+          requestBytes.addAll(element);
+        }
+        if (requestBytesList.length > 1) {
+          logTrace(['_onHttpDownload <= requestBytesList.length is ${requestBytesList.length}, so merge to one list.']);
+        }
+      }
+      //解析请求数据
+      final requestData = _config.binary ? Uint8List.fromList(requestBytes) : await request.readAsString();
+      logTrace(['_onHttpDownload <=', requestData]);
+      final requestUid = (request.headers['easy-security-identity'] ?? '').trim();
+      final requestToken = (tokenConverter == null || requestUid.isEmpty) ? null : await tokenConverter(requestUid);
+      final requestPacket = EasySecurity.decrypt(requestData, requestToken ?? _config.pwd);
+      if (requestPacket == null) {
+        logError(['_onHttpDownload <=', requestData, requestUid, requestToken, requestPacket]);
+        return Response.internalServerError(headers: responseHeaders);
+      }
+      logDebug(['_onHttpDownload <<<<<<', requestPacket]);
+      //路由响应数据
+      final responseStream = await handler(request, requestPacket);
+      logDebug(['_onHttpDownload >>>>>>', responseStream]);
+      if (responseStream == null) {
+        logError(['_onHttpDownload =>', responseStream]);
+        return Response.internalServerError(headers: responseHeaders);
+      }
+      logTrace(['_onHttpDownload =>', responseStream]);
+      return Response.ok(responseStream, headers: {'content-type': 'application/octet-stream'}..addAll(responseHeaders ?? {}));
     });
   }
 
