@@ -149,7 +149,7 @@ class EasyClient extends EasyLogger {
   }
 
   ///发起AES加密通讯的http请求
-  Future<EasyPacket> httpRequest(String route, {Map<String, dynamic>? data, List<List<int>>? fileBytes, MediaType? mediaType, Map<String, String>? headers}) async {
+  Future<EasyPacket> httpRequest(String route, {Map<String, dynamic>? data, List<List<int>>? fileBytes, MediaType? mediaType, Map<String, String>? headers, Future<List<int>?> Function(dynamic body)? decrypt}) async {
     final requestId = _reqIdInc++;
     final requestPacket = EasyPacket.request(route: route, id: requestId, desc: DateTime.now().millisecondsSinceEpoch.toString(), data: data);
     final requestData = threadEnable
@@ -185,6 +185,20 @@ class EasyClient extends EasyLogger {
         logError(['httpResponse <<<<<<', responsePacket]);
         return responsePacket;
       }
+
+      if (decrypt != null) {
+        final bytes = await decrypt(responseBody);
+        if (bytes == null) {
+          final responsePacket = requestPacket.requestDecryptError();
+          logError(['httpResponse <<<<<<', responsePacket]);
+          return responsePacket;
+        } else {
+          final responsePacket = requestPacket.responseOk(data: {'bytes': bytes});
+          logDebug(['httpResponse <<<<<<', responsePacket]);
+          return responsePacket;
+        }
+      }
+
       final responseData = threadEnable
           ? await _thread!.runTask<EasyPacket>(
               taskType: _threadTaskDecrypt,
