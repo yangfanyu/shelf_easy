@@ -1,3 +1,7 @@
+## 5.0.7
+
+- Add decrypt argument to EasyClient.httpRequest.  
+  
 ## 5.0.6
 
 - Add the httpDownload method to EasyServer.  
