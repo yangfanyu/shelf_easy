@@ -87,6 +87,9 @@ class EasyServer extends EasyLogger {
   ///读取配置信息
   EasyServerConfig get config => _config;
 
+  ///读取全部已绑定用户信息的session的uid集合
+  Iterable<String> get sessionKeys => _websoketSessionMap.keys;
+
   EasyServer({required EasyServerConfig config})
     : _config = config,
       _clusterClientMap = {},
