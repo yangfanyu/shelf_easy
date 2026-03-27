@@ -1,3 +1,7 @@
+## 5.0.8
+
+- Add sessionKeys method to EasyServer.  
+  
 ## 5.0.7
 
 - Add decrypt argument to EasyClient.httpRequest.  
