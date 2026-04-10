@@ -1282,6 +1282,9 @@ class EasyCoderModelInfo {
   ///模型类的名称
   final String className;
 
+  ///模型类的数据库表名称，默认为类名的小写下划线命名
+  final String? tableName;
+
   ///模型类的常量字段
   final List<EasyCoderFieldInfo> constFields;
 
@@ -1314,6 +1317,7 @@ class EasyCoderModelInfo {
     this.importList = const [],
     this.classDesc = const [],
     required this.className,
+    this.tableName,
     this.constFields = const [],
     this.classFields = const [],
     this.extraFields = const [],
@@ -1336,6 +1340,15 @@ class EasyCoderModelInfo {
       return '${className.replaceAllMapped(RegExp(r'(?<=[a-z])[A-Z]'), (m) => '_${m.group(0)}').toLowerCase()}.dart';
     } else {
       return outputFile!;
+    }
+  }
+
+  ///获取代码的实际数据库表名称
+  String get actualTableName {
+    if (tableName == null) {
+      return className.replaceAllMapped(RegExp(r'(?<=[a-z])[A-Z]'), (m) => '_${m.group(0)}').toLowerCase();
+    } else {
+      return tableName!;
     }
   }
 }

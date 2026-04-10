@@ -94,7 +94,7 @@ class OnlyTwoDirty {
 }
 
 class OnlyTwoQuery {
-  static const $tableName = 'onlytwo';
+  static const $tableName = 'only_two';
 
   ///
   static DbQueryField<String, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get test1 => DbQueryField('test1');

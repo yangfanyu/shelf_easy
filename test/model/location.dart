@@ -112,7 +112,7 @@ class LocationDirty {
 }
 
 class LocationQuery {
-  static const $tableName = 'location';
+  static const $tableName = 'locations';
 
   ///纬度
   static DbQueryField<double, double, DBUnsupportArrayOperate> get latitude => DbQueryField('latitude');

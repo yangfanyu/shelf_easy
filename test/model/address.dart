@@ -150,7 +150,7 @@ class AddressDirty {
 }
 
 class AddressQuery {
-  static const $tableName = 'address';
+  static const $tableName = 'addresses';
 
   ///国家
   static DbQueryField<String, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get country => DbQueryField('country');

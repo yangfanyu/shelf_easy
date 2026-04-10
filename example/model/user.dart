@@ -227,7 +227,7 @@ class UserDirty {
 }
 
 class UserQuery {
-  static const $tableName = 'user';
+  static const $tableName = 'users';
 
   static Set<DbQueryField> get $secrecyFieldsExclude {
     return {

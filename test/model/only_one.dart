@@ -76,7 +76,7 @@ class OnlyOneDirty {
 }
 
 class OnlyOneQuery {
-  static const $tableName = 'onlyone';
+  static const $tableName = 'only_one';
 
   ///
   static DbQueryField<String, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get test1 => DbQueryField('test1');

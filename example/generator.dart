@@ -28,6 +28,7 @@ void main() {
       importList: [],
       classDesc: ['', '位置', ''],
       className: 'Location',
+      tableName: 'locations',
       classFields: [
         EasyCoderFieldInfo(type: 'ObjectId', name: '_id', desc: ['唯一标志']),
         EasyCoderFieldInfo(type: 'String', name: 'country', desc: ['国家']),
@@ -47,6 +48,7 @@ void main() {
       importList: ['constant.dart', 'location.dart'],
       classDesc: ['', '用户', ''],
       className: 'User',
+      tableName: 'users',
       classFields: [
         EasyCoderFieldInfo(type: 'ObjectId', name: '_id', desc: ['唯一标志']),
         EasyCoderFieldInfo(type: 'String', name: 'no', desc: ['账号']),

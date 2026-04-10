@@ -456,7 +456,7 @@ class EasyCoder extends EasyLogger {
     if (modelInfo.query && modelInfo.classFields.isNotEmpty) {
       buffer.write('\n');
       buffer.write('class ${modelInfo.className}Query {\n');
-      buffer.write('${indent}static const \$tableName = \'${modelInfo.className.toLowerCase()}\';\n\n'); //数据表名称
+      buffer.write('${indent}static const \$tableName = \'${modelInfo.actualTableName}\';\n\n'); //数据表名称
       //保密字段
       final secrecyList = <EasyCoderFieldInfo>[]; //保密字段
       for (var element in modelInfo.classFields) {

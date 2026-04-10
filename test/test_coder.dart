@@ -18,6 +18,7 @@ void testEasyCoderModel() {
       importList: ['address.dart'],
       classDesc: ['', '用户类', ''],
       className: 'User',
+      tableName: 'users',
       constFields: [
         EasyCoderFieldInfo(type: 'int', name: 'sexMale', desc: ['男性'], defVal: '1', zhText: '男', enText: 'Male'),
         EasyCoderFieldInfo(type: 'int', name: 'sexFemale', desc: ['女性'], defVal: '2', zhText: '女', enText: 'Female'),
@@ -47,6 +48,7 @@ void testEasyCoderModel() {
       importList: ['location.dart'],
       classDesc: ['', '用户地址类', ''],
       className: 'Address',
+      tableName: 'addresses',
       classFields: [
         EasyCoderFieldInfo(type: 'String', name: 'country', desc: ['国家']),
         EasyCoderFieldInfo(type: 'String', name: 'province', desc: ['省份']),
@@ -61,6 +63,7 @@ void testEasyCoderModel() {
       importList: [],
       classDesc: ['', '用户位置类', ''],
       className: 'Location',
+      tableName: 'locations',
       classFields: [
         EasyCoderFieldInfo(type: 'double', name: 'latitude', desc: ['纬度']),
         EasyCoderFieldInfo(type: 'double', name: 'longitude', desc: ['经度']),

@@ -93,7 +93,7 @@ class OnlyNullDirty {
 }
 
 class OnlyNullQuery {
-  static const $tableName = 'onlynull';
+  static const $tableName = 'only_null';
 
   ///
   static DbQueryField<String, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get test1 => DbQueryField('test1');

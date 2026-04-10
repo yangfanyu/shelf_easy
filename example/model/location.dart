@@ -227,7 +227,7 @@ class LocationDirty {
 }
 
 class LocationQuery {
-  static const $tableName = 'location';
+  static const $tableName = 'locations';
 
   ///唯一标志
   static DbQueryField<ObjectId, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get id => DbQueryField('_id');
