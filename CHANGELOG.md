@@ -1,3 +1,7 @@
+## 5.0.9
+
+- Add custom table name field to EasyCoder.
+
 ## 5.0.8
 
 - Add sessionKeys method to EasyServer.  
