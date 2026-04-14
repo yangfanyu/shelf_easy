@@ -69,9 +69,9 @@ void main() {
   list.sort((a, b) => a.compareTo(b));
   print(list);
 
-  final objId1 = DbQueryField.hexstr2ObjectId('000000000000000000000000');
-  final objId2 = DbQueryField.hexstr2ObjectId('000000000000000000000000');
-  final objId3 = DbQueryField.hexstr2ObjectId('000000000000000000000001');
+  final objId1 = DbQueryField.parseObjectId('000000000000000000000000');
+  final objId2 = DbQueryField.parseObjectId('000000000000000000000000');
+  final objId3 = DbQueryField.parseObjectId('000000000000000000000001');
 
   print('objId1 == objId2 => ${objId1 == objId2}');
   print('objId1 == objId3 => ${objId1 == objId3}');
@@ -87,9 +87,9 @@ void main() {
   Map<ObjectId, int> map3x = {};
   map3x[objId1] = 0;
   map3x[objId3] = 1;
-  print("ObjectId Map : $map3x ${map3x['000000000000000000000000']} ${map3x[DbQueryField.hexstr2ObjectId('000000000000000000000000')]} ${map3x[objId3]}");
-  print("${map3x.containsKey(objId1)} ${map3x.containsKey(DbQueryField.hexstr2ObjectId('000000000000000000000000'))} ${map3x.containsKey('000000000000000000000000')}"); //true true false
-  print("${map3x.keys.toSet().contains(objId1)} ${map3x.keys.toSet().contains(DbQueryField.hexstr2ObjectId('000000000000000000000000'))} ${map3x.keys.toSet().contains('000000000000000000000000')}"); //true true false
+  print("ObjectId Map : $map3x ${map3x['000000000000000000000000']} ${map3x[DbQueryField.parseObjectId('000000000000000000000000')]} ${map3x[objId3]}");
+  print("${map3x.containsKey(objId1)} ${map3x.containsKey(DbQueryField.parseObjectId('000000000000000000000000'))} ${map3x.containsKey('000000000000000000000000')}"); //true true false
+  print("${map3x.keys.toSet().contains(objId1)} ${map3x.keys.toSet().contains(DbQueryField.parseObjectId('000000000000000000000000'))} ${map3x.keys.toSet().contains('000000000000000000000000')}"); //true true false
 
   Map<String, int> map3z = {};
   map3z['000000000000000000000000'] = 2;

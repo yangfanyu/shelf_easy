@@ -315,6 +315,9 @@ class DbPipeline extends DbBaseModel {
   ///投影操作
   final Set<DbQueryField>? $project;
 
+  ///连接操作
+  final DbPipelineLookup? $lookup;
+
   ///展开操作
   final dynamic $unwind;
 
@@ -330,7 +333,7 @@ class DbPipeline extends DbBaseModel {
   ///排序参数
   final Set<DbQueryField>? $sort;
 
-  DbPipeline({this.$match, this.$project, this.$unwind, this.$group, this.$skip, this.$limit, this.$sort});
+  DbPipeline({this.$match, this.$project, this.$lookup, this.$unwind, this.$group, this.$skip, this.$limit, this.$sort});
 
   @override
   Map<String, dynamic> toJson() {
@@ -345,6 +348,9 @@ class DbPipeline extends DbBaseModel {
         if (element._value$projection != null) projectFields[element.name] = element._value$projection; //兼容为1或0的情况
       }
       map['\$project'] = projectFields;
+    }
+    if ($lookup != null) {
+      map['\$lookup'] = $lookup?.toJson();
     }
     if ($unwind != null) {
       map['\$unwind'] = $unwind is String ? '\$${$unwind}' : $unwind;
@@ -391,6 +397,40 @@ class DbPipeline extends DbBaseModel {
     } else {
       return v;
     }
+  }
+}
+
+///
+///聚合连接属性
+///
+class DbPipelineLookup extends DbBaseModel {
+  ///目标集合
+  final String from;
+
+  ///本表字段
+  final String localField;
+
+  ///对方字段
+  final String foreignField;
+
+  ///输出别名
+  final String as_;
+
+  DbPipelineLookup({
+    required this.from,
+    required this.localField,
+    required this.foreignField,
+    required this.as_,
+  });
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'from': from,
+      'localField': localField,
+      'foreignField': foreignField,
+      'as': as_,
+    };
   }
 }
 
@@ -915,12 +955,6 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
     }
     return null;
   }
-
-  ///创建一个新的ObjectId
-  static ObjectId createObjectId() => ObjectId();
-
-  ///将HexString转换为ObjectId，失败返回[emptyObjectId]
-  static ObjectId hexstr2ObjectId(String hexstr) => parseObjectId(hexstr);
 
   ///创建一个空的ObjectId
   static ObjectId get emptyObjectId => ObjectId.fromHexString('000000000000000000000000');

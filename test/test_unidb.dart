@@ -4,14 +4,13 @@ import 'dart:io';
 import 'package:shelf_easy/shelf_deps.dart';
 import 'package:shelf_easy/shelf_easy.dart';
 
-import 'model/address.dart';
-import 'model/user.dart';
+import 'model/all.dart';
 
 void main() {
   // testJsonTool();
-  testHelpClass();
+  // testHelpClass();
   // testDataBase();
-  // testAggregate();
+  testAggregate();
 }
 
 void testJsonTool() {
@@ -232,6 +231,14 @@ void testHelpClass() {
             UserQuery.rmb..$project(asField: 'rmbxxx'),
             DbQueryField('aaa.bbb')..$project(asField: 'ccc_ddd'),
           },
+        ),
+        DbPipeline(
+          $lookup: DbPipelineLookup(
+            from: 'a',
+            localField: 'x',
+            foreignField: 'y',
+            as_: 'b',
+          ),
         ),
         DbPipeline(
           $unwind: UserQuery.age.name,
@@ -620,8 +627,8 @@ void testDataBase() {
     print(User().toJson.hashCode);
     print(User().toJson.hashCode);
     print(User().toJson.hashCode);
-    print(DbQueryField.createObjectId());
-    print(DbQueryField.hexstr2ObjectId(''));
+    print(ObjectId());
+    print(DbQueryField.parseObjectId(''));
     //关闭连接
     await database.destroy().then((value) => exit(0));
   });
@@ -643,17 +650,23 @@ void testAggregate() {
   );
   database.connect().then((value) async {
     //deleteMany without filter
+    await database.deleteMany(TeamQuery.$tableName, DbFilter({}));
     await database.deleteMany(UserQuery.$tableName, DbFilter({}));
+
+    //insert Team
+    final team = Team(name: '测试团队');
+    await database.insertOne(TeamQuery.$tableName, team);
+
     //insertMany
     await database.insertMany(UserQuery.$tableName, [
-      User(name: '用户11', age: 11, rmb: 10),
-      User(name: '用户11', age: 11, rmb: 20),
-      User(name: '用户22', age: 22, rmb: 30),
-      User(name: '用户22', age: 22, rmb: 40),
-      User(name: '用户33', age: 33, rmb: 50),
-      User(name: '用户33', age: 33, rmb: 60),
-      User(name: '用户44', age: 44, rmb: 70),
-      User(name: '用户44', age: 44, rmb: 80),
+      User(name: '用户11', age: 11, rmb: 10, teamId: team.id),
+      User(name: '用户11', age: 11, rmb: 20, teamId: team.id),
+      User(name: '用户22', age: 22, rmb: 30, teamId: team.id),
+      User(name: '用户22', age: 22, rmb: 40, teamId: team.id),
+      User(name: '用户33', age: 33, rmb: 50, teamId: team.id),
+      User(name: '用户33', age: 33, rmb: 60, teamId: team.id),
+      User(name: '用户44', age: 44, rmb: 70, teamId: team.id),
+      User(name: '用户44', age: 44, rmb: 80, teamId: team.id),
     ]);
     //aggregate1
     await database.aggregate<DbJsonWraper>(
@@ -727,6 +740,45 @@ void testAggregate() {
       ],
       converter: DbJsonWraper.fromJson,
     );
+    //aggregate3
+    final result = await database.aggregate<DbJsonWraper>(
+      UserQuery.$tableName,
+      [
+        DbPipeline(
+          $match: DbFilter(
+            {
+              UserQuery.age..$gte(20),
+            },
+          ),
+        ),
+        DbPipeline(
+          $project: {
+            UserQuery.name..include(),
+            UserQuery.teamId..include(),
+          },
+        ),
+        DbPipeline(
+          $lookup: DbPipelineLookup(
+            from: TeamQuery.$tableName,
+            localField: UserField.teamId,
+            foreignField: TeamField.id,
+            as_: 'refTeam',
+          ),
+        ),
+        DbPipeline(
+          $unwind: 'refTeam',
+        ),
+        DbPipeline(
+          $skip: 1,
+        ),
+        DbPipeline(
+          $limit: 2,
+        ),
+      ],
+      converter: DbJsonWraper.fromJson,
+    );
+    print(JsonEncoder.withIndent(' ').convert(result));
+
     //关闭连接
     await database.destroy().then((value) => exit(0));
   });

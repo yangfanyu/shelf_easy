@@ -34,6 +34,11 @@ class User extends DbBaseModel {
   ObjectId _id;
 
   ///
+  ///团队
+  ///
+  ObjectId teamId;
+
+  ///
   ///姓名
   ///
   String name;
@@ -68,6 +73,7 @@ class User extends DbBaseModel {
   static const Map<String, Map<String, String?>> fieldMap = {
     'zh': {
       '_id': null,
+      'teamId': null,
       'name': '姓名',
       'age': '年龄',
       'rmb': null,
@@ -81,6 +87,7 @@ class User extends DbBaseModel {
     },
     'en': {
       '_id': null,
+      'teamId': null,
       'name': 'Name',
       'age': 'Age',
       'rmb': null,
@@ -106,6 +113,7 @@ class User extends DbBaseModel {
 
   User({
     ObjectId? id,
+    ObjectId? teamId,
     String? name,
     int? age,
     double? rmb,
@@ -117,6 +125,7 @@ class User extends DbBaseModel {
     List<ObjectId>? friendList,
     Map<int, Map<ObjectId, Address>>? ageObjectIdAddressMap,
   }) : _id = id ?? ObjectId(),
+       teamId = teamId ?? ObjectId.fromHexString('000000000000000000000000'),
        name = name ?? '名称',
        age = age ?? 10,
        rmb = rmb ?? 100,
@@ -134,6 +143,7 @@ class User extends DbBaseModel {
   factory User.fromJson(Map<String, dynamic> map) {
     return User(
       id: DbQueryField.tryParseObjectId(map['_id']),
+      teamId: DbQueryField.tryParseObjectId(map['teamId']),
       name: DbQueryField.tryParseString(map['name']),
       age: DbQueryField.tryParseInt(map['age']),
       rmb: DbQueryField.tryParseDouble(map['rmb']),
@@ -156,6 +166,7 @@ class User extends DbBaseModel {
   Map<String, dynamic> toJson() {
     return {
       '_id': DbQueryField.toBaseType(_id),
+      'teamId': DbQueryField.toBaseType(teamId),
       'name': DbQueryField.toBaseType(name),
       'age': DbQueryField.toBaseType(age),
       'rmb': DbQueryField.toBaseType(rmb),
@@ -173,6 +184,7 @@ class User extends DbBaseModel {
   Map<String, dynamic> toKValues() {
     return {
       '_id': _id,
+      'teamId': teamId,
       'name': name,
       'age': age,
       'rmb': rmb,
@@ -190,6 +202,7 @@ class User extends DbBaseModel {
   void updateByJson(Map<String, dynamic> map, {User? parser}) {
     parser = parser ?? User.fromJson(map);
     if (map.containsKey('_id')) _id = parser._id;
+    if (map.containsKey('teamId')) teamId = parser.teamId;
     if (map.containsKey('name')) name = parser.name;
     if (map.containsKey('age')) age = parser.age;
     if (map.containsKey('rmb')) rmb = parser.rmb;
@@ -205,6 +218,7 @@ class User extends DbBaseModel {
   @override
   void updateByKValues(Map<String, dynamic> map) {
     if (map.containsKey('_id')) _id = map['_id'];
+    if (map.containsKey('teamId')) teamId = map['teamId'];
     if (map.containsKey('name')) name = map['name'];
     if (map.containsKey('age')) age = map['age'];
     if (map.containsKey('rmb')) rmb = map['rmb'];
@@ -223,6 +237,11 @@ class UserField {
   ///标志
   ///
   static const String id = '_id';
+
+  ///
+  ///团队
+  ///
+  static const String teamId = 'teamId';
 
   ///
   ///姓名
@@ -264,6 +283,11 @@ class UserDirty {
   ///标志
   ///
   set id(ObjectId value) => data['_id'] = DbQueryField.toBaseType(value);
+
+  ///
+  ///团队
+  ///
+  set teamId(ObjectId value) => data['teamId'] = DbQueryField.toBaseType(value);
 
   ///
   ///姓名
@@ -314,6 +338,11 @@ class UserQuery {
   ///标志
   ///
   static DbQueryField<ObjectId, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get id => DbQueryField('_id');
+
+  ///
+  ///团队
+  ///
+  static DbQueryField<ObjectId, DBUnsupportNumberOperate, DBUnsupportArrayOperate> get teamId => DbQueryField('teamId');
 
   ///
   ///姓名

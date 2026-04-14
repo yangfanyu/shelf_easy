@@ -15,6 +15,17 @@ void testEasyCoderModel() {
   );
   coder.generateModel(
     EasyCoderModelInfo(
+      classDesc: ['', '团队类', ''],
+      className: 'Team',
+      tableName: 'teams',
+      classFields: [
+        EasyCoderFieldInfo(type: 'ObjectId', name: '_id', desc: ['', '标志', ''], secrecy: true),
+        EasyCoderFieldInfo(type: 'String', name: 'name', desc: ['', '姓名', ''], defVal: '\'名称\'', zhText: '姓名', enText: 'Name'),
+      ],
+    ),
+  );
+  coder.generateModel(
+    EasyCoderModelInfo(
       importList: ['address.dart'],
       classDesc: ['', '用户类', ''],
       className: 'User',
@@ -25,6 +36,7 @@ void testEasyCoderModel() {
       ],
       classFields: [
         EasyCoderFieldInfo(type: 'ObjectId', name: '_id', desc: ['', '标志', ''], secrecy: true),
+        EasyCoderFieldInfo(type: 'ObjectId', name: 'teamId', desc: ['', '团队', '']),
         EasyCoderFieldInfo(type: 'String', name: 'name', desc: ['', '姓名', ''], defVal: '\'名称\'', zhText: '姓名', enText: 'Name'),
         EasyCoderFieldInfo(type: 'int', name: 'age', desc: ['年龄'], secrecy: true, defVal: '10', zhText: '年龄', enText: 'Age'),
         EasyCoderFieldInfo(type: 'double', name: 'rmb', desc: ['RMB'], secrecy: true, defVal: '100'),

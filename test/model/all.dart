@@ -1,3 +1,4 @@
+export 'team.dart';
 export 'user.dart';
 export 'address.dart';
 export 'location.dart';
