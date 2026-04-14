@@ -1,3 +1,7 @@
+## 5.1.0
+
+- Add $loopup config to DbPipeline.
+  
 ## 5.0.9
 
 - Add custom table name field to EasyCoder.
