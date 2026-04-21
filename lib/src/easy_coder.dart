@@ -151,6 +151,11 @@ class EasyCoder extends EasyLogger {
       }
       buffer.write('$indent$indent},\n');
       buffer.write('$indent};\n\n');
+      buffer.write('${indent}static const Map<int, int?> colorMap = {\n');
+      for (var element in modelInfo.constFields) {
+        buffer.write('$indent$indent${element.defVal}: ${element.color},\n');
+      }
+      buffer.write('$indent};\n\n');
     }
   }
 

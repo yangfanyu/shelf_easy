@@ -1381,6 +1381,9 @@ class EasyCoderFieldInfo {
   ///常量字段映射的英文值
   final String? enText;
 
+  ///常量字段映射的颜色值
+  final String? color;
+
   EasyCoderFieldInfo({
     required this.type,
     required this.name,
@@ -1390,5 +1393,6 @@ class EasyCoderFieldInfo {
     this.defVal,
     this.zhText,
     this.enText,
+    this.color,
   });
 }

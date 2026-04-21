@@ -31,8 +31,9 @@ void testEasyCoderModel() {
       className: 'User',
       tableName: 'users',
       constFields: [
-        EasyCoderFieldInfo(type: 'int', name: 'sexMale', desc: ['男性'], defVal: '1', zhText: '男', enText: 'Male'),
-        EasyCoderFieldInfo(type: 'int', name: 'sexFemale', desc: ['女性'], defVal: '2', zhText: '女', enText: 'Female'),
+        EasyCoderFieldInfo(type: 'int', name: 'sexMale', desc: ['男性'], defVal: '1', zhText: '男', enText: 'Male', color: '0xFFFF0000'),
+        EasyCoderFieldInfo(type: 'int', name: 'sexFemale', desc: ['女性'], defVal: '2', zhText: '女', enText: 'Female', color: '0xFF0000FF'),
+        EasyCoderFieldInfo(type: 'int', name: 'sexUnknow', desc: ['未知'], defVal: '3', zhText: '未知', enText: 'Unknnow'),
       ],
       classFields: [
         EasyCoderFieldInfo(type: 'ObjectId', name: '_id', desc: ['', '标志', ''], secrecy: true),

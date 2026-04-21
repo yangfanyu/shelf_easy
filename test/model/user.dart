@@ -17,15 +17,26 @@ class User extends DbBaseModel {
   ///女性
   static const int sexFemale = 2;
 
+  ///未知
+  static const int sexUnknow = 3;
+
   static const Map<String, Map<int, String?>> constMap = {
     'zh': {
       1: '男',
       2: '女',
+      3: '未知',
     },
     'en': {
       1: 'Male',
       2: 'Female',
+      3: 'Unknnow',
     },
+  };
+
+  static const Map<int, int?> colorMap = {
+    1: 0xFFFF0000,
+    2: 0xFF0000FF,
+    3: null,
   };
 
   ///
