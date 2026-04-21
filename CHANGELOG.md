@@ -1,3 +1,7 @@
+## 5.1.1
+
+- Add const color property to EasyCoder.
+  
 ## 5.1.0
 
 - Add $loopup config to DbPipeline.
