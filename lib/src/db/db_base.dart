@@ -714,6 +714,7 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
   // bool operator ==(Object other) => other is DbQueryField && other._name == _name;
 
   /* **************** 指令操作 ********** */
+
   ///等于
   void $eq(FD_TYPE value) => _cmds['\$eq'] = toBaseType(value);
 
@@ -748,21 +749,33 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
   }
 
   ///数组中任一项满足过滤条件
-  void $itemAnyMatch({DbFilter? filter, ITEM_TYPE? $eq, ITEM_TYPE? $ne, ITEM_TYPE? $gt, ITEM_TYPE? $lt, ITEM_TYPE? $gte, ITEM_TYPE? $lte}) {
+  void $itemAnyMatch({DbFilter? filter, ITEM_TYPE? $eq, ITEM_TYPE? $ne, ITEM_TYPE? $gt, ITEM_TYPE? $gte, ITEM_TYPE? $lt, ITEM_TYPE? $lte, List<ITEM_TYPE>? $in, List<ITEM_TYPE>? $nin}) {
     final exp = filter?.toJson() ?? {};
     if ($eq != null) exp['\$eq'] = $eq;
     if ($ne != null) exp['\$ne'] = $ne;
     if ($gt != null) exp['\$gt'] = $gt;
-    if ($lt != null) exp['\$lt'] = $lt;
     if ($gte != null) exp['\$gte'] = $gte;
+    if ($lt != null) exp['\$lt'] = $lt;
     if ($lte != null) exp['\$lte'] = $lte;
+    if ($in != null) exp['\$in'] = $in;
+    if ($nin != null) exp['\$nin'] = $nin;
     _cmds['\$elemMatch'] = exp;
   }
 
-  ///数组每一个项都满足过滤条件
-  void $itemAllMatch({ITEM_TYPE? $ne}) {
-    _cmds['\$ne'] = $ne;
+  ///数组每项都不满足过滤条件（非任一项满足 <=> 每项都不满足）
+  void $itemAllNotMatch({DbFilter? filter, ITEM_TYPE? $eq, ITEM_TYPE? $ne, ITEM_TYPE? $gt, ITEM_TYPE? $gte, ITEM_TYPE? $lt, ITEM_TYPE? $lte, List<ITEM_TYPE>? $in, List<ITEM_TYPE>? $nin}) {
+    final exp = filter?.toJson() ?? {};
+    if ($eq != null) exp['\$eq'] = $eq;
+    if ($ne != null) exp['\$ne'] = $ne;
+    if ($gt != null) exp['\$gt'] = $gt;
+    if ($gte != null) exp['\$gte'] = $gte;
+    if ($lt != null) exp['\$lt'] = $lt;
+    if ($lte != null) exp['\$lte'] = $lte;
+    if ($in != null) exp['\$in'] = $in;
+    if ($nin != null) exp['\$nin'] = $nin;
+    _cmds['\$not'] = {'\$elemMatch': exp};
   }
+
   /* **************** 赋值操作 ********** */
 
   ///设置 $set 操作的值

@@ -9,8 +9,8 @@ import 'model/all.dart';
 void main() {
   // testJsonTool();
   // testHelpClass();
-  // testDataBase();
-  testAggregate();
+  testDataBase();
+  // testAggregate();
 }
 
 void testJsonTool() {
@@ -50,7 +50,7 @@ void testHelpClass() {
               },
             ),
           ),
-          UserQuery.friendList..$itemAllMatch($ne: DbQueryField.emptyObjectId),
+          UserQuery.friendList..$itemAllNotMatch($eq: DbQueryField.emptyObjectId),
         },
         $or: [
           {
@@ -390,7 +390,7 @@ void testDataBase() {
       ),
       converter: User.fromJson,
     );
-    //findOne with filter elemMatch
+    //findOne with filter itemAnyMatch
     await database.findOne(
       UserQuery.$tableName,
       DbFilter({
@@ -462,7 +462,7 @@ void testDataBase() {
         },
       ),
     );
-    //findMany with filter elemMatch
+    //findMany with filter itemAnyMatch
     await database.findMany(
       UserQuery.$tableName,
       DbFilter({
@@ -476,11 +476,11 @@ void testDataBase() {
         },
       ),
     );
-    //findMany with filter elemMatch
+    //findMany with filter itemAnyMatch
     await database.findMany(
       UserQuery.$tableName,
       DbFilter({
-        UserQuery.accessList..$itemAnyMatch($ne: -1),
+        UserQuery.accessList..$itemAnyMatch($eq: -1),
       }),
       converter: User.fromJson,
       findOptions: DbFindOptions(
@@ -490,11 +490,11 @@ void testDataBase() {
         },
       ),
     );
-    //findMany with filter elemMatch [every$ne]
+    //findMany with filter itemAllNotMatch
     await database.findMany(
       UserQuery.$tableName,
       DbFilter({
-        UserQuery.accessList..$itemAllMatch($ne: -1),
+        UserQuery.accessList..$itemAllNotMatch($eq: -1),
       }),
       converter: User.fromJson,
       findOptions: DbFindOptions(
