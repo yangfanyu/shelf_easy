@@ -1,3 +1,7 @@
+## 5.2.0
+
+- Optimized array sub-item matching template method for database operations.
+  
 ## 5.1.1
 
 - Add const color property to EasyCoder.
