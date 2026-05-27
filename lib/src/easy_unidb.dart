@@ -229,6 +229,21 @@ class EasyUniDb extends EasyLogger implements DbBase {
     }
   }
 
+  ///批量写入操作
+  /// * [DbResult.success] 写入匹配的总数 >=0 时为true
+  /// * [DbResult.rescode] 写入匹配的总数 或 异常标识[-1]
+  @override
+  Future<DbResult<int>> bulkWrite(String table, List<DbBulkline> bulkline, {DbBulkWriteOptions? bulkWriteOptions}) async {
+    try {
+      final result = await _handle.bulkWrite(table, bulkline, bulkWriteOptions: bulkWriteOptions);
+      (result.success ? logDebug : logWarn)(['bulkWrite =>', table, bulkline, bulkWriteOptions, result]);
+      return result;
+    } catch (error, stack) {
+      logError(['bulkWrite =>', table, bulkline, bulkWriteOptions, error, '\n', stack]);
+      return DbResult(success: false, rescode: -1, message: error.toString());
+    }
+  }
+
   ///统计记录数量
   /// * [DbResult.success] 统计结果的数值 >=0 时为true
   /// * [DbResult.rescode] 统计结果的数值 或 异常标识[-1]

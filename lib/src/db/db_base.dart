@@ -33,6 +33,8 @@ abstract class DbBase {
 
   Future<DbResult<T>> aggregate<T extends DbBaseModel>(String table, List<DbPipeline> pipeline, {DbAggregateOptions? aggregateOptions, required T Function(Map<String, dynamic> map) converter}) => throw UnimplementedError();
 
+  Future<DbResult<int>> bulkWrite(String table, List<DbBulkline> bulkline, {DbBulkWriteOptions? bulkWriteOptions}) => throw UnimplementedError();
+
   Future<DbResult<int>> count(String table, DbFilter filter, {DbCountOptions? countOptions}) => throw UnimplementedError();
 
   Future<DbResult<void>> withTransaction(Future<String> Function(DbSession session) operate, {DbTransactionOptions? transactionOptions, void Function({String? msg, String? warn, String? err})? onmessage}) => throw UnimplementedError();
@@ -391,7 +393,7 @@ class DbPipeline extends DbBaseModel {
 
   Object _convertToObject(dynamic v) {
     if (v is Map) {
-      return v.map((key, value) => MapEntry(key, _convertToObject(value)));
+      return v.map((key, value) => MapEntry(key as String, _convertToObject(value)));
     } else if (v is List) {
       return v.map((value) => _convertToObject(value)).toList();
     } else {
@@ -431,6 +433,100 @@ class DbPipelineLookup extends DbBaseModel {
       'foreignField': foreignField,
       'as': as_,
     };
+  }
+}
+
+///
+///批量语句处理
+///
+class DbBulkline extends DbBaseModel {
+  ///插入单条记录: 记录值
+  final DbBaseModel? insertOneDocument;
+
+  ///更新单条记录: 过滤器
+  final DbFilter? updateOnefilter;
+
+  ///更新单条记录: 新内容
+  final DbUpdate? updateOneUpdate;
+
+  ///更新单条记录: 没有则插入，有则更新
+  final bool? updateOneUpsert;
+
+  ///更新多条记录: 过滤器
+  final DbFilter? updateManyfilter;
+
+  ///更新多条记录: 新内容
+  final DbUpdate? updateManyUpdate;
+
+  ///更新多条记录: 没有则插入，有则更新
+  final bool? updateManyUpsert;
+
+  ///删除单条记录: 过滤器
+  final DbFilter? deleteOnefilter;
+
+  ///删除多条记录: 过滤器
+  final DbFilter? deleteManyfilter;
+
+  DbBulkline({
+    this.insertOneDocument,
+    this.updateOnefilter,
+    this.updateOneUpdate,
+    this.updateOneUpsert,
+    this.updateManyfilter,
+    this.updateManyUpdate,
+    this.updateManyUpsert,
+    this.deleteOnefilter,
+    this.deleteManyfilter,
+  });
+
+  @override
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    if (insertOneDocument != null) {
+      map['insertOne'] = {
+        if (insertOneDocument != null) 'document': insertOneDocument?.toJson(),
+      };
+    }
+    if (updateOneUpdate != null) {
+      map['updateOne'] = {
+        if (updateOnefilter != null) 'filter': updateOnefilter?.toJson(),
+        if (updateOneUpdate != null) 'update': updateOneUpdate?.toJson(),
+        if (updateOneUpsert != null) 'upsert': updateOneUpsert,
+      };
+    }
+    if (updateManyUpdate != null) {
+      map['updateMany'] = {
+        if (updateManyfilter != null) 'filter': updateManyfilter?.toJson(),
+        if (updateManyUpdate != null) 'update': updateManyUpdate?.toJson(),
+        if (updateManyUpsert != null) 'upsert': updateManyUpsert,
+      };
+    }
+    if (deleteOnefilter != null) {
+      map['deleteOne'] = {
+        if (deleteOnefilter != null) 'filter': deleteOnefilter?.toJson(),
+      };
+    }
+    if (deleteManyfilter != null) {
+      map['deleteMany'] = {
+        if (deleteManyfilter != null) 'filter': deleteManyfilter?.toJson(),
+      };
+    }
+    return map;
+  }
+
+  Map<String, Object> compile() {
+    final map = toJson();
+    return map.map((key, value) => MapEntry(key, _convertToObject(value)));
+  }
+
+  Object _convertToObject(dynamic v) {
+    if (v is Map) {
+      return v.map((key, value) => MapEntry(key as String, _convertToObject(value)));
+    } else if (v is List) {
+      return v.map((value) => _convertToObject(value)).toList();
+    } else {
+      return v;
+    }
   }
 }
 
@@ -622,6 +718,24 @@ class DbAggregateOptions extends DbBaseModel {
   final DbSession? session;
 
   DbAggregateOptions({this.session});
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {};
+  }
+}
+
+//
+///批量操作附加选项
+///
+class DbBulkWriteOptions extends DbBaseModel {
+  //事务会话
+  final DbSession? session;
+
+  //是否有序
+  final bool? ordered;
+
+  DbBulkWriteOptions({this.session, this.ordered});
 
   @override
   Map<String, dynamic> toJson() {

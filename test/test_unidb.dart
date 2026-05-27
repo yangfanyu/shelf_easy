@@ -9,8 +9,9 @@ import 'model/all.dart';
 void main() {
   // testJsonTool();
   // testHelpClass();
-  testDataBase();
+  // testDataBase();
   // testAggregate();
+  testBulkWrite();
 }
 
 void testJsonTool() {
@@ -778,6 +779,125 @@ void testAggregate() {
       converter: DbJsonWraper.fromJson,
     );
     print(JsonEncoder.withIndent(' ').convert(result));
+
+    //关闭连接
+    await database.destroy().then((value) => exit(0));
+  });
+  //sigint
+  ProcessSignal.sigint.watch().listen((signal) {
+    database.destroy().then((value) => exit(0));
+  });
+}
+
+void testBulkWrite() {
+  final database = EasyUniDb(
+    config: EasyUniDbConfig(
+      driver: EasyUniDbDriver.mongo,
+      host: InternetAddress.anyIPv4.host,
+      port: 27017,
+      db: 'shelf',
+      params: {},
+    ),
+  );
+  database.connect().then((value) async {
+    //deleteMany without filter
+    await database.deleteMany(TeamQuery.$tableName, DbFilter({}));
+    await database.deleteMany(UserQuery.$tableName, DbFilter({}));
+
+    //insert Team
+    final team = Team(name: '测试团队');
+    await database.insertOne(TeamQuery.$tableName, team);
+
+    //insertMany
+    await database.insertMany(UserQuery.$tableName, [
+      User(name: '用户11', age: 11, rmb: 10, teamId: team.id),
+      User(name: '用户11', age: 11, rmb: 20, teamId: team.id),
+      User(name: '用户22', age: 22, rmb: 30, teamId: team.id),
+      User(name: '用户22', age: 22, rmb: 40, teamId: team.id),
+      User(name: '用户33', age: 33, rmb: 50, teamId: team.id),
+      User(name: '用户33', age: 33, rmb: 60, teamId: team.id),
+      User(name: '用户44', age: 44, rmb: 70, teamId: team.id),
+      User(name: '用户44', age: 44, rmb: 80, teamId: team.id),
+    ]);
+    //bulkWrite1
+    final result = await database.bulkWrite(
+      UserQuery.$tableName,
+      [
+        DbBulkline(
+          insertOneDocument: User(name: '用户55', age: 55, rmb: 90, teamId: team.id, addressBak: Address()),
+        ),
+        DbBulkline(
+          insertOneDocument: User(name: '用户55', age: 55, rmb: 100, teamId: team.id, addressBak: Address()),
+        ),
+        DbBulkline(
+          insertOneDocument: User(name: '用户66', age: 66, rmb: 110, teamId: team.id, addressBak: Address()),
+        ),
+        DbBulkline(
+          insertOneDocument: User(name: '用户66', age: 66, rmb: 120, teamId: team.id, addressBak: Address()),
+        ),
+        DbBulkline(
+          insertOneDocument: User(name: '用户66', age: 66, rmb: 130, teamId: team.id, addressBak: Address()),
+        ),
+        DbBulkline(
+          insertOneDocument: User(name: '用户66', age: 66, rmb: 140, teamId: team.id, addressBak: Address()),
+        ),
+        DbBulkline(
+          insertOneDocument: User(name: '用户66', age: 66, rmb: 150, teamId: team.id, addressBak: Address()),
+        ),
+        DbBulkline(
+          insertOneDocument: User(name: '用户66', age: 66, rmb: 160, teamId: team.id, addressBak: Address()),
+        ),
+        DbBulkline(
+          updateOnefilter: DbFilter({UserQuery.rmb..$eq(10)}),
+          updateOneUpdate: DbUpdate($inc: {UserQuery.rmb..$inc(1)}),
+        ),
+        DbBulkline(
+          updateOnefilter: DbFilter({UserQuery.rmb..$eq(20)}),
+          updateOneUpdate: DbUpdate($inc: {UserQuery.rmb..$inc(2)}),
+        ),
+        DbBulkline(
+          updateManyfilter: DbFilter({UserQuery.age..$eq(22)}),
+          updateManyUpdate: DbUpdate($inc: {UserQuery.rmb..$inc(3)}),
+        ),
+        DbBulkline(
+          updateManyfilter: DbFilter({UserQuery.age..$eq(33)}),
+          updateManyUpdate: DbUpdate($inc: {UserQuery.rmb..$inc(4)}),
+        ),
+        DbBulkline(
+          deleteOnefilter: DbFilter({UserQuery.age..$eq(44)}),
+        ),
+        DbBulkline(
+          deleteOnefilter: DbFilter({UserQuery.age..$eq(55)}),
+        ),
+        DbBulkline(
+          deleteManyfilter: DbFilter({
+            UserQuery.rmb
+              ..$gte(120)
+              ..$lte(130),
+          }),
+        ),
+        DbBulkline(
+          deleteManyfilter: DbFilter({UserQuery.rmb..$gte(150)}),
+        ),
+      ],
+    );
+    print(JsonEncoder.withIndent(' ').convert(result));
+
+    final users = await database.findMany(
+      UserQuery.$tableName,
+      DbFilter({}),
+      findOptions: DbFindOptions(
+        $projection: {
+          UserQuery.id..include(),
+          UserQuery.name..include(),
+          UserQuery.age..include(),
+          UserQuery.rmb..include(),
+          UserQuery.teamId..include(),
+        },
+      ),
+      converter: User.fromJson,
+    );
+    print(JsonEncoder.withIndent(' ').convert(users.resultData));
 
     //关闭连接
     await database.destroy().then((value) => exit(0));

@@ -287,6 +287,25 @@ class DbMongo implements DbBase {
   }
 
   @override
+  Future<DbResult<int>> bulkWrite(String table, List<DbBulkline> bulkline, {DbBulkWriteOptions? bulkWriteOptions}) async {
+    final db = await _safeOpen();
+    final result = await db.collection(table).bulkWrite(bulkline.map((e) => e.compile()).toList(), ordered: bulkWriteOptions?.ordered ?? true);
+    final resultTotal = result.nInserted + result.nModified + result.nMatched + result.nUpserted + result.nRemoved;
+    return DbResult(
+      success: result.writeErrors.isEmpty && resultTotal >= 0,
+      rescode: resultTotal,
+      message: result.writeErrors.map((e) => '${e.code}: ${e.errmsg}').join('\n'),
+      result: resultTotal,
+      resultData: resultTotal,
+      insertedCount: result.nInserted,
+      modifiedCount: result.nModified,
+      matchedCount: result.nMatched,
+      upsertedCount: result.nUpserted,
+      deletedCount: result.nRemoved,
+    );
+  }
+
+  @override
   Future<DbResult<int>> count(String table, DbFilter filter, {DbCountOptions? countOptions}) async {
     final db = await _safeOpen();
     final result = await db.collection(table).count(filter.toJson());
