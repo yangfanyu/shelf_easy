@@ -1,3 +1,7 @@
+## 5.2.1
+
+- Add a bulkWrite method to EasyUniDb.
+  
 ## 5.2.0
 
 - Optimized array sub-item matching template method for database operations.
