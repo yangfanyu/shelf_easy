@@ -292,10 +292,10 @@ class DbMongo implements DbBase {
     final result = await db.collection(table).bulkWrite(bulkline.map((e) => e.compile()).toList(), ordered: bulkWriteOptions?.ordered ?? true);
     final resultTotal = result.nInserted + result.nModified + result.nMatched + result.nUpserted + result.nRemoved;
     return DbResult(
-      success: result.writeErrors.isEmpty && resultTotal >= 0,
-      rescode: resultTotal,
+      success: result.writeErrors.isEmpty,
+      rescode: result.writeErrors.isEmpty ? resultTotal : -1,
       message: result.writeErrors.map((e) => '${e.code}: ${e.errmsg}').join('\n'),
-      result: resultTotal,
+      result: result.writeErrors.isEmpty ? resultTotal : null,
       resultData: resultTotal,
       insertedCount: result.nInserted,
       modifiedCount: result.nModified,

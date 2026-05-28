@@ -230,8 +230,9 @@ class EasyUniDb extends EasyLogger implements DbBase {
   }
 
   ///批量写入操作
-  /// * [DbResult.success] 写入匹配的总数 >=0 时为true
-  /// * [DbResult.rescode] 写入匹配的总数 或 异常标识[-1]
+  /// * [DbResult.success] 当 DbResult.result!=null 时为true
+  /// * [DbResult.rescode] 相关记录的总数 或 异常标识[-1]
+  ///
   @override
   Future<DbResult<int>> bulkWrite(String table, List<DbBulkline> bulkline, {DbBulkWriteOptions? bulkWriteOptions}) async {
     try {
