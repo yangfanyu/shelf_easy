@@ -1,3 +1,7 @@
+## 5.2.2
+
+- Optimized return results for bulkWrite of EasyUniDb.
+  
 ## 5.2.1
 
 - Add a bulkWrite method to EasyUniDb.
