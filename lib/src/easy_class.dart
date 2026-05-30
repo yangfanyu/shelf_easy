@@ -1200,6 +1200,9 @@ class EasyCoderConfig extends EasyConfig {
   ///代码缩进单位
   final String indent;
 
+  //模型_id自动生成有效值
+  final bool autoId;
+
   ///成员数据类型toJson方法
   final Map<String, String> fieldsToJsonVals;
 
@@ -1222,6 +1225,7 @@ class EasyCoderConfig extends EasyConfig {
     required this.absFolder,
     this.baseClass = 'DbBaseModel',
     this.indent = '  ',
+    this.autoId = true,
     Map<String, String> customFieldsToJsonVals = const {},
     Map<String, String> customBaseFromJsonVals = const {},
     Map<String, String> customNestFromJsonKeys = const {},

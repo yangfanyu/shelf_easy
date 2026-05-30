@@ -527,7 +527,7 @@ class EasyCoder extends EasyLogger {
     if (currType == 'num') return '0';
     if (currType == 'bool') return 'false';
     if (currType == 'String') return '\'\'';
-    if (currType == 'ObjectId') return name == '_id' ? 'ObjectId()' : 'ObjectId.fromHexString(\'000000000000000000000000\')';
+    if (currType == 'ObjectId') return name == '_id' && _config.autoId ? 'ObjectId()' : 'ObjectId.fromHexString(\'000000000000000000000000\')';
     if (currType.startsWith('List')) return '[]';
     if (currType.startsWith('Map')) return '{}';
     return '$type()';
