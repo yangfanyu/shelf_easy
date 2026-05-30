@@ -1,3 +1,7 @@
+## 5.2.3
+
+- Add the autoId option to EasyCoderConfig.
+  
 ## 5.2.2
 
 - Optimized return results for bulkWrite of EasyUniDb.
