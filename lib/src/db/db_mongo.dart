@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:mongo_dart/mongo_dart.dart';
 
+import '../easy_class.dart';
 import 'db_base.dart';
 
 class DbMongo implements DbBase {
@@ -35,7 +36,7 @@ class DbMongo implements DbBase {
       _time[no] = current; //更新活跃时间
       return instance;
     }
-    throw ('Db instance $no is not connected, state is ${instance.state}, please try again.');
+    throw EasyException('Db instance $no is not connected, state is ${instance.state}, please try again.');
   }
 
   @override

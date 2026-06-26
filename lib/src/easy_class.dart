@@ -86,7 +86,20 @@ class EasyConstant {
   static const clientCloseByDestroy = EasyPacket._(code: 4104, desc: 'clientCloseByDestroy');
 
   ///客户端未知关闭原因
-  static const clientCloseByUnknow = EasyPacket._(code: 4106, desc: 'clientCloseByUnknow');
+  static const clientCloseByUnknown = EasyPacket._(code: 4106, desc: 'clientCloseByUnknown');
+}
+
+///
+///通用异常
+///
+class EasyException implements Exception {
+  ///异常信息
+  final String message;
+
+  EasyException(this.message);
+
+  @override
+  String toString() => 'EasyException: $message';
 }
 
 ///
@@ -209,7 +222,7 @@ class EasyLogger {
   }
 
   ///当前输出文件缓存
-  static final Map<String, File> _filesMap = {};
+  static Future _fileLogChain = Future.value();
 
   ///使用[print]输出到控制台
   static void printLogger(EasyLogger instance, String msg, EasyLogLevel logLevel) {
@@ -259,17 +272,13 @@ class EasyLogger {
     }
   }
 
-  ///写入到日志文件，注意：为避免并发异步写入混乱，目前采用的全部是同步操作
+  ///采用[Future]链写入日志文件，回调内使用sync I/O：单行写入量极小（微秒级），flush:true 保证崩溃前落盘，使用await反而增加Future分配开销，得不偿失
   static void writeLogger(EasyLogger instance, String msg, EasyLogLevel logLevel) {
     if (instance._logFilePath == null) return;
-    try {
+    _fileLogChain = _fileLogChain.whenComplete(() {
       //检测文件是否存在，不存在则创建新的
-      File? file = _filesMap[instance._logFilePath];
-      if (file == null) {
-        file = File('${instance._logFilePath}.log');
-        _filesMap[instance._logFilePath] = file;
-        if (!file.existsSync()) file.createSync(recursive: true); //同步创建
-      }
+      File file = File('${instance._logFilePath}.log');
+      if (!file.existsSync()) file.createSync(recursive: true); //同步创建
       //同步写入可避免顺序混乱
       file.writeAsStringSync('$msg\n', mode: FileMode.append, flush: true);
       //检查当前文件大大小，进行备份
@@ -292,13 +301,8 @@ class EasyLogger {
         for (var i = fileList.length - 1; i >= 0; i--) {
           fileList[i].renameSync('${instance._logFilePath}.log.${i + 1}');
         }
-        //从当前缓存文件中移除掉
-        _filesMap.remove(instance._logFilePath);
       }
-    } catch (error) {
-      //从当前缓存文件中移除掉
-      _filesMap.remove(instance._logFilePath);
-    }
+    });
   }
 
   ///同时输出到控制台和写入到文件
@@ -395,7 +399,7 @@ class EasyPacket<T> {
   ///服务端创建推送签名包
   factory EasyPacket.pushsign(String secret, {required String route, required Map<String, dynamic>? data, required String? ucid}) {
     final word = EasySecurity.uuid.v4();
-    final sign = EasySecurity.getMd5('$secret$route$word$secret');
+    final sign = EasySecurity.getHmacSha256('$route$word', secret);
     return EasyPacket._(route: route, data: data, ucid: ucid, word: word, sign: sign);
   }
 
@@ -480,7 +484,7 @@ class EasyPacket<T> {
   EasyPacket<E> cloneExtra<E>(E? extra) => EasyPacket<E>._(route: route, id: id, code: code, desc: desc, data: data, ucid: ucid, word: word, sign: sign, extra: extra);
 
   ///验证签名是否错误
-  bool isSignError(String secret) => EasySecurity.getMd5('$secret$route$word$secret') != sign;
+  bool isSignError(String secret) => EasySecurity.getHmacSha256('$route$word', secret) != sign;
 
   ///jsonEncode(this)抛出的异常被吃掉了，所以需要写成jsonEncode(toJson())
   @override
@@ -497,6 +501,28 @@ class EasySecurity {
   ///计算md5编码
   static String getMd5(String data) {
     return md5.convert(utf8.encode(data)).toString();
+  }
+
+  ///计算sha256编码
+  static String getSha256(String data) {
+    return sha256.convert(utf8.encode(data)).toString();
+  }
+
+  ///计算sha512编码
+  static String getSha512(String data) {
+    return sha512.convert(utf8.encode(data)).toString();
+  }
+
+  ///计算hmac-sha256编码
+  static String getHmacSha256(String data, String pwd) {
+    final hmacSha256 = Hmac(sha256, utf8.encode(pwd)); // HMAC-SHA256
+    return hmacSha256.convert(utf8.encode(data)).toString();
+  }
+
+  ///计算hmac-sha512编码
+  static String getHmacSha512(String data, String pwd) {
+    final hmacSha512 = Hmac(sha512, utf8.encode(pwd)); // HMAC-SHA512
+    return hmacSha512.convert(utf8.encode(data)).toString();
   }
 
   ///将数据包进行加密，采用随机生成iv和key的AES加密算法（CBC、Pkcs7）
@@ -1018,14 +1044,11 @@ class EasyServerSession {
 ///数据库类型
 ///
 enum EasyUniDbDriver {
-  ///可用于Native端与Web端
-  hive,
-
-  ///用于Native端
+  ///原生dart实现
   mongo,
 
-  ///用于Native端
-  postgre,
+  ///桥接rust实现
+  bridge,
 }
 
 ///

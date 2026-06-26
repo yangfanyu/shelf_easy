@@ -6,6 +6,12 @@ import 'package:shelf_easy/shelf_deps.dart';
 import 'package:shelf_easy/shelf_easy.dart';
 
 void main() {
+  print(EasySecurity.getMd5('123456'));
+  print(EasySecurity.getSha256('123456'));
+  print(EasySecurity.getSha512('123456'));
+  print(EasySecurity.getHmacSha256('123456', '123456'));
+  print(EasySecurity.getHmacSha512('123456', '123456'));
+
   // Assign compile-time constant to p0.
   Point p0 = Point.origin0;
   // Create new point using const constructor.

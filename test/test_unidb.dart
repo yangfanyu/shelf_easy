@@ -848,36 +848,36 @@ void testBulkWrite() {
           insertOneDocument: User(name: '用户66', age: 66, rmb: 160, teamId: team.id, addressBak: Address()),
         ),
         DbBulkline(
-          updateOnefilter: DbFilter({UserQuery.rmb..$eq(10)}),
+          updateOneFilter: DbFilter({UserQuery.rmb..$eq(10)}),
           updateOneUpdate: DbUpdate($inc: {UserQuery.rmb..$inc(1)}),
         ),
         DbBulkline(
-          updateOnefilter: DbFilter({UserQuery.rmb..$eq(20)}),
+          updateOneFilter: DbFilter({UserQuery.rmb..$eq(20)}),
           updateOneUpdate: DbUpdate($inc: {UserQuery.rmb..$inc(2)}),
         ),
         DbBulkline(
-          updateManyfilter: DbFilter({UserQuery.age..$eq(22)}),
+          updateManyFilter: DbFilter({UserQuery.age..$eq(22)}),
           updateManyUpdate: DbUpdate($inc: {UserQuery.rmb..$inc(3)}),
         ),
         DbBulkline(
-          updateManyfilter: DbFilter({UserQuery.age..$eq(33)}),
+          updateManyFilter: DbFilter({UserQuery.age..$eq(33)}),
           updateManyUpdate: DbUpdate($inc: {UserQuery.rmb..$inc(4)}),
         ),
         DbBulkline(
-          deleteOnefilter: DbFilter({UserQuery.age..$eq(44)}),
+          deleteOneFilter: DbFilter({UserQuery.age..$eq(44)}),
         ),
         DbBulkline(
-          deleteOnefilter: DbFilter({UserQuery.age..$eq(55)}),
+          deleteOneFilter: DbFilter({UserQuery.age..$eq(55)}),
         ),
         DbBulkline(
-          deleteManyfilter: DbFilter({
+          deleteManyFilter: DbFilter({
             UserQuery.rmb
               ..$gte(120)
               ..$lte(130),
           }),
         ),
         DbBulkline(
-          deleteManyfilter: DbFilter({UserQuery.rmb..$gte(150)}),
+          deleteManyFilter: DbFilter({UserQuery.rmb..$gte(150)}),
         ),
       ],
     );

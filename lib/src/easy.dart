@@ -42,6 +42,7 @@ class Easy {
     bool runErrorsZone = true,
     bool errorsAreFatal = false,
   }) async {
+    final hostname = machineBind ? File(machineFile).readAsStringSync().trim() : null;
     final clusterServerConfig = envClusterServerConfig[environment];
     final clusterServerEntryPoint = envClusterServerEntryPoint?[environment];
     final defaultServerConfig = envDefaultServerConfig?[environment];
@@ -67,7 +68,7 @@ class Easy {
     finalServerConfig.forEach((cluster, serverConfigList) {
       for (var serverConfig in serverConfigList) {
         serverConfig.initClusterLinksConfigs(finalServerConfig); //初始化需要远程连接的集群分组配置信息
-        if (machineBind && serverConfig.host != File(machineFile).readAsStringSync().trim()) {
+        if (machineBind && serverConfig.host != hostname) {
           continue; //不匹配主机名
         }
         final serverEntryPoint = clusterServerEntryPoint?[cluster] ?? defaultServerEntryPoint;

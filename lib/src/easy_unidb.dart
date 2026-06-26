@@ -1,7 +1,6 @@
 import 'db/db_base.dart';
-import 'db/db_hive.dart' as hive;
 import 'db/db_unsupport.dart' if (dart.library.io) 'db/db_mongo.dart' as mongo;
-import 'db/db_unsupport.dart' if (dart.library.io) 'db/db_postgre.dart' as postgre;
+import 'db/db_unsupport.dart' if (dart.library.io) 'db/db_bridge.dart' as bridge;
 import 'easy_class.dart';
 
 ///
@@ -25,10 +24,10 @@ class EasyUniDb extends EasyLogger implements DbBase {
         logFileBackup: config.logFileBackup,
         logFileMaxBytes: config.logFileMaxBytes,
       ) {
-    if (_config.user == null && _config.password != null) throw ('_config.user == null && _config.password != null');
-    if (_config.user != null && _config.password == null) throw ('_config.user != null && _config.password == null');
-    if (_config.poolSize < 1) throw ('_config.poolSize < 1');
-    if (_config.idleTimeMs < 60000) throw ('_config.idleTimeMs < 60000'); //不能小于1分钟
+    if (_config.user == null && _config.password != null) throw EasyException('_config.user == null && _config.password != null');
+    if (_config.user != null && _config.password == null) throw EasyException('_config.user != null && _config.password == null');
+    if (_config.poolSize < 1) throw EasyException('_config.poolSize < 1');
+    if (_config.idleTimeMs < 60000) throw EasyException('_config.idleTimeMs < 60000'); //不能小于1分钟
   }
 
   ///连接到数据库
@@ -300,12 +299,10 @@ class EasyUniDb extends EasyLogger implements DbBase {
       params: config.params,
     );
     switch (config.driver) {
-      case EasyUniDbDriver.hive:
-        return hive.create(dbcfg);
       case EasyUniDbDriver.mongo:
         return mongo.create(dbcfg);
-      case EasyUniDbDriver.postgre:
-        return postgre.create(dbcfg);
+      case EasyUniDbDriver.bridge:
+        return bridge.create(dbcfg);
     }
   }
 }

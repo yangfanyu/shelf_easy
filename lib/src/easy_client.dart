@@ -91,9 +91,9 @@ class EasyClient extends EasyLogger {
         logFileBackup: config.logFileBackup,
         logFileMaxBytes: config.logFileMaxBytes,
       ) {
-    if (_config.timeout < 5 * 1000) throw ('_config.timeout < 5 * 1000');
-    if (_config.heartick < 30) throw ('_config.heartick < 30');
-    if (_config.conntick < 3) throw ('_config.conntick < 3');
+    if (_config.timeout < 5 * 1000) throw EasyException('_config.timeout < 5 * 1000');
+    if (_config.heartick < 30) throw EasyException('_config.heartick < 30');
+    if (_config.conntick < 3) throw EasyException('_config.conntick < 3');
   }
 
   ///初始化并发线程，用于客户端高计算量任务，如json解析、加解密操作等
@@ -134,7 +134,8 @@ class EasyClient extends EasyLogger {
     //关闭计时器
     _timer?.cancel();
     _timer = null;
-    //清除监听器
+    //清除请求监听
+    _requesterMap.forEach((id, requester) => requester.completer.complete(requester.packet.requestExpiredError())); //完成所有等待中的请求
     _requesterMap.clear();
     _listenersMap.clear();
     //安全关闭连接
@@ -426,9 +427,11 @@ class EasyClient extends EasyLogger {
 
   void _onWebSocketDone() {
     if (_expired) return;
-    logDebug(['_onWebSocketDone =>', _socket?.closeCode, _socket?.closeReason]);
+    final closeCode = _socket?.closeCode ?? EasyConstant.clientCloseByUnknown.code;
+    final closeReason = _socket?.closeReason ?? EasyConstant.clientCloseByUnknown.desc;
+    logDebug(['_onWebSocketDone =>', closeCode, closeReason]);
     _safeClose(EasyConstant.clientCloseByDone.code, EasyConstant.clientCloseByDone.desc); //关闭旧连接
-    if (_onclose != null) _onclose!(_socket?.closeCode ?? EasyConstant.clientCloseByUnknow.code, _socket?.closeReason ?? EasyConstant.clientCloseByUnknow.desc);
+    if (_onclose != null) _onclose!(closeCode, closeReason);
   }
 
   void _onHeartick() {

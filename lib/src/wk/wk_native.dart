@@ -30,10 +30,14 @@ class WkNative implements WkBase {
         task?.completer.complete(message.data);
       }
     }, cancelOnError: false);
-    Isolate.spawn(runErrorsZone ? _entryPointZone : _entryPoint, _config, errorsAreFatal: errorsAreFatal).then((value) {
-      _isolate = value;
-      _timer = Timer.periodic(Duration(seconds: 1), (Timer timer) => _onHeartick());
-    });
+    Isolate.spawn(runErrorsZone ? _entryPointZone : _entryPoint, _config, errorsAreFatal: errorsAreFatal)
+        .then((value) {
+          _isolate = value;
+          _timer = Timer.periodic(Duration(seconds: 1), (Timer timer) => _onHeartick());
+        })
+        .catchError((error, stack) {
+          if (!completer.isCompleted) completer.completeError(error, stack);
+        });
     return completer.future;
   }
 

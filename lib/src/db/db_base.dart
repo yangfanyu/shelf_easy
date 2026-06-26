@@ -444,7 +444,7 @@ class DbBulkline extends DbBaseModel {
   final DbBaseModel? insertOneDocument;
 
   ///更新单条记录: 过滤器
-  final DbFilter? updateOnefilter;
+  final DbFilter? updateOneFilter;
 
   ///更新单条记录: 新内容
   final DbUpdate? updateOneUpdate;
@@ -453,7 +453,7 @@ class DbBulkline extends DbBaseModel {
   final bool? updateOneUpsert;
 
   ///更新多条记录: 过滤器
-  final DbFilter? updateManyfilter;
+  final DbFilter? updateManyFilter;
 
   ///更新多条记录: 新内容
   final DbUpdate? updateManyUpdate;
@@ -462,21 +462,21 @@ class DbBulkline extends DbBaseModel {
   final bool? updateManyUpsert;
 
   ///删除单条记录: 过滤器
-  final DbFilter? deleteOnefilter;
+  final DbFilter? deleteOneFilter;
 
   ///删除多条记录: 过滤器
-  final DbFilter? deleteManyfilter;
+  final DbFilter? deleteManyFilter;
 
   DbBulkline({
     this.insertOneDocument,
-    this.updateOnefilter,
+    this.updateOneFilter,
     this.updateOneUpdate,
     this.updateOneUpsert,
-    this.updateManyfilter,
+    this.updateManyFilter,
     this.updateManyUpdate,
     this.updateManyUpsert,
-    this.deleteOnefilter,
-    this.deleteManyfilter,
+    this.deleteOneFilter,
+    this.deleteManyFilter,
   });
 
   @override
@@ -489,26 +489,26 @@ class DbBulkline extends DbBaseModel {
     }
     if (updateOneUpdate != null) {
       map['updateOne'] = {
-        if (updateOnefilter != null) 'filter': updateOnefilter?.toJson(),
+        if (updateOneFilter != null) 'filter': updateOneFilter?.toJson(),
         if (updateOneUpdate != null) 'update': updateOneUpdate?.toJson(),
         if (updateOneUpsert != null) 'upsert': updateOneUpsert,
       };
     }
     if (updateManyUpdate != null) {
       map['updateMany'] = {
-        if (updateManyfilter != null) 'filter': updateManyfilter?.toJson(),
+        if (updateManyFilter != null) 'filter': updateManyFilter?.toJson(),
         if (updateManyUpdate != null) 'update': updateManyUpdate?.toJson(),
         if (updateManyUpsert != null) 'upsert': updateManyUpsert,
       };
     }
-    if (deleteOnefilter != null) {
+    if (deleteOneFilter != null) {
       map['deleteOne'] = {
-        if (deleteOnefilter != null) 'filter': deleteOnefilter?.toJson(),
+        if (deleteOneFilter != null) 'filter': deleteOneFilter?.toJson(),
       };
     }
-    if (deleteManyfilter != null) {
+    if (deleteManyFilter != null) {
       map['deleteMany'] = {
-        if (deleteManyfilter != null) 'filter': deleteManyfilter?.toJson(),
+        if (deleteManyFilter != null) 'filter': deleteManyFilter?.toJson(),
       };
     }
     return map;
@@ -819,13 +819,11 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
 
   DbQueryField(this._name) : _cmds = {};
 
-  // TODO 是否有必要重写hashCode和operator==？
+  @override
+  int get hashCode => _name.hashCode;
 
-  // @override
-  // int get hashCode => _name.hashCode;
-
-  // @override
-  // bool operator ==(Object other) => other is DbQueryField && other._name == _name;
+  @override
+  bool operator ==(Object other) => other is DbQueryField && other._name == _name;
 
   /* **************** 指令操作 ********** */
 

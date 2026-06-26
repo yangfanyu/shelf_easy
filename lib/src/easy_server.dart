@@ -106,9 +106,9 @@ class EasyServer extends EasyLogger {
         logFileBackup: config.logFileBackup,
         logFileMaxBytes: config.logFileMaxBytes,
       ) {
-    if (_config.heart < 30 * 1000) throw ('_config.heart < 30 * 1000');
-    if (_config.timeout < _config.heart * 2) throw ('_config.timeout < _config.heart * 2');
-    if (_config.reqIdCache < 16) throw ('_config.reqIdCache < 16');
+    if (_config.heart < 30 * 1000) throw EasyException('_config.heart < 30 * 1000');
+    if (_config.timeout < _config.heart * 2) throw EasyException('_config.timeout < _config.heart * 2');
+    if (_config.reqIdCache < 16) throw EasyException('_config.reqIdCache < 16');
   }
 
   ///设置事件监听器
@@ -192,16 +192,26 @@ class EasyServer extends EasyLogger {
   }
 
   ///设置http服务的AES加密通讯的文件上传路由，调用过此方法后过启动为web服务器
-  void httpUpload(String route, HttpUploadHandler handler, {required String Function() destinationFolder, String defaultMediatype = 'application/octet-stream', HttpTokenConverter? tokenConverter, Map<String, Object>? responseHeaders}) {
+  void httpUpload(String route, HttpUploadHandler handler, {required String Function() destinationFolder, int maxBytesSize = 10 * 1024 * 1024, String defaultMediatype = 'application/octet-stream', HttpTokenConverter? tokenConverter, Map<String, Object>? responseHeaders}) {
     _router ??= Router();
     _router?.post(route, (Request request) async {
       logTrace(['_onHttpUpload <=', request.headers]);
       //读取表单数据
+      var requestBytesSize = 0;
       final requestBytesList = <Uint8List>[];
       final requestMediaTypes = <MediaType>[];
       if (request.multipart() case var multipart?) {
         await for (final part in multipart.parts) {
-          requestBytesList.add(await part.readBytes());
+          final chunks = <List<int>>[];
+          await for (final chunk in part) {
+            requestBytesSize += chunk.length; //边读边累加总大小检查
+            if (requestBytesSize > maxBytesSize) {
+              logError(['_onHttpUpload <=', 'requestBytesSize > $maxBytesSize']);
+              return Response.badRequest(headers: responseHeaders);
+            }
+            chunks.add(chunk);
+          }
+          requestBytesList.add(Uint8List.fromList([for (final c in chunks) ...c]));
           requestMediaTypes.add(MediaType.parse(part.headers['content-type'] ?? defaultMediatype));
         }
         logTrace(['_onHttpUpload <=', requestBytesList.first]);
@@ -215,9 +225,7 @@ class EasyServer extends EasyLogger {
       final requestPacket = EasySecurity.decrypt(requestBytesList.first, requestToken ?? _config.pwd);
       final requestFiles = <File>[];
       for (var i = 1; i < requestBytesList.length; i++) {
-        final file = File('${destinationFolder()}/${EasySecurity.uuid.v4()}.${requestMediaTypes[i].subtype}')
-          ..createSync(recursive: true) //同步创建
-          ..writeAsBytesSync(requestBytesList[i]); //同步写入
+        final file = File('${destinationFolder()}/${EasySecurity.uuid.v4()}.${requestMediaTypes[i].subtype}');
         requestFiles.add(file);
       }
       if (requestPacket == null) {
@@ -228,6 +236,13 @@ class EasyServer extends EasyLogger {
       //路由响应数据
       final responsePacket = await handler(request, requestPacket, requestFiles) ?? requestPacket.responseOk();
       logDebug(['_onHttpUpload >>>>>>', responsePacket]);
+      if (responsePacket.ok) {
+        for (var i = 0; i < requestFiles.length; i++) {
+          final file = requestFiles[i];
+          await file.create(recursive: true); //异步等待，避免同步傻等阻塞事件循环
+          await file.writeAsBytes(requestBytesList[i + 1]); //异步等待，避免同步傻等阻塞事件循环
+        }
+      }
       final responseData = EasySecurity.encrypt(responsePacket, requestToken ?? _config.pwd, _config.binary);
       if (responseData == null) {
         logError(['_onHttpUpload =>', responsePacket, responseData]);
@@ -538,38 +553,47 @@ class EasyServer extends EasyLogger {
           (request) => _router != null ? _router!(request) : webSocketHandler((websocket, subprotocol) => _onWebSocketConnect(websocket, request))(request),
         );
     serve(
-      handler,
-      _config.host == 'anyIPv4' ? InternetAddress.anyIPv4 : (_config.host == 'anyIPv6' ? InternetAddress.anyIPv6 : _config.host),
-      _config.port,
-      securityContext: _config.sslEnable
-          ? (SecurityContext()
-              ..usePrivateKey(_config.sslKeyFile!, password: _config.sslKeyPasswd)
-              ..useCertificateChain(_config.sslCerFile!, password: _config.sslCerPasswd))
-          : null,
-      backlog: _config.backlog,
-      shared: _config.isolateInstances > 1,
-      poweredByHeader: _config.xPoweredByHeader,
-    ).then((server) {
-      if (_router != null) {
-        logInfo(['web server is listening...']);
-      } else {
-        logInfo(['websocket server is listening...']);
-      }
-      //保存http服务器实例
-      _server = server;
-      //连接关联的集群节点
-      _clusterClientMap.forEach((cluster, clientList) {
-        for (var client in clientList) {
-          client.connect(now: false);
-        }
-      });
-      //开启心跳循环
-      if (_router == null) {
-        _ticker = Timer.periodic(Duration(milliseconds: _config.heart), (timer) => _onServerHeart());
-      }
-      //启动完成
-      completer.complete();
-    });
+          handler,
+          _config.host == 'anyIPv4' ? InternetAddress.anyIPv4 : (_config.host == 'anyIPv6' ? InternetAddress.anyIPv6 : _config.host),
+          _config.port,
+          securityContext: _config.sslEnable
+              ? (SecurityContext()
+                  ..usePrivateKey(_config.sslKeyFile!, password: _config.sslKeyPasswd)
+                  ..useCertificateChain(_config.sslCerFile!, password: _config.sslCerPasswd))
+              : null,
+          backlog: _config.backlog,
+          shared: _config.isolateInstances > 1,
+          poweredByHeader: _config.xPoweredByHeader,
+        )
+        .then((server) {
+          if (_router != null) {
+            logInfo(['web server is listening...']);
+          } else {
+            logInfo(['websocket server is listening...']);
+          }
+          //保存http服务器实例
+          _server = server;
+          //连接关联的集群节点
+          _clusterClientMap.forEach((cluster, clientList) {
+            for (var client in clientList) {
+              client.connect(now: false);
+            }
+          });
+          //开启心跳循环
+          if (_router == null) {
+            _ticker = Timer.periodic(Duration(milliseconds: _config.heart), (timer) => _onServerHeart());
+          }
+          //启动完成
+          completer.complete();
+        })
+        .catchError((error, stack) {
+          if (_router != null) {
+            logError(['web server cannot start!!!', error, '\n', stack]);
+          } else {
+            logError(['websocket server cannot start!!!', error, '\n', stack]);
+          }
+          if (!completer.isCompleted) completer.completeError(error, stack);
+        });
     return completer.future;
   }
 
@@ -586,17 +610,27 @@ class EasyServer extends EasyLogger {
       await client.destroy();
     }
     //关闭server
-    _server?.close(force: true).then((value) {
-      if (_router != null) {
-        logInfo(['web server was closed.']);
-      } else {
-        logInfo(['websocket server was closed.']);
-      }
-      //释放http服务器实例
-      _server = null;
-      //关闭完成
-      completer.complete();
-    });
+    _server
+        ?.close(force: true)
+        .then((value) {
+          if (_router != null) {
+            logInfo(['web server was closed.']);
+          } else {
+            logInfo(['websocket server was closed.']);
+          }
+          //释放http服务器实例
+          _server = null;
+          //关闭完成
+          completer.complete();
+        })
+        .catchError((error, stack) {
+          if (_router != null) {
+            logError(['web server cannot close!!!', error, '\n', stack]);
+          } else {
+            logError(['websocket server cannot close!!!', error, '\n', stack]);
+          }
+          if (!completer.isCompleted) completer.completeError(error, stack);
+        });
     return completer.future;
   }
 
@@ -711,14 +745,18 @@ class EasyServer extends EasyLogger {
           return;
         } else {
           logDebug(['_onWebSocketMessage <<<<<<', session.info, packet]);
-          remote(session, child).then((response) {
-            if (response == null) {
-              logInfo(['_onWebSocketRequest =>', session.info, 'REMOTE', watch.elapsed, child.route]);
-            } else {
-              pushResponse(session, packet, response: response);
-              logInfo(['_onWebSocketRequest =>', session.info, 'REMOTE', response.code, watch.elapsed, child.route]);
-            }
-          });
+          remote(session, child)
+              .then((response) {
+                if (response == null) {
+                  logInfo(['_onWebSocketRequest =>', session.info, 'REMOTE', watch.elapsed, child.route]);
+                } else {
+                  pushResponse(session, packet, response: response);
+                  logInfo(['_onWebSocketRequest =>', session.info, 'REMOTE', response.code, watch.elapsed, child.route]);
+                }
+              })
+              .catchError((error, stack) {
+                logError(['_onWebSocketRequest =>', session.info, 'REMOTE', watch.elapsed, child.route, error, '\n', stack]);
+              });
           return;
         }
       } catch (error, stack) {
@@ -735,14 +773,18 @@ class EasyServer extends EasyLogger {
       return;
     } else {
       logDebug(['_onWebSocketMessage <<<<<<', session.info, packet]);
-      route(session, packet).then((response) {
-        if (response == null) {
-          logInfo(['_onWebSocketRequest =>', session.info, 'ROUTE', watch.elapsed, packet.route]);
-        } else {
-          pushResponse(session, packet, response: response);
-          logInfo(['_onWebSocketRequest =>', session.info, 'ROUTE', response.code, watch.elapsed, packet.route]);
-        }
-      });
+      route(session, packet)
+          .then((response) {
+            if (response == null) {
+              logInfo(['_onWebSocketRequest =>', session.info, 'ROUTE', watch.elapsed, packet.route]);
+            } else {
+              pushResponse(session, packet, response: response);
+              logInfo(['_onWebSocketRequest =>', session.info, 'ROUTE', response.code, watch.elapsed, packet.route]);
+            }
+          })
+          .catchError((error, stack) {
+            logError(['_onWebSocketRequest =>', session.info, 'ROUTE', watch.elapsed, packet.route, error, '\n', stack]);
+          });
       return;
     }
   }
