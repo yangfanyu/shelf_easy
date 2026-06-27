@@ -1,3 +1,7 @@
+## 5.3.0
+
+- Improve the robustness of the logging and uploading methods, and fix some issues.
+  
 ## 5.2.3
 
 - Add the autoId option to EasyCoderConfig.
