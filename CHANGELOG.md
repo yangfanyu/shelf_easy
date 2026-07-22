@@ -1,3 +1,7 @@
+## 5.3.3
+
+- Fix the type conversion error of arrayFilters caused by the underlying drive.
+  
 ## 5.3.2
 
 - Add the arrayFilters option for database update operations.
