@@ -531,7 +531,8 @@ class DbBulkline extends DbBaseModel {
 
   Object _convertToObject(dynamic v) {
     if (v is Map) {
-      return v.map((key, value) => MapEntry(key as String, _convertToObject(value)));
+      //驱动限制：arrayFilters真实类型必须保持为List<Map<String, dynamic>>，而最终返回类型必须保持了为Map<String, Object>，否则会报错
+      return v.map((key, value) => MapEntry(key as String, key == 'arrayFilters' ? value as Object : _convertToObject(value)));
     } else if (v is List) {
       return v.map((value) => _convertToObject(value)).toList();
     } else {
