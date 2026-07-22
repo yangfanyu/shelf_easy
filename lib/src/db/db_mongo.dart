@@ -131,6 +131,7 @@ class DbMongo implements DbBase {
           filter.toJson(),
           update.toJson(),
           upsert: updateOptions?.$upsert,
+          arrayFilters: updateOptions?.$arrayFilters?.map((e) => e.toJson()).toList(),
         );
     return DbResult(
       success: result.nModified > 0 || result.nMatched > 0 || result.nUpserted > 0,
@@ -152,6 +153,7 @@ class DbMongo implements DbBase {
           filter.toJson(),
           update.toJson(),
           upsert: updateOptions?.$upsert,
+          arrayFilters: updateOptions?.$arrayFilters?.map((e) => e.toJson()).toList(),
         );
     return DbResult(
       success: result.nModified > 0 || result.nMatched > 0 || result.nUpserted > 0,
@@ -248,6 +250,7 @@ class DbMongo implements DbBase {
           update: update.toJson(),
           remove: false,
           upsert: findUpdateOptions?.$upsert,
+          arrayFilters: findUpdateOptions?.$arrayFilters?.map((e) => e.toJson()).toList(),
           fields: findUpdateOptions?.$projectionToJson(),
           returnNew: findUpdateOptions?.$returnNew,
         );

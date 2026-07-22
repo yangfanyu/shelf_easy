@@ -452,6 +452,9 @@ class DbBulkline extends DbBaseModel {
   ///更新单条记录: 没有则插入，有则更新
   final bool? updateOneUpsert;
 
+  ///更新单条记录: 数组过滤器
+  final List<DbFilter>? updateOneArrayFilters;
+
   ///更新多条记录: 过滤器
   final DbFilter? updateManyFilter;
 
@@ -460,6 +463,9 @@ class DbBulkline extends DbBaseModel {
 
   ///更新多条记录: 没有则插入，有则更新
   final bool? updateManyUpsert;
+
+  ///更新多条记录: 数组过滤器
+  final List<DbFilter>? updateManyArrayFilters;
 
   ///删除单条记录: 过滤器
   final DbFilter? deleteOneFilter;
@@ -472,9 +478,11 @@ class DbBulkline extends DbBaseModel {
     this.updateOneFilter,
     this.updateOneUpdate,
     this.updateOneUpsert,
+    this.updateOneArrayFilters,
     this.updateManyFilter,
     this.updateManyUpdate,
     this.updateManyUpsert,
+    this.updateManyArrayFilters,
     this.deleteOneFilter,
     this.deleteManyFilter,
   });
@@ -492,6 +500,7 @@ class DbBulkline extends DbBaseModel {
         if (updateOneFilter != null) 'filter': updateOneFilter?.toJson(),
         if (updateOneUpdate != null) 'update': updateOneUpdate?.toJson(),
         if (updateOneUpsert != null) 'upsert': updateOneUpsert,
+        if (updateOneArrayFilters != null) 'arrayFilters': updateOneArrayFilters?.map((e) => e.toJson()).toList(),
       };
     }
     if (updateManyUpdate != null) {
@@ -499,6 +508,7 @@ class DbBulkline extends DbBaseModel {
         if (updateManyFilter != null) 'filter': updateManyFilter?.toJson(),
         if (updateManyUpdate != null) 'update': updateManyUpdate?.toJson(),
         if (updateManyUpsert != null) 'upsert': updateManyUpsert,
+        if (updateManyArrayFilters != null) 'arrayFilters': updateManyArrayFilters?.map((e) => e.toJson()).toList(),
       };
     }
     if (deleteOneFilter != null) {
@@ -570,13 +580,19 @@ class DbUpdateOptions extends DbBaseModel {
   ///没有则插入，有则更新
   final bool? $upsert;
 
-  DbUpdateOptions({this.session, this.$upsert});
+  ///数组过滤器
+  final List<DbFilter>? $arrayFilters;
+
+  DbUpdateOptions({this.session, this.$upsert, this.$arrayFilters});
 
   @override
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     if ($upsert != null) {
       map['\$upsert'] = $upsert;
+    }
+    if ($arrayFilters != null) {
+      map['\$arrayFilters'] = $arrayFilters?.map((e) => e.toJson()).toList();
     }
     return map;
   }
@@ -678,13 +694,16 @@ class DbFindUpdateOptions extends DbBaseModel {
   ///没有则插入，有则更新
   final bool? $upsert;
 
+  ///数组过滤器
+  final List<DbFilter>? $arrayFilters;
+
   ///返回值是否更新后的记录
   final bool? $returnNew;
 
   ///投影参数
   final Set<DbQueryField>? $projection;
 
-  DbFindUpdateOptions({this.session, this.$upsert, this.$returnNew, this.$projection});
+  DbFindUpdateOptions({this.session, this.$upsert, this.$arrayFilters, this.$returnNew, this.$projection});
 
   ///$projection转换为Map格式数据
   Map<String, Object>? $projectionToJson() {
@@ -699,6 +718,9 @@ class DbFindUpdateOptions extends DbBaseModel {
     final map = <String, dynamic>{};
     if ($upsert != null) {
       map['\$upsert'] = $upsert;
+    }
+    if ($arrayFilters != null) {
+      map['\$arrayFilters'] = $arrayFilters?.map((e) => e.toJson()).toList();
     }
     if ($returnNew != null) {
       map['\$returnNew'] = $returnNew;

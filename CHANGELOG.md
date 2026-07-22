@@ -1,5 +1,9 @@
 ## 5.3.0
 
+- Add the arrayFilters option for database update operations.
+  
+## 5.3.0
+
 - Improve the robustness of the logging and uploading methods, and fix some issues.
   
 ## 5.2.3
