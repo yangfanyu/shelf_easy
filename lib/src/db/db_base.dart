@@ -911,6 +911,12 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
     _cmds['\$not'] = {'\$elemMatch': exp};
   }
 
+  ///数组首元素作用域：生成 thisName.$.fieldName 路径，$ 绑定 [$itemAnyMatch] 查询命中的第一个元素，[$itemAnyMatch] 查询必须携带元素唯一键
+  DbQueryField<FD, ITEM, NUM> $first<FD, ITEM, NUM>(DbQueryField<FD, ITEM, NUM> field) => DbQueryField<FD, ITEM, NUM>('$_name.\$.${field._name}');
+
+  ///数组全元素作用域：mark 为空生成 thisName.$[].fieldName 路径，$[] 无条件作用于数组全部元素，与查询条件无关；mark 非空生成 thisName.$[mark].fieldName 路径，$[mark] 作用于 [$arrayFilters] 中同名标记过滤器命中的全部元素
+  DbQueryField<FD, ITEM, NUM> $every<FD, ITEM, NUM>(DbQueryField<FD, ITEM, NUM> field, {String mark = ''}) => DbQueryField<FD, ITEM, NUM>('$_name.\$[$mark].${field._name}');
+
   /* **************** 赋值操作 ********** */
 
   ///设置 $set 操作的值
