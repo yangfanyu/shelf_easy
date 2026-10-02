@@ -1,3 +1,7 @@
+## 5.3.4
+
+- Added $first and $every operators for DbQueryField.
+  
 ## 5.3.3
 
 - Fix the type conversion error of arrayFilters caused by the underlying drive.
