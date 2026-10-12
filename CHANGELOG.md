@@ -1,3 +1,7 @@
+## 5.3.5
+
+- Added $self operators for DbQueryField.
+  
 ## 5.3.4
 
 - Added $first and $every operators for DbQueryField.
