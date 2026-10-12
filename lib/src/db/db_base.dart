@@ -911,6 +911,9 @@ class DbQueryField<FD_TYPE, NUM_TYPE, ITEM_TYPE> {
     _cmds['\$not'] = {'\$elemMatch': exp};
   }
 
+  ///对象自身作用域：生成 thisName.fieldName 路径
+  DbQueryField<FD, ITEM, NUM> $self<FD, ITEM, NUM>(DbQueryField<FD, ITEM, NUM> field) => DbQueryField<FD, ITEM, NUM>('$_name.${field._name}');
+
   ///数组首元素作用域：生成 thisName.$.fieldName 路径，$ 绑定 [$itemAnyMatch] 查询命中的第一个元素，[$itemAnyMatch] 查询必须携带元素唯一键
   DbQueryField<FD, ITEM, NUM> $first<FD, ITEM, NUM>(DbQueryField<FD, ITEM, NUM> field) => DbQueryField<FD, ITEM, NUM>('$_name.\$.${field._name}');
 
