@@ -52,6 +52,14 @@ void testEasyCoderModel() {
       extraFields: [
         EasyCoderFieldInfo(type: 'String', name: '\$pingying', desc: ['', '非序列化字段', '']),
       ],
+      customLines: [
+        '',
+        '@override',
+        'int get hashCode => _id.hashCode;',
+        '',
+        '@override',
+        'bool operator ==(Object other) => other is User && _id == other._id;',
+      ],
       constMap: true,
     ),
     headerComments: ['// ignore_for_file: non_constant_identifier_names'],

@@ -1321,6 +1321,9 @@ class EasyCoderModelInfo {
   ///模型实例的扩展字段，这一部分字段不参与序列化和查询
   final List<EasyCoderFieldInfo> extraFields;
 
+  ///自定义行
+  final List<String> customLines;
+
   ///是否生成[constFields]中字段的[值]的国际化语言Map映射，为[true]时[constFields]的每个子项类型必须为int
   final bool constMap;
 
@@ -1348,6 +1351,7 @@ class EasyCoderModelInfo {
     this.constFields = const [],
     this.classFields = const [],
     this.extraFields = const [],
+    this.customLines = const [],
     this.constMap = false,
     this.fieldMap = true,
     this.field = true,

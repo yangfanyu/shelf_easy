@@ -57,6 +57,7 @@ class EasyCoder extends EasyLogger {
     _generateToKValuesMethod(indent, modelInfo, buffer); //toKValues函数
     _generateUpdateByJsonMethod(indent, modelInfo, buffer); //updateByJson函数
     _generateUpdateByKValuesMethod(indent, modelInfo, buffer); //updateByKValues函数
+    _generateCustomLines(indent, modelInfo, buffer); //自定义行
     buffer.write('}\n'); //类结束
     //字段辅助类
     _generateFieldClass(indent, modelInfo, buffer);
@@ -412,6 +413,16 @@ class EasyCoder extends EasyLogger {
     }
     buffer.write('$indent}\n');
     return;
+  }
+
+  void _generateCustomLines(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {
+    for (var element in modelInfo.customLines) {
+      if (element.isEmpty) {
+        buffer.write('\n');
+      } else {
+        buffer.write('$indent$element\n');
+      }
+    }
   }
 
   void _generateFieldClass(String indent, EasyCoderModelInfo modelInfo, StringBuffer buffer) {

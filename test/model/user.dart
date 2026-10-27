@@ -241,6 +241,12 @@ class User extends DbBaseModel {
     if (map.containsKey('friendList')) friendList = map['friendList'];
     if (map.containsKey('ageObjectIdAddressMap')) ageObjectIdAddressMap = map['ageObjectIdAddressMap'];
   }
+
+  @override
+  int get hashCode => _id.hashCode;
+
+  @override
+  bool operator ==(Object other) => other is User && _id == other._id;
 }
 
 class UserField {
