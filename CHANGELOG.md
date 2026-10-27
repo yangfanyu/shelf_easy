@@ -1,3 +1,7 @@
+## 5.3.6
+
+- Add custom lines to the data model generator EasyCoder.
+
 ## 5.3.5
 
 - Added $self operators for DbQueryField.
